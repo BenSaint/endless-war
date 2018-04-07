@@ -1,4 +1,10 @@
 #!/usr/bin/python3
+#
+# endless-war
+# mperron (2018)
+#
+# a chat bot for the RFCK discord server
+
 import discord
 import asyncio
 import random
@@ -15,7 +21,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	# Wake up when we see a message start with pound.
-	elif message.content.startswith('#'):
+	if message.content.startswith('#'):
 		""" let the user know we're working on it """
 		resp = await client.send_message(message.channel, '...')
 
