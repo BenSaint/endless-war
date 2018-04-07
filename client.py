@@ -9,6 +9,8 @@ import discord
 import asyncio
 import random
 
+import userfmt
+
 client = discord.Client()
 
 @client.event
@@ -27,13 +29,16 @@ async def on_message(message):
 
 		""" tokenize the message. the command should be the first word. """
 		tokens = message.content.split(' ')
-		cmd = tokens[0].lower()
 		tokens_count = len(tokens)
+		cmd = tokens[0].lower()
 
 		""" process command words """
 		if cmd == '#kill':
-			if tokens_count > 1:
-				await client.edit_message(resp, 'Okay, let\'s kill {}!' . format(tokens[1]))
+			mentions_count = len(message.mentions)
+			if mentions_count > 0:
+				names = userfmt.userListToNameString(message.mentions)
+
+				await client.edit_message(resp, 'Okay, let\'s kill {}!'.format(names))
 			else:
 				await client.edit_message(resp, 'Okay tough guy, who are you killing?')
 
