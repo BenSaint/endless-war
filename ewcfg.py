@@ -12,9 +12,19 @@ role_corpse = "corpse"
 faction_killers = "killers"
 faction_rowdys = "rowdys"
 
+# Channel names
+channel_mines = "the-mines"
+
 # Commands
-cmd_enlist = '#enlist'
-cmd_revive = '#revive'
-cmd_kill = '#kill'
-cmd_devour = '#devour'
-cmd_mine = '#mine'
+cmd_prefix = '!'
+cmd_enlist = cmd_prefix + 'enlist'
+cmd_revive = cmd_prefix + 'revive'
+cmd_kill = cmd_prefix + 'kill'
+cmd_devour = cmd_prefix + 'devour'
+cmd_mine = cmd_prefix + 'mine'
+
+# Slime costs/values
+slimes_tokill = 200
+slimes_permine = 5
+slimes_onrevive = 20
+slimes_toenlist = 420
