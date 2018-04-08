@@ -2,3 +2,15 @@ Create a file in the same directory as client.py named "token", which
 contains only your API token.
 
 Run client.py (with python 3.5+).
+
+------------------------------------------------------------------------
+
+Creating the database tables:
+ 
+CREATE TABLE users (
+	id_user varchar(128) NOT NULL,
+	id_server varchar(128) NOT NULL,
+	slimes int NOT NULL DEFAULT '0',
+	
+	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
+);

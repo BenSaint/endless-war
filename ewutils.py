@@ -1,3 +1,5 @@
+import MySQLdb;
+
 """ get the API token from the config file on disk """
 def getToken():
 	token = ""
@@ -10,11 +12,11 @@ def getToken():
 			line = line.rstrip()
 			if len(line) > 0:
 				token = line
-
-		f_token.close()
 	except IOError:
 		token = ""
 		print("Could not read token file.")
+	finally:
+		f_token.close()
 
 	return token
 
@@ -47,3 +49,7 @@ def getRoleMap(roles):
 		roles_map[role.name.replace(" ", "").lower()] = role
 
 	return roles_map
+
+""" connect to the database """
+def databaseConnect():
+	return MySQLdb.connect(host="localhost", user="rfck-bot", passwd="rfck", db="rfck")

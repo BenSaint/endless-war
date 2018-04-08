@@ -38,37 +38,64 @@ async def on_message(message):
 		tokens_count = len(tokens)
 		cmd = tokens[0].lower()
 
+		# remove mentions to us
+		mentions = list(filter(lambda user : user.id != client.user.id, message.mentions))
+
 		# common data we'll need
 		roles_map = ewutils.getRoleMap(message.server.roles)
+		mentions_count = len(mentions)
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
-			mentions_count = len(message.mentions)
-
 			if mentions_count > 0:
 				# The roles assigned to the author of this user.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
-				# TODO check that the user has enough slime for all the KILLS
+				try:
+					conn = ewutils.databaseConnect();
+					cursor = conn.cursor();
 
-				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
-				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+					cursor.execute("SELECT slimes FROM users WHERE id_user = %s AND id_server = %s", [message.author.id, message.author.server.id])
+					result = cursor.fetchone();
 
-				if user_iskillers == False and user_isrowdys == False:
-					await client.edit_message(resp, "Nice try, loser.")
-				else:
-					names = ewutils.userListToNameString(message.mentions)
-					role_corpse = roles_map[ewcfg.role_corpse]
+					user_slimes = 0
+					if result == None:
+						cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", [message.author.id, message.author.server.id])
+						conn.commit();
+					else:
+						user_slimes = result[0]
 
-					for member in message.mentions:
-						roles_map_target = ewutils.getRoleMap(member.roles)
-						if (user_iskillers and ewcfg.role_rowdyfuckers in roles_map_target) or (user_isrowdys and ewcfg.role_copkillers in roles_map_target):
-							await client.replace_roles(member, role_corpse)
+					# FIXME debug
+					print('user {} ({}/{}) has {} slimes.'.format(message.author.display_name, message.author.id, message.author.server.id, user_slimes))
+
+					# TODO check that the user has enough slime for all the KILLS
+
+					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+
+					if user_iskillers == False and user_isrowdys == False:
+						await client.edit_message(resp, "Nice try, loser.")
+					else:
+						role_corpse = roles_map[ewcfg.role_corpse]
+						users_killed = []
+
+						for member in mentions:
+							roles_map_target = ewutils.getRoleMap(member.roles)
+							if (user_iskillers and ewcfg.role_rowdyfuckers in roles_map_target) or (user_isrowdys and ewcfg.role_copkillers in roles_map_target):
+								await client.replace_roles(member, role_corpse)
+								users_killed.append(member)
+							else:
+								# FIXME debug
+								print("couldn't kill {}".format(member.display_name))
+
+						if len(users_killed) > 0:
+							names = ewutils.userListToNameString(users_killed)
+							await client.edit_message(resp, 'Killed {}!'.format(names))
 						else:
-							# FIXME debug
-							print("couldn't kill {}".format(member.name))
-
-					await client.edit_message(resp, 'Killed {}!'.format(names))
+							await client.edit_message(resp, "Didn't kill anybody.")
+				finally:
+					cursor.close()
+					conn.close()
 			else:
 				await client.edit_message(resp, 'Okay tough guy, who are you killing?')
 
@@ -127,8 +154,6 @@ async def on_message(message):
 
 		# Debug command to override the role of a user
 		elif cmd == '#setrole':
-			mentions_count = len(message.mentions)
-
 			if mentions_count == 0:
 				await client.edit_message(resp, 'Set who\'s role?')
 			else:
@@ -136,7 +161,7 @@ async def on_message(message):
 				role = roles_map.get(role_target)
 
 				if role != None:
-					for user in message.mentions:
+					for user in mentions:
 						await client.replace_roles(user, role)
 
 					await client.edit_message(resp, 'Done.')
