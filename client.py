@@ -108,6 +108,23 @@ async def on_message(message):
 			else:
 				await client.edit_message(resp, "You can't do that right now.")
 
+		# faction leader consumes the mentioned players of their own faction to absorb their slime count
+		# kills the mentioned players
+		elif cmd == ewcfg.cmd_devour:
+
+			# TODO devour cmd
+
+			# FIXME debug
+			await client.edit_message(resp, "You can't do that right now.")
+
+		# gives +5 slime to the miner (message.author)
+		elif cmd == ewcfg.cmd_mine:
+
+			# TODO mine cmd
+
+			# FIXME debug
+			await client.edit_message(resp, "You can't do that right now.")
+
 		# Debug command to override the role of a user
 		elif cmd == '#setrole':
 			mentions_count = len(message.mentions)
