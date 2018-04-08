@@ -138,26 +138,37 @@ async def on_message(message):
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 			if ewcfg.role_corpse in roles_map_user:
+				# List of maps of member and slime count.
+				member_slime_pile = []
+
 				try:
 					conn = ewutils.databaseConnect();
 					cursor = conn.cursor();
 
 					# Give player some initial slimes.
 					ewutils.setSlimesForPlayer(conn, cursor, message.author, ewcfg.slimes_onrevive)
+					member_slime_pile.append({ 'member': message.author, 'slimes': ewcfg.slimes_onrevive })
+
+					for member in message.server.members:
+						if member.id != message.author.id:
+							member_slimes = ewutils.getSlimesForPlayer(conn, cursor, member) + ewcfg.slimes_onrevive_everyone
+							ewutils.setSlimesForPlayer(conn, cursor, member, member_slimes)
+							member_slime_pile.append({ 'member': member, 'slimes': member_slimes })
 
 					conn.commit()
 				finally:
 					cursor.close()
 					conn.close()
 
-				# Update score on user's nickname.
-				try:
-					await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, ewcfg.slimes_onrevive))
-				except:
-					pass
-
 				await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
 				await client.edit_message(resp, 'Revived {}!'.format(message.author.display_name))
+
+				# Update score on user's nickname.
+				for obj in member_slime_pile:
+					try:
+						await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
+					except:
+						pass
 			else:
 				await client.edit_message(resp, 'You\'re not dead.')
 
@@ -237,7 +248,7 @@ async def on_message(message):
 					await client.edit_message(resp, "You can't mine here. Try #{}.".format(ewcfg.channel_mines))
 
 		# Show the current slime score of a player.
-		elif cmd == ewcfg.cmd_score:
+		elif cmd == ewcfg.cmd_score or cmd == ewcfg.cmd_score_alt1:
 			if mentions_count == 0:
 				user_slimes = 0
 				try:
@@ -263,6 +274,74 @@ async def on_message(message):
 
 				# return somebody's score
 				await client.edit_message(resp, "{}'s slime score is {}.".format(member.display_name, user_slimes))
+
+		# rowdy fucker and cop killer (leaders) can give slimes to anybody
+		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
+				await client.edit_message(resp, "Only the Rowdy Fucker or Cop Killer can do that.")
+			else:
+				if mentions_count == 0:
+					await client.edit_message(resp, "Give slimes to who?")
+				else:
+					if tokens_count > 1:
+						value = None
+						for token in tokens[1:]:
+							try:
+								value = int(token)
+								break
+							except:
+								value = None
+
+						if value != None:
+							user_slimes = 0
+							member_slimes = []
+							try:
+								conn = ewutils.databaseConnect();
+								cursor = conn.cursor();
+								user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
+
+								# determine slime count for every member mentioned
+								for member in mentions:
+									member_slimes.append({ 'member': member, 'slimes': (ewutils.getSlimesForPlayer(conn, cursor, member) + value) })
+							finally:
+								cursor.close()
+								conn.close()
+
+							if (value * mentions_count) > user_slimes:
+								await client.edit_message(resp, "You don't have enough slimes ({}/{}).".format(user_slimes, (value * mentions_count)))
+							else:
+								user_slimes = user_slimes - (value * mentions_count)
+
+								try:
+									conn = ewutils.databaseConnect();
+									cursor = conn.cursor();
+
+									ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+
+									# give value slimes to mentioned players
+									for obj in member_slimes:
+										ewutils.setSlimesForPlayer(conn, cursor, obj['member'], obj['slimes'])
+
+									conn.commit()
+								finally:
+									cursor.close()
+									conn.close()
+
+								await client.edit_message(resp, "Slime scores altered!")
+								
+								# update nicknames for all members
+								for obj in member_slimes:
+									try:
+										await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
+									except:
+										pass
+								try:
+									await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
+								except:
+									pass
+						else:
+							await client.edit_message(resp, "Give how many slimes?")
 
 		# Debug command to override the role of a user
 		elif cmd == '!setrole':

@@ -23,9 +23,13 @@ cmd_kill = cmd_prefix + 'kill'
 cmd_devour = cmd_prefix + 'devour'
 cmd_mine = cmd_prefix + 'mine'
 cmd_score = cmd_prefix + 'slimes'
+cmd_score_alt1 = cmd_prefix + 'slime'
+cmd_giveslime = cmd_prefix + 'giveslime'
+cmd_giveslime_alt1 = cmd_prefix + 'giveslimes'
 
 # Slime costs/values
 slimes_tokill = 200
 slimes_permine = 5
 slimes_onrevive = 20
+slimes_onrevive_everyone = 20
 slimes_toenlist = 420
