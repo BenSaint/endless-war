@@ -14,6 +14,8 @@ faction_rowdys = "rowdys"
 
 # Channel names
 channel_mines = "the-mines"
+channel_combatzone = "combat-zone"
+channel_endlesswar = "endless-war"
 
 # Commands
 cmd_prefix = '!'
@@ -29,7 +31,7 @@ cmd_giveslime_alt1 = cmd_prefix + 'giveslimes'
 
 # Slime costs/values
 slimes_tokill = 200
-slimes_permine = 5
+slimes_permine = 20
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 420

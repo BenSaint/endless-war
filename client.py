@@ -48,7 +48,9 @@ async def on_message(message):
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
-			if mentions_count > 0:
+			if message.channel.name != ewcfg.channel_combatzone:
+				await client.edit_message(resp, "You can only kill in the #{}.".format(ewcfg.channel_combatzone))
+			elif mentions_count > 0:
 				# The roles assigned to the author of this user.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -70,8 +72,13 @@ async def on_message(message):
 					if user_iskillers == False and user_isrowdys == False:
 						await client.edit_message(resp, "Nice try, loser.")
 					else:
+						# slimes from this kill might be awarded to the boss
+						role_boss = ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker
+						boss_slimes = 0
+
 						role_corpse = roles_map[ewcfg.role_corpse]
 						juveniles_killed = []
+						adults_killed = []
 						users_unkilled = []
 						users_killed = []
 
@@ -81,6 +88,8 @@ async def on_message(message):
 							if (user_iskillers and ewcfg.role_rowdyfuckers in roles_map_target) or (user_isrowdys and ewcfg.role_copkillers in roles_map_target) or (ewcfg.role_juvenile in roles_map_target):
 								if ewcfg.role_juvenile in roles_map_target:
 									juveniles_killed.append(member)
+								else:
+									adults_killed.append(member)
 
 								users_killed.append(member)
 								await client.replace_roles(member, role_corpse)
@@ -101,6 +110,12 @@ async def on_message(message):
 									if juvenile_slimes > 0:
 										user_slimes = user_slimes + juvenile_slimes
 
+								# Add adult tarets' slimes to the boss.
+								for member in adults_killed:
+									adult_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
+									if adult_slimes > 0:
+										boss_slimes = boss_slimes + adult_slimes
+
 								# Set the new slime value for the player.
 								ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
 
@@ -112,6 +127,28 @@ async def on_message(message):
 							finally:
 								cursor.close()
 								conn.close()
+
+							# give slimes to the boss if possible.
+							if boss_slimes > 0:
+								boss_member = None
+
+								for member in message.author.server.members:
+									if role_boss in ewutils.getRoleMap(member.roles):
+										boss_member = member
+										break
+								
+								if boss_member != None:
+									try:
+										conn = ewutils.databaseConnect();
+										cursor = conn.cursor();
+
+										boss_slimes = ewutils.getSlimesForPlayer(conn, cursor, boss_member) + boss_slimes
+										ewutils.setSlimesForPlayer(conn, cursor, boss_member, boss_slimes)
+
+										conn.commit()
+									finally:
+										cursor.close()
+										conn.close()
 
 							# Present a nice list of killed player names.
 							names = ewutils.userListToNameString(users_killed)
@@ -125,6 +162,13 @@ async def on_message(message):
 								await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
 							except:
 								pass
+
+							# Update the boss players slime count.
+							if boss_member != None:
+								try:
+									await client.change_nickname(boss_member, ewutils.getNickWithSlimes(boss_member, boss_slimes))
+								except:
+									pass
 						else:
 							if len(users_unkilled) > 0:
 								await client.edit_message(resp, 'You can\'t kill {}.'.format(ewutils.userListToNameString(users_unkilled)))
@@ -135,43 +179,48 @@ async def on_message(message):
 
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
-			roles_map_user = ewutils.getRoleMap(message.author.roles)
-
-			if ewcfg.role_corpse in roles_map_user:
-				# List of maps of member and slime count.
-				member_slime_pile = []
-
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-
-					# Give player some initial slimes.
-					slimes_initial = ewutils.getSlimesForPlayer(conn, cursor, message.author) + ewcfg.slimes_onrevive
-					ewutils.setSlimesForPlayer(conn, cursor, message.author, slimes_initial)
-					member_slime_pile.append({ 'member': message.author, 'slimes': slimes_initial })
-
-					for member in message.server.members:
-						if member.id != message.author.id:
-							member_slimes = ewutils.getSlimesForPlayer(conn, cursor, member) + ewcfg.slimes_onrevive_everyone
-							ewutils.setSlimesForPlayer(conn, cursor, member, member_slimes)
-							member_slime_pile.append({ 'member': member, 'slimes': member_slimes })
-
-					conn.commit()
-				finally:
-					cursor.close()
-					conn.close()
-
-				await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
-				await client.edit_message(resp, 'Revived {}!'.format(message.author.display_name))
-
-				# Update score on user's nickname.
-				for obj in member_slime_pile:
-					try:
-						await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
-					except:
-						pass
+			if message.channel.name != ewcfg.channel_endlesswar:
+				await client.edit_message(resp, "You can only revive in #{}.".format(ewcfg.channel_endlesswar))
 			else:
-				await client.edit_message(resp, 'You\'re not dead.')
+				roles_map_user = ewutils.getRoleMap(message.author.roles)
+
+				if ewcfg.role_corpse in roles_map_user:
+					# List of maps of member and slime count.
+					member_slime_pile = []
+
+					try:
+						conn = ewutils.databaseConnect();
+						cursor = conn.cursor();
+
+						# Give player some initial slimes.
+						slimes_initial = ewcfg.slimes_onrevive
+						ewutils.setSlimesForPlayer(conn, cursor, message.author, slimes_initial)
+						member_slime_pile.append({ 'member': message.author, 'slimes': slimes_initial })
+
+						# Give some slimes to every living player (currently online)
+						for member in message.server.members:
+							if member.id != message.author.id and member.id != client.user.id:
+								if ewcfg.role_corpse not in ewutils.getRoleMap(member.roles):
+									member_slimes = ewutils.getSlimesForPlayer(conn, cursor, member) + ewcfg.slimes_onrevive_everyone
+									ewutils.setSlimesForPlayer(conn, cursor, member, member_slimes)
+									member_slime_pile.append({ 'member': member, 'slimes': member_slimes })
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
+					await client.edit_message(resp, 'Revived {}!'.format(message.author.display_name))
+
+					# Update score on user's nickname.
+					for obj in member_slime_pile:
+						try:
+							await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
+						except:
+							pass
+				else:
+					await client.edit_message(resp, 'You\'re not dead.')
 
 		# move from juvenile to one of the armies (rowdys or killers)
 		elif cmd == ewcfg.cmd_enlist:
@@ -211,11 +260,72 @@ async def on_message(message):
 		# faction leader consumes the mentioned players of their own faction to absorb their slime count
 		# kills the mentioned players
 		elif cmd == ewcfg.cmd_devour:
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			is_copkiller = ewcfg.role_copkiller in roles_map_user
+			is_rowdyfucker = ewcfg.role_rowdyfucker in roles_map_user
 
-			# TODO devour cmd
+			if is_copkiller == False and is_rowdyfucker == False:
+				await client.edit_message(resp, "Only the Rowdy Fucker or Cop Killer can do that.")
+			else:
+				if mentions_count == 0:
+					await client.edit_message(resp, "Devour who?")
+				else:
+					members_devoured = []
+					members_na = []
 
-			# FIXME debug
-			await client.edit_message(resp, "You can't do that right now.")
+					try:
+						conn = ewutils.databaseConnect();
+						cursor = conn.cursor();
+						user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
+
+						# determine slime count for every member mentioned
+						for member in mentions:
+							roles_map_member = ewutils.getRoleMap(member.roles)
+
+							if is_copkiller == True and ewcfg.role_copkillers in roles_map_member or is_rowdyfucker == True and ewcfg.role_rowdyfuckers in roles_map_member:
+								# get slimes from the player
+								slime_count = ewutils.getSlimesForPlayer(conn, cursor, member)
+								user_slimes = user_slimes + slime_count
+
+								# set player slimes to 0
+								ewutils.setSlimesForPlayer(conn, cursor, member, 0)
+								members_devoured.append(member)
+							else:
+								members_na.append(member)
+
+						# add slime to rf/ck
+						ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+					role_corpse = roles_map[ewcfg.role_corpse]
+					for member in members_devoured:
+						# update slime counts
+						try:
+							# set roles to corpse for mentioned players
+							await client.replace_roles(member, role_corpse)
+							await client.change_nickname(member, ewutils.getNickWithSlimes(member, 0))
+						except:
+							pass
+
+					if len(members_devoured) > 0:
+						names = ewutils.userListToNameString(members_devoured)
+						if len(members_na) > 0:
+							await client.edit_message(resp, 'Devoured {}! (But you can\'t eat {}.)'.format(names, ewutils.userListToNameString(members_na)))
+						else:
+							await client.edit_message(resp, 'Devoured {}!'.format(names))
+					elif len(members_na) > 0:
+						await client.edit_message(resp, 'You can\'t eat {}.'.format(ewutils.userListToNameString(members_na)))
+					else:
+						await client.edit_message(resp, 'Couldn\'t devour anyone.')
+
+					try:
+						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
+					except:
+						pass
 
 		# gives slime to the miner (message.author)
 		elif cmd == ewcfg.cmd_mine:
