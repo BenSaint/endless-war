@@ -13,14 +13,14 @@ import sys
 import ewutils
 import ewcfg
 
+print('Starting up...')
+
 client = discord.Client()
 
 @client.event
 async def on_ready():
-	print('Logged in as')
-	print(client.user.name)
-	print(client.user.id)
-	print('------')
+	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
+	print('Ready.')
 
 @client.event
 async def on_message(message):
