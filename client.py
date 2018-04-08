@@ -146,8 +146,9 @@ async def on_message(message):
 					cursor = conn.cursor();
 
 					# Give player some initial slimes.
-					ewutils.setSlimesForPlayer(conn, cursor, message.author, ewcfg.slimes_onrevive)
-					member_slime_pile.append({ 'member': message.author, 'slimes': ewcfg.slimes_onrevive })
+					slimes_initial = ewutils.getSlimesForPlayer(conn, cursor, message.author) + ewcfg.slimes_onrevive
+					ewutils.setSlimesForPlayer(conn, cursor, message.author, slimes_initial)
+					member_slime_pile.append({ 'member': message.author, 'slimes': slimes_initial })
 
 					for member in message.server.members:
 						if member.id != message.author.id:
