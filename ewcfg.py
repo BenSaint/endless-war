@@ -22,6 +22,7 @@ cmd_revive = cmd_prefix + 'revive'
 cmd_kill = cmd_prefix + 'kill'
 cmd_devour = cmd_prefix + 'devour'
 cmd_mine = cmd_prefix + 'mine'
+cmd_score = cmd_prefix + 'slimes'
 
 # Slime costs/values
 slimes_tokill = 200
