@@ -91,7 +91,7 @@ async def on_message(message):
 		# process command words
 		if cmd == ewcfg.cmd_kill:
 			if message.channel.name != ewcfg.channel_combatzone:
-				await client.edit_message(resp, "You can only kill in the #{}.".format(ewcfg.channel_combatzone))
+				await client.edit_message(resp, "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone))
 			elif mentions_count > 0:
 				# The roles assigned to the author of this user.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
@@ -105,14 +105,14 @@ async def on_message(message):
 					conn.close()
 
 				if user_slimes < (mentions_count * ewcfg.slimes_tokill):
-					await client.edit_message(resp, "You don't have enough slimes! ({}/{})".format(user_slimes, mentions_count * ewcfg.slimes_tokill))
+					await client.edit_message(resp, "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime. ({}/{})".format(user_slimes, mentions_count * ewcfg.slimes_tokill))
 				else:
 					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
 					# Only killers, rowdys, the cop killer, and the rowdy fucker can kill people
 					if user_iskillers == False and user_isrowdys == False:
-						await client.edit_message(resp, "Nice try, loser.")
+						await client.edit_message(resp, "Juveniles lack the moral fiber necessary for murder.")
 					else:
 						# slimes from this kill might be awarded to the boss
 						role_boss = ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker
@@ -195,9 +195,9 @@ async def on_message(message):
 							# Present a nice list of killed player names.
 							names = ewutils.userListToNameString(users_killed)
 							if len(users_unkilled) > 0:
-								await client.edit_message(resp, 'Killed {}! (But you can\'t kill {}.)'.format(names, ewutils.userListToNameString(users_unkilled)))
+								await client.edit_message(resp, '{} have been SLAUGHTERED. :slime5: :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled)))
 							else:
-								await client.edit_message(resp, 'Killed {}!'.format(names))
+								await client.edit_message(resp, '{} has been SLAUGHTERED. :slime5: :gun:'.format(names))
 
 							# Try to show the new slime count on the killing player.
 							try:
@@ -213,16 +213,16 @@ async def on_message(message):
 									pass
 						else:
 							if len(users_unkilled) > 0:
-								await client.edit_message(resp, 'You can\'t kill {}.'.format(ewutils.userListToNameString(users_unkilled)))
+								await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled)))
 							else:
-								await client.edit_message(resp, "Didn't kill anybody.")
+								await client.edit_message(resp, "ENDLESS WAR will not allow this betrayal.")
 			else:
-				await client.edit_message(resp, 'Okay tough guy, who are you killing?')
+				await client.edit_message(resp, 'Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name.')
 
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
 			if message.channel.name != ewcfg.channel_endlesswar:
-				await client.edit_message(resp, "You can only revive in #{}.".format(ewcfg.channel_endlesswar))
+				await client.edit_message(resp, "Come to me. I hunger. #{}.".format(ewcfg.channel_endlesswar))
 			else:
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -253,7 +253,7 @@ async def on_message(message):
 						conn.close()
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
-					await client.edit_message(resp, 'Revived {}!'.format(message.author.display_name))
+					await client.edit_message(resp, ':slime4: A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. :slime4: {} has been reborn in slime. :slime4:'.format(message.author.display_name))
 
 					# Update score on user's nickname.
 					for obj in member_slime_pile:
@@ -262,7 +262,7 @@ async def on_message(message):
 						except:
 							pass
 				else:
-					await client.edit_message(resp, 'You\'re not dead.')
+					await client.edit_message(resp, 'You\'re not dead just yet.')
 
 		# move from juvenile to one of the armies (rowdys or killers)
 		elif cmd == ewcfg.cmd_enlist:
@@ -283,21 +283,21 @@ async def on_message(message):
 					conn.close()
 
 				if user_slimes < ewcfg.slimes_toenlist:
-					await client.edit_message(resp, "You don't have enough slime ({}/{}).".format(user_slimes, ewcfg.slimes_toenlist))
+					await client.edit_message(resp, "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist))
 				else:
 					if faction == ewcfg.faction_rowdys:
 						await client.replace_roles(message.author, roles_map[ewcfg.role_rowdyfuckers])
-						await client.edit_message(resp, "Joined {}!".format(ewcfg.faction_rowdys))
+						await client.edit_message(resp, "Enlisted in the {}.".format(ewcfg.faction_rowdys))
 					elif faction == ewcfg.faction_killers:
 						await client.replace_roles(message.author, roles_map[ewcfg.role_copkillers])
-						await client.edit_message(resp, "Joined {}!".format(ewcfg.faction_killers))
+						await client.edit_message(resp, "Enlisted in the {}.".format(ewcfg.faction_killers))
 					else:
 						await client.edit_message(resp, "Which faction? Say '{} {}' or '{} {}'.".format(ewcfg.cmd_enlist, ewcfg.faction_killers, ewcfg.cmd_enlist, ewcfg.faction_rowdys))
 
 			elif ewcfg.role_corpse in roles_map_user:
-				await client.edit_message(resp, 'You are dead.')
+				await client.edit_message(resp, 'You are dead, bitch.')
 			else:
-				await client.edit_message(resp, "You can't do that right now.")
+				await client.edit_message(resp, "You can't do that right now, bitch.")
 
 		# faction leader consumes the mentioned players of their own faction to absorb their slime count
 		# kills the mentioned players
@@ -307,7 +307,7 @@ async def on_message(message):
 			is_rowdyfucker = ewcfg.role_rowdyfucker in roles_map_user
 
 			if is_copkiller == False and is_rowdyfucker == False:
-				await client.edit_message(resp, "Only the Rowdy Fucker or Cop Killer can do that.")
+				await client.edit_message(resp, "Know your place.")
 			else:
 				if mentions_count == 0:
 					await client.edit_message(resp, "Devour who?")
@@ -356,13 +356,13 @@ async def on_message(message):
 					if len(members_devoured) > 0:
 						names = ewutils.userListToNameString(members_devoured)
 						if len(members_na) > 0:
-							await client.edit_message(resp, 'Devoured {}! (But you can\'t eat {}.)'.format(names, ewutils.userListToNameString(members_na)))
+							await client.edit_message(resp, '{} has been devoured. ({} was not devoured.)'.format(names, ewutils.userListToNameString(members_na)))
 						else:
-							await client.edit_message(resp, 'Devoured {}!'.format(names))
+							await client.edit_message(resp, '{} has been devoured.'.format(names))
 					elif len(members_na) > 0:
-						await client.edit_message(resp, 'You can\'t eat {}.'.format(ewutils.userListToNameString(members_na)))
+						await client.edit_message(resp, '{} was not devoured.'.format(ewutils.userListToNameString(members_na)))
 					else:
-						await client.edit_message(resp, 'Couldn\'t devour anyone.')
+						await client.edit_message(resp, 'No one was devoured.')
 
 					try:
 						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
@@ -415,7 +415,7 @@ async def on_message(message):
 					conn.close()
 
 				# return my score
-				await client.edit_message(resp, "Your slime score is {}.".format(user_slimes))
+				await client.edit_message(resp, "Your slime score is {} :slime1:".format(user_slimes))
 			else:
 				member = mentions[0]
 				user_slimes = 0
@@ -428,13 +428,13 @@ async def on_message(message):
 					conn.close()
 
 				# return somebody's score
-				await client.edit_message(resp, "{}'s slime score is {}.".format(member.display_name, user_slimes))
+				await client.edit_message(resp, "{}'s slime score is {} :slime1:".format(member.display_name, user_slimes))
 
 		# rowdy fucker and cop killer (leaders) can give slimes to anybody
 		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
-				await client.edit_message(resp, "Only the Rowdy Fucker or Cop Killer can do that.")
+				await client.edit_message(resp, "Only the Rowdy Fucker :rowdyfucker: and the Cop Killer :copkiller: can do that.")
 			else:
 				if mentions_count == 0:
 					await client.edit_message(resp, "Give slimes to who?")
@@ -464,7 +464,7 @@ async def on_message(message):
 								conn.close()
 
 							if (value * mentions_count) > user_slimes:
-								await client.edit_message(resp, "You don't have enough slimes ({}/{}).".format(user_slimes, (value * mentions_count)))
+								await client.edit_message(resp, "You don't have that much slime to give ({}/{}).".format(user_slimes, (value * mentions_count)))
 							else:
 								user_slimes = user_slimes - (value * mentions_count)
 
@@ -483,7 +483,7 @@ async def on_message(message):
 									cursor.close()
 									conn.close()
 
-								await client.edit_message(resp, "Slime scores altered!")
+								await client.edit_message(resp, "Slime scores altered! :slime1:")
 								
 								# update nicknames for all members
 								for obj in member_slimes:
@@ -496,7 +496,7 @@ async def on_message(message):
 								except:
 									pass
 						else:
-							await client.edit_message(resp, "Give how many slimes?")
+							await client.edit_message(resp, "Give how much slime?")
 
 
 		# advertise help services
@@ -523,11 +523,11 @@ async def on_message(message):
 			""" couldn't process the command. bail out!! """
 			""" bot rule 0: be cute """
 			randint = random.randint(1,3)
-			msg_mistake = "oh, sorry"
+			msg_mistake = "ENDLESS WAR is growing frustrated."
 			if randint == 2:
-				msg_mistake = "whoops"
+				msg_mistake = "ENDLESS WAR denies you his favor."
 			elif randint == 3:
-				msg_mistake = "nevermind"
+				msg_mistake = "ENDLESS WAR pays you no mind."
 
 			await asyncio.sleep(1)
 			await client.edit_message(resp, msg_mistake)
