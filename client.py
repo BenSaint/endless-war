@@ -44,7 +44,7 @@ async def on_ready():
 @client.event
 async def on_message(message):
 	""" do not interact with our own messages """
-	if message.author.id == client.user.id:
+	if message.author.id == client.user.id or message.author.bot == True:
 		return
 
 	"""
