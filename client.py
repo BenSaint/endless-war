@@ -45,8 +45,13 @@ async def on_message(message):
 	if message.author.id == client.user.id:
 		return
 
-	""" Wake up when we see a message start with a bang. """
-	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None:
+	"""
+		Wake up if we need to respond to messages. Could be:
+			message starts with !
+			direct message (server == None)
+			user is new/has no roles (len(roles) < 2)
+	"""
+	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
 		# tokenize the message. the command should be the first word.
 		tokens = message.content.split(' ')
 		tokens_count = len(tokens)
@@ -71,6 +76,12 @@ async def on_message(message):
 		# common data we'll need
 		roles_map = ewutils.getRoleMap(message.server.roles)
 		mentions_count = len(mentions)
+
+		# assign the juveniles role to a user with only 1 or 0 roles.
+		if len(message.author.roles) < 2:
+			role_juvenile = roles_map[ewcfg.role_juvenile]
+			await client.replace_roles(message.author, role_juvenile)
+			return
 
 		# let the user know we're working on it
 		if cmd != ewcfg.cmd_mine or message.channel.name != ewcfg.channel_mines:
