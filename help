@@ -1,0 +1,30 @@
+These are the commands I understand:
+
+	!slime
+		Show your slime score. Mention a user to see their score instead.
+
+	!mine
+		Mine for slime.
+		Used only in #the-mines.
+
+	!enlist
+		Join the Rowdy Fuckers or the Cop Killers (if you have enough slime).
+		
+	!kill @username ...
+		Kill the mentioned users. Rowdys kill Killers. Killers kill Rowdys.
+		Both kill Juveniles. Costs 200 slime.
+		You can mention more than one user.
+		Used only in the #combat-zone.
+
+	!revive
+		Bring yourself back from the dead.
+		Used only in the #endless-war.
+
+Only the Cop Killer and the Rowdy Fucker can:
+
+	!devour @username ...
+		Devour the mentioned users (of your own faction) and absorb their
+		slime! You can mention more than one user.
+
+	!giveslime # @username ...
+		Give each mentioned user # slimes from your own slime score.

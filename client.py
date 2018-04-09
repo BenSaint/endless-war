@@ -9,6 +9,7 @@ import discord
 import asyncio
 import random
 import sys
+import time
 
 import ewutils
 import ewcfg
@@ -17,6 +18,10 @@ print('Starting up...')
 
 client = discord.Client()
 
+# A map containing user IDs and the last time in UTC seconds since we sent them
+# the help doc via DM. This is to prevent spamming.
+last_helped_times = {}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -24,6 +29,7 @@ while sys.argv:
 
 	sys.argv = sys.argv[1:]
 
+# When debug is enabled, additional commands are turned on.
 if debug == True:
 	print('Debug mode enabled.')
 
@@ -32,18 +38,32 @@ async def on_ready():
 	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	print('Ready.')
 
+
 @client.event
 async def on_message(message):
-	""" Ignore DMs """
-	if message.server == None:
+	""" do not interact with our own messages """
+	if message.author.id == client.user.id:
 		return
 
 	""" Wake up when we see a message start with a bang. """
-	if message.content.startswith(ewcfg.cmd_prefix):
+	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None:
 		# tokenize the message. the command should be the first word.
 		tokens = message.content.split(' ')
 		tokens_count = len(tokens)
 		cmd = tokens[0].lower()
+
+		""" reply to DMs with help document """
+		if message.server == None:
+			time_now = int(time.time())
+			time_last = last_helped_times.get(message.author.id, 0)
+
+			# Only send the help doc once every thirty seconds. There's no need to spam it.
+			if (time_now - time_last) > 30:
+				last_helped_times[message.author.id] = time_now
+				await client.send_message(message.channel, ewutils.getHelpText())
+
+			# Nothing else to do in a DM.
+			return
 
 		# remove mentions to us
 		mentions = list(filter(lambda user : user.id != client.user.id, message.mentions))

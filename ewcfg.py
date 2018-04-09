@@ -28,6 +28,9 @@ cmd_score = cmd_prefix + 'slimes'
 cmd_score_alt1 = cmd_prefix + 'slime'
 cmd_giveslime = cmd_prefix + 'giveslime'
 cmd_giveslime_alt1 = cmd_prefix + 'giveslimes'
+cmd_help = cmd_prefix + 'help'
+cmd_help_alt1 = cmd_prefix + 'command'
+cmd_help_alt2 = cmd_prefix + 'commands'
 
 # Slime costs/values
 slimes_tokill = 200

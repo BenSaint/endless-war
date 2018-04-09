@@ -92,3 +92,22 @@ def getNickWithSlimes(member, user_slimes):
 			user_nick = match.group(1)
 
 	return (('%05d ' % user_slimes) + user_nick)
+
+""" dump help document """
+def getHelpText():
+	text = ""
+
+	try:
+		f_help = open("help", "r")
+		lines = f_help.readlines()
+
+		for line in lines:
+			text = text + line
+
+	except IOError:
+		text = ""
+		print("Could not read help file.")
+	finally:
+		f_help.close()
+
+	return text
