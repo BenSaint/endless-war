@@ -38,6 +38,8 @@ async def on_ready():
 	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	print('Ready.')
 
+	await client.change_presence(game=discord.Game(name="dev. by @krak"))
+
 
 @client.event
 async def on_message(message):
