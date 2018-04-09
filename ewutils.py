@@ -91,6 +91,10 @@ def getNickWithSlimes(member, user_slimes):
 		if match != None:
 			user_nick = match.group(1)
 
+	# Max for a five-digit counter.
+	if user_slimes > 99999:
+		user_slimes = 99999
+
 	return (('%05d ' % user_slimes) + user_nick)
 
 """ dump help document """

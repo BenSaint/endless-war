@@ -484,6 +484,11 @@ async def on_message(message):
 						else:
 							await client.edit_message(resp, "Give how many slimes?")
 
+
+		# advertise help services
+		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
+			await client.edit_message(resp, 'Send me a DM for help.')
+
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
 			if mentions_count == 0:
