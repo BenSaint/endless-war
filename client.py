@@ -86,8 +86,7 @@ async def on_message(message):
 			return
 
 		# let the user know we're working on it
-		if cmd != ewcfg.cmd_mine or message.channel.name != ewcfg.channel_mines:
-			resp = await client.send_message(message.channel, '...')
+		resp = await client.send_message(message.channel, '...')
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
@@ -375,7 +374,7 @@ async def on_message(message):
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 			if ewcfg.role_corpse in roles_map_user:
-				await client.send_message(message.channel, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive))
+				await client.edit_message(resp, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive))
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
 					user_slimes = 0
@@ -398,6 +397,8 @@ async def on_message(message):
 						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
 					except:
 						pass
+
+					await client.edit_message(resp, "You got some slime :slime6: :pick:")
 				else:
 					await client.edit_message(resp, "You can't mine here. Try #{}.".format(ewcfg.channel_mines))
 
