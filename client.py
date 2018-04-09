@@ -17,6 +17,16 @@ print('Starting up...')
 
 client = discord.Client()
 
+debug = False
+while sys.argv:
+	if sys.argv[0].lower() == '--debug':
+		debug = True
+
+	sys.argv = sys.argv[1:]
+
+if debug == True:
+	print('Debug mode enabled.')
+
 @client.event
 async def on_ready():
 	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
@@ -455,7 +465,7 @@ async def on_message(message):
 							await client.edit_message(resp, "Give how many slimes?")
 
 		# Debug command to override the role of a user
-		elif cmd == '!setrole':
+		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
 			if mentions_count == 0:
 				await client.edit_message(resp, 'Set who\'s role?')
 			else:
