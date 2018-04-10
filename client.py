@@ -208,7 +208,7 @@ async def on_message(message):
 						else:
 							if len(users_unkilled) > 0 or len(users_invuln) > 0:
 								if len(users_unkilled) == 0:
-									await client.edit_message(resp, '{} {} died too recently and are immune.'.format(ewutils.userListToNameString(users_invuln), ('have' if len(users_invuln) > 1 else 'has')))
+									await client.edit_message(resp, '{} {} died too recently and {} immune.'.format(ewutils.userListToNameString(users_invuln), ('have' if len(users_invuln) > 1 else 'has'), ('are' if len(users_invuln) > 1 else 'is')))
 								else:
 									await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled + users_invuln)))
 							else:
