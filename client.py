@@ -86,7 +86,8 @@ async def on_message(message):
 			return
 
 		# let the user know we're working on it
-		resp = await client.send_message(message.channel, '...')
+		if cmd != ewcfg.cmd_mine or message.channel.name != ewcfg.channel_mines:
+			resp = await client.send_message(message.channel, '...')
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
@@ -127,7 +128,7 @@ async def on_message(message):
 						# Attempt to kill each mentioned player.
 						for member in mentions:
 							roles_map_target = ewutils.getRoleMap(member.roles)
-							if (user_iskillers and ewcfg.role_rowdyfuckers in roles_map_target) or (user_isrowdys and ewcfg.role_copkillers in roles_map_target) or (ewcfg.role_juvenile in roles_map_target):
+							if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
 								if ewcfg.role_juvenile in roles_map_target:
 									juveniles_killed.append(member)
 								else:
@@ -171,9 +172,8 @@ async def on_message(message):
 								conn.close()
 
 							# give slimes to the boss if possible.
+							boss_member = None
 							if boss_slimes > 0:
-								boss_member = None
-
 								for member in message.author.server.members:
 									if role_boss in ewutils.getRoleMap(member.roles):
 										boss_member = member
@@ -374,7 +374,7 @@ async def on_message(message):
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 			if ewcfg.role_corpse in roles_map_user:
-				await client.edit_message(resp, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive))
+				await client.send_message(message.channel, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive))
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
 					user_slimes = 0
@@ -397,8 +397,6 @@ async def on_message(message):
 						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
 					except:
 						pass
-
-					await client.edit_message(resp, "You got some slime :slime6: :pick:")
 				else:
 					await client.edit_message(resp, "You can't mine here. Try #{}.".format(ewcfg.channel_mines))
 
