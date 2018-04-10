@@ -42,4 +42,4 @@ slimes_onrevive_everyone = 20
 slimes_toenlist = 420
 
 # Lifetimes
-invuln_onrevive = 300
+invuln_onrevive = 1200

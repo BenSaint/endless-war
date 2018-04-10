@@ -201,14 +201,14 @@ async def on_message(message):
 							# Present a nice list of killed player names.
 							names = ewutils.userListToNameString(users_killed)
 							if len(users_unkilled) > 0 or len(users_invuln) > 0:
-								await client.edit_message(resp, '{} have been SLAUGHTERED. :slime5: :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled + users_invuln)))
+								await client.edit_message(resp, '{} have been SLAUGHTERED. <:slime5:431659469844381717> :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled + users_invuln)))
 							else:
-								await client.edit_message(resp, '{} has been SLAUGHTERED. :slime5: :gun:'.format(names))
+								await client.edit_message(resp, '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(names))
 
 						else:
 							if len(users_unkilled) > 0 or len(users_invuln) > 0:
 								if len(users_unkilled) == 0:
-									await client.edit_message(resp, '{} {} died too recently and are immune.'.format(('have' if len(users_invuln) > 1 else 'has'), ewutils.userListToNameString(users_invuln)))
+									await client.edit_message(resp, '{} {} died too recently and are immune.'.format(ewutils.userListToNameString(users_invuln), ('have' if len(users_invuln) > 1 else 'has')))
 								else:
 									await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled + users_invuln)))
 							else:
@@ -253,7 +253,7 @@ async def on_message(message):
 					revive_times[message.author.id] = int(time.time())
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
-					await client.edit_message(resp, ':slime4: A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. :slime4: {} has been reborn in slime. :slime4:'.format(message.author.display_name))
+					await client.edit_message(resp, '<:slime4:431570132901560320> A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. <:slime4:431570132901560320> {} has been reborn in slime. <:slime4:431570132901560320>'.format(message.author.display_name))
 				else:
 					await client.edit_message(resp, 'You\'re not dead just yet.')
 
@@ -394,7 +394,7 @@ async def on_message(message):
 					conn.close()
 
 				# return my score
-				await client.edit_message(resp, "Your slime score is {} :slime1:".format(user_slimes))
+				await client.edit_message(resp, "Your slime score is {} <:slime1:431564830541873182>".format(user_slimes))
 			else:
 				member = mentions[0]
 				user_slimes = 0
@@ -407,13 +407,13 @@ async def on_message(message):
 					conn.close()
 
 				# return somebody's score
-				await client.edit_message(resp, "{}'s slime score is {} :slime1:".format(member.display_name, user_slimes))
+				await client.edit_message(resp, "{}'s slime score is {} <:slime1:431564830541873182>".format(member.display_name, user_slimes))
 
 		# rowdy fucker and cop killer (leaders) can give slimes to anybody
 		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
-				await client.edit_message(resp, "Only the Rowdy Fucker :rowdyfucker: and the Cop Killer :copkiller: can do that.")
+				await client.edit_message(resp, "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that.")
 			else:
 				if mentions_count == 0:
 					await client.edit_message(resp, "Give slimes to who?")
@@ -462,7 +462,7 @@ async def on_message(message):
 									cursor.close()
 									conn.close()
 
-								await client.edit_message(resp, "Slime scores altered! :slime1:")
+								await client.edit_message(resp, "Slime scores altered! <:slime1:431564830541873182>")
 								
 						else:
 							await client.edit_message(resp, "Give how much slime?")
