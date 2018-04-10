@@ -12,8 +12,7 @@ These are the commands I understand:
 		
 	!kill @username ...
 		Kill the mentioned users. Rowdys kill Killers. Killers kill Rowdys.
-		Both kill Juveniles. Costs 200 slime.
-		You can mention more than one user.
+		Both kill Juveniles. Costs 1000 slime.
 		Used only in the #combat-zone.
 
 	!revive

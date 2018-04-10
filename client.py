@@ -41,7 +41,7 @@ async def on_ready():
 	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	print('Ready.')
 
-	await client.change_presence(game=discord.Game(name="dev. by @krak"))
+	await client.change_presence(game=discord.Game(name=("dev. by @krak " + ewcfg.version)))
 
 
 @client.event
@@ -94,9 +94,16 @@ async def on_message(message):
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
+			response = ""
+
 			if message.channel.name != ewcfg.channel_combatzone:
-				await client.edit_message(resp, "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone))
-			elif mentions_count > 0:
+				response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
+
+			# Only allow one kill at a time.
+			elif mentions_count > 1:
+				response = "One kill at a time!"
+
+			elif mentions_count == 1:
 				# The roles assigned to the author of this user.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -108,69 +115,68 @@ async def on_message(message):
 					cursor.close()
 					conn.close()
 
-				if user_slimes < (mentions_count * ewcfg.slimes_tokill):
-					await client.edit_message(resp, "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime. ({}/{})".format(user_slimes, mentions_count * ewcfg.slimes_tokill))
+				if user_slimes < ewcfg.slimes_tokill:
+					response = "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime. ({}/{})".format(user_slimes, ewcfg.slimes_tokill)
 				else:
 					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
 					# Only killers, rowdys, the cop killer, and the rowdy fucker can kill people
 					if user_iskillers == False and user_isrowdys == False:
-						await client.edit_message(resp, "Juveniles lack the moral fiber necessary for murder.")
+						response = "Juveniles lack the moral fiber necessary for murder."
 					else:
 						# slimes from this kill might be awarded to the boss
-						role_boss = ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker
+						role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
 						boss_slimes = 0
 
 						role_corpse = roles_map[ewcfg.role_corpse]
-						juveniles_killed = []
-						adults_killed = []
-						users_unkilled = []
-						users_killed = []
-						users_invuln = []
 
-						# Attempt to kill each mentioned player.
-						for member in mentions:
-							roles_map_target = ewutils.getRoleMap(member.roles)
-							if (int(time.time()) - revive_times.get(member.id, 0)) < ewcfg.invuln_onrevive:
-								users_invuln.append(member)
-							elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
-								if ewcfg.role_juvenile in roles_map_target:
-									juveniles_killed.append(member)
-								else:
-									adults_killed.append(member)
+						was_juvenile = False
+						was_killed = False
+						was_invuln = False
+						was_dead = False
 
-								users_killed.append(member)
-								await client.replace_roles(member, role_corpse)
-							else:
-								users_unkilled.append(member)
+						# Attempt to kill mentioned player.
+						member = mentions[0]
 
-						users_killed_count = len(users_killed)
-						if users_killed_count > 0:
+						roles_map_target = ewutils.getRoleMap(member.roles)
+						if (int(time.time()) - revive_times.get(member.id, 0)) < ewcfg.invuln_onrevive:
+							# User is currently invulnerable
+							was_invuln = True
+
+						elif role_corpse in roles_map_target:
+							# Target is already dead.
+							was_dead = True
+
+						elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+							# User can be killed.
+							if ewcfg.role_juvenile in roles_map_target:
+								was_juvenile = True
+
+							was_killed = True
+							await client.replace_roles(member, role_corpse)
+
+						if was_killed == True:
 							try:
 								conn = ewutils.databaseConnect();
 								cursor = conn.cursor();
 
-								user_slimes = user_slimes - (users_killed_count * ewcfg.slimes_tokill)
+								user_slimes = user_slimes - ewcfg.slimes_tokill
 
-								# Add juvenile targets' slimes to this player.
-								for member in juveniles_killed:
-									juvenile_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
-									if juvenile_slimes > 0:
-										user_slimes = user_slimes + juvenile_slimes
-
-								# Add adult tarets' slimes to the boss.
-								for member in adults_killed:
-									adult_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
-									if adult_slimes > 0:
-										boss_slimes = boss_slimes + adult_slimes
+								killed_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
+								if killed_slimes > 0:
+									if was_juvenile == True:
+										# Add juvenile targets' slimes to this player.
+										user_slimes = user_slimes + killed_slimes
+									else:
+										# Add adult tarets' slimes to the boss.
+										boss_slimes = boss_slimes + killed_slimes
 
 								# Set the new slime value for the player.
 								ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
 
-								# Remove all slimes from the other players.
-								for member in users_killed:
-									ewutils.setSlimesForPlayer(conn, cursor, member, 0)
+								# Remove all slimes from the dead player.
+								ewutils.setSlimesForPlayer(conn, cursor, member, 0)
 
 								conn.commit()
 							finally:
@@ -180,9 +186,9 @@ async def on_message(message):
 							# give slimes to the boss if possible.
 							boss_member = None
 							if boss_slimes > 0:
-								for member in message.author.server.members:
-									if role_boss in ewutils.getRoleMap(member.roles):
-										boss_member = member
+								for member_search in message.author.server.members:
+									if role_boss in ewutils.getRoleMap(member_search.roles):
+										boss_member = member_search
 										break
 								
 								if boss_member != None:
@@ -199,27 +205,31 @@ async def on_message(message):
 										conn.close()
 
 							# Present a nice list of killed player names.
-							names = ewutils.userListToNameString(users_killed)
-							if len(users_unkilled) > 0 or len(users_invuln) > 0:
-								await client.edit_message(resp, '{} have been SLAUGHTERED. <:slime5:431659469844381717> :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled + users_invuln)))
-							else:
-								await client.edit_message(resp, '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(names))
-
+							if was_killed == True:
+								# player was killed
+								response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
 						else:
-							if len(users_unkilled) > 0 or len(users_invuln) > 0:
-								if len(users_unkilled) == 0:
-									await client.edit_message(resp, '{} {} died too recently and {} immune.'.format(ewutils.userListToNameString(users_invuln), ('have' if len(users_invuln) > 1 else 'has'), ('are' if len(users_invuln) > 1 else 'is')))
-								else:
-									await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled + users_invuln)))
+							if was_invuln == True:
+								# player was invulnerable
+								response = '{} has died too recently and is immune.'.format(member.display_name)
+							elif was_dead == True:
+								# target is already dead
+								response = '{} is already dead.'.format(member.display_name)
 							else:
-								await client.edit_message(resp, "ENDLESS WAR will not allow this betrayal.")
+								# teammate, or otherwise unkillable
+								response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 			else:
-				await client.edit_message(resp, 'Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name.')
+				response = 'Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name.'
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
+			response = ""
+
 			if message.channel.name != ewcfg.channel_endlesswar and message.channel.name != ewcfg.channel_sewers:
-				await client.edit_message(resp, "Come to me. I hunger. #{}.".format(ewcfg.channel_sewers))
+				response = "Come to me. I hunger. #{}.".format(ewcfg.channel_sewers)
 			else:
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -253,12 +263,16 @@ async def on_message(message):
 					revive_times[message.author.id] = int(time.time())
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
-					await client.edit_message(resp, '<:slime4:431570132901560320> A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. <:slime4:431570132901560320> {} has been reborn in slime. <:slime4:431570132901560320>'.format(message.author.display_name))
+					response = '<:slime4:431570132901560320> A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. <:slime4:431570132901560320> {} has been reborn in slime. <:slime4:431570132901560320>'.format(message.author.display_name)
 				else:
-					await client.edit_message(resp, 'You\'re not dead just yet.')
+					response = 'You\'re not dead just yet.'
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# move from juvenile to one of the armies (rowdys or killers)
 		elif cmd == ewcfg.cmd_enlist:
+			response = ""
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 			if ewcfg.role_juvenile in roles_map_user:
@@ -276,34 +290,38 @@ async def on_message(message):
 					conn.close()
 
 				if user_slimes < ewcfg.slimes_toenlist:
-					await client.edit_message(resp, "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist))
+					response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)
 				else:
 					if faction == ewcfg.faction_rowdys:
 						await client.replace_roles(message.author, roles_map[ewcfg.role_rowdyfuckers])
-						await client.edit_message(resp, "Enlisted in the {}.".format(ewcfg.faction_rowdys))
+						response = "Enlisted in the {}.".format(ewcfg.faction_rowdys)
 					elif faction == ewcfg.faction_killers:
 						await client.replace_roles(message.author, roles_map[ewcfg.role_copkillers])
-						await client.edit_message(resp, "Enlisted in the {}.".format(ewcfg.faction_killers))
+						response = "Enlisted in the {}.".format(ewcfg.faction_killers)
 					else:
-						await client.edit_message(resp, "Which faction? Say '{} {}' or '{} {}'.".format(ewcfg.cmd_enlist, ewcfg.faction_killers, ewcfg.cmd_enlist, ewcfg.faction_rowdys))
+						response = "Which faction? Say '{} {}' or '{} {}'.".format(ewcfg.cmd_enlist, ewcfg.faction_killers, ewcfg.cmd_enlist, ewcfg.faction_rowdys)
 
 			elif ewcfg.role_corpse in roles_map_user:
-				await client.edit_message(resp, 'You are dead, bitch.')
+				response = 'You are dead, bitch.'
 			else:
-				await client.edit_message(resp, "You can't do that right now, bitch.")
+				response = "You can't do that right now, bitch."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# faction leader consumes the mentioned players of their own faction to absorb their slime count
 		# kills the mentioned players
 		elif cmd == ewcfg.cmd_devour:
+			response = ""
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			is_copkiller = ewcfg.role_copkiller in roles_map_user
 			is_rowdyfucker = ewcfg.role_rowdyfucker in roles_map_user
 
 			if is_copkiller == False and is_rowdyfucker == False:
-				await client.edit_message(resp, "Know your place.")
+				response = "Know your place."
 			else:
 				if mentions_count == 0:
-					await client.edit_message(resp, "Devour who?")
+					response = "Devour who?"
 				else:
 					members_devoured = []
 					members_na = []
@@ -348,20 +366,23 @@ async def on_message(message):
 					if len(members_devoured) > 0:
 						names = ewutils.userListToNameString(members_devoured)
 						if len(members_na) > 0:
-							await client.edit_message(resp, '{} has been devoured. ({} was not devoured.)'.format(names, ewutils.userListToNameString(members_na)))
+							response = '{} has been devoured. ({} was not devoured.)'.format(names, ewutils.userListToNameString(members_na))
 						else:
-							await client.edit_message(resp, '{} has been devoured.'.format(names))
+							response = '{} has been devoured.'.format(names)
 					elif len(members_na) > 0:
-						await client.edit_message(resp, '{} was not devoured.'.format(ewutils.userListToNameString(members_na)))
+						response = '{} was not devoured.'.format(ewutils.userListToNameString(members_na))
 					else:
-						await client.edit_message(resp, 'No one was devoured.')
+						response = 'No one was devoured.'
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# gives slime to the miner (message.author)
 		elif cmd == ewcfg.cmd_mine:
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 			if ewcfg.role_corpse in roles_map_user:
-				await client.send_message(message.channel, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive))
+				await client.send_message(message.channel, ewutils.formatMessage(message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
 					user_slimes = 0
@@ -379,10 +400,12 @@ async def on_message(message):
 						cursor.close()
 						conn.close()
 				else:
-					await client.edit_message(resp, "You can't mine here. Try #{}.".format(ewcfg.channel_mines))
+					await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
 
 		# Show the current slime score of a player.
 		elif cmd == ewcfg.cmd_score or cmd == ewcfg.cmd_score_alt1:
+			response = ""
+
 			if mentions_count == 0:
 				user_slimes = 0
 				try:
@@ -394,7 +417,7 @@ async def on_message(message):
 					conn.close()
 
 				# return my score
-				await client.edit_message(resp, "Your slime score is {} <:slime1:431564830541873182>".format(user_slimes))
+				response = "Your slime score is {} <:slime1:431564830541873182>".format(user_slimes)
 			else:
 				member = mentions[0]
 				user_slimes = 0
@@ -407,16 +430,21 @@ async def on_message(message):
 					conn.close()
 
 				# return somebody's score
-				await client.edit_message(resp, "{}'s slime score is {} <:slime1:431564830541873182>".format(member.display_name, user_slimes))
+				response = "{}'s slime score is {} <:slime1:431564830541873182>".format(member.display_name, user_slimes)
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# rowdy fucker and cop killer (leaders) can give slimes to anybody
 		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:
+			response = ""
+
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
-				await client.edit_message(resp, "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that.")
+				resopnse = "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that."
 			else:
 				if mentions_count == 0:
-					await client.edit_message(resp, "Give slimes to who?")
+					response = "Give slimes to who?"
 				else:
 					if tokens_count > 1:
 						value = None
@@ -443,7 +471,7 @@ async def on_message(message):
 								conn.close()
 
 							if (value * mentions_count) > user_slimes:
-								await client.edit_message(resp, "You don't have that much slime to give ({}/{}).".format(user_slimes, (value * mentions_count)))
+								response = "You don't have that much slime to give ({}/{}).".format(user_slimes, (value * mentions_count))
 							else:
 								user_slimes = user_slimes - (value * mentions_count)
 
@@ -462,24 +490,29 @@ async def on_message(message):
 									cursor.close()
 									conn.close()
 
-								await client.edit_message(resp, "Slime scores altered! <:slime1:431564830541873182>")
+								response = "Slime scores altered! <:slime1:431564830541873182>"
 								
 						else:
-							await client.edit_message(resp, "Give how much slime?")
+							response = "Give how much slime?"
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
-			await client.edit_message(resp, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**')
+			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
 		# advertise help services
 		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
-			await client.edit_message(resp, 'Send me a DM for help.')
+			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Send me a DM for help.'))
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
+			response = ""
+
 			if mentions_count == 0:
-				await client.edit_message(resp, 'Set who\'s role?')
+				response = 'Set who\'s role?'
 			else:
 				role_target = tokens[1]
 				role = roles_map.get(role_target)
@@ -488,10 +521,14 @@ async def on_message(message):
 					for user in mentions:
 						await client.replace_roles(user, role)
 
-					await client.edit_message(resp, 'Done.')
+					response = 'Done.'
 				else:
-					await client.edit_message(resp, 'Unrecognized role.')
+					response = 'Unrecognized role.'
 
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
+		# didn't match any of the command words.
 		else:
 			""" couldn't process the command. bail out!! """
 			""" bot rule 0: be cute """

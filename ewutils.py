@@ -77,26 +77,6 @@ def getSlimesForPlayer(conn, cursor, member):
 def setSlimesForPlayer(conn, cursor, member, slimes):
 	cursor.execute("REPLACE INTO users(id_user, id_server, slimes) VALUES(%s, %s, %s)", (member.id, member.server.id, slimes))
 
-
-""" add or update the scorecard before a user's name """
-def getNickWithSlimes(member, user_slimes):
-	user_nick = member.nick
-
-	# Update display name with slime count.
-	if user_nick == None:
-		user_nick = member.display_name
-	else:
-		# If the nickname already has a score, find the nick part and discard the score.
-		match = re_slimescore.match(user_nick)
-		if match != None:
-			user_nick = match.group(1)
-
-	# Max for a five-digit counter.
-	if user_slimes > 99999:
-		user_slimes = 99999
-
-	return (('%05d ' % user_slimes) + user_nick)
-
 """ dump help document """
 def getHelpText():
 	text = ""
@@ -115,3 +95,7 @@ def getHelpText():
 		f_help.close()
 
 	return text
+
+""" format responses with the username: """
+def formatMessage(user_target, message):
+	return "{}: {}".format(user_target.display_name, message)
