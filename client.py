@@ -199,18 +199,6 @@ async def on_message(message):
 							else:
 								await client.edit_message(resp, '{} has been SLAUGHTERED. :slime5: :gun:'.format(names))
 
-							# Try to show the new slime count on the killing player.
-							try:
-								await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
-							except:
-								pass
-
-							# Update the boss players slime count.
-							if boss_member != None:
-								try:
-									await client.change_nickname(boss_member, ewutils.getNickWithSlimes(boss_member, boss_slimes))
-								except:
-									pass
 						else:
 							if len(users_unkilled) > 0:
 								await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled)))
@@ -254,13 +242,6 @@ async def on_message(message):
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
 					await client.edit_message(resp, ':slime4: A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. :slime4: {} has been reborn in slime. :slime4:'.format(message.author.display_name))
-
-					# Update score on user's nickname.
-					for obj in member_slime_pile:
-						try:
-							await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
-						except:
-							pass
 				else:
 					await client.edit_message(resp, 'You\'re not dead just yet.')
 
@@ -349,7 +330,6 @@ async def on_message(message):
 						try:
 							# set roles to corpse for mentioned players
 							await client.replace_roles(member, role_corpse)
-							await client.change_nickname(member, ewutils.getNickWithSlimes(member, 0))
 						except:
 							pass
 
@@ -363,11 +343,6 @@ async def on_message(message):
 						await client.edit_message(resp, '{} was not devoured.'.format(ewutils.userListToNameString(members_na)))
 					else:
 						await client.edit_message(resp, 'No one was devoured.')
-
-					try:
-						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
-					except:
-						pass
 
 		# gives slime to the miner (message.author)
 		elif cmd == ewcfg.cmd_mine:
@@ -391,12 +366,6 @@ async def on_message(message):
 					finally:
 						cursor.close()
 						conn.close()
-
-					# Update score on user's nickname.
-					try:
-						await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
-					except:
-						pass
 				else:
 					await client.edit_message(resp, "You can't mine here. Try #{}.".format(ewcfg.channel_mines))
 
@@ -483,16 +452,6 @@ async def on_message(message):
 
 								await client.edit_message(resp, "Slime scores altered! :slime1:")
 								
-								# update nicknames for all members
-								for obj in member_slimes:
-									try:
-										await client.change_nickname(obj['member'], ewutils.getNickWithSlimes(obj['member'], obj['slimes']))
-									except:
-										pass
-								try:
-									await client.change_nickname(message.author, ewutils.getNickWithSlimes(message.author, user_slimes))
-								except:
-									pass
 						else:
 							await client.edit_message(resp, "Give how much slime?")
 
