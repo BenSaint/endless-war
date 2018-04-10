@@ -22,6 +22,9 @@ client = discord.Client()
 # the help doc via DM. This is to prevent spamming.
 last_helped_times = {}
 
+# Map containing user IDs and the last time they revived in UTC seconds.
+revive_times = {}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -124,11 +127,14 @@ async def on_message(message):
 						adults_killed = []
 						users_unkilled = []
 						users_killed = []
+						users_invuln = []
 
 						# Attempt to kill each mentioned player.
 						for member in mentions:
 							roles_map_target = ewutils.getRoleMap(member.roles)
-							if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+							if (int(time.time()) - revive_times.get(member.id, 0)) < ewcfg.invuln_onrevive:
+								users_invuln.append(member)
+							elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
 								if ewcfg.role_juvenile in roles_map_target:
 									juveniles_killed.append(member)
 								else:
@@ -194,14 +200,17 @@ async def on_message(message):
 
 							# Present a nice list of killed player names.
 							names = ewutils.userListToNameString(users_killed)
-							if len(users_unkilled) > 0:
-								await client.edit_message(resp, '{} have been SLAUGHTERED. :slime5: :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled)))
+							if len(users_unkilled) > 0 or len(users_invuln) > 0:
+								await client.edit_message(resp, '{} have been SLAUGHTERED. :slime5: :gun: ({} was not.)'.format(names, ewutils.userListToNameString(users_unkilled + users_invuln)))
 							else:
 								await client.edit_message(resp, '{} has been SLAUGHTERED. :slime5: :gun:'.format(names))
 
 						else:
-							if len(users_unkilled) > 0:
-								await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled)))
+							if len(users_unkilled) > 0 or len(users_invuln) > 0:
+								if len(users_unkilled) == 0:
+									await client.edit_message(resp, '{} {} died too recently and are immune.'.format(('have' if len(users_invuln) > 1 else 'has'), ewutils.userListToNameString(users_invuln)))
+								else:
+									await client.edit_message(resp, 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(ewutils.userListToNameString(users_unkilled + users_invuln)))
 							else:
 								await client.edit_message(resp, "ENDLESS WAR will not allow this betrayal.")
 			else:
@@ -209,8 +218,8 @@ async def on_message(message):
 
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
-			if message.channel.name != ewcfg.channel_endlesswar:
-				await client.edit_message(resp, "Come to me. I hunger. #{}.".format(ewcfg.channel_endlesswar))
+			if message.channel.name != ewcfg.channel_endlesswar and message.channel.name != ewcfg.channel_sewers:
+				await client.edit_message(resp, "Come to me. I hunger. #{}.".format(ewcfg.channel_sewers))
 			else:
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -239,6 +248,9 @@ async def on_message(message):
 					finally:
 						cursor.close()
 						conn.close()
+					
+					# Store the last time the user revived, so we know if they're invulnerable.
+					revive_times[message.author.id] = int(time.time())
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
 					await client.edit_message(resp, ':slime4: A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. :slime4: {} has been reborn in slime. :slime4:'.format(message.author.display_name))
@@ -455,6 +467,10 @@ async def on_message(message):
 						else:
 							await client.edit_message(resp, "Give how much slime?")
 
+
+		# !harvest is not a command
+		elif cmd == ewcfg.cmd_harvest:
+			await client.edit_message(resp, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**')
 
 		# advertise help services
 		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
