@@ -77,6 +77,8 @@ def getPlayerData(conn, cursor, member):
 
 	if result != None:
 		data = {
+			ewcfg.col_id_user: member.id,
+			ewcfg.col_id_server: member.server.id,
 			ewcfg.col_slimes: result[0],
 			ewcfg.col_time_lastkill: int(result[1]),
 			ewcfg.col_time_lastrevive: int(result[2]),

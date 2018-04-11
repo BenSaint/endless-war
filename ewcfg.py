@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.01"
+version = "v1.02"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -36,7 +36,7 @@ cmd_help_alt2 = cmd_prefix + 'commands'
 cmd_harvest = cmd_prefix + 'harvest'
 
 # Slime costs/values
-slimes_tokill = 1000
+slimes_tokill = 20
 slimes_permine = 20
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
@@ -44,6 +44,9 @@ slimes_toenlist = 420
 
 # Lifetimes
 invuln_onrevive = 1200
+
+# Cooldowns
+cd_kill = 60
 
 # Database columns
 col_id_user = 'id_user'
