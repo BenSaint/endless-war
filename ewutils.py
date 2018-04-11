@@ -80,10 +80,12 @@ def getPlayerData(conn, cursor, member):
 			ewcfg.col_id_user: member.id,
 			ewcfg.col_id_server: member.server.id,
 			ewcfg.col_slimes: result[0],
-			ewcfg.col_time_lastkill: int(result[1]),
-			ewcfg.col_time_lastrevive: int(result[2]),
+			ewcfg.col_time_lastkill: result[1],
+			ewcfg.col_time_lastrevive: result[2],
 			ewcfg.col_id_killer: result[3]
 		}
+	else:
+		cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (member.id, member.server.id))
 
 	return data
 
@@ -104,10 +106,6 @@ def getSlimesForPlayer(conn, cursor, member):
 		user_slimes = result[0]
 
 	return user_slimes
-
-""" set the slime count to a specific value """
-def setSlimesForPlayer(conn, cursor, member, slimes):
-	cursor.execute("REPLACE INTO users(id_user, id_server, slimes) VALUES(%s, %s, %s)", (member.id, member.server.id, slimes))
 
 """ dump help document """
 def getHelpText():

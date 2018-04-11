@@ -116,6 +116,8 @@ async def on_message(message):
 					member = mentions[0]
 					killed_data = ewutils.getPlayerData(conn, cursor, member)
 					killed_slimes = killed_data[ewcfg.col_slimes]
+
+					conn.commit()
 				finally:
 					cursor.close()
 					conn.close()
@@ -211,8 +213,9 @@ async def on_message(message):
 											conn = ewutils.databaseConnect();
 											cursor = conn.cursor();
 
-											boss_slimes = ewutils.getSlimesForPlayer(conn, cursor, boss_member) + boss_slimes
-											ewutils.setSlimesForPlayer(conn, cursor, boss_member, boss_slimes)
+											boss_data = ewutils.getPlayerData(conn, cursor, boss_member)
+											boss_data[ewcfg.col_slimes] = boss_data[ewcfg.col_slimes] + boss_slimes
+											ewutils.setPlayerData(conn, cursor, boss_data)
 
 											conn.commit()
 										finally:
@@ -259,13 +262,14 @@ async def on_message(message):
 						slimes_initial = player_data[ewcfg.col_slimes] = ewcfg.slimes_onrevive
 						player_data[ewcfg.col_time_lastrevive] = int(time.time())
 						ewutils.setPlayerData(conn, cursor, player_data)
-
+						
 						# Give some slimes to every living player (currently online)
 						for member in message.server.members:
 							if member.id != message.author.id and member.id != client.user.id:
 								if ewcfg.role_corpse not in ewutils.getRoleMap(member.roles):
-									member_slimes = ewutils.getSlimesForPlayer(conn, cursor, member) + ewcfg.slimes_onrevive_everyone
-									ewutils.setSlimesForPlayer(conn, cursor, member, member_slimes)
+									member_data = ewutils.getPlayerData(conn, cursor, member)
+									member_data[ewcfg.col_slimes] = member_data[ewcfg.col_slimes] + ewcfg.slimes_onrevive_everyone
+									ewutils.setPlayerData(conn, cursor, member_data)
 
 						conn.commit()
 					finally:
@@ -339,25 +343,30 @@ async def on_message(message):
 					try:
 						conn = ewutils.databaseConnect();
 						cursor = conn.cursor();
-						user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
+						user_data = ewutils.getPlayerData(conn, cursor, message.author)
+						user_slimes = user_data[ewcfg.col_slimes]
 
 						# determine slime count for every member mentioned
 						for member in mentions:
 							roles_map_member = ewutils.getRoleMap(member.roles)
 
 							if is_copkiller == True and ewcfg.role_copkillers in roles_map_member or is_rowdyfucker == True and ewcfg.role_rowdyfuckers in roles_map_member:
+
 								# get slimes from the player
-								slime_count = ewutils.getSlimesForPlayer(conn, cursor, member)
-								user_slimes = user_slimes + slime_count
+								member_data = ewutils.getPlayerData(conn, cursor, member)
+								user_slimes = user_slimes + member_data[ewcfg.col_slimes]
 
 								# set player slimes to 0
-								ewutils.setSlimesForPlayer(conn, cursor, member, 0)
+								member_data[ewcfg.col_slimes] = 0
+								ewutils.setPlayerData(conn, cursor, member_data)
+
 								members_devoured.append(member)
 							else:
 								members_na.append(member)
 
 						# add slime to rf/ck
-						ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+						user_data[ewcfg.col_slimes] = user_slimes
+						ewutils.setPlayerData(conn, cursor, user_data)
 
 						conn.commit()
 					finally:
@@ -402,8 +411,9 @@ async def on_message(message):
 						cursor = conn.cursor();
 
 						# Increment slimes for this user.
-						user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author) + ewcfg.slimes_permine
-						ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+						user_data = ewutils.getPlayerData(conn, cursor, message.author)
+						user_data[ewcfg.col_slimes] = user_data[ewcfg.col_slimes] + ewcfg.slimes_permine
+						ewutils.setPlayerData(conn, cursor, user_data)
 
 						conn.commit()
 					finally:
@@ -471,11 +481,12 @@ async def on_message(message):
 							try:
 								conn = ewutils.databaseConnect();
 								cursor = conn.cursor();
-								user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
+								user_data = ewutils.getPlayerData(conn, cursor, message.author)
+								user_slimes = user_data[ewcfg.col_slimes]
 
 								# determine slime count for every member mentioned
 								for member in mentions:
-									member_slimes.append({ 'member': member, 'slimes': (ewutils.getSlimesForPlayer(conn, cursor, member) + value) })
+									member_slimes.append(ewutils.getPlayerData(conn, cursor, member))
 							finally:
 								cursor.close()
 								conn.close()
@@ -489,11 +500,13 @@ async def on_message(message):
 									conn = ewutils.databaseConnect();
 									cursor = conn.cursor();
 
-									ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+									user_data[ewcfg.col_slimes] = user_slimes
+									ewutils.setPlayerData(conn, cursor, user_data)
 
 									# give value slimes to mentioned players
 									for obj in member_slimes:
-										ewutils.setSlimesForPlayer(conn, cursor, obj['member'], obj['slimes'])
+										obj[ewcfg.col_slimes] = obj[ewcfg.col_slimes] + value
+										ewutils.setPlayerData(conn, cursor, obj)
 
 									conn.commit()
 								finally:
