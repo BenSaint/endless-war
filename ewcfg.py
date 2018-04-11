@@ -44,3 +44,11 @@ slimes_toenlist = 420
 
 # Lifetimes
 invuln_onrevive = 1200
+
+# Database columns
+col_id_user = 'id_user'
+col_id_server = 'id_server'
+col_slimes = 'slimes'
+col_time_lastkill = 'time_lastkill'
+col_time_lastrevive = 'time_lastrevive'
+col_id_killer = 'id_killer'

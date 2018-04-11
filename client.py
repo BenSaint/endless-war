@@ -22,9 +22,6 @@ client = discord.Client()
 # the help doc via DM. This is to prevent spamming.
 last_helped_times = {}
 
-# Map containing user IDs and the last time they revived in UTC seconds.
-revive_times = {}
-
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -110,11 +107,24 @@ async def on_message(message):
 				try:
 					conn = ewutils.databaseConnect();
 					cursor = conn.cursor();
-					user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
+
+					# Get killing player's info.
+					user_data = ewutils.getPlayerData(conn, cursor, message.author)
+					user_slimes = user_data[ewcfg.col_slimes]
+
+					# Get target's info.
+					member = mentions[0]
+					killed_data = ewutils.getPlayerData(conn, cursor, member)
+					killed_slimes = killed_data[ewcfg.col_slimes]
 				finally:
 					cursor.close()
 					conn.close()
 
+				# TODO disallow kill if the player has killed recently
+
+				# TODO disallow kill if the player is the id_killer of killed_data
+
+				# TODO change formula to determine kill cost
 				if user_slimes < ewcfg.slimes_tokill:
 					response = "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime. ({}/{})".format(user_slimes, ewcfg.slimes_tokill)
 				else:
@@ -136,11 +146,8 @@ async def on_message(message):
 						was_invuln = False
 						was_dead = False
 
-						# Attempt to kill mentioned player.
-						member = mentions[0]
-
 						roles_map_target = ewutils.getRoleMap(member.roles)
-						if (int(time.time()) - revive_times.get(member.id, 0)) < ewcfg.invuln_onrevive:
+						if (int(time.time()) - killed_data[ewcfg.col_time_lastrevive]) < ewcfg.invuln_onrevive:
 							# User is currently invulnerable
 							was_invuln = True
 
@@ -163,7 +170,6 @@ async def on_message(message):
 
 								user_slimes = user_slimes - ewcfg.slimes_tokill
 
-								killed_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
 								if killed_slimes > 0:
 									if was_juvenile == True:
 										# Add juvenile targets' slimes to this player.
@@ -173,10 +179,14 @@ async def on_message(message):
 										boss_slimes = boss_slimes + killed_slimes
 
 								# Set the new slime value for the player.
-								ewutils.setSlimesForPlayer(conn, cursor, message.author, user_slimes)
+								user_data[ewcfg.col_slimes] = user_slimes
+								user_data[ewcfg.col_time_lastkill] = int(time.time())
+								ewutils.setPlayerData(conn, cursor, user_data)
 
 								# Remove all slimes from the dead player.
-								ewutils.setSlimesForPlayer(conn, cursor, member, 0)
+								killed_data[ewcfg.col_slimes] = 0
+								killed_data[ewcfg.col_id_killer] = message.author.id
+								ewutils.setPlayerData(conn, cursor, killed_data)
 
 								conn.commit()
 							finally:
@@ -234,17 +244,16 @@ async def on_message(message):
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				if ewcfg.role_corpse in roles_map_user:
-					# List of maps of member and slime count.
-					member_slime_pile = []
-
 					try:
 						conn = ewutils.databaseConnect();
 						cursor = conn.cursor();
 
+						player_data = ewutils.getPlayerData(conn, cursor, message.author)
+
 						# Give player some initial slimes.
-						slimes_initial = ewcfg.slimes_onrevive
-						ewutils.setSlimesForPlayer(conn, cursor, message.author, slimes_initial)
-						member_slime_pile.append({ 'member': message.author, 'slimes': slimes_initial })
+						slimes_initial = player_data[ewcfg.col_slimes] = ewcfg.slimes_onrevive
+						player_data[ewcfg.col_time_lastrevive] = int(time.time())
+						ewutils.setPlayerData(conn, cursor, player_data)
 
 						# Give some slimes to every living player (currently online)
 						for member in message.server.members:
@@ -252,15 +261,11 @@ async def on_message(message):
 								if ewcfg.role_corpse not in ewutils.getRoleMap(member.roles):
 									member_slimes = ewutils.getSlimesForPlayer(conn, cursor, member) + ewcfg.slimes_onrevive_everyone
 									ewutils.setSlimesForPlayer(conn, cursor, member, member_slimes)
-									member_slime_pile.append({ 'member': member, 'slimes': member_slimes })
 
 						conn.commit()
 					finally:
 						cursor.close()
 						conn.close()
-					
-					# Store the last time the user revived, so we know if they're invulnerable.
-					revive_times[message.author.id] = int(time.time())
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
 					response = '<:slime4:431570132901560320> A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. <:slime4:431570132901560320> {} has been reborn in slime. <:slime4:431570132901560320>'.format(message.author.display_name)

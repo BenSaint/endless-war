@@ -11,6 +11,9 @@ CREATE TABLE users (
 	id_user varchar(128) NOT NULL,
 	id_server varchar(128) NOT NULL,
 	slimes int NOT NULL DEFAULT '0',
+	time_lastkill int NOT NULL DEFAULT '0',
+	time_lastrevive int NOT NULL DEFAULT '0',
+	id_killer varchar(128) NOT NULL DEFAULT '',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );

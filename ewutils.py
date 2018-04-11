@@ -1,6 +1,8 @@
 import MySQLdb
 import re
 
+import ewcfg
+
 # Regex to match the score count in a user's nickname.
 re_slimescore = re.compile('^[0-9]{5,} +(.*)$');
 
@@ -58,6 +60,34 @@ def getRoleMap(roles):
 """ connect to the database """
 def databaseConnect():
 	return MySQLdb.connect(host="localhost", user="rfck-bot", passwd="rfck", db="rfck")
+
+""" get the full data model for a player """
+def getPlayerData(conn, cursor, member):
+	data = {
+		ewcfg.col_id_user: member.id,
+		ewcfg.col_id_server: member.server.id,
+		ewcfg.col_slimes: 0,
+		ewcfg.col_time_lastkill: 0,
+		ewcfg.col_time_lastrevive: 0,
+		ewcfg.col_id_killer: ''
+	}
+
+	cursor.execute("SELECT slimes, time_lastkill, time_lastrevive, id_killer FROM users WHERE id_user = %s AND id_server = %s", (member.id, member.server.id))
+	result = cursor.fetchone();
+
+	if result != None:
+		data = {
+			ewcfg.col_slimes: result[0],
+			ewcfg.col_time_lastkill: int(result[1]),
+			ewcfg.col_time_lastrevive: int(result[2]),
+			ewcfg.col_id_killer: result[3]
+		}
+
+	return data
+
+""" save the full data model for a player """
+def setPlayerData(conn, cursor, data):
+	cursor.execute("REPLACE INTO users(id_user, id_server, slimes, time_lastkill, time_lastrevive, id_killer) VALUES(%s, %s, %s, %s, %s, %s)", (data[ewcfg.col_id_user], data[ewcfg.col_id_server], data[ewcfg.col_slimes], data[ewcfg.col_time_lastkill], data[ewcfg.col_time_lastrevive], data[ewcfg.col_id_killer]))
 
 """ get the slime count for the specified member (player). sets to 0 if they aren't in the database """
 def getSlimesForPlayer(conn, cursor, member):
