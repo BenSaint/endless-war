@@ -1,10 +1,6 @@
 import MySQLdb
-import re
 
 import ewcfg
-
-# Regex to match the score count in a user's nickname.
-re_slimescore = re.compile('^[0-9]{5,} +(.*)$');
 
 
 """ get the API token from the config file on disk """
