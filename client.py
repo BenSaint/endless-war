@@ -184,8 +184,12 @@ async def on_message(message):
 											# Add adult tarets' slimes to the boss.
 											boss_slimes = boss_slimes + killed_data.slimes
 
-									# Set the new slime value for the player.
-									user_data.lastkill = int(time.time())
+									# Remove !revive invulnerability.
+									user_data.time_lastrevive = 0
+
+									# Set the last kill time for kill cooldown.
+									user_data.time_lastkill = int(time.time())
+
 									user_data.persist(conn=conn, cursor=cursor)
 
 									# Remove all slimes from the dead player.
@@ -213,17 +217,15 @@ async def on_message(message):
 
 											boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
 											boss_data.slimes += boss_slimes
-											boss_data.persist()
+											boss_data.persist(conn=conn, cursor=cursor)
 
 											conn.commit()
 										finally:
 											cursor.close()
 											conn.close()
 
-								# Present a nice list of killed player names.
-								if was_killed == True:
-									# player was killed
-									response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
+								# player was killed
+								response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
 							else:
 								if was_invuln == True:
 									# player was invulnerable

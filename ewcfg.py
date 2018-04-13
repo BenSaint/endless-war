@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.03"
+version = "v1.04"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -25,7 +25,6 @@ cmd_prefix = '!'
 cmd_enlist = cmd_prefix + 'enlist'
 cmd_revive = cmd_prefix + 'revive'
 cmd_kill = cmd_prefix + 'kill'
-cmd_spar = cmd_prefix + 'spar'
 cmd_devour = cmd_prefix + 'devour'
 cmd_mine = cmd_prefix + 'mine'
 cmd_score = cmd_prefix + 'slimes'
@@ -36,6 +35,7 @@ cmd_help = cmd_prefix + 'help'
 cmd_help_alt1 = cmd_prefix + 'command'
 cmd_help_alt2 = cmd_prefix + 'commands'
 cmd_harvest = cmd_prefix + 'harvest'
+cmd_spar = cmd_prefix + 'spar'
 
 # Slime costs/values
 slimes_tokill = 20
