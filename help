@@ -1,29 +1,41 @@
 These are the commands I understand:
 
-	!slime
+	**!slime**
 		Show your slime score. Mention a user to see their score instead.
 
-	!mine
+	**!mine**
 		Mine for slime.
-		Used only in #the-mines.
 
-	!enlist
+		*Used only in #the-mines.*
+
+	**!enlist**
 		Join the Rowdy Fuckers or the Cop Killers (if you have enough slime).
 		
-	!kill @username ...
+	**!kill** *@username*
 		Kill the mentioned users. Rowdys kill Killers. Killers kill Rowdys.
-		Both kill Juveniles. Costs 1000 slime.
-		Used only in the #combat-zone.
+		Both kill Juveniles.
+		
+		*Costs slime proportional your and your target's slime scores.*
+		*Used only in the #combat-zone.*
+		*1 minute cooldown.*
 
-	!revive
+	**!spar** *@username*
+		Practice fighting with the targeted player of your faction.
+		The weaker player gains slime.
+
+		*Used only in #the-dojo.*
+		*10 minute cooldown.*
+
+	**!revive**
 		Bring yourself back from the dead.
-		Used only in the #the-sewers.
+
+		*Used only in the #the-sewers.*
 
 Only the Cop Killer and the Rowdy Fucker can:
 
-	!devour @username ...
+	**!devour** *@username* ...
 		Devour the mentioned users (of your own faction) and absorb their
 		slime! You can mention more than one user.
 
-	!giveslime # @username ...
+	**!giveslime** # *@username* ...
 		Give each mentioned user # slimes from your own slime score.
