@@ -318,7 +318,7 @@ async def on_message(message):
 						weaker_player.persist()
 
 						# player was sparred with
-						response = '{} parries the attack. <:knife: :slime5:431659469844381717>'.format(member.display_name)
+						response = '{} parries the attack. :knife: <:slime5:431659469844381717>'.format(member.display_name)
 					else:
 						if was_dead:
 							# target is already dead
