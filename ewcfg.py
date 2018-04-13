@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.02"
+version = "v1.03"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
