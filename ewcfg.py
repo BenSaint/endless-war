@@ -18,12 +18,14 @@ channel_mines = "the-mines"
 channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
+channel_dojo = "the-dojo"
 
 # Commands
 cmd_prefix = '!'
 cmd_enlist = cmd_prefix + 'enlist'
 cmd_revive = cmd_prefix + 'revive'
 cmd_kill = cmd_prefix + 'kill'
+cmd_spar = cmd_prefix + 'spar'
 cmd_devour = cmd_prefix + 'devour'
 cmd_mine = cmd_prefix + 'mine'
 cmd_score = cmd_prefix + 'slimes'
@@ -41,17 +43,11 @@ slimes_permine = 20
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 420
+slimes_perspar = 2500
 
 # Lifetimes
 invuln_onrevive = 1200
 
 # Cooldowns
 cd_kill = 60
-
-# Database columns
-col_id_user = 'id_user'
-col_id_server = 'id_server'
-col_slimes = 'slimes'
-col_time_lastkill = 'time_lastkill'
-col_time_lastrevive = 'time_lastrevive'
-col_id_killer = 'id_killer'
+cd_spar = 600

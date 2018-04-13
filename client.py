@@ -13,6 +13,7 @@ import time
 
 import ewutils
 import ewcfg
+from ew import EwUser
 
 print('Starting up...')
 
@@ -109,30 +110,28 @@ async def on_message(message):
 					cursor = conn.cursor();
 
 					# Get killing player's info.
-					user_data = ewutils.getPlayerData(conn, cursor, message.author)
-					user_slimes = user_data[ewcfg.col_slimes]
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 					# Get target's info.
 					member = mentions[0]
-					killed_data = ewutils.getPlayerData(conn, cursor, member)
-					killed_slimes = killed_data[ewcfg.col_slimes]
+					killed_data = EwUser(member=member, conn=conn, cursor=cursor)
 
 					conn.commit()
 				finally:
 					cursor.close()
 					conn.close()
 
-				if (int(time.time()) - user_data[ewcfg.col_time_lastkill]) < ewcfg.cd_kill:
+				if (int(time.time()) - user_data.time_lastkill) < ewcfg.cd_kill:
 					# disallow kill if the player has killed recently
 					response = "Take a moment to appreciate your last slaughter."
-				elif killed_data[ewcfg.col_id_killer] == user_data[ewcfg.col_id_user]:
+				elif killed_data.id_killer == user_data.id_user:
 					# disallow kill if the player is the id_killer of killed_data
 					response = "You have already proven your superiority over {}.".format(member.display_name)
 				else:
 					# new (more fair?) slime calculation. more slimes makes you harder to kill.
-					slimes_tokill = ewcfg.slimes_tokill + int(user_slimes/10) + int(killed_slimes/2)
+					slimes_tokill = ewcfg.slimes_tokill + int(user_data.slimes/10) + int(killed_data.slimes/2)
 
-					if user_slimes < slimes_tokill:
+					if user_data.slimes < slimes_tokill:
 						response = "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime."
 					else:
 						user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
@@ -154,7 +153,7 @@ async def on_message(message):
 							was_dead = False
 
 							roles_map_target = ewutils.getRoleMap(member.roles)
-							if (int(time.time()) - killed_data[ewcfg.col_time_lastrevive]) < ewcfg.invuln_onrevive:
+							if (int(time.time()) - killed_data.time_lastrevive) < ewcfg.invuln_onrevive:
 								# User is currently invulnerable
 								was_invuln = True
 
@@ -175,25 +174,24 @@ async def on_message(message):
 									conn = ewutils.databaseConnect();
 									cursor = conn.cursor();
 
-									user_slimes = user_slimes - slimes_tokill
+									user_data.slimes -= slimes_tokill
 
-									if killed_slimes > 0:
+									if killed_data.slimes > 0:
 										if was_juvenile == True:
 											# Add juvenile targets' slimes to this player.
-											user_slimes = user_slimes + killed_slimes
+											user_slimes = user_slimes + killed_data.slimes
 										else:
 											# Add adult tarets' slimes to the boss.
-											boss_slimes = boss_slimes + killed_slimes
+											boss_slimes = boss_slimes + killed_data.slimes
 
 									# Set the new slime value for the player.
-									user_data[ewcfg.col_slimes] = user_slimes
-									user_data[ewcfg.col_time_lastkill] = int(time.time())
-									ewutils.setPlayerData(conn, cursor, user_data)
+									user_data.lastkill = int(time.time())
+									user_data.persist(conn=conn, cursor=cursor)
 
 									# Remove all slimes from the dead player.
-									killed_data[ewcfg.col_slimes] = 0
-									killed_data[ewcfg.col_id_killer] = message.author.id
-									ewutils.setPlayerData(conn, cursor, killed_data)
+									killed_data.slimes = 0
+									killed_data.id_killer = message.author.id
+									killed_data.persist(conn=conn, cursor=cursor)
 
 									conn.commit()
 								finally:
@@ -213,9 +211,9 @@ async def on_message(message):
 											conn = ewutils.databaseConnect();
 											cursor = conn.cursor();
 
-											boss_data = ewutils.getPlayerData(conn, cursor, boss_member)
-											boss_data[ewcfg.col_slimes] = boss_data[ewcfg.col_slimes] + boss_slimes
-											ewutils.setPlayerData(conn, cursor, boss_data)
+											boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
+											boss_data.slimes += boss_slimes
+											boss_data.persist()
 
 											conn.commit()
 										finally:
@@ -242,6 +240,103 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+
+		# Spar with an ally
+		elif cmd == ewcfg.cmd_spar:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to spar.".format(ewcfg.channel_dojo)
+
+			# Only allow one kill at a time.
+			elif mentions_count > 1:
+				response = "One sparring partner at a time!"
+
+			elif mentions_count == 1:
+				# The roles assigned to the author of this user.
+				roles_map_user = ewutils.getRoleMap(message.author.roles)
+
+				try:
+					conn = ewutils.databaseConnect();
+					cursor = conn.cursor();
+
+					# Get killing player's info.
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+					# Get target's info.
+					member = mentions[0]
+					sparred_data = EwUser(member=member, conn=conn, cursor=cursor)
+
+					conn.commit()
+				finally:
+					cursor.close()
+					conn.close()
+
+				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+
+				# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
+				if user_iskillers == False and user_isrowdys == False:
+					response = "Juveniles lack the backbone necessary for combat."
+				else:
+					was_juvenile = False
+					was_sparred = False
+					was_dead = False
+					was_player_tired = False
+					was_target_tired = False
+
+					roles_map_target = ewutils.getRoleMap(member.roles)
+
+					if ewcfg.role_corpse in roles_map_target:
+						# Target is already dead.
+						was_dead = True
+					elif (user_data.time_lastspar + ewcfg.cd_spar) > int(time.time()):
+						# player sparred too recently
+						was_player_tired = True
+					elif (sparred_data.time_lastspar + ewcfg.cd_spar) > int(time.time()):
+						# taret sparred too recently
+						was_target_tired = True
+					elif ewcfg.role_juvenile in roles_map_target:
+						# Target is a juvenile.
+						was_juvenile = True
+
+					elif (user_iskillers and (ewcfg.role_copkillers in roles_map_target)) or (user_isrowdys and (ewcfg.role_rowdyfuckers in roles_map_target)):
+						# User can be sparred.
+						was_sparred = True
+
+
+					#if the duel is successful
+					if was_sparred:
+						weaker_player = sparred_data if sparred_data.slimes < user_data.slimes else user_data
+						stronger_player = sparred_data if user_data is weaker_player else user_data
+
+						# Weaker player gains slime based on the slime of the stronger player.
+						weaker_player.slimes += ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
+						weaker_player.time_lastspar = int(time.time())
+						weaker_player.persist()
+
+						# player was sparred with
+						response = '{} parries the attack. <:knife: :slime5:431659469844381717>'.format(member.display_name)
+					else:
+						if was_dead:
+							# target is already dead
+							response = '{} is already dead.'.format(member.display_name)
+						elif was_target_tired:
+							# target has sparred too recently
+							response = '{} is too tired to spar right now.'.format(member.display_name)
+						elif was_player_tired:
+							# player has sparred too recently
+							response = 'You are too tired to spar right now.'
+						else:
+							#otherwise unkillable
+							response = '{} cannot spar now.'.format(member.display_name)
+			else:
+				response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
 			response = ""
@@ -256,21 +351,22 @@ async def on_message(message):
 						conn = ewutils.databaseConnect();
 						cursor = conn.cursor();
 
-						player_data = ewutils.getPlayerData(conn, cursor, message.author)
+						player_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 						# Give player some initial slimes.
-						slimes_initial = player_data[ewcfg.col_slimes] = ewcfg.slimes_onrevive
-						player_data[ewcfg.col_time_lastrevive] = int(time.time())
-						ewutils.setPlayerData(conn, cursor, player_data)
-						
+						player_data.slimes = ewcfg.slimes_onrevive
+						player_data.time_lastrevive = int(time.time())
+						player_data.persist(conn=conn, cursor=cursor)
+
 						# Give some slimes to every living player (currently online)
 						for member in message.server.members:
 							if member.id != message.author.id and member.id != client.user.id:
 								if ewcfg.role_corpse not in ewutils.getRoleMap(member.roles):
-									member_data = ewutils.getPlayerData(conn, cursor, member)
-									member_data[ewcfg.col_slimes] = member_data[ewcfg.col_slimes] + ewcfg.slimes_onrevive_everyone
-									ewutils.setPlayerData(conn, cursor, member_data)
+									member_data = EwUser(member=member, conn=conn, cursor=cursor)
+									member_data.slimes += ewcfg.slimes_onrevive_everyone
+									member_data.persist(conn=conn, cursor=cursor)
 
+						# Commit all transactions at once.
 						conn.commit()
 					finally:
 						cursor.close()
@@ -294,14 +390,7 @@ async def on_message(message):
 				if tokens_count > 1:
 					faction = tokens[1].lower()
 
-				user_slimes = 0
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-					user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
-				finally:
-					cursor.close()
-					conn.close()
+				user_slimes = EwUser(member=message.author).slimes
 
 				if user_slimes < ewcfg.slimes_toenlist:
 					response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)
@@ -343,8 +432,8 @@ async def on_message(message):
 					try:
 						conn = ewutils.databaseConnect();
 						cursor = conn.cursor();
-						user_data = ewutils.getPlayerData(conn, cursor, message.author)
-						user_slimes = user_data[ewcfg.col_slimes]
+						
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 						# determine slime count for every member mentioned
 						for member in mentions:
@@ -353,20 +442,19 @@ async def on_message(message):
 							if is_copkiller == True and ewcfg.role_copkillers in roles_map_member or is_rowdyfucker == True and ewcfg.role_rowdyfuckers in roles_map_member:
 
 								# get slimes from the player
-								member_data = ewutils.getPlayerData(conn, cursor, member)
-								user_slimes = user_slimes + member_data[ewcfg.col_slimes]
+								member_data = EwUser(member=member, conn=conn, cursor=cursor)
+								user_data.slimes += member_data.slimes
 
 								# set player slimes to 0
-								member_data[ewcfg.col_slimes] = 0
-								ewutils.setPlayerData(conn, cursor, member_data)
+								member_data.slimes = 0
+								member_data.persist(conn=conn, cursor=cursor)
 
 								members_devoured.append(member)
 							else:
 								members_na.append(member)
 
 						# add slime to rf/ck
-						user_data[ewcfg.col_slimes] = user_slimes
-						ewutils.setPlayerData(conn, cursor, user_data)
+						user_data.persist(conn=conn, cursor=cursor)
 
 						conn.commit()
 					finally:
@@ -411,9 +499,9 @@ async def on_message(message):
 						cursor = conn.cursor();
 
 						# Increment slimes for this user.
-						user_data = ewutils.getPlayerData(conn, cursor, message.author)
-						user_data[ewcfg.col_slimes] = user_data[ewcfg.col_slimes] + ewcfg.slimes_permine
-						ewutils.setPlayerData(conn, cursor, user_data)
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						user_data.slimes += ewcfg.slimes_permine
+						user_data.persist(conn=conn, cursor=cursor)
 
 						conn.commit()
 					finally:
@@ -427,27 +515,13 @@ async def on_message(message):
 			response = ""
 
 			if mentions_count == 0:
-				user_slimes = 0
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-					user_slimes = ewutils.getSlimesForPlayer(conn, cursor, message.author)
-				finally:
-					cursor.close()
-					conn.close()
+				user_slimes = EwUser(member=message.author).slimes
 
 				# return my score
 				response = "Your slime score is {} <:slime1:431564830541873182>".format(user_slimes)
 			else:
 				member = mentions[0]
-				user_slimes = 0
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-					user_slimes = ewutils.getSlimesForPlayer(conn, cursor, member)
-				finally:
-					cursor.close()
-					conn.close()
+				user_slimes = EwUser(member=member).slimes
 
 				# return somebody's score
 				response = "{}'s slime score is {} <:slime1:431564830541873182>".format(member.display_name, user_slimes)
@@ -461,7 +535,7 @@ async def on_message(message):
 
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
-				resopnse = "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that."
+				response = "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that."
 			else:
 				if mentions_count == 0:
 					response = "Give slimes to who?"
@@ -481,32 +555,31 @@ async def on_message(message):
 							try:
 								conn = ewutils.databaseConnect();
 								cursor = conn.cursor();
-								user_data = ewutils.getPlayerData(conn, cursor, message.author)
-								user_slimes = user_data[ewcfg.col_slimes]
+
+								user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 								# determine slime count for every member mentioned
 								for member in mentions:
-									member_slimes.append(ewutils.getPlayerData(conn, cursor, member))
+									member_slimes.append(EwUser(member=member, conn=conn, cursor=cursor))
 							finally:
 								cursor.close()
 								conn.close()
 
-							if (value * mentions_count) > user_slimes:
-								response = "You don't have that much slime to give ({}/{}).".format(user_slimes, (value * mentions_count))
+							if (value * mentions_count) > user_data.slimes:
+								response = "You don't have that much slime to give ({}/{}).".format(user_data.slimes, (value * mentions_count))
 							else:
-								user_slimes = user_slimes - (value * mentions_count)
+								user_data.slimes -= (value * mentions_count)
 
 								try:
 									conn = ewutils.databaseConnect();
 									cursor = conn.cursor();
 
-									user_data[ewcfg.col_slimes] = user_slimes
-									ewutils.setPlayerData(conn, cursor, user_data)
+									user_data.persist(conn=conn, cursor=cursor)
 
 									# give value slimes to mentioned players
 									for obj in member_slimes:
-										obj[ewcfg.col_slimes] = obj[ewcfg.col_slimes] + value
-										ewutils.setPlayerData(conn, cursor, obj)
+										obj.slimes += value
+										obj.persist(conn=conn, cursor=cursor)
 
 									conn.commit()
 								finally:
