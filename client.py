@@ -179,10 +179,10 @@ async def on_message(message):
 									if killed_data.slimes > 0:
 										if was_juvenile == True:
 											# Add juvenile targets' slimes to this player.
-											user_slimes = user_slimes + killed_data.slimes
+											user_data.slimes += killed_data.slimes
 										else:
 											# Add adult tarets' slimes to the boss.
-											boss_slimes = boss_slimes + killed_data.slimes
+											boss_slimes += killed_data.slimes
 
 									# Remove !revive invulnerability.
 									user_data.time_lastrevive = 0
