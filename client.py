@@ -102,7 +102,7 @@ async def on_message(message):
 				response = "One kill at a time!"
 
 			elif mentions_count == 1:
-				# The roles assigned to the author of this user.
+				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				try:
@@ -243,6 +243,79 @@ async def on_message(message):
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 
+		# Kill yourself to return slime to your general.
+		elif cmd == ewcfg.cmd_suicide:
+			response = ""
+
+			# Only allowed in the combat zone.
+			if message.channel.name != ewcfg.channel_combatzone:
+				response = "You must go to the #{} to commit suicide.".format(ewcfg.channel_combatzone)
+			else:
+				# Get the user data.
+				user_data = EwUser(member=message.author)
+
+				# The roles assigned to the author of this message.
+				roles_map_user = ewutils.getRoleMap(message.author.roles)
+
+				# Slime transfer
+				boss_slimes = ewcfg.slimes_tokill + int(user_data.slimes * 3 / 5)
+
+				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+				user_isgeneral = ewcfg.role_copkiller in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+				user_isjuvenile = ewcfg.role_juvenile in roles_map_user
+				user_isdead = ewcfg.role_corpse in roles_map_user
+
+				if user_isdead:
+					response = "Too late for that."
+				elif user_isjuvenile:
+					response = "Juveniles are too cowardly for suicide."
+				elif user_isgeneral:
+					response = "\*click* Alas, your gun has jammed."
+				elif user_iskillers or user_isrowdys:
+					role_corpse = roles_map[ewcfg.role_corpse]
+
+					# Assign the corpse role to the player. He dead.
+					await client.replace_roles(message.author, role_corpse)
+
+					# Set the id_killer to the player himself, remove his slime.
+					user_data.id_killer = message.author.id
+					user_data.slimes = 0
+					user_data.persist()
+
+					# give slimes to the boss is possible.
+
+					boss_member = None
+					if boss_slimes > 0:
+						role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
+
+						for member_search in message.author.server.members:
+							if role_boss in ewutils.getRoleMap(member_search.roles):
+								boss_member = member_search
+								break
+						
+						if boss_member != None:
+							try:
+								conn = ewutils.databaseConnect();
+								cursor = conn.cursor();
+
+								boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
+								boss_data.slimes += boss_slimes
+								boss_data.persist(conn=conn, cursor=cursor)
+
+								conn.commit()
+							finally:
+								cursor.close()
+								conn.close()
+
+					response = '{} has willingly returned to the slime. <:slimeskull:431670526621122562>'.format(message.author.display_name)
+				else:
+					# This should never happen. We handled all the role cases. Just in case.
+					response = "\*click* Alas, your gun has jammed."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 		# Spar with an ally
 		elif cmd == ewcfg.cmd_spar:
 			response = ""
@@ -255,7 +328,7 @@ async def on_message(message):
 				response = "One sparring partner at a time!"
 
 			elif mentions_count == 1:
-				# The roles assigned to the author of this user.
+				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				try:
@@ -520,13 +593,13 @@ async def on_message(message):
 				user_slimes = EwUser(member=message.author).slimes
 
 				# return my score
-				response = "Your slime score is {} <:slime1:431564830541873182>".format(user_slimes)
+				response = "Your slime score is {:,} <:slime1:431564830541873182>".format(user_slimes)
 			else:
 				member = mentions[0]
 				user_slimes = EwUser(member=member).slimes
 
 				# return somebody's score
-				response = "{}'s slime score is {} <:slime1:431564830541873182>".format(member.display_name, user_slimes)
+				response = "{}'s slime score is {:,} <:slime1:431564830541873182>".format(member.display_name, user_slimes)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))

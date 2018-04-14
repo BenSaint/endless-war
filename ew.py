@@ -9,6 +9,7 @@ col_time_lastkill = 'time_lastkill'
 col_time_lastrevive = 'time_lastrevive'
 col_id_killer = 'id_killer'
 col_time_lastspar = 'time_lastspar'
+col_time_expirpvp = 'time_expirpvp'
 
 """ User model for database persistence """
 class EwUser:
@@ -21,6 +22,7 @@ class EwUser:
 	time_lastkill = 0
 	time_lastrevive = 0
 	time_lastspar = 0
+	time_expirpvp = 0
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member=None, conn=None, cursor=None):
@@ -43,12 +45,13 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					col_slimes,
 					col_time_lastkill,
 					col_time_lastrevive,
 					col_id_killer,
-					col_time_lastspar
+					col_time_lastspar,
+					col_time_expirpvp
 				), (
 					member.id,
 					member.server.id
@@ -62,6 +65,7 @@ class EwUser:
 					self.time_lastrevive = result[2]
 					self.id_killer = result[3]
 					self.time_lastspar = result[4]
+					self.time_expirpvp = result[5]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (member.id, member.server.id))
@@ -91,14 +95,15 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)".format(
 				col_id_user,
 				col_id_server,
 				col_slimes,
 				col_time_lastkill,
 				col_time_lastrevive,
 				col_id_killer,
-				col_time_lastspar
+				col_time_lastspar,
+				col_time_expirpvp
 			), (
 				self.id_user,
 				self.id_server,
@@ -106,7 +111,8 @@ class EwUser:
 				self.time_lastkill,
 				self.time_lastrevive,
 				self.id_killer,
-				self.time_lastspar
+				self.time_lastspar,
+				self.time_expirpvp
 			))
 
 			if our_cursor:

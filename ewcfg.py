@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.04"
+version = "v1.05"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -36,6 +36,7 @@ cmd_help_alt1 = cmd_prefix + 'command'
 cmd_help_alt2 = cmd_prefix + 'commands'
 cmd_harvest = cmd_prefix + 'harvest'
 cmd_spar = cmd_prefix + 'spar'
+cmd_suicide = cmd_prefix + 'suicide'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -51,3 +52,8 @@ invuln_onrevive = 1200
 # Cooldowns
 cd_kill = 60
 cd_spar = 600
+
+# PvP timer pushouts
+time_pvp_base = 300
+time_pvp_kill = 600
+time_pvp_mine = 180
