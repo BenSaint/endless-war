@@ -104,6 +104,7 @@ async def on_message(message):
 			elif mentions_count == 1:
 				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
+				time_now = int(time.time())
 
 				try:
 					conn = ewutils.databaseConnect();
@@ -121,12 +122,21 @@ async def on_message(message):
 					cursor.close()
 					conn.close()
 
-				if (int(time.time()) - user_data.time_lastkill) < ewcfg.cd_kill:
+				# Killed player's assigned Discord roles.
+				roles_map_target = ewutils.getRoleMap(member.roles)
+
+				if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+					# disallow killing generals
+					response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter a general.'
+				elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
 					# disallow kill if the player has killed recently
 					response = "Take a moment to appreciate your last slaughter."
 				elif killed_data.id_killer == user_data.id_user:
 					# disallow kill if the player is the id_killer of killed_data
 					response = "You have already proven your superiority over {}.".format(member.display_name)
+				elif time_now > killed_data.time_expirpvp:
+					# target is not flagged for PvP
+					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 				else:
 					# new (more fair?) slime calculation. more slimes makes you harder to kill.
 					slimes_tokill = ewcfg.slimes_tokill + int(user_data.slimes/10) + int(killed_data.slimes/2)
@@ -151,9 +161,7 @@ async def on_message(message):
 							was_killed = False
 							was_invuln = False
 							was_dead = False
-
-							roles_map_target = ewutils.getRoleMap(member.roles)
-							if (int(time.time()) - killed_data.time_lastrevive) < ewcfg.invuln_onrevive:
+							if (time_now - killed_data.time_lastrevive) < ewcfg.invuln_onrevive:
 								# User is currently invulnerable
 								was_invuln = True
 
@@ -188,8 +196,12 @@ async def on_message(message):
 									user_data.time_lastrevive = 0
 
 									# Set the last kill time for kill cooldown.
-									user_data.time_lastkill = int(time.time())
+									user_data.time_lastkill = time_now
 
+									# Flag the killer for PvP
+									user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+
+									# Persist the player's data.
 									user_data.persist(conn=conn, cursor=cursor)
 
 									# Remove all slimes from the dead player.
@@ -328,83 +340,97 @@ async def on_message(message):
 				response = "One sparring partner at a time!"
 
 			elif mentions_count == 1:
-				# The roles assigned to the author of this message.
-				roles_map_user = ewutils.getRoleMap(message.author.roles)
+				member = mentions[0]
 
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-
-					# Get killing player's info.
-					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-
-					# Get target's info.
-					member = mentions[0]
-					sparred_data = EwUser(member=member, conn=conn, cursor=cursor)
-
-					conn.commit()
-				finally:
-					cursor.close()
-					conn.close()
-
-				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
-				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-
-				# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
-				if user_iskillers == False and user_isrowdys == False:
-					response = "Juveniles lack the backbone necessary for combat."
+				if(member.id == message.author.id):
+					response = "How do you expect to spar with yourself?"
 				else:
-					was_juvenile = False
-					was_sparred = False
-					was_dead = False
-					was_player_tired = False
-					was_target_tired = False
 
-					roles_map_target = ewutils.getRoleMap(member.roles)
+					# The roles assigned to the author of this message.
+					roles_map_user = ewutils.getRoleMap(message.author.roles)
 
-					if ewcfg.role_corpse in roles_map_target:
-						# Target is already dead.
-						was_dead = True
-					elif (user_data.time_lastspar + ewcfg.cd_spar) > int(time.time()):
-						# player sparred too recently
-						was_player_tired = True
-					elif (sparred_data.time_lastspar + ewcfg.cd_spar) > int(time.time()):
-						# taret sparred too recently
-						was_target_tired = True
-					elif ewcfg.role_juvenile in roles_map_target:
-						# Target is a juvenile.
-						was_juvenile = True
+					try:
+						conn = ewutils.databaseConnect();
+						cursor = conn.cursor();
 
-					elif (user_iskillers and (ewcfg.role_copkillers in roles_map_target)) or (user_isrowdys and (ewcfg.role_rowdyfuckers in roles_map_target)):
-						# User can be sparred.
-						was_sparred = True
+						# Get killing player's info.
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
+						# Get target's info.
+						sparred_data = EwUser(member=member, conn=conn, cursor=cursor)
 
-					#if the duel is successful
-					if was_sparred:
-						weaker_player = sparred_data if sparred_data.slimes < user_data.slimes else user_data
-						stronger_player = sparred_data if user_data is weaker_player else user_data
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
 
-						# Weaker player gains slime based on the slime of the stronger player.
-						weaker_player.slimes += ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
-						weaker_player.time_lastspar = int(time.time())
-						weaker_player.persist()
+					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
-						# player was sparred with
-						response = '{} parries the attack. :knife: <:slime5:431659469844381717>'.format(member.display_name)
+					# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
+					if user_iskillers == False and user_isrowdys == False:
+						response = "Juveniles lack the backbone necessary for combat."
 					else:
-						if was_dead:
-							# target is already dead
-							response = '{} is already dead.'.format(member.display_name)
-						elif was_target_tired:
-							# target has sparred too recently
-							response = '{} is too tired to spar right now.'.format(member.display_name)
-						elif was_player_tired:
-							# player has sparred too recently
-							response = 'You are too tired to spar right now.'
+						was_juvenile = False
+						was_sparred = False
+						was_dead = False
+						was_player_tired = False
+						was_target_tired = False
+
+						time_now = int(time.time())
+
+						roles_map_target = ewutils.getRoleMap(member.roles)
+
+						if ewcfg.role_corpse in roles_map_target:
+							# Target is already dead.
+							was_dead = True
+						elif (user_data.time_lastspar + ewcfg.cd_spar) > time_now:
+							# player sparred too recently
+							was_player_tired = True
+						elif (sparred_data.time_lastspar + ewcfg.cd_spar) > time_now:
+							# taret sparred too recently
+							was_target_tired = True
+						elif ewcfg.role_juvenile in roles_map_target:
+							# Target is a juvenile.
+							was_juvenile = True
+
+						elif (user_iskillers and (ewcfg.role_copkillers in roles_map_target)) or (user_isrowdys and (ewcfg.role_rowdyfuckers in roles_map_target)):
+							# User can be sparred.
+							was_sparred = True
+
+
+						#if the duel is successful
+						if was_sparred:
+							weaker_player = sparred_data if sparred_data.slimes < user_data.slimes else user_data
+							stronger_player = sparred_data if user_data is weaker_player else user_data
+
+							# Flag the player for PvP
+							user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+
+							# Weaker player gains slime based on the slime of the stronger player.
+							weaker_player.slimes += ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
+							weaker_player.time_lastspar = time_now
+							weaker_player.persist()
+
+							# Persist the user if he was the stronger player.
+							if user_data is not weaker_player:
+								user_data.persist()
+
+							# player was sparred with
+							response = '{} parries the attack. :knife: <:slime5:431659469844381717>'.format(member.display_name)
 						else:
-							#otherwise unkillable
-							response = '{} cannot spar now.'.format(member.display_name)
+							if was_dead:
+								# target is already dead
+								response = '{} is already dead.'.format(member.display_name)
+							elif was_target_tired:
+								# target has sparred too recently
+								response = '{} is too tired to spar right now.'.format(member.display_name)
+							elif was_player_tired:
+								# player has sparred too recently
+								response = 'You are too tired to spar right now.'
+							else:
+								#otherwise unkillable
+								response = '{} cannot spar now.'.format(member.display_name)
 			else:
 				response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
 
@@ -567,15 +593,18 @@ async def on_message(message):
 				await client.send_message(message.channel, ewutils.formatMessage(message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
-					user_slimes = 0
-
 					try:
 						conn = ewutils.databaseConnect();
 						cursor = conn.cursor();
 
-						# Increment slimes for this user.
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						# Increment slimes for this user.
 						user_data.slimes += ewcfg.slimes_permine
+
+						# Flag the user for PvP
+						user_data.time_expirpvp = (int(time.time()) + ewcfg.time_pvp_mine)
+
 						user_data.persist(conn=conn, cursor=cursor)
 
 						conn.commit()

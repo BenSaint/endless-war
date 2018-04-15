@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.05"
+version = "v1.06"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -54,6 +54,5 @@ cd_kill = 60
 cd_spar = 600
 
 # PvP timer pushouts
-time_pvp_base = 300
 time_pvp_kill = 600
 time_pvp_mine = 180

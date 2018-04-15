@@ -7,6 +7,8 @@ These are the commands I understand:
 		Mine for slime.
 
 		*Used only in #the-mines.*
+		*Awards 20 slime.*
+		*Flags you for PvP combat for 3 minutes.*
 
 	**!enlist**
 		Join the Rowdy Fuckers or the Cop Killers (if you have enough slime).
@@ -18,6 +20,7 @@ These are the commands I understand:
 		*Costs slime proportional your and your target's slime scores.*
 		*Used only in the #combat-zone.*
 		*1 minute cooldown.*
+		*Flags you for PvP combat for 10 minutes.*
 
 	**!spar** *@username*
 		Practice fighting with the targeted player of your faction.
@@ -25,6 +28,7 @@ These are the commands I understand:
 
 		*Used only in #the-dojo.*
 		*10 minute cooldown.*
+		*Flags you for PvP combat for 10 minutes.*
 
 	**!revive**
 		Bring yourself back from the dead.
