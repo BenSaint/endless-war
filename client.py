@@ -87,8 +87,21 @@ async def on_message(message):
 			return
 
 		# let the user know we're working on it
+		resp = None
 		if cmd != ewcfg.cmd_mine or message.channel.name != ewcfg.channel_mines:
 			resp = await client.send_message(message.channel, '...')
+
+
+		# Scold/ignore offline players.
+		if message.author.status == discord.Status.offline:
+			response = "You cannot participate in the ENDLESS WAR while offline."
+
+			if resp != None:
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			else:
+				await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
+
+			return
 
 		# process command words
 		if cmd == ewcfg.cmd_kill:
