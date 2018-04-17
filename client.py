@@ -10,12 +10,14 @@ import asyncio
 import random
 import sys
 import time
+import json
+import subprocess
 
 import ewutils
 import ewcfg
 from ew import EwUser
 
-print('Starting up...')
+ewutils.logMsg('Starting up...')
 
 client = discord.Client()
 
@@ -32,15 +34,81 @@ while sys.argv:
 
 # When debug is enabled, additional commands are turned on.
 if debug == True:
-	print('Debug mode enabled.')
+	ewutils.logMsg('Debug mode enabled.')
 
 @client.event
 async def on_ready():
-	print('Logged in as {} ({}).'.format(client.user.name, client.user.id))
-	print('Ready.')
+	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
+	ewutils.logMsg('Ready.')
 
 	await client.change_presence(game=discord.Game(name=("dev. by @krak " + ewcfg.version)))
 
+	# Look for a Twitch client_id on disk.
+	twitch_client_id = ewutils.getTwitchClientId()
+
+	# If no twitch client ID is available, twitch integration will be disabled.
+	if twitch_client_id == None or len(twitch_client_id) == 0:
+		ewutils.logMsg('No twitch_client_id file found. Twitch integration disabled.')
+	else:
+		ewutils.logMsg("Enabled Twitch integration.")
+
+		# Channels in the connected discord servers to announce to.
+		announcement_channels = []
+
+		for server in client.servers:
+			ewutils.logMsg("connected to: {}".format(server.name))
+			for channel in server.channels:
+				if(channel.type == discord.ChannelType.text):
+					if(channel.name == ewcfg.channel_twitch_announcement):
+						announcement_channels.append(channel)
+
+						ewutils.logMsg("• found : {}".format(channel.name))
+						ewutils.logMsg("•• using for announcements.")
+		stream_live = None
+
+		count = 5
+		while True:
+			count -= 1
+			if count <= 0:
+				count = 180
+				ewutils.logMsg("Twitch hook still active.")
+
+			# Twitch API call to see if there are any active streams.
+			json_string = ""
+			p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
+			for line in p.stdout.readlines():
+				json_string += line.decode('utf-8')
+			json_parsed = json.loads(json_string)
+
+			# When a stream is up, data is an array of stream information objects.
+			data = json_parsed.get('data')
+			if data != None:
+				data_count = len(data)
+				stream_was_live = stream_live
+				stream_live = True if data_count > 0 else False
+
+				if stream_was_live == False and stream_live == True:
+					ewutils.logMsg("The stream is now live.")
+
+					# The stream has transitioned from offline to online. Make an announcement!
+					for channel in announcement_channels:
+						await client.send_message(
+							channel,
+							"ATTENTION CITIZENS. THE ROWDY FUCKER AND THE COP KILLER ARE STREAMING. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n{}".format(
+								"https://www.twitch.tv/rowdyfrickerscopkillers"
+							)
+					)
+
+			await asyncio.sleep(60)
+
+@client.event
+async def on_member_join(member):
+	roles_map = ewutils.getRoleMap(member.server.roles)
+	role_juvenile = roles_map[ewcfg.role_juvenile]
+
+	ewutils.logMsg("New member \"{}\" joined. Assigned Juveniles role.".format(member.display_name))
+
+	await client.replace_roles(member, role_juvenile)
 
 @client.event
 async def on_message(message):
@@ -120,8 +188,8 @@ async def on_message(message):
 				time_now = int(time.time())
 
 				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
 
 					# Get killing player's info.
 					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
@@ -192,8 +260,8 @@ async def on_message(message):
 
 							if was_killed == True:
 								try:
-									conn = ewutils.databaseConnect();
-									cursor = conn.cursor();
+									conn = ewutils.databaseConnect()
+									cursor = conn.cursor()
 
 									user_data.slimes -= slimes_tokill
 
@@ -237,8 +305,8 @@ async def on_message(message):
 									
 									if boss_member != None:
 										try:
-											conn = ewutils.databaseConnect();
-											cursor = conn.cursor();
+											conn = ewutils.databaseConnect()
+											cursor = conn.cursor()
 
 											boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
 											boss_data.slimes += boss_slimes
@@ -321,8 +389,8 @@ async def on_message(message):
 						
 						if boss_member != None:
 							try:
-								conn = ewutils.databaseConnect();
-								cursor = conn.cursor();
+								conn = ewutils.databaseConnect()
+								cursor = conn.cursor()
 
 								boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
 								boss_data.slimes += boss_slimes
@@ -363,8 +431,8 @@ async def on_message(message):
 					roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 					try:
-						conn = ewutils.databaseConnect();
-						cursor = conn.cursor();
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 
 						# Get killing player's info.
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
@@ -462,8 +530,8 @@ async def on_message(message):
 
 				if ewcfg.role_corpse in roles_map_user:
 					try:
-						conn = ewutils.databaseConnect();
-						cursor = conn.cursor();
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 
 						player_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
@@ -544,8 +612,8 @@ async def on_message(message):
 					members_na = []
 
 					try:
-						conn = ewutils.databaseConnect();
-						cursor = conn.cursor();
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 						
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
@@ -607,8 +675,8 @@ async def on_message(message):
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
 					try:
-						conn = ewutils.databaseConnect();
-						cursor = conn.cursor();
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
@@ -670,8 +738,8 @@ async def on_message(message):
 							user_slimes = 0
 							member_slimes = []
 							try:
-								conn = ewutils.databaseConnect();
-								cursor = conn.cursor();
+								conn = ewutils.databaseConnect()
+								cursor = conn.cursor()
 
 								user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
@@ -688,8 +756,8 @@ async def on_message(message):
 								user_data.slimes -= (value * mentions_count)
 
 								try:
-									conn = ewutils.databaseConnect();
-									cursor = conn.cursor();
+									conn = ewutils.databaseConnect()
+									cursor = conn.cursor()
 
 									user_data.persist(conn=conn, cursor=cursor)
 
@@ -707,6 +775,86 @@ async def on_message(message):
 								
 						else:
 							response = "Give how much slime?"
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
+		# Ghosts can haunt enlisted players to reduce their slime score.
+		elif cmd == ewcfg.cmd_haunt:
+			response = ""
+
+			if mentions_count > 1:
+				response = "You can only spook one person at a time. Who do you think you are, the Lord of Ghosts?"
+			elif mentions_count == 1:
+				time_now = int(time.time())
+
+				# A map of role names to Roles assigned to the current user.
+				roles_map_user = ewutils.getRoleMap(message.author.roles)
+
+				# Get the user and target data from the database.
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+					member = mentions[0]
+					haunted_data = EwUser(member=member, conn=conn, cursor=cursor)
+				finally:
+					cursor.close()
+					conn.close()
+
+				# A map of role names to Roles assigned to the targeted user.
+				roles_map_target = ewutils.getRoleMap(member.roles)
+
+				if ewcfg.role_corpse not in roles_map_user:
+					# Only dead players can haunt.
+					response = "You can't haunt now. Try {}.".format(ewcfg.cmd_suicide)
+				elif message.channel.name != ewcfg.channel_sewers:
+					# Allowed only from the-sewers.
+					response = "You must haunt from #{}.".format(ewcfg.channel_sewers)
+				elif ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+					# Disallow haunting of generals.
+					response = "He is too far from the sewers in his ivory tower, and thus cannot be haunted."
+				elif (time_now - user_data.time_lasthaunt) < ewcfg.cd_haunt:
+					# Disallow haunting if the user has haunted too recently.
+					response = "You're being a little TOO spooky lately, don't you think?"
+				elif time_now > haunted_data.time_expirpvp:
+					# Require the target to be flagged for PvP
+					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
+				elif ewcfg.role_juvenile in roles_map_target:
+					# Juveniles can't be haunted.
+					response = "The juveniles are innocent."
+				elif ewcfg.role_corpse in roles_map_target:
+					# Dead players can't be haunted.
+					response = "{} is already dead.".format(member.display_name)
+				elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target:
+					# Target can be haunted by the player.
+					haunted_data.slimes -= int(haunted_data.slimes / ewcfg.slimes_hauntratio)
+					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_haunt)
+					user_data.time_lasthaunt = time_now
+
+					# Persist changes to the database.
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data.persist(conn=conn, cursor=cursor)
+						haunted_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+					response = "{} has been haunted by a discontent corpse! Slime has been lost!".format(member.display_name)
+				else:
+					# Some condition we didn't think of.
+					response = "You cannot haunt {}.".format(member.display_name)
+			else:
+				# No mentions, or mentions we didn't understand.
+				response = "Your spookiness is appreciated, but ENDLESS WAR didn\'t understand that name."
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -761,7 +909,7 @@ async def on_message(message):
 token = ewutils.getToken()
 
 if token == None or len(token) == 0:
-	print('Please place your API token in a file called "token", in the same directory as this script.')
+	ewutils.logMsg('Please place your API token in a file called "token", in the same directory as this script.')
 	sys.exit(0)
 
 # connect to discord and run indefinitely

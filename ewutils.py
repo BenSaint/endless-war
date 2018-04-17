@@ -1,14 +1,21 @@
 import MySQLdb
+import datetime
 
 import ewcfg
 
 
-""" get the API token from the config file on disk """
-def getToken():
+""" Write the string to stdout with a timestamp. """
+def logMsg(string):
+	print("[{}] {}".format(datetime.datetime.now(), string))
+
+	return string
+
+""" read a file named fname and return its contents as a string """
+def getValueFromFileContents(fname):
 	token = ""
 
 	try:
-		f_token = open("token", "r")
+		f_token = open(fname, "r")
 		f_token_lines = f_token.readlines()
 
 		for line in f_token_lines:
@@ -17,11 +24,19 @@ def getToken():
 				token = line
 	except IOError:
 		token = ""
-		print("Could not read token file.")
+		print("Could not read {} file.".format(fname))
 	finally:
 		f_token.close()
 
 	return token
+
+""" get the Discord API token from the config file on disk """
+def getToken():
+	return getValueFromFileContents("token")
+
+""" get the Twitch client ID from the config file on disk """
+def getTwitchClientId():
+	return getValueFromFileContents("twitch_client_id")
 
 """ print a list of strings with nice comma-and grammar """
 def formatNiceList(names):

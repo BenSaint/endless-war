@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.06"
+version = "v1.07"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -19,6 +19,7 @@ channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
 channel_dojo = "the-dojo"
+channel_twitch_announcement = "general"
 
 # Commands
 cmd_prefix = '!'
@@ -37,6 +38,7 @@ cmd_help_alt2 = cmd_prefix + 'commands'
 cmd_harvest = cmd_prefix + 'harvest'
 cmd_spar = cmd_prefix + 'spar'
 cmd_suicide = cmd_prefix + 'suicide'
+cmd_haunt = cmd_prefix + 'haunt'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -45,6 +47,7 @@ slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 420
 slimes_perspar = 2500
+slimes_hauntratio = 20
 
 # Lifetimes
 invuln_onrevive = 1200
@@ -52,7 +55,9 @@ invuln_onrevive = 1200
 # Cooldowns
 cd_kill = 60
 cd_spar = 600
+cd_haunt = 600
 
 # PvP timer pushouts
 time_pvp_kill = 600
 time_pvp_mine = 180
+time_pvp_haunt = 600

@@ -35,6 +35,12 @@ These are the commands I understand:
 
 		*Used only in the #the-sewers.*
 
+	**!haunt** *@username*
+		Haunt a living player from beyond the grave, costing them slime.
+
+		*Used only when dead.*
+		*10 minute cooldown.*
+
 Only the Cop Killer and the Rowdy Fucker can:
 
 	**!devour** *@username* ...
