@@ -194,6 +194,10 @@ async def on_message(message):
 					# Get killing player's info.
 					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
+					# Flag the killer for PvP no matter what happens next.
+					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+					user_data.persist(conn=conn, cursor=cursor)
+
 					# Get target's info.
 					member = mentions[0]
 					killed_data = EwUser(member=member, conn=conn, cursor=cursor)
@@ -285,9 +289,6 @@ async def on_message(message):
 
 							# Set the last kill time for kill cooldown.
 							user_data.time_lastkill = time_now
-
-							# Flag the killer for PvP
-							user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
 
 							# Persist the player's data.
 							user_data.persist(conn=conn, cursor=cursor)
