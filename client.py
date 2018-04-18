@@ -351,7 +351,7 @@ async def on_message(message):
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				# Slime transfer
-				boss_slimes = ewcfg.slimes_tokill + int(user_data.slimes * 3 / 5)
+				boss_slimes = user_data.slimes - (ewcfg.slimes_tokill + int(user_data.slimes * 3 / 5))
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
