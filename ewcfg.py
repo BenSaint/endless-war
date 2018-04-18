@@ -19,7 +19,7 @@ channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
 channel_dojo = "the-dojo"
-channel_twitch_announcement = "general"
+channel_twitch_announcement = "rfck-chat"
 
 # Commands
 cmd_prefix = '!'

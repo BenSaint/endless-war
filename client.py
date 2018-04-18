@@ -206,129 +206,131 @@ async def on_message(message):
 				# Killed player's assigned Discord roles.
 				roles_map_target = ewutils.getRoleMap(member.roles)
 
+				# new (more fair?) slime calculation. more slimes makes you harder to kill.
+				slimes_tokill = ewcfg.slimes_tokill + int(user_data.slimes/10) + int(killed_data.slimes/2)
+
+				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+
 				if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
 					# disallow killing generals
 					response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter a general.'
+
 				elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
 					# disallow kill if the player has killed recently
 					response = "Take a moment to appreciate your last slaughter."
+
 				elif killed_data.id_killer == user_data.id_user:
 					# disallow kill if the player is the id_killer of killed_data
 					response = "You have already proven your superiority over {}.".format(member.display_name)
+
 				elif time_now > killed_data.time_expirpvp:
 					# target is not flagged for PvP
 					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
-				else:
-					# new (more fair?) slime calculation. more slimes makes you harder to kill.
-					slimes_tokill = ewcfg.slimes_tokill + int(user_data.slimes/10) + int(killed_data.slimes/2)
 
-					if user_data.slimes < slimes_tokill:
-						response = "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime."
+				elif user_data.slimes < slimes_tokill:
+					# Not enough slime.
+					response = "You are currently too weak-willed and feminine. Harvest more Juveniles for their slime."
+
+				elif user_iskillers == False and user_isrowdys == False:
+					# Only killers, rowdys, the cop killer, and the rowdy fucker can kill people
+					if ewcfg.role_juvenile in roles_map_user:
+						response = "Juveniles lack the moral fiber necessary for murder."
 					else:
-						user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
-						user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+						response = "You lack the moral fiber necessary for murder."
 
-						# Only killers, rowdys, the cop killer, and the rowdy fucker can kill people
-						if user_iskillers == False and user_isrowdys == False:
-							response = "Juveniles lack the moral fiber necessary for murder."
-						else:
-							# slimes from this kill might be awarded to the boss
-							role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
-							boss_slimes = 0
+				elif ewcfg.role_corpse in roles_map_target:
+					# Target is already dead.
+					response = '{} is already dead.'.format(member.display_name)
 
-							role_corpse = roles_map[ewcfg.role_corpse]
+				elif (time_now - killed_data.time_lastrevive) < ewcfg.invuln_onrevive:
+					# User is currently invulnerable
+					response = '{} has died too recently and is immune.'.format(member.display_name)
 
-							was_juvenile = False
-							was_killed = False
-							was_invuln = False
-							was_dead = False
-							if (time_now - killed_data.time_lastrevive) < ewcfg.invuln_onrevive:
-								# User is currently invulnerable
-								was_invuln = True
+				else:
+					# slimes from this kill might be awarded to the boss
+					role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
+					boss_slimes = 0
 
-							elif role_corpse in roles_map_target:
-								# Target is already dead.
-								was_dead = True
+					role_corpse = roles_map[ewcfg.role_corpse]
 
-							elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
-								# User can be killed.
-								if ewcfg.role_juvenile in roles_map_target:
-									was_juvenile = True
+					was_juvenile = False
+					was_killed = False
 
-								was_killed = True
-								await client.replace_roles(member, role_corpse)
+					if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+						# User can be killed.
+						if ewcfg.role_juvenile in roles_map_target:
+							was_juvenile = True
 
-							if was_killed == True:
+						was_killed = True
+						await client.replace_roles(member, role_corpse)
+
+					if was_killed == True:
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.slimes -= slimes_tokill
+
+							if killed_data.slimes > 0:
+								if was_juvenile == True:
+									# Add juvenile targets' slimes to this player.
+									user_data.slimes += killed_data.slimes
+								else:
+									# Add adult tarets' slimes to the boss.
+									boss_slimes += killed_data.slimes
+
+							# Remove !revive invulnerability.
+							user_data.time_lastrevive = 0
+
+							# Set the last kill time for kill cooldown.
+							user_data.time_lastkill = time_now
+
+							# Flag the killer for PvP
+							user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+
+							# Persist the player's data.
+							user_data.persist(conn=conn, cursor=cursor)
+
+							# Remove all slimes from the dead player.
+							killed_data.slimes = 0
+							killed_data.id_killer = message.author.id
+							killed_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+						# give slimes to the boss if possible.
+						boss_member = None
+						if boss_slimes > 0:
+							for member_search in message.author.server.members:
+								if role_boss in ewutils.getRoleMap(member_search.roles):
+									boss_member = member_search
+									break
+							
+							if boss_member != None:
 								try:
 									conn = ewutils.databaseConnect()
 									cursor = conn.cursor()
 
-									user_data.slimes -= slimes_tokill
-
-									if killed_data.slimes > 0:
-										if was_juvenile == True:
-											# Add juvenile targets' slimes to this player.
-											user_data.slimes += killed_data.slimes
-										else:
-											# Add adult tarets' slimes to the boss.
-											boss_slimes += killed_data.slimes
-
-									# Remove !revive invulnerability.
-									user_data.time_lastrevive = 0
-
-									# Set the last kill time for kill cooldown.
-									user_data.time_lastkill = time_now
-
-									# Flag the killer for PvP
-									user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
-
-									# Persist the player's data.
-									user_data.persist(conn=conn, cursor=cursor)
-
-									# Remove all slimes from the dead player.
-									killed_data.slimes = 0
-									killed_data.id_killer = message.author.id
-									killed_data.persist(conn=conn, cursor=cursor)
+									boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
+									boss_data.slimes += boss_slimes
+									boss_data.persist(conn=conn, cursor=cursor)
 
 									conn.commit()
 								finally:
 									cursor.close()
 									conn.close()
 
-								# give slimes to the boss if possible.
-								boss_member = None
-								if boss_slimes > 0:
-									for member_search in message.author.server.members:
-										if role_boss in ewutils.getRoleMap(member_search.roles):
-											boss_member = member_search
-											break
-									
-									if boss_member != None:
-										try:
-											conn = ewutils.databaseConnect()
-											cursor = conn.cursor()
+						# player was killed
+						response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
 
-											boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
-											boss_data.slimes += boss_slimes
-											boss_data.persist(conn=conn, cursor=cursor)
+					else:
+						# teammate, or otherwise unkillable
+						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
-											conn.commit()
-										finally:
-											cursor.close()
-											conn.close()
-
-								# player was killed
-								response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
-							else:
-								if was_invuln == True:
-									# player was invulnerable
-									response = '{} has died too recently and is immune.'.format(member.display_name)
-								elif was_dead == True:
-									# target is already dead
-									response = '{} is already dead.'.format(member.display_name)
-								else:
-									# teammate, or otherwise unkillable
-									response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 			else:
 				response = 'Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name.'
 
