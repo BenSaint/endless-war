@@ -94,7 +94,7 @@ async def on_ready():
 					for channel in announcement_channels:
 						await client.send_message(
 							channel,
-							"ATTENTION CITIZENS. THE ROWDY FUCKER AND THE COP KILLER ARE STREAMING. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n{}".format(
+							"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
 								"https://www.twitch.tv/rowdyfrickerscopkillers"
 							)
 					)
