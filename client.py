@@ -907,6 +907,7 @@ async def on_message(message):
 							winnings = 5 * value
 							response += "\n\nYou rolled a 7! It's your lucky day. You won {} slime.".format(winnings)
 							user_data.slimes += winnings
+							casino_data.slimes -= winnings
 
 						else:
 							response += "\n\nYou didn't roll 7. You lost your slime."
@@ -1003,6 +1004,10 @@ async def on_message(message):
 						winnings = 5 * value
 						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {} slime.**".format(winnings)
 
+					elif (roll1 == ewcfg.emote_tacobell or roll1 == ewcfg.emote_kfc or roll1 == ewcfg.emote_pizzahut) and (roll2 == ewcfg.emote_tacobell or roll2 == ewcfg.emote_kfc or roll2 == ewcfg.emote_pizzahut) and (roll3 == ewcfg.emote_tacobell or roll3 == ewcfg.emote_kfc or roll3 == ewcfg.emote_pizzahut):
+						winnings = value
+						response += "\n\n**You dine on fast food. The machine spits out {} slime.**".format(winnings)
+
 					elif roll1 == ewcfg.emote_moon and roll2 == ewcfg.emote_moon and roll3 == ewcfg.emote_moon:
 						winnings = 5 * value
 						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {} slime.**".format(winnings)
@@ -1029,6 +1034,7 @@ async def on_message(message):
 
 					# Add winnings (if there were any) and save the user data.
 					user_data.slimes += winnings
+					casino_data.slimes -= winnings
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
