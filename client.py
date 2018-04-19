@@ -902,7 +902,16 @@ async def on_message(message):
 						roll1 = random.randint(1,6)
 						roll2 = random.randint(1,6)
 
-						response = "You rolled a {} and a {}.".format(roll1, roll2)
+						emotes_dice = [
+							ewcfg.emote_dice1,
+							ewcfg.emote_dice2,
+							ewcfg.emote_dice3,
+							ewcfg.emote_dice4,
+							ewcfg.emote_dice5,
+							ewcfg.emote_dice6
+						]
+
+						response = " {} {}".format(emotes_dice[roll1 - 1], emotes_dice[roll2 - 1])
 						crapstokens = message.content.split(' ')
 
 						if (roll1 + roll2) == 7:
