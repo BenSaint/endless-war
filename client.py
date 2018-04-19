@@ -905,7 +905,7 @@ async def on_message(message):
 
 						if (roll1 + roll2) == 7:
 							winnings = 5 * value
-							response += "\n\nYou rolled a 7! It's your lucky day. You won {} slime.".format(winnings)
+							response += "\n\n**You rolled a 7! It's your lucky day. You won {} slime.**".format(winnings)
 							user_data.slimes += winnings
 							casino_data.slimes -= winnings
 
