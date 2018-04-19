@@ -836,7 +836,9 @@ async def on_message(message):
 					response = "{} is already dead.".format(member.display_name)
 				elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target:
 					# Target can be haunted by the player.
-					haunted_data.slimes -= int(haunted_data.slimes / ewcfg.slimes_hauntratio)
+					haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
+					haunted_data.slimes -= haunted_slimes
+					user_data.slimes -= haunted_slimes
 					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_haunt)
 					user_data.time_lasthaunt = time_now
 
