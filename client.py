@@ -881,12 +881,21 @@ async def on_message(message):
 							value = None
 
 				if value != None:
-					user_data = EwUser(member=message.author)
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 
-					if (value) > user_data.slimes:
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+
+
+					if value > user_data.slimes:
 						response = "You don't have that much slime to bet with."
 					else:
-						user_data.slimes -= (value)
+						user_data.slimes -= value
 
 						roll1 = random.randint(1,6)
 						roll2 = random.randint(1,6)
@@ -901,8 +910,19 @@ async def on_message(message):
 
 						else:
 							response += "\n\nYou didn't roll 7. You lost your slime."
+							casino_data.slimes += value
 
-						user_data.persist()
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							casino_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
 				else:
 					response = "Specify how much slime you will wager."
 
@@ -917,7 +937,17 @@ async def on_message(message):
 				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
 			else:
 				value = ewcfg.slimes_perslot
-				user_data = EwUser(member=message.author)
+
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+
+				finally:
+					cursor.close()
+					conn.close()
 
 				if value > user_data.slimes:
 					response = "You don't have enough slime."
@@ -995,10 +1025,21 @@ async def on_message(message):
 
 					else:
 						response += "\n\n*Nothing happens...*"
+						casino_data.slimes += value
 
 					# Add winnings (if there were any) and save the user data.
 					user_data.slimes += winnings
-					user_data.persist()
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data.persist(conn=conn, cursor=cursor)
+						casino_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))

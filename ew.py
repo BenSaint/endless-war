@@ -27,11 +27,16 @@ class EwUser:
 	time_lasthaunt = 0
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
-	def __init__(self, member=None, conn=None, cursor=None):
+	def __init__(self, member=None, conn=None, cursor=None, id_user=None, id_server=None):
+		if(id_user == None) and (id_server == None):
+			if(member != None):
+				id_server = member.server.id
+				id_user = member.id
+
 		# Retrieve the object from the database if the user is provided.
-		if(member != None):
-			self.id_server = member.server.id
-			self.id_user = member.id
+		if(id_user != None) and (id_server != None):
+			self.id_server = id_server
+			self.id_user = id_user
 
 			our_cursor = False
 			our_conn = False
@@ -56,8 +61,8 @@ class EwUser:
 					col_time_expirpvp,
 					col_time_lasthaunt
 				), (
-					member.id,
-					member.server.id
+					id_user,
+					id_server
 				))
 				result = cursor.fetchone();
 
@@ -72,7 +77,7 @@ class EwUser:
 					self.time_lasthaunt = result[6]
 				else:
 					# Create a new database entry if the object is missing.
-					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (member.id, member.server.id))
+					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
 					
 					conn.commit()
 
