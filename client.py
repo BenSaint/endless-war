@@ -524,7 +524,6 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
 			response = ""
@@ -864,6 +863,52 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# Toss the dice at slime craps!
+		elif cmd == ewcfg.cmd_slimecraps:
+			# Only allowed in the slime casino.
+			if message.channel.name != ewcfg.channel_casino:
+				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
+			else:
+				value = None
+
+				if tokens_count > 1:
+					for token in tokens[1:]:
+						try:
+							value = int(token)
+							break
+						except:
+							value = None
+
+				if value != None:
+					user_data = EwUser(member=message.author)
+
+					if (value) > user_data.slimes:
+						response = "You don't have that much slime to bet with."
+					else:
+						user_data.slimes -= (value)
+
+						roll1 = random.randint(1,6)
+						roll2 = random.randint(1,6)
+
+						response = "You rolled a {} and a {}.".format(roll1, roll2)
+						crapstokens = message.content.split(' ')
+
+						if (roll1 + roll2) == 7:
+							winnings = 5 * value
+							response += "\n\nYou rolled a 7! It's your lucky day. You won {} slime.".format(winnings)
+							user_data.slimes += winnings
+
+						else:
+							response += "\n\nYou didn't roll 7. You lost your slime."
+
+						user_data.persist()
+				else:
+					response = "Specify how much slime you will wager."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 
 		# Pull the lever on a slot machine!
 		elif cmd == ewcfg.cmd_slimeslots:

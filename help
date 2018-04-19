@@ -44,8 +44,13 @@ These are the commands I understand:
 	**!slimeslots**
 		Play the slime slot machine!
 
-		*Used only in the #casino.*
+		*Used only in the #slime-casino.*
 		*Costs 100 slime.*
+
+	**!slimecraps** #
+		Toss the dice! Wager some number of slimes and win big.
+
+		*Used only in the #slime-casino.*
 
 Only the Cop Killer and the Rowdy Fucker can:
 

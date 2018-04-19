@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.08"
+version = "v1.09"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -20,7 +20,7 @@ channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
 channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
-channel_casino = "casino"
+channel_casino = "slime-casino"
 
 # Commands
 cmd_prefix = '!'
@@ -41,6 +41,7 @@ cmd_spar = cmd_prefix + 'spar'
 cmd_suicide = cmd_prefix + 'suicide'
 cmd_haunt = cmd_prefix + 'haunt'
 cmd_slimeslots = cmd_prefix + 'slimeslots'
+cmd_slimecraps = cmd_prefix + 'slimecraps'
 
 # Slime costs/values
 slimes_tokill = 20
