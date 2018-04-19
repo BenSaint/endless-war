@@ -73,31 +73,34 @@ async def on_ready():
 				count = 180
 				ewutils.logMsg("Twitch hook still active.")
 
-			# Twitch API call to see if there are any active streams.
-			json_string = ""
-			p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
-			for line in p.stdout.readlines():
-				json_string += line.decode('utf-8')
-			json_parsed = json.loads(json_string)
+			try:
+				# Twitch API call to see if there are any active streams.
+				json_string = ""
+				p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
+				for line in p.stdout.readlines():
+					json_string += line.decode('utf-8')
+				json_parsed = json.loads(json_string)
 
-			# When a stream is up, data is an array of stream information objects.
-			data = json_parsed.get('data')
-			if data != None:
-				data_count = len(data)
-				stream_was_live = stream_live
-				stream_live = True if data_count > 0 else False
+				# When a stream is up, data is an array of stream information objects.
+				data = json_parsed.get('data')
+				if data != None:
+					data_count = len(data)
+					stream_was_live = stream_live
+					stream_live = True if data_count > 0 else False
 
-				if stream_was_live == False and stream_live == True:
-					ewutils.logMsg("The stream is now live.")
+					if stream_was_live == False and stream_live == True:
+						ewutils.logMsg("The stream is now live.")
 
-					# The stream has transitioned from offline to online. Make an announcement!
-					for channel in announcement_channels:
-						await client.send_message(
-							channel,
-							"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
-								"https://www.twitch.tv/rowdyfrickerscopkillers"
-							)
-					)
+						# The stream has transitioned from offline to online. Make an announcement!
+						for channel in announcement_channels:
+							await client.send_message(
+								channel,
+								"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
+									"https://www.twitch.tv/rowdyfrickerscopkillers"
+								)
+						)
+			except:
+				ewutils.logMsg('Twitch handler hit an exception. Continuing.')
 
 			await asyncio.sleep(60)
 
@@ -326,7 +329,7 @@ async def on_message(message):
 									conn.close()
 
 						# player was killed
-						response = '{} has been SLAUGHTERED. <:slime5:431659469844381717> :gun:'.format(member.display_name)
+						response = '{} has been SLAUGHTERED. {} :gun:'.format(member.display_name, ewcfg.emote_slime5)
 
 					else:
 						# teammate, or otherwise unkillable
@@ -404,7 +407,7 @@ async def on_message(message):
 								cursor.close()
 								conn.close()
 
-					response = '{} has willingly returned to the slime. <:slimeskull:431670526621122562>'.format(message.author.display_name)
+					response = '{} has willingly returned to the slime. {}'.format(message.author.display_name, ewcfg.emote_slimeskull)
 				else:
 					# This should never happen. We handled all the role cases. Just in case.
 					response = "\*click* Alas, your gun has jammed."
@@ -501,7 +504,7 @@ async def on_message(message):
 								user_data.persist()
 
 							# player was sparred with
-							response = '{} parries the attack. :knife: <:slime5:431659469844381717>'.format(member.display_name)
+							response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
 						else:
 							if was_dead:
 								# target is already dead
@@ -558,7 +561,7 @@ async def on_message(message):
 						conn.close()
 
 					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
-					response = '<:slime4:431570132901560320> A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. <:slime4:431570132901560320> {} has been reborn in slime. <:slime4:431570132901560320>'.format(message.author.display_name)
+					response = '{slime4} A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. {slime4} {name} has been reborn in slime. {slime4}'.format(slime4=ewcfg.emote_slime4, name=message.author.display_name)
 				else:
 					response = 'You\'re not dead just yet.'
 
@@ -706,13 +709,13 @@ async def on_message(message):
 				user_slimes = EwUser(member=message.author).slimes
 
 				# return my score
-				response = "Your slime score is {:,} <:slime1:431564830541873182>".format(user_slimes)
+				response = "Your slime score is {:,} {}".format(user_slimes, ewcfg.emote_slime1)
 			else:
 				member = mentions[0]
 				user_slimes = EwUser(member=member).slimes
 
 				# return somebody's score
-				response = "{}'s slime score is {:,} <:slime1:431564830541873182>".format(member.display_name, user_slimes)
+				response = "{}'s slime score is {:,} {}".format(member.display_name, user_slimes, ewcfg.emote_slime1)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -723,7 +726,7 @@ async def on_message(message):
 
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
 			if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
-				response = "Only the Rowdy Fucker <:rowdyfucker:431275088076079105> and the Cop Killer <:copkiller:431275071945048075> can do that."
+				response = "Only the Rowdy Fucker {} and the Cop Killer {} can do that.".format(ewcfg.emote_rowdyfucker, ewcfg.emote_copkiller)
 			else:
 				if mentions_count == 0:
 					response = "Give slimes to who?"
@@ -774,7 +777,7 @@ async def on_message(message):
 									cursor.close()
 									conn.close()
 
-								response = "Slime scores altered! <:slime1:431564830541873182>"
+								response = "Slime scores altered! {}".format(ewcfg.emote_slime1)
 								
 						else:
 							response = "Give how much slime?"
@@ -862,6 +865,98 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+		# Pull the lever on a slot machine!
+		elif cmd == ewcfg.cmd_slimeslots:
+			# Only allowed in the slime casino.
+			if message.channel.name != ewcfg.channel_casino:
+				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
+			else:
+				value = ewcfg.slimes_perslot
+				user_data = EwUser(member=message.author)
+
+				if value > user_data.slimes:
+					response = "You don't have enough slime."
+				else:
+					# Add some suspense...
+					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {} slime and pull the handle...".format(ewcfg.slimes_perslot)))
+					await asyncio.sleep(3)
+
+					# Spend slimes
+					user_data.slimes -= value
+
+					slots = [
+						ewcfg.emote_tacobell,
+						ewcfg.emote_pizzahut,
+						ewcfg.emote_kfc,
+						ewcfg.emote_moon,
+						ewcfg.emote_111,
+						ewcfg.emote_copkiller,
+						ewcfg.emote_rowdyfucker,
+						ewcfg.emote_theeye
+					]
+					slots_len = len(slots)
+
+					# Roll those tumblers!
+					spins = 3
+					while spins > 0:
+						await client.edit_message(resp, ewutils.formatMessage(message.author, "{} {} {}".format(
+							slots[random.randrange(0, slots_len)],
+							slots[random.randrange(0, slots_len)],
+							slots[random.randrange(0, slots_len)]
+						)))
+						await asyncio.sleep(1)
+						spins -= 1
+
+					# Determine the final state.
+					roll1 = slots[random.randrange(0, slots_len)]
+					roll2 = slots[random.randrange(0, slots_len)]
+					roll3 = slots[random.randrange(0, slots_len)]
+
+					response = "{} {} {}".format(roll1, roll2, roll3)
+					winnings = 0
+
+					# Determine winnings.
+					if roll1 == ewcfg.emote_tacobell and roll2 == ewcfg.emote_tacobell and roll3 == ewcfg.emote_tacobell:
+						winnings = 5 * value
+						response += "\n\n**¡Ándale! ¡Arriba! The machine spits out {} slime.**".format(winnings)
+
+					elif roll1 == ewcfg.emote_pizzahut and roll2 == ewcfg.emote_pizzahut and roll3 == ewcfg.emote_pizzahut:
+						winnings = 5 * value
+						response += "\n\n**Oven-fired goodness! The machine spits out {} slime.**".format(winnings)
+
+					elif roll1 == ewcfg.emote_kfc and roll2 == ewcfg.emote_kfc and roll3 == ewcfg.emote_kfc:
+						winnings = 5 * value
+						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {} slime.**".format(winnings)
+
+					elif roll1 == ewcfg.emote_moon and roll2 == ewcfg.emote_moon and roll3 == ewcfg.emote_moon:
+						winnings = 5 * value
+						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {} slime.**".format(winnings)
+						
+					elif roll1 == ewcfg.emote_111 and roll2 == ewcfg.emote_111 and roll3 == ewcfg.emote_111:
+						winnings = 1111
+						response += "\n\n**111111111111111111111111111111111111111111111111**\n\n**The machine spits out {} slime.**".format(winnings)
+						
+					elif roll1 == ewcfg.emote_copkiller and roll2 == ewcfg.emote_copkiller and roll3 == ewcfg.emote_copkiller:
+						winnings = 40 * value
+						response += "\n\n**How handsome!! The machine spits out {} slime.**".format(winnings)
+						
+					elif roll1 == ewcfg.emote_rowdyfucker and roll2 == ewcfg.emote_rowdyfucker and roll3 == ewcfg.emote_rowdyfucker:
+						winnings = 40 * value
+						response += "\n\n**So powerful!! The machine spits out {} slime.**".format(winnings)
+						
+					elif roll1 == ewcfg.emote_theeye and roll2 == ewcfg.emote_theeye and roll3 == ewcfg.emote_theeye:
+						winnings = 350 * value
+						response += "\n\n**JACKPOT!! The machine spews forth {} slime!**".format(winnings)
+
+					else:
+						response += "\n\n*Nothing happens...*"
+
+					# Add winnings (if there were any) and save the user data.
+					user_data.slimes += winnings
+					user_data.persist()
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
@@ -907,6 +1002,7 @@ async def on_message(message):
 			await client.edit_message(resp, msg_mistake)
 			await asyncio.sleep(2)
 			await client.delete_message(resp)
+
 
 # find our REST API token
 token = ewutils.getToken()

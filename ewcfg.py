@@ -20,6 +20,7 @@ channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
 channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
+channel_casino = "casino"
 
 # Commands
 cmd_prefix = '!'
@@ -39,6 +40,7 @@ cmd_harvest = cmd_prefix + 'harvest'
 cmd_spar = cmd_prefix + 'spar'
 cmd_suicide = cmd_prefix + 'suicide'
 cmd_haunt = cmd_prefix + 'haunt'
+cmd_slimeslots = cmd_prefix + 'slimeslots'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -48,6 +50,7 @@ slimes_onrevive_everyone = 20
 slimes_toenlist = 420
 slimes_perspar = 2500
 slimes_hauntratio = 20
+slimes_perslot = 100
 
 # Lifetimes
 invuln_onrevive = 1200
@@ -61,3 +64,17 @@ cd_haunt = 600
 time_pvp_kill = 600
 time_pvp_mine = 180
 time_pvp_haunt = 600
+
+# Emotes
+emote_tacobell = "<:tacobell:431273890195570699>"
+emote_pizzahut = "<:pizzahut:431273890355085323>"
+emote_kfc = "<:kfc:431273890216673281>"
+emote_moon = "<:moon:431418525303963649>"
+emote_111 = "<:111:431547758181220377>"
+emote_copkiller = "<:copkiller:431275071945048075>"
+emote_rowdyfucker = "<:rowdyfucker:431275088076079105>"
+emote_theeye = "<:theeye:431429098909466634>"
+emote_slime1 = "<:slime1:431564830541873182>"
+emote_slime4 = "<:slime4:431570132901560320>"
+emote_slime5 = "<:slime5:431659469844381717>"
+emote_slimeskull = "<:slimeskull:431670526621122562>"
