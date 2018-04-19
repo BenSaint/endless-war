@@ -33,13 +33,19 @@ These are the commands I understand:
 	**!revive**
 		Bring yourself back from the dead.
 
-		*Used only in the #the-sewers.*
+		*Used only in #the-sewers.*
 
 	**!haunt** *@username*
 		Haunt a living player from beyond the grave, costing them slime.
 
 		*Used only when dead.*
 		*10 minute cooldown.*
+
+	**!slimeslots**
+		Play the slime slot machine!
+
+		*Used only in the #casino.*
+		*Costs 100 slime.*
 
 Only the Cop Killer and the Rowdy Fucker can:
 
