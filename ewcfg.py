@@ -45,6 +45,7 @@ cmd_suicide = cmd_prefix + 'suicide'
 cmd_haunt = cmd_prefix + 'haunt'
 cmd_slimeslots = cmd_prefix + 'slimeslots'
 cmd_slimecraps = cmd_prefix + 'slimecraps'
+cmd_deadmega = cmd_prefix + 'deadmega'
 
 # Slime costs/values
 slimes_tokill = 20
