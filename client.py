@@ -26,6 +26,14 @@ client = discord.Client()
 # the help doc via DM. This is to prevent spamming.
 last_helped_times = {}
 
+# Map containing user IDs and the last time in UTC seconds since the slot
+# machine was used.
+last_slotsed_times = {}
+
+# Map containing user IDs and the last time in UTC seconds since the player
+# threw their dice.
+last_crapsed_times = {}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -949,16 +957,27 @@ async def on_message(message):
 
 		# Toss the dice at slime craps!
 		elif cmd == ewcfg.cmd_slimecraps:
-			# Only allowed in the slime casino.
-			if message.channel.name != ewcfg.channel_casino:
+			last_used = last_crapsed_times.get(message.author.id)
+			time_now = int(time.time())
+
+			if last_used == None:
+				last_used = 0
+
+			if last_used + 2 > time_now:
+				response = "**ENOUGH**"
+			elif message.channel.name != ewcfg.channel_casino:
+				# Only allowed in the slime casino.
 				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
 			else:
+				last_crapsed_times[message.author.id] = time_now
 				value = None
 
 				if tokens_count > 1:
 					for token in tokens[1:]:
 						try:
 							value = int(token)
+							if value < 0:
+								value = None
 							break
 						except:
 							value = None
@@ -1025,11 +1044,21 @@ async def on_message(message):
 
 		# Pull the lever on a slot machine!
 		elif cmd == ewcfg.cmd_slimeslots:
-			# Only allowed in the slime casino.
-			if message.channel.name != ewcfg.channel_casino:
+			last_used = last_slotsed_times.get(message.author.id)
+			time_now = int(time.time())
+
+			if last_used == None:
+				last_used = 0
+
+			if last_used + 30 > time_now:
+				# Rate limit slot machine action.
+				response = "**ENOUGH**"
+			elif message.channel.name != ewcfg.channel_casino:
+				# Only allowed in the slime casino.
 				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
 			else:
 				value = ewcfg.slimes_perslot
+				last_slotsed_times[message.author.id] = time_now
 
 				try:
 					conn = ewutils.databaseConnect()
@@ -1138,6 +1167,8 @@ async def on_message(message):
 					finally:
 						cursor.close()
 						conn.close()
+
+				last_slotsed_times[message.author.id] = 0
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
