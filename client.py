@@ -12,6 +12,7 @@ import sys
 import time
 import json
 import subprocess
+import traceback
 
 import ewutils
 import ewcfg
@@ -100,7 +101,39 @@ async def on_ready():
 								)
 						)
 			except:
-				ewutils.logMsg('Twitch handler hit an exception. Continuing.')
+				ewutils.logMsg('Twitch handler hit an exception (continuing):')
+				traceback.print_exc(file=sys.stdout)
+
+			try:
+				for server in client.servers:
+					roles_map = ewutils.getRoleMap(server.roles)
+
+					role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
+					role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
+					role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
+
+					# Monitor all user roles and update if a user is no longer flagged for PvP.
+					for member in server.members:
+						pvp_role = None
+
+						if role_juvenile_pvp in member.roles:
+							pvp_role = role_juvenile_pvp
+						elif role_copkillers_pvp in member.roles:
+							pvp_role = role_copkillers_pvp
+						elif role_rowdyfuckers_pvp in member.roles:
+							pvp_role = role_rowdyfuckers_pvp
+
+						if pvp_role != None:
+							# Retrieve user data from the database.
+							user_data = EwUser(member=member)
+
+							# If the user's PvP expire time is historical, remove the PvP role.
+							if user_data.time_expirpvp < int(time.time()):
+								await client.remove_roles(member, pvp_role)
+
+			except:
+				ewutils.logMsg('An error occurred in the scheduled role update task:')
+				traceback.print_exc(file=sys.stdout)
 
 			await asyncio.sleep(60)
 
@@ -218,6 +251,14 @@ async def on_message(message):
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+
+				# Add the PvP flag role.
+				if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+				elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+				elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
 
 				if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
 					# disallow killing generals
@@ -503,6 +544,14 @@ async def on_message(message):
 							if user_data is not weaker_player:
 								user_data.persist()
 
+							# Add the PvP flag role.
+							if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+							elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+							elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+
 							# player was sparred with
 							response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
 						else:
@@ -534,6 +583,9 @@ async def on_message(message):
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				if ewcfg.role_corpse in roles_map_user:
+					time_now = int(time.time())
+					player_is_pvp = False
+
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
@@ -542,7 +594,10 @@ async def on_message(message):
 
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
-						player_data.time_lastrevive = int(time.time())
+						player_data.time_lastrevive = time_now
+						if(player_data.time_expirpvp > time_now):
+							player_is_pvp = True
+							
 						player_data.persist(conn=conn, cursor=cursor)
 
 						# Give some slimes to every living player (currently online)
@@ -559,7 +614,11 @@ async def on_message(message):
 						cursor.close()
 						conn.close()
 
-					await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
+					if player_is_pvp:
+						await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile], roles_map[ewcfg.role_juvenile_pvp])
+					else:
+						await client.replace_roles(message.author, roles_map[ewcfg.role_juvenile])
+
 					response = '{slime4} A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. {slime4} {name} has been reborn in slime. {slime4}'.format(slime4=ewcfg.emote_slime4, name=message.author.display_name)
 				else:
 					response = 'You\'re not dead just yet.'
@@ -577,16 +636,26 @@ async def on_message(message):
 				if tokens_count > 1:
 					faction = tokens[1].lower()
 
-				user_slimes = EwUser(member=message.author).slimes
+				user_data = EwUser(member=message.author)
+				user_slimes = user_data.slimes
+				user_is_pvp = (user_data.time_expirpvp > int(time.time()))
 
 				if user_slimes < ewcfg.slimes_toenlist:
 					response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)
 				else:
 					if faction == ewcfg.faction_rowdys:
-						await client.replace_roles(message.author, roles_map[ewcfg.role_rowdyfuckers])
+						if user_is_pvp:
+							await client.replace_roles(message.author, roles_map[ewcfg.role_rowdyfuckers], roles_map[ewcfg.role_rowdyfuckers_pvp])
+						else:
+							await client.replace_roles(message.author, roles_map[ewcfg.role_rowdyfuckers])
+
 						response = "Enlisted in the {}.".format(ewcfg.faction_rowdys)
 					elif faction == ewcfg.faction_killers:
-						await client.replace_roles(message.author, roles_map[ewcfg.role_copkillers])
+						if user_is_pvp:
+							await client.replace_roles(message.author, roles_map[ewcfg.role_copkillers], roles_map[ewcfg.role_copkillers_pvp])
+						else:
+							await client.replace_roles(message.author, roles_map[ewcfg.role_copkillers])
+
 						response = "Enlisted in the {}.".format(ewcfg.faction_killers)
 					else:
 						response = "Which faction? Say '{} {}' or '{} {}'.".format(ewcfg.cmd_enlist, ewcfg.faction_killers, ewcfg.cmd_enlist, ewcfg.faction_rowdys)
@@ -693,10 +762,19 @@ async def on_message(message):
 
 						user_data.persist(conn=conn, cursor=cursor)
 
+
 						conn.commit()
 					finally:
 						cursor.close()
 						conn.close()
+
+					# Add the PvP flag role.
+					if ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+					elif ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+					elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
 				else:
 					await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
 
@@ -837,6 +915,9 @@ async def on_message(message):
 				elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target:
 					# Target can be haunted by the player.
 					haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
+					if haunted_slimes > ewcfg.slimes_hauntmax:
+						haunted_slimes = ewcfg.slimes_hauntmax
+
 					haunted_data.slimes -= haunted_slimes
 					user_data.slimes -= haunted_slimes
 					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_haunt)

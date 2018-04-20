@@ -1,12 +1,15 @@
 # Global configuration options.
-version = "v1.09"
+version = "v1.10"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
+role_juvenile_pvp = "juvenilepvp"
 role_rowdyfucker = "rowdyfucker"
 role_rowdyfuckers = "rowdys"
+role_rowdyfuckers_pvp = "rowdypvp"
 role_copkiller = "copkiller"
 role_copkillers = "killers"
+role_copkillers_pvp = "killerpvp"
 role_corpse = "corpse"
 
 # Faction names
@@ -51,6 +54,7 @@ slimes_onrevive_everyone = 20
 slimes_toenlist = 420
 slimes_perspar = 2500
 slimes_hauntratio = 20
+slimes_hauntmax = 1500
 slimes_perslot = 100
 
 # Lifetimes

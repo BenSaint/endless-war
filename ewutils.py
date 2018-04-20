@@ -3,7 +3,6 @@ import datetime
 
 import ewcfg
 
-
 """ Write the string to stdout with a timestamp. """
 def logMsg(string):
 	print("[{}] {}".format(datetime.datetime.now(), string))
