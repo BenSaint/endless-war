@@ -431,14 +431,14 @@ async def on_message(message):
 					user_data.slimes = 0
 					user_data.persist()
 
-					# give slimes to the boss is possible.
-
+					# Give slimes to the boss if possible.
 					boss_member = None
 					if boss_slimes > 0:
 						role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
 
 						for member_search in message.author.server.members:
-							if role_boss in ewutils.getRoleMap(member_search.roles):
+							boss_roles = ewutils.getRoleMap(member_search.roles)
+							if role_boss in boss_roles and ewcfg.role_kingpin in boss_roles:
 								boss_member = member_search
 								break
 						

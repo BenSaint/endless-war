@@ -11,6 +11,7 @@ role_copkiller = "copkiller"
 role_copkillers = "killers"
 role_copkillers_pvp = "killerpvp"
 role_corpse = "corpse"
+role_kingpin = "kingpin"
 
 # Faction names
 faction_killers = "killers"
