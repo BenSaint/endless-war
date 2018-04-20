@@ -1172,6 +1172,26 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+        elif cmd == ewcfg.cmd_deadmega:
+		response = ""
+		roles_map_user = ewutils.getRoleMap(message.author.roles)
+		if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
+				response = "Only the Rowdy Fucker {} and the Cop Killer {} can do that.".format(ewcfg.emote_rowdyfucker, ewcfg.emote_copkiller)
+		else:
+                	value = 1000000
+                	user_slimes = 0
+                	user_data = EwUser(member=message.author)
+
+                	if (value) > user_data.slimes:
+                    		response = "You don't have that much slime to lose ({}/{}).".format(user_data.slimes, (value))
+                	else:
+                    		user_data.slimes -= (value)
+                    		user_data.persist()
+                    		response = "Alas, poor megaslime. You have {} slime remaining.".format(user_data.slimes)
+
+		# Send the response to the player.
+		await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
