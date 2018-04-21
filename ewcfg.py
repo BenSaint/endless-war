@@ -25,6 +25,7 @@ channel_sewers = "the-sewers"
 channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
+channel_stockexchange = "slime-stock-exchange"
 
 # Commands
 cmd_prefix = '!'
@@ -47,6 +48,9 @@ cmd_haunt = cmd_prefix + 'haunt'
 cmd_slimeslots = cmd_prefix + 'slimeslots'
 cmd_slimecraps = cmd_prefix + 'slimecraps'
 cmd_deadmega = cmd_prefix + 'deadmega'
+cmd_invest = cmd_prefix + 'invest'
+cmd_slimecredit = cmd_prefix + 'slimecredit'
+cmd_withdraw = cmd_prefix + 'withdraw'
 
 # Slime costs/values
 slimes_tokill = 20
