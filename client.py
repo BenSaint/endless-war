@@ -1193,7 +1193,7 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-    		# Invest in the slime exchange!
+		# Invest in the slime exchange!
 		elif cmd == ewcfg.cmd_invest:
 
 			if message.channel.name != ewcfg.channel_stockexchange:
@@ -1226,13 +1226,13 @@ async def on_message(message):
 						response = "You don't have that much slime to invest."
 					else:
 						user_data.slimes -= value
-                        user_data.slimecredit += value
-                        casino_data.slimes += value
+						user_data.slimecredit += value
+						casino_data.slimes += value
 
 						response = "You have invested {} slime in the stock exchange.".format(value)
-                        
+						
 						user_data = EwUser(member=message.author)
-                        user_data.persist()
+						user_data.persist()
 
 				else:
 					response = "Specify how much slime you will invest."
@@ -1240,7 +1240,7 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-    		# Withdraw your investments!
+		# Withdraw your investments!
 		elif cmd == ewcfg.cmd_withdraw:
 
 			if message.channel.name != ewcfg.channel_stockexchange:
@@ -1274,13 +1274,13 @@ async def on_message(message):
 						response = "You don't have that much credit to withdraw."
 					else:
 						user_data.slimes += value
-                        user_data.slimecredit -= value
-                        casino_data.slimes -= value
+						user_data.slimecredit -= value
+						casino_data.slimes -= value
 
 						response = "You have withdrawn {} slime from the stock exchange.".format(value)
-                        
+						
 						user_data = EwUser(member=message.author)
-                        user_data.persist()
+						user_data.persist()
 
 				else:
 					response = "Specify how much slime you will invest."
@@ -1288,7 +1288,7 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-            	# Show the current slime score of a player.
+		# Show the current slime score of a player.
 		elif cmd == ewcfg.cmd_slimecredit:
 			response = ""
 
