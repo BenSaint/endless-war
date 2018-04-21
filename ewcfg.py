@@ -75,6 +75,7 @@ cd_haunt = 600
 time_pvp_kill = 600
 time_pvp_mine = 180
 time_pvp_haunt = 600
+time_pvp_invest_withdraw = 180
 
 # Emotes
 emote_tacobell = "<:tacobell:431273890195570699>"

@@ -1286,6 +1286,9 @@ async def on_message(message):
 						user_data.slimecredit -= value
 						casino_data.slimes -= value
 
+						# Flag the user for PvP
+						user_data.time_expirpvp = (int(time.time()) + ewcfg.time_pvp_invest_withdraw)
+
 						response = "You have withdrawn {} slime from the stock exchange.".format(value)
 						
 						try:
@@ -1299,6 +1302,16 @@ async def on_message(message):
 						finally:
 							cursor.close()
 							conn.close()
+
+						# Add the visible PvP flag role.
+						roles_map_user = ewutils.getRoleMap(message.author.roles)
+						if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+							await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+						elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+							await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+						elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+							await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+
 
 				else:
 					response = "Specify how much slime you will invest."
