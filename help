@@ -52,6 +52,20 @@ These are the commands I understand:
 
 		*Used only in the #slime-casino.*
 
+	**!invest** #
+		Invest some slime in the market!
+
+		*Used only in the #slime-stock-exchange*
+
+	**!withdraw** #
+		Pull money out of your investments.
+
+		*Used only in the #slime-stock-exchange*
+
+	**!slimecredit**
+		View your invested slime balance.
+
+
 Only the Cop Killer and the Rowdy Fucker can:
 
 	**!devour** *@username* ...

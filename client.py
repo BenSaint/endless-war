@@ -1231,8 +1231,17 @@ async def on_message(message):
 
 						response = "You have invested {} slime in the stock exchange.".format(value)
 						
-						user_data = EwUser(member=message.author)
-						user_data.persist()
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							casino_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
 
 				else:
 					response = "Specify how much slime you will invest."
@@ -1279,8 +1288,17 @@ async def on_message(message):
 
 						response = "You have withdrawn {} slime from the stock exchange.".format(value)
 						
-						user_data = EwUser(member=message.author)
-						user_data.persist()
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							casino_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
 
 				else:
 					response = "Specify how much slime you will invest."
@@ -1296,11 +1314,11 @@ async def on_message(message):
 				user_slimecredit = EwUser(member=message.author).slimecredit
 
 				# return my score
-				response = "You have {} in slime credit.".format(user_slimecredit, ewcfg.emote_slime1)
+				response = "You have {} in slime credit.".format(user_slimecredit)
 			else:
 
 				# return somebody's score
-				response = "You can't see another player's slime credit!".
+				response = "You can't see another player's slime credit!"
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			

@@ -17,6 +17,7 @@ CREATE TABLE users (
 	time_lastspar int NOT NULL DEFAULT '0',
 	time_expirpvp int NOT NULL DEFAULT '0',
 	time_lasthaunt int NOT NULL DEFAULT '0',
+	slimecredit int NOT NULL DEFAULT '0',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
