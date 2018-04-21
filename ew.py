@@ -5,6 +5,7 @@ import ewcfg
 col_id_user = 'id_user'
 col_id_server = 'id_server'
 col_slimes = 'slimes'
+col_slimecredit = 'slimecredit'
 col_time_lastkill = 'time_lastkill'
 col_time_lastrevive = 'time_lastrevive'
 col_id_killer = 'id_killer'
@@ -19,6 +20,7 @@ class EwUser:
 	id_killer = ""
 
 	slimes = 0
+	slimecredit = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -52,8 +54,9 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					col_slimes,
+             				col_slimecredit,
 					col_time_lastkill,
 					col_time_lastrevive,
 					col_id_killer,
@@ -69,12 +72,13 @@ class EwUser:
 				if result != None:
 					# Record found: apply the data to this object.
 					self.slimes = result[0]
-					self.time_lastkill = result[1]
-					self.time_lastrevive = result[2]
-					self.id_killer = result[3]
-					self.time_lastspar = result[4]
-					self.time_expirpvp = result[5]
-					self.time_lasthaunt = result[6]
+					self.slimecredit = result[1]
+					self.time_lastkill = result[2]
+					self.time_lastrevive = result[3]
+					self.id_killer = result[4]
+					self.time_lastspar = result[5]
+					self.time_expirpvp = result[6]
+					self.time_lasthaunt = result[7]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -104,10 +108,11 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				col_id_user,
 				col_id_server,
 				col_slimes,
+                		col_slimecredit,
 				col_time_lastkill,
 				col_time_lastrevive,
 				col_id_killer,
@@ -118,6 +123,7 @@ class EwUser:
 				self.id_user,
 				self.id_server,
 				self.slimes,
+				self.slimecredit,
 				self.time_lastkill,
 				self.time_lastrevive,
 				self.id_killer,
