@@ -1193,6 +1193,118 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+    		# Invest in the slime exchange!
+		elif cmd == ewcfg.cmd_invest:
+
+			if message.channel.name != ewcfg.channel_stockexchange:
+				# Only allowed in the stock exchange.
+				response = "You must go to the #{} to invest your slime.".format(ewcfg.channel_stockexchange)
+			else:
+				value = None
+				if tokens_count > 1:
+					for token in tokens[1:]:
+						try:
+							value = int(token)
+							if value < 0:
+								value = None
+							break
+						except:
+							value = None
+
+				if value != None:
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+
+					if value > user_data.slimes:
+						response = "You don't have that much slime to invest."
+					else:
+						user_data.slimes -= value
+                        user_data.slimecredit += value
+                        casino_data.slimes += value
+
+						response = "You have invested {} slime in the stock exchange.".format(value)
+                        
+						user_data = EwUser(member=message.author)
+                        user_data.persist()
+
+				else:
+					response = "Specify how much slime you will invest."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+    		# Withdraw your investments!
+		elif cmd == ewcfg.cmd_withdraw:
+
+			if message.channel.name != ewcfg.channel_stockexchange:
+				# Only allowed in the stock exchange.
+				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
+			else:
+				value = None
+				if tokens_count > 1:
+					for token in tokens[1:]:
+						try:
+							value = int(token)
+							if value < 0:
+								value = None
+							break
+						except:
+							value = None
+
+				if value != None:
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+
+
+					if value > user_data.slimecredit:
+						response = "You don't have that much credit to withdraw."
+					else:
+						user_data.slimes += value
+                        user_data.slimecredit -= value
+                        casino_data.slimes -= value
+
+						response = "You have withdrawn {} slime from the stock exchange.".format(value)
+                        
+						user_data = EwUser(member=message.author)
+                        user_data.persist()
+
+				else:
+					response = "Specify how much slime you will invest."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+            	# Show the current slime score of a player.
+		elif cmd == ewcfg.cmd_slimecredit:
+			response = ""
+
+			if mentions_count == 0:
+				user_slimecredit = EwUser(member=message.author).slimecredit
+
+				# return my score
+				response = "You have {} in slime credit.".format(user_slimecredit, ewcfg.emote_slime1)
+			else:
+
+				# return somebody's score
+				response = "You can't see another player's slime credit!".
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
+			
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
