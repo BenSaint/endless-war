@@ -107,3 +107,10 @@ def getHelpText():
 """ format responses with the username: """
 def formatMessage(user_target, message):
 	return "*{}*: {}".format(user_target.display_name, message)
+
+""" Returns the latest value, so that short PvP timer actions don't shorten remaining PvP time. """
+def calculatePvpTimer(current_time_expirpvp, desired_time_expirpvp):
+	if desired_time_expirpvp > current_time_expirpvp:
+		return desired_time_expirpvp
+
+	return current_time_expirpvp

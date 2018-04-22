@@ -239,7 +239,7 @@ async def on_message(message):
 					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 					# Flag the killer for PvP no matter what happens next.
-					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+					user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
 					user_data.persist(conn=conn, cursor=cursor)
 
 					# Get target's info.
@@ -541,7 +541,7 @@ async def on_message(message):
 							stronger_player = sparred_data if user_data is weaker_player else user_data
 
 							# Flag the player for PvP
-							user_data.time_expirpvp = (time_now + ewcfg.time_pvp_kill)
+							user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
 
 							# Weaker player gains slime based on the slime of the stronger player.
 							weaker_player.slimes += ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
@@ -766,7 +766,7 @@ async def on_message(message):
 						user_data.slimes += ewcfg.slimes_permine
 
 						# Flag the user for PvP
-						user_data.time_expirpvp = (int(time.time()) + ewcfg.time_pvp_mine)
+						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
 
 						user_data.persist(conn=conn, cursor=cursor)
 
@@ -928,7 +928,7 @@ async def on_message(message):
 
 					haunted_data.slimes -= haunted_slimes
 					user_data.slimes -= haunted_slimes
-					user_data.time_expirpvp = (time_now + ewcfg.time_pvp_haunt)
+					user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_haunt))
 					user_data.time_lasthaunt = time_now
 
 					# Persist changes to the database.
@@ -1287,7 +1287,7 @@ async def on_message(message):
 						casino_data.slimes -= value
 
 						# Flag the user for PvP
-						user_data.time_expirpvp = (int(time.time()) + ewcfg.time_pvp_invest_withdraw)
+						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_invest_withdraw))
 
 						response = "You have withdrawn {} slime from the stock exchange.".format(value)
 						
