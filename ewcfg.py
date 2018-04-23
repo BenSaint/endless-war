@@ -64,7 +64,7 @@ slimes_hauntmax = 1500
 slimes_perslot = 100
 
 # Lifetimes
-invuln_onrevive = 1200
+invuln_onrevive = 0
 
 # Cooldowns
 cd_kill = 60

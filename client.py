@@ -602,6 +602,7 @@ async def on_message(message):
 
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
+						player_data.time_expirpvp = time_now - 1;
 						player_data.time_lastrevive = time_now
 						if(player_data.time_expirpvp > time_now):
 							player_is_pvp = True
