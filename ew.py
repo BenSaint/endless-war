@@ -28,6 +28,7 @@ class EwUser:
 	time_lastspar = 0
 	time_expirpvp = 0
 	time_lasthaunt = 0
+	time_lastinvest = 0
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member=None, conn=None, cursor=None, id_user=None, id_server=None):
