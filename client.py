@@ -34,6 +34,10 @@ last_slotsed_times = {}
 # threw their dice.
 last_crapsed_times = {}
 
+# Map of user ID to a map of recent miss-mining time to count. If the count
+# exceeds 3 in 5 seconds, you die.
+last_mismined_times = {}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -785,7 +789,47 @@ async def on_message(message):
 					elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
 						await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
 				else:
-					await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
+					mismined = last_mismined_times.get(message.author.id)
+					time_now = int(time.time())
+
+					if mismined == None:
+						mismined = {
+							'time': time_now,
+							'count': 0
+						}
+
+					if time_now - mismined['time'] < 5:
+						mismined['count'] += 1
+					else:
+						# Reset counter.
+						mismined['time'] = time_now
+						mismined['count'] = 1
+
+					last_mismined_times[message.author.id] = mismined
+
+					if mismined['count'] >= 3:
+						# Death
+						last_mismined_times[message.author.id] = None
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+							user_data.slimes = 0
+							user_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+
+						await client.edit_message(resp, ewutils.formatMessage(message.author, "You have died in a mining accident."))
+						await client.replace_roles(message.author, roles_map[ewcfg.role_corpse])
+					else:
+						await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
+
 
 		# Show the current slime score of a player.
 		elif cmd == ewcfg.cmd_score or cmd == ewcfg.cmd_score_alt1:
