@@ -56,11 +56,13 @@ These are the commands I understand:
 		Invest some slime in the market!
 
 		*Used only in the #slime-stock-exchange*
+		*5 minute cooldown shared with !withdraw.*
 
 	**!withdraw** #
 		Pull money out of your investments.
 
 		*Used only in the #slime-stock-exchange*
+		*5 minute cooldown shared with !invest.*
 		*Flags you for PvP combat for 3 minutes.*
 
 	**!slimecredit**

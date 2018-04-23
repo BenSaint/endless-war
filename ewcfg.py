@@ -70,6 +70,7 @@ invuln_onrevive = 0
 cd_kill = 60
 cd_spar = 600
 cd_haunt = 600
+cd_invest = 300
 
 # PvP timer pushouts
 time_pvp_kill = 600

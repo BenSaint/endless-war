@@ -12,6 +12,7 @@ col_id_killer = 'id_killer'
 col_time_lastspar = 'time_lastspar'
 col_time_expirpvp = 'time_expirpvp'
 col_time_lasthaunt = 'time_lasthaunt'
+col_time_lastinvest = 'time_lastinvest'
 
 """ User model for database persistence """
 class EwUser:
@@ -54,7 +55,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					col_slimes,
              				col_slimecredit,
 					col_time_lastkill,
@@ -62,7 +63,8 @@ class EwUser:
 					col_id_killer,
 					col_time_lastspar,
 					col_time_expirpvp,
-					col_time_lasthaunt
+					col_time_lasthaunt,
+					col_time_lastinvest
 				), (
 					id_user,
 					id_server
@@ -79,6 +81,7 @@ class EwUser:
 					self.time_lastspar = result[5]
 					self.time_expirpvp = result[6]
 					self.time_lasthaunt = result[7]
+					self.time_lastinvest = result[8]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -108,7 +111,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				col_id_user,
 				col_id_server,
 				col_slimes,
@@ -118,7 +121,8 @@ class EwUser:
 				col_id_killer,
 				col_time_lastspar,
 				col_time_expirpvp,
-				col_time_lasthaunt
+				col_time_lasthaunt,
+				col_time_lastinvest
 			), (
 				self.id_user,
 				self.id_server,
@@ -129,7 +133,8 @@ class EwUser:
 				self.id_killer,
 				self.time_lastspar,
 				self.time_expirpvp,
-				self.time_lasthaunt
+				self.time_lasthaunt,
+				self.time_lastinvest
 			))
 
 			if our_cursor:

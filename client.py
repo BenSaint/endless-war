@@ -1257,6 +1257,8 @@ async def on_message(message):
 							value = None
 
 				if value != None:
+					time_now = int(time.time())
+
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
@@ -1269,9 +1271,13 @@ async def on_message(message):
 
 					if value > user_data.slimes:
 						response = "You don't have that much slime to invest."
+					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
+						# Limit frequency of investments.
+						response = "You can't invest right now. Your slimebroker is busy."
 					else:
 						user_data.slimes -= value
 						user_data.slimecredit += value
+						user_data.time_lastinvest = time_now
 						casino_data.slimes += value
 
 						response = "You have invested {} slime in the stock exchange.".format(value)
@@ -1313,6 +1319,8 @@ async def on_message(message):
 							value = None
 
 				if value != None:
+					time_now = int(time.time())
+
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
@@ -1326,9 +1334,13 @@ async def on_message(message):
 
 					if value > user_data.slimecredit:
 						response = "You don't have that much credit to withdraw."
+					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
+						# Limit frequency of withdrawals
+						response = "You can't withdraw right now. Your slimebroker is busy."
 					else:
 						user_data.slimes += value
 						user_data.slimecredit -= value
+						user_data.time_lastinvest = time_now
 						casino_data.slimes -= value
 
 						# Flag the user for PvP
