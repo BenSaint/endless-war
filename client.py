@@ -56,6 +56,9 @@ async def on_ready():
 
 	await client.change_presence(game=discord.Game(name=("dev. by @krak " + ewcfg.version)))
 
+	# The last time we updated the stock market rates
+	time_laststocked = 0
+
 	# Look for a Twitch client_id on disk.
 	twitch_client_id = ewutils.getTwitchClientId()
 
@@ -147,6 +150,114 @@ async def on_ready():
 				ewutils.logMsg('An error occurred in the scheduled role update task:')
 				traceback.print_exc(file=sys.stdout)
 
+			# Adjust stock market rates.
+			try:
+				time_now = int(time.time())
+
+				if time_now - time_laststocked > 30:
+					# "If it's at least 30 seconds since the last time the stock value changed..."
+				
+					stockmarket_channels = []
+
+					for server in client.servers:
+						ewutils.logMsg("connected to: {}".format(server.name))
+						for channel in server.channels:
+							if(channel.type == discord.ChannelType.text):
+								if(channel.name == ewcfg.channel_twitch_announcement):
+									announcement_channels.append(channel)
+
+									ewutils.logMsg("• found : {}".format(channel.name))
+									ewutils.logMsg("•• using for announcements.")
+
+
+					time_laststocked = time_now
+
+					# Manipulate the stock market in some way.
+					response = ""
+
+					#get data from the Casino and Price Index
+					try:
+						conn = ewutils.databaseConnect();
+						cursor = conn.cursor();
+						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+						priceindex_data = EwUser(id_user='priceindex', id_server=message.author.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+					
+					#start price index at 1,000,000 slime
+					if market_data.slimes == 0:
+						market_data.slimes = 1000000
+					
+					#increase or decrease the current rate of change of slime stock value
+					fluctuation == (random.randint (-2,2)*100)
+					noise == (random.randint (-9,9)*10)
+					subnoise == ((random.randint (-9,9)))
+					if noise == 0 and subnoise == 0;
+						boombust == (random.randint(-1,1)*500)
+					else boombust == 0
+					marketrate == (marketrate + fluctuation + noise + subnoise + boombust)
+					if marketrate < 300
+						marketrate == 300 + noise + subnoise
+
+					# slime stock report
+					percentage == (int(marketrate/10) - 100)
+					percentageabs == (percentage * -1)
+					if marketrate > 1800;
+						response = 'The slimeconomy is skyrocketing!!! Slime stock is up {}%!!!'.format.(percentage)
+					elif marketrate < 600;
+						response = 'The slimeconomy is plummetting!!! Slime stock is down {}%!!!'.format.(percentageabs)
+					elif marketrate > 1200;
+						response = 'The slimeconomy is booming! Slime stock is up {}%!'.format.(percentage)
+					elif marketrate < 900;
+						response = 'The slimeconomy is stagnating! Slime stock is down {}%!'.format.(percentageabs)
+					elif marketrate > 1000;
+						response = 'The slimeconomy is doing well. Slime stock is up {}%.'.format.(percentage)
+					elif marketrate < 1000;
+						response = 'The slimeconomy is a bit sluggish. Slime stock is down {}%.'.format.(percentageabs)
+					else;
+						response = 'The slimeconomy is holding steady. No change in slime stock value.'
+							
+					
+
+					#alter the casino's and price index's slime score
+					casino_data.slimes == int((casino_data.slimes * marketrate)/1000)
+					priceindex_data.slimes == int((priceindex_data.slimes * marketrate)/1000)
+					
+					#nudge the market rate back towards 1000 if it's extremely high or low
+					if marketrate >= 1400;
+						marketrate == (marketrate - 100)
+					if marketrate >= 2000;
+						marketrate == (marketrate - 200)
+					if marketrate <= 800;				
+						marketrate == (marketrate + 100)
+					if marketrate <= 500;				
+						marketrate == (marketrate + 100)
+					
+					#set market rate for next time
+					casino_data.marketrate == marketrate
+					
+					# Commit all transactions at once.
+					priceindex_data.persist()
+					conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+					# FIXME debug
+					ewutils.logMsg('stock price update')
+			except:
+				ewutils.logMsg('An error occurred in the stock market update task:')
+				traceback.print_exc(file=sys.stdout)
+
+			for channel in announcement_channels:
+				await client.send_message(
+				channel,
+				ewutils.formatMessage(message.author, response
+				)
+			)
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 			await asyncio.sleep(60)
 
 @client.event
@@ -1245,6 +1356,17 @@ async def on_message(message):
 				# Only allowed in the stock exchange.
 				response = "You must go to the #{} to invest your slime.".format(ewcfg.channel_stockexchange)
 			else:
+				#get priceindex data
+				try:
+					conn = ewutils.databaseConnect();
+					cursor = conn.cursor();
+					priceindex_data = EwUser(id_user='priceindex', id_server=message.author.server.id, conn=conn, cursor=cursor)
+				finally:
+					cursor.close()
+					conn.close()
+					value = None
+				exchangerate = int(priceindex_data.slimes / 100000)
+				
 				value = None
 				if tokens_count > 1:
 					for token in tokens[1:]:
@@ -1276,7 +1398,7 @@ async def on_message(message):
 						response = "You can't invest right now. Your slimebroker is busy."
 					else:
 						user_data.slimes -= value
-						user_data.slimecredit += value
+						user_data.slimecredit += int((int(value * 0.95))/exchangerate)
 						user_data.time_lastinvest = time_now
 						casino_data.slimes += value
 
@@ -1307,7 +1429,17 @@ async def on_message(message):
 				# Only allowed in the stock exchange.
 				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
 			else:
-				value = None
+			#get priceindex data
+				try:
+					conn = ewutils.databaseConnect();
+					cursor = conn.cursor();
+					priceindex_data = EwUser(id_user='priceindex', id_server=message.author.server.id, conn=conn, cursor=cursor)
+				finally:
+					cursor.close()
+					conn.close()
+					value = None
+				exchangerate = int(priceindex_data.slimes / 100000)
+				
 				if tokens_count > 1:
 					for token in tokens[1:]:
 						try:
@@ -1338,10 +1470,10 @@ async def on_message(message):
 						# Limit frequency of withdrawals
 						response = "You can't withdraw right now. Your slimebroker is busy."
 					else:
-						user_data.slimes += value
+						user_data.slimes += (value * exchangerate)
 						user_data.slimecredit -= value
 						user_data.time_lastinvest = time_now
-						casino_data.slimes -= value
+						casino_data.slimes -= (value * exchangerate)
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_invest_withdraw))
@@ -1371,7 +1503,7 @@ async def on_message(message):
 
 
 				else:
-					response = "Specify how much slime you will invest."
+					response = "Specify how much slime you will withdraw."
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -1391,7 +1523,34 @@ async def on_message(message):
 				response = "You can't see another player's slime credit!"
 
 			# Send the response to the player.
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# Show the current market value of slime.
+		elif cmd == ewcfg.cmd_checkpriceindex:
+			response = ""
+			
+			#get data from the Casino and Price Index
+			try:
+				conn = ewutils.databaseConnect();
+				cursor = conn.cursor();
+				priceindex_data = EwUser(id_user='priceindex', id_server=message.author.server.id, conn=conn, cursor=cursor)
+			finally:
+				cursor.close()
+				conn.close()
+				
+			if message.channel.name != ewcfg.channel_stockexchange:
+				# Only allowed in the stock exchange.
+				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
+
+			else:
+				priceindex_slimes = EwUser(member=priceindex).slimes
+
+				# return my score
+				response = "The current market price index of slime is {}.".format(priceindex_slimes)
+
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 			
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
