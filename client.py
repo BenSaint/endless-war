@@ -16,7 +16,7 @@ import traceback
 
 import ewutils
 import ewcfg
-from ew import EwUser
+from ew import EwUser, EwMarket
 
 ewutils.logMsg('Starting up...')
 
@@ -111,7 +111,7 @@ async def on_ready():
 								"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
 									"https://www.twitch.tv/rowdyfrickerscopkillers"
 								)
-						)
+							)
 			except:
 				ewutils.logMsg('Twitch handler hit an exception (continuing):')
 				traceback.print_exc(file=sys.stdout)
@@ -1033,7 +1033,7 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
 					finally:
 						cursor.close()
 						conn.close()
@@ -1063,18 +1063,18 @@ async def on_message(message):
 							winnings = 5 * value
 							response += "\n\n**You rolled a 7! It's your lucky day. You won {} slime.**".format(winnings)
 							user_data.slimes += winnings
-							casino_data.slimes -= winnings
+							market_data.slimes_casino -= (winnings - value)
 
 						else:
 							response += "\n\nYou didn't roll 7. You lost your slime."
-							casino_data.slimes += value
+							market_data.slimes_casino += value
 
 						try:
 							conn = ewutils.databaseConnect()
 							cursor = conn.cursor()
 
 							user_data.persist(conn=conn, cursor=cursor)
-							casino_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
 
 							conn.commit()
 						finally:
@@ -1110,7 +1110,7 @@ async def on_message(message):
 					cursor = conn.cursor()
 
 					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-					casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+					market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
 
 				finally:
 					cursor.close()
@@ -1125,6 +1125,7 @@ async def on_message(message):
 
 					# Spend slimes
 					user_data.slimes -= value
+					market_data.slimes_casino += value
 
 					slots = [
 						ewcfg.emote_tacobell,
@@ -1196,17 +1197,16 @@ async def on_message(message):
 
 					else:
 						response += "\n\n*Nothing happens...*"
-						casino_data.slimes += value
 
 					# Add winnings (if there were any) and save the user data.
 					user_data.slimes += winnings
-					casino_data.slimes -= winnings
+					market_data.slimes_casino -= winnings
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
 
 						user_data.persist(conn=conn, cursor=cursor)
-						casino_data.persist(conn=conn, cursor=cursor)
+						market_data.persist(conn=conn, cursor=cursor)
 
 						conn.commit()
 					finally:
@@ -1264,7 +1264,7 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
 					finally:
 						cursor.close()
 						conn.close()
@@ -1278,7 +1278,7 @@ async def on_message(message):
 						user_data.slimes -= value
 						user_data.slimecredit += value
 						user_data.time_lastinvest = time_now
-						casino_data.slimes += value
+						market_data.slimes_casino += value
 
 						response = "You have invested {} slime in the stock exchange.".format(value)
 						
@@ -1287,7 +1287,7 @@ async def on_message(message):
 							cursor = conn.cursor()
 
 							user_data.persist(conn=conn, cursor=cursor)
-							casino_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
 
 							conn.commit()
 						finally:
@@ -1326,7 +1326,7 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-						casino_data = EwUser(id_user='casino', id_server=message.author.server.id, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
 					finally:
 						cursor.close()
 						conn.close()
@@ -1341,7 +1341,7 @@ async def on_message(message):
 						user_data.slimes += value
 						user_data.slimecredit -= value
 						user_data.time_lastinvest = time_now
-						casino_data.slimes -= value
+						market_data.slimes_casino -= value
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_invest_withdraw))
@@ -1353,7 +1353,7 @@ async def on_message(message):
 							cursor = conn.cursor()
 
 							user_data.persist(conn=conn, cursor=cursor)
-							casino_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
 
 							conn.commit()
 						finally:
