@@ -29,6 +29,8 @@ class EwUser:
 	time_expirpvp = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
+	
+	marketrate = 1000
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member=None, conn=None, cursor=None, id_user=None, id_server=None):
@@ -56,7 +58,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					col_slimes,
              				col_slimecredit,
 					col_time_lastkill,
@@ -65,7 +67,8 @@ class EwUser:
 					col_time_lastspar,
 					col_time_expirpvp,
 					col_time_lasthaunt,
-					col_time_lastinvest
+					col_time_lastinvest,
+					col_marketrate
 				), (
 					id_user,
 					id_server
@@ -83,6 +86,7 @@ class EwUser:
 					self.time_expirpvp = result[6]
 					self.time_lasthaunt = result[7]
 					self.time_lastinvest = result[8]
+					self.marketrate = result[9]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -112,7 +116,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				col_id_user,
 				col_id_server,
 				col_slimes,
@@ -123,7 +127,8 @@ class EwUser:
 				col_time_lastspar,
 				col_time_expirpvp,
 				col_time_lasthaunt,
-				col_time_lastinvest
+				col_time_lastinvest,
+				col_marketrate
 			), (
 				self.id_user,
 				self.id_server,
@@ -136,6 +141,7 @@ class EwUser:
 				self.time_expirpvp,
 				self.time_lasthaunt,
 				self.time_lastinvest
+				self.marketrate
 			))
 
 			if our_cursor:
