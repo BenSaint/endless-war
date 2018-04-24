@@ -51,6 +51,7 @@ cmd_deadmega = cmd_prefix + 'deadmega'
 cmd_invest = cmd_prefix + 'invest'
 cmd_slimecredit = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
+cmd_exchangerate = cmd_prefix + 'exchangerate'
 
 # Slime costs/values
 slimes_tokill = 20
