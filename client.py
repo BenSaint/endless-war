@@ -75,6 +75,8 @@ async def on_ready():
 			ewutils.logMsg("connected to: {}".format(server.name))
 			for channel in server.channels:
 				if(channel.type == discord.ChannelType.text):
+					if(channel.name == ewcfg.channel_stockmarket):
+						stockmarket_channels.append(channel)
 					if(channel.name == ewcfg.channel_twitch_announcement):
 						announcement_channels.append(channel)
 
@@ -163,7 +165,7 @@ async def on_ready():
 						ewutils.logMsg("connected to: {}".format(server.name))
 						for channel in server.channels:
 							if(channel.type == discord.ChannelType.text):
-								if(channel.name == ewcfg.channel_twitch_announcement):
+								if(channel.name == ewcfg.channel_stockexchange):
 									announcement_channels.append(channel)
 
 									ewutils.logMsg("• found : {}".format(channel.name))
@@ -1362,7 +1364,7 @@ async def on_message(message):
 					cursor.close()
 					conn.close()
 					value = None
-				exchangerate = int(market_data.rate_exchange / 100000)
+				exchangerate = (market_data.rate_exchange / 1000.0)
 				
 				value = None
 				if tokens_count > 1:
@@ -1395,7 +1397,7 @@ async def on_message(message):
 						response = "You can't invest right now. Your slimebroker is busy."
 					else:
 						user_data.slimes -= value
-						user_data.slimecredit += int((int(value * 0.95))/exchangerate)
+						user_data.slimecredit += int((value * 0.95)/exchangerate)
 						user_data.time_lastinvest = time_now
 						market_data.slimes_casino += value
 
@@ -1427,15 +1429,8 @@ async def on_message(message):
 				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
 			else:
 			#get priceindex data
-				try:
-					conn = ewutils.databaseConnect();
-					cursor = conn.cursor();
-					market_data = EwMarket(id_server=server.id)
-				finally:
-					cursor.close()
-					conn.close()
-					value = None
-				exchangerate = int(market_data.rate_exchange / 100000)
+				market_data = EwMarket(id_server=server.id)
+				exchangerate = (market_data.rate_exchange / 1000.0)
 				
 				if tokens_count > 1:
 					for token in tokens[1:]:
@@ -1467,10 +1462,10 @@ async def on_message(message):
 						# Limit frequency of withdrawals
 						response = "You can't withdraw right now. Your slimebroker is busy."
 					else:
-						user_data.slimes += (value * exchangerate)
+						user_data.slimes += int(value * exchangerate)
 						user_data.slimecredit -= value
 						user_data.time_lastinvest = time_now
-						market_data.slimes_casino -= (value * exchangerate)
+						market_data.slimes_casino -= int(value * exchangerate)
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_invest_withdraw))
@@ -1527,13 +1522,7 @@ async def on_message(message):
 			response = ""
 			
 			#get market data
-			try:
-				conn = ewutils.databaseConnect();
-				cursor = conn.cursor();
-				market_data = EwMarket(id_server=server.id)
-			finally:
-				cursor.close()
-				conn.close()
+			market_data = EwMarket(id_server=server.id)
 				
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
