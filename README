@@ -18,6 +18,28 @@ CREATE TABLE users (
 	time_expirpvp int NOT NULL DEFAULT '0',
 	time_lasthaunt int NOT NULL DEFAULT '0',
 	slimecredit int NOT NULL DEFAULT '0',
+	slimelevel int NOT NULL DEFAULT '1',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
+);
+
+CREATE TABLE markets (
+	id_server varchar(128) NOT NULL,
+	slimes_casino int NOT NULL DEFAULT '0',
+	rate_market int NOT NULL DEFAULT '1000',
+	rate_exchange int NOT NULL DEFAULT '1000',
+
+	PRIMARY KEY (id_server)
+);
+
+CREATE TABLE stats (
+	id_server varchar(128) NOT NULL,
+	timestamp datetime DEFAULT CURRENT_TIMESTAMP,
+	total_slimecredit int NOT NULL DEFAULT '0',
+	total_slime int NOT NULL DEFAULT '0',
+	total_players int NOT NULL DEFAULT '0',
+	total_players_pvp int NOT NULL DEFAULT '0',
+	slimes_casino int NOT NULL DEFAULT '0',
+	rate_market int NOT NULL DEFAULT '1000',
+	rate_exchange int NOT NULL DEFAULT '1000'
 );
