@@ -209,7 +209,7 @@ async def on_ready():
 								market_data.boombust = ewcfg.cd_boombust
 
 								if boombust < 0:
-									market_data.boombust += -1
+									market_data.boombust *= -1
 						else:
 							boombust = 0
 
