@@ -171,13 +171,13 @@ async def on_ready():
 					traceback.print_exc(file=sys.stdout)
 
 			# Adjust the exchange rate of slime for the market.
-			if (time_now - time_last_market) >= ewcfg.update_market:
-				time_last_market = time_now
+			try:
+				for server in client.servers:
+					# Load market data from the database.
+					market_data = EwMarket(id_server=server.id)
 
-				try:
-					for server in client.servers:
-						# Load market data from the database.
-						market_data = EwMarket(id_server=server.id)
+					if market_data.time_lasttick + ewcfg.update_market < time_now:
+						market_data.time_lasttick = time_now
 
 						# Nudge the value back to stability.
 						rate_market = market_data.rate_market
@@ -268,12 +268,12 @@ async def on_ready():
 						# Send the announcement.
 						channel = channels_stockmarket.get(server.id)
 						if channel != None:
-							await client.send_message(channel, response)
+							await client.send_message(channel, ('**' + response + '**'))
 						else:
 							ewutils.logMsg('No stock market channel for server {}'.format(server.name))
-				except:
-					ewutils.logMsg('An error occurred in the scheduled slime market update task:')
-					traceback.print_exc(file=sys.stdout)
+			except:
+				ewutils.logMsg('An error occurred in the scheduled slime market update task:')
+				traceback.print_exc(file=sys.stdout)
 
 			# Wait a while before running periodic tasks.
 			await asyncio.sleep(15)

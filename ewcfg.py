@@ -5,7 +5,6 @@ version = "v1.12"
 update_hookstillactive = 60 * 60 * 3
 update_twitch = 60
 update_pvp = 60
-
 update_market = 900
 
 # Role names. All lower case with no spaces.
@@ -128,6 +127,7 @@ col_rate_market = 'rate_market'
 col_rate_exchange = 'rate_exchange'
 col_slimes_casino = 'slimes_casino'
 col_boombust = 'boombust'
+col_time_lasttick = 'time_lasttick'
 
 # Database columns for stats
 col_total_slime = 'total_slime'

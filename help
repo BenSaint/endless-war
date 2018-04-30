@@ -71,12 +71,3 @@ These are the commands I understand:
 
 	**!exchangerate**
 		See the current exchange rate of slimes per slime credit.
-
-Only the Cop Killer and the Rowdy Fucker can:
-
-	**!devour** *@username* ...
-		Devour the mentioned users (of your own faction) and absorb their
-		slime! You can mention more than one user.
-
-	**!giveslime** # *@username* ...
-		Give each mentioned user # slimes from your own slime score.

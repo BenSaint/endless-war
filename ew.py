@@ -10,6 +10,7 @@ class EwMarket:
 	rate_market = 1000
 	rate_exchange = 1000
 	boombust = 0
+	time_lasttick = 0
 
 	""" Load the market data for this server from the database. """
 	def __init__(self, id_server=None, conn=None, cursor=None):
@@ -30,11 +31,12 @@ class EwMarket:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
 					ewcfg.col_slimes_casino,
 					ewcfg.col_rate_market,
 					ewcfg.col_rate_exchange,
-					ewcfg.col_boombust
+					ewcfg.col_boombust,
+					ewcfg.col_time_lasttick
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -44,6 +46,7 @@ class EwMarket:
 					self.rate_market = result[1]
 					self.rate_exchange = result[2]
 					self.boombust = result[3]
+					self.time_lasttick = result[4]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -72,18 +75,20 @@ class EwMarket:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_server,
 				ewcfg.col_slimes_casino,
 				ewcfg.col_rate_market,
 				ewcfg.col_rate_exchange,
-				ewcfg.col_boombust
+				ewcfg.col_boombust,
+				ewcfg.col_time_lasttick
 			), (
 				self.id_server,
 				self.slimes_casino,
 				self.rate_market,
 				self.rate_exchange,
-				self.boombust
+				self.boombust,
+				self.time_lasttick
 			))
 
 			if our_cursor:
