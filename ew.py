@@ -1,27 +1,6 @@
 import ewutils
 import ewcfg
 
-# Common database columns
-col_id_server = 'id_server'
-
-# Database columns for users
-col_id_user = 'id_user'
-col_slimes = 'slimes'
-col_slimelevel = 'slimelevel'
-col_slimecredit = 'slimecredit'
-col_time_lastkill = 'time_lastkill'
-col_time_lastrevive = 'time_lastrevive'
-col_id_killer = 'id_killer'
-col_time_lastspar = 'time_lastspar'
-col_time_expirpvp = 'time_expirpvp'
-col_time_lasthaunt = 'time_lasthaunt'
-col_time_lastinvest = 'time_lastinvest'
-
-# Database columns for markets
-col_rate_market = 'rate_market'
-col_rate_exchange = 'rate_exchange'
-col_slimes_casino = 'slimes_casino'
-
 """ Market data model for database persistence """
 class EwMarket:
 	id_server = ""
@@ -30,6 +9,7 @@ class EwMarket:
 
 	rate_market = 1000
 	rate_exchange = 1000
+	boombust = 0
 
 	""" Load the market data for this server from the database. """
 	def __init__(self, id_server=None, conn=None, cursor=None):
@@ -50,10 +30,11 @@ class EwMarket:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {} FROM markets WHERE id_server = %s".format(
-					col_slimes_casino,
-					col_rate_market,
-					col_rate_exchange
+				cursor.execute("SELECT {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+					ewcfg.col_slimes_casino,
+					ewcfg.col_rate_market,
+					ewcfg.col_rate_exchange,
+					ewcfg.col_boombust
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -62,6 +43,7 @@ class EwMarket:
 					self.slimes_casino = result[0]
 					self.rate_market = result[1]
 					self.rate_exchange = result[2]
+					self.boombust = result[3]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -90,16 +72,18 @@ class EwMarket:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}) VALUES(%s, %s, %s, %s)".format(
-				col_id_server,
-				col_slimes_casino,
-				col_rate_market,
-				col_rate_exchange
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s)".format(
+				ewcfg.col_id_server,
+				ewcfg.col_slimes_casino,
+				ewcfg.col_rate_market,
+				ewcfg.col_rate_exchange,
+				ewcfg.col_boombust
 			), (
 				self.id_server,
 				self.slimes_casino,
 				self.rate_market,
-				self.rate_exchange
+				self.rate_exchange,
+				self.boombust
 			))
 
 			if our_cursor:
@@ -155,16 +139,16 @@ class EwUser:
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
-					col_slimes,
-					col_slimelevel,
-					col_slimecredit,
-					col_time_lastkill,
-					col_time_lastrevive,
-					col_id_killer,
-					col_time_lastspar,
-					col_time_expirpvp,
-					col_time_lasthaunt,
-					col_time_lastinvest
+					ewcfg.col_slimes,
+					ewcfg.col_slimelevel,
+					ewcfg.col_slimecredit,
+					ewcfg.col_time_lastkill,
+					ewcfg.col_time_lastrevive,
+					ewcfg.col_id_killer,
+					ewcfg.col_time_lastspar,
+					ewcfg.col_time_expirpvp,
+					ewcfg.col_time_lasthaunt,
+					ewcfg.col_time_lastinvest
 				), (
 					id_user,
 					id_server
@@ -213,18 +197,18 @@ class EwUser:
 
 			# Save the object.
 			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
-				col_id_user,
-				col_id_server,
-				col_slimes,
-				col_slimelevel,
-				col_slimecredit,
-				col_time_lastkill,
-				col_time_lastrevive,
-				col_id_killer,
-				col_time_lastspar,
-				col_time_expirpvp,
-				col_time_lasthaunt,
-				col_time_lastinvest
+				ewcfg.col_id_user,
+				ewcfg.col_id_server,
+				ewcfg.col_slimes,
+				ewcfg.col_slimelevel,
+				ewcfg.col_slimecredit,
+				ewcfg.col_time_lastkill,
+				ewcfg.col_time_lastrevive,
+				ewcfg.col_id_killer,
+				ewcfg.col_time_lastspar,
+				ewcfg.col_time_expirpvp,
+				ewcfg.col_time_lasthaunt,
+				ewcfg.col_time_lastinvest
 			), (
 				self.id_user,
 				self.id_server,

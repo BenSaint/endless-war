@@ -1,5 +1,12 @@
 # Global configuration options.
-version = "v1.11"
+version = "v1.12"
+
+# Update intervals
+update_hookstillactive = 60 * 60 * 3
+update_twitch = 60
+update_pvp = 60
+
+update_market = 900
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -72,6 +79,7 @@ cd_kill = 60
 cd_spar = 600
 cd_haunt = 600
 cd_invest = 1200
+cd_boombust = 22
 
 # PvP timer pushouts
 time_pvp_kill = 600
@@ -98,3 +106,31 @@ emote_dice3 = "<:dice3:436942524041527298>"
 emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
+
+# Common database columns
+col_id_server = 'id_server'
+
+# Database columns for users
+col_id_user = 'id_user'
+col_slimes = 'slimes'
+col_slimelevel = 'slimelevel'
+col_slimecredit = 'slimecredit'
+col_time_lastkill = 'time_lastkill'
+col_time_lastrevive = 'time_lastrevive'
+col_id_killer = 'id_killer'
+col_time_lastspar = 'time_lastspar'
+col_time_expirpvp = 'time_expirpvp'
+col_time_lasthaunt = 'time_lasthaunt'
+col_time_lastinvest = 'time_lastinvest'
+
+# Database columns for markets
+col_rate_market = 'rate_market'
+col_rate_exchange = 'rate_exchange'
+col_slimes_casino = 'slimes_casino'
+col_boombust = 'boombust'
+
+# Database columns for stats
+col_total_slime = 'total_slime'
+col_total_slimecredit = 'total_slimecredit'
+col_total_players = 'total_players'
+col_total_players_pvp = 'total_players_pvp'

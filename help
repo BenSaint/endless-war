@@ -53,21 +53,24 @@ These are the commands I understand:
 		*Used only in the #slime-casino.*
 
 	**!invest** #
-		Invest some slime in the market!
+		Invest some slime in the market! You exchange slime for slime credits
+		at the current exchange rate, plus a 5% brokerage fee.
 
 		*Used only in the #slime-stock-exchange*
 		*20 minute cooldown shared with !withdraw.*
 
 	**!withdraw** #
-		Pull money out of your investments.
+		Cash in your slime credits for cold, wet slime!
 
 		*Used only in the #slime-stock-exchange*
 		*20 minute cooldown shared with !invest.*
 		*Flags you for PvP combat for 3 minutes.*
 
 	**!slimecredit**
-		View your invested slime balance.
+		See how many slime credits you have.
 
+	**!exchangerate**
+		See the current exchange rate of slimes per slime credit.
 
 Only the Cop Killer and the Rowdy Fucker can:
 

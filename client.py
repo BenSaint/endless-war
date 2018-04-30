@@ -66,88 +66,217 @@ async def on_ready():
 		ewutils.logMsg("Enabled Twitch integration.")
 
 		# Channels in the connected discord servers to announce to.
-		announcement_channels = []
+		channels_announcement = []
+
+		# Channels in the connected discord servers to send stock market updates to. Map of server ID to channel.
+		channels_stockmarket = {}
 
 		for server in client.servers:
 			ewutils.logMsg("connected to: {}".format(server.name))
 			for channel in server.channels:
 				if(channel.type == discord.ChannelType.text):
 					if(channel.name == ewcfg.channel_twitch_announcement):
-						announcement_channels.append(channel)
+						channels_announcement.append(channel)
+						ewutils.logMsg("• found for announcements: {}".format(channel.name))
 
-						ewutils.logMsg("• found : {}".format(channel.name))
-						ewutils.logMsg("•• using for announcements.")
+					elif(channel.name == ewcfg.channel_stockexchange):
+						channels_stockmarket[server.id] = channel
+						ewutils.logMsg("• found for stock exchange: {}".format(channel.name))
+
+		time_now = int(time.time())
+		time_last_twitch = time_now
+		time_last_pvp = time_now
+		time_last_market = time_now
+
+		# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
+		time_last_logged = time_now - ewcfg.update_hookstillactive + 60
+
 		stream_live = None
-
-		count = 5
 		while True:
-			count -= 1
-			if count <= 0:
-				count = 180
-				ewutils.logMsg("Twitch hook still active.")
+			time_now = int(time.time())
 
-			try:
-				# Twitch API call to see if there are any active streams.
-				json_string = ""
-				p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
-				for line in p.stdout.readlines():
-					json_string += line.decode('utf-8')
-				json_parsed = json.loads(json_string)
+			# Periodic message to log that this stuff is still running.
+			if (time_now - time_last_logged) >= ewcfg.update_hookstillactive:
+				time_last_logged = time_now
 
-				# When a stream is up, data is an array of stream information objects.
-				data = json_parsed.get('data')
-				if data != None:
-					data_count = len(data)
-					stream_was_live = stream_live
-					stream_live = True if data_count > 0 else False
+				ewutils.logMsg("Periodic hook still active.")
 
-					if stream_was_live == False and stream_live == True:
-						ewutils.logMsg("The stream is now live.")
+			# Check to see if a stream is live via the Twitch API.
+			if (time_now - time_last_twitch) >= ewcfg.update_twitch:
+				time_last_twitch = time_now
 
-						# The stream has transitioned from offline to online. Make an announcement!
-						for channel in announcement_channels:
-							await client.send_message(
-								channel,
-								"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
-									"https://www.twitch.tv/rowdyfrickerscopkillers"
+				try:
+					# Twitch API call to see if there are any active streams.
+					json_string = ""
+					p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
+					for line in p.stdout.readlines():
+						json_string += line.decode('utf-8')
+					json_parsed = json.loads(json_string)
+
+					# When a stream is up, data is an array of stream information objects.
+					data = json_parsed.get('data')
+					if data != None:
+						data_count = len(data)
+						stream_was_live = stream_live
+						stream_live = True if data_count > 0 else False
+
+						if stream_was_live == False and stream_live == True:
+							ewutils.logMsg("The stream is now live.")
+
+							# The stream has transitioned from offline to online. Make an announcement!
+							for channel in channels_announcement:
+								await client.send_message(
+									channel,
+									"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
+										"https://www.twitch.tv/rowdyfrickerscopkillers"
+									)
 								)
-							)
-			except:
-				ewutils.logMsg('Twitch handler hit an exception (continuing):')
-				traceback.print_exc(file=sys.stdout)
+				except:
+					ewutils.logMsg('Twitch handler hit an exception (continuing):')
+					traceback.print_exc(file=sys.stdout)
 
-			try:
-				for server in client.servers:
-					roles_map = ewutils.getRoleMap(server.roles)
+			# Clear PvP roles from players who are no longer flagged.
+			if (time_now - time_last_pvp) >= ewcfg.update_pvp:
+				time_last_pvp = time_now
 
-					role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
-					role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
-					role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
+				try:
+					for server in client.servers:
+						roles_map = ewutils.getRoleMap(server.roles)
 
-					# Monitor all user roles and update if a user is no longer flagged for PvP.
-					for member in server.members:
-						pvp_role = None
+						role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
+						role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
+						role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
 
-						if role_juvenile_pvp in member.roles:
-							pvp_role = role_juvenile_pvp
-						elif role_copkillers_pvp in member.roles:
-							pvp_role = role_copkillers_pvp
-						elif role_rowdyfuckers_pvp in member.roles:
-							pvp_role = role_rowdyfuckers_pvp
+						# Monitor all user roles and update if a user is no longer flagged for PvP.
+						for member in server.members:
+							pvp_role = None
 
-						if pvp_role != None:
-							# Retrieve user data from the database.
-							user_data = EwUser(member=member)
+							if role_juvenile_pvp in member.roles:
+								pvp_role = role_juvenile_pvp
+							elif role_copkillers_pvp in member.roles:
+								pvp_role = role_copkillers_pvp
+							elif role_rowdyfuckers_pvp in member.roles:
+								pvp_role = role_rowdyfuckers_pvp
 
-							# If the user's PvP expire time is historical, remove the PvP role.
-							if user_data.time_expirpvp < int(time.time()):
-								await client.remove_roles(member, pvp_role)
+							if pvp_role != None:
+								# Retrieve user data from the database.
+								user_data = EwUser(member=member)
 
-			except:
-				ewutils.logMsg('An error occurred in the scheduled role update task:')
-				traceback.print_exc(file=sys.stdout)
+								# If the user's PvP expire time is historical, remove the PvP role.
+								if user_data.time_expirpvp < int(time.time()):
+									await client.remove_roles(member, pvp_role)
 
-			await asyncio.sleep(60)
+				except:
+					ewutils.logMsg('An error occurred in the scheduled role update task:')
+					traceback.print_exc(file=sys.stdout)
+
+			# Adjust the exchange rate of slime for the market.
+			if (time_now - time_last_market) >= ewcfg.update_market:
+				time_last_market = time_now
+
+				try:
+					for server in client.servers:
+						# Load market data from the database.
+						market_data = EwMarket(id_server=server.id)
+
+						# Nudge the value back to stability.
+						rate_market = market_data.rate_market
+						if rate_market >= 1030:
+							rate_market -= 10
+						elif rate_market <= 970:
+							rate_market += 10
+
+						# Tick down the boombust cooldown.
+						if market_data.boombust < 0:
+							market_data.boombust += 1
+						elif market_data.boombust > 0:
+							market_data.boombust -= 1
+
+						# Adjust the market rate.
+						fluctuation = 0 #(random.randrange(5) - 2) * 100
+						noise = (random.randrange(19) - 9) * 2
+						subnoise = (random.randrange(13) - 6)
+
+						# Some extra excitement!
+						if noise == 0 and subnoise == 0:
+							boombust = (random.randrange(3) - 1) * 200
+
+							# If a boombust occurs shortly after a previous boombust, make sure it's the opposite effect. (Boom follows bust, bust follows boom.)
+							if (market_data.boombust > 0 and boombust > 0) or (market_data.boombust < 0 and boombust < 0):
+								boombust *= -1
+
+							if boombust != 0:
+								market_data.boombust = ewcfg.cd_boombust
+
+								if boombust < 0:
+									market_data.boombust += -1
+						else:
+							boombust = 0
+
+						rate_market += fluctuation + noise + subnoise + boombust
+						if rate_market < 300:
+							rate_market = (300 + noise + subnoise)
+
+						percentage = ((rate_market / 10) - 100)
+						percentage_abs = percentage * -1
+
+						# If the value hits 0, we're stuck there forever.
+						if market_data.rate_exchange <= 100:
+							market_data.rate_exchange = 100
+
+						# Apply the market change to the casino balance and exchange rate.
+						market_data.slimes_casino = int(market_data.slimes_casino * (rate_market / 1000.0))
+						market_data.rate_exchange = int(market_data.rate_exchange * (rate_market / 1000.0))
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							# Persist new data.
+							market_data.rate_market = rate_market
+							market_data.persist(conn=conn, cursor=cursor)
+
+							# Create a historical snapshot.
+							ewutils.persistMarketHistory(market_data=market_data, conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+						# Give some indication of how the market is doing to the users.
+						response = "..."
+
+						# Market is up ...
+						if rate_market > 1200:
+							response = 'The slimeconomy is skyrocketing!!! Slime stock is up {p:.3g}%!!!'.format(p=percentage)
+						elif rate_market > 1100:
+							response = 'The slimeconomy is booming! Slime stock is up {p:.3g}%!'.format(p=percentage)
+						elif rate_market > 1000:
+							response = 'The slimeconomy is doing well. Slime stock is up {p:.3g}%.'.format(p=percentage)
+						# Market is down ...
+						elif rate_market < 800:
+							response = 'The slimeconomy is plummetting!!! Slime stock is down {p:.3g}%!!!'.format(p=percentage_abs)
+						elif rate_market < 900:
+							response = 'The slimeconomy is stagnating! Slime stock is down {p:.3g}%!'.format(p=percentage_abs)
+						elif rate_market < 1000:
+							response = 'The slimeconomy is a bit sluggish. Slime stock is down {p:.3g}%.'.format(p=percentage_abs)
+						# Perfectly balanced
+						else:
+							response = 'The slimeconomy is holding steady. No change in slime stock value.'
+
+						# Send the announcement.
+						channel = channels_stockmarket.get(server.id)
+						if channel != None:
+							await client.send_message(channel, response)
+						else:
+							ewutils.logMsg('No stock market channel for server {}'.format(server.name))
+				except:
+					ewutils.logMsg('An error occurred in the scheduled slime market update task:')
+					traceback.print_exc(file=sys.stdout)
+
+			# Wait a while before running periodic tasks.
+			await asyncio.sleep(15)
 
 @client.event
 async def on_member_join(member):
@@ -366,7 +495,7 @@ async def on_message(message):
 								if role_boss in ewutils.getRoleMap(member_search.roles):
 									boss_member = member_search
 									break
-							
+
 							if boss_member != None:
 								try:
 									conn = ewutils.databaseConnect()
@@ -445,7 +574,7 @@ async def on_message(message):
 							if role_boss in boss_roles and ewcfg.role_kingpin in boss_roles:
 								boss_member = member_search
 								break
-						
+
 						if boss_member != None:
 							try:
 								conn = ewutils.databaseConnect()
@@ -610,7 +739,7 @@ async def on_message(message):
 						player_data.time_lastrevive = time_now
 						if(player_data.time_expirpvp > time_now):
 							player_is_pvp = True
-							
+
 						player_data.persist(conn=conn, cursor=cursor)
 
 						# Give some slimes to every living player (currently online)
@@ -701,7 +830,7 @@ async def on_message(message):
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
-						
+
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 
 						# determine slime count for every member mentioned
@@ -887,7 +1016,7 @@ async def on_message(message):
 								conn.close()
 
 							if (value * mentions_count) > user_data.slimes:
-								response = "You don't have that much slime to give ({}/{}).".format(user_data.slimes, (value * mentions_count))
+								response = "You don't have that much slime to give ({:,}/{:,}).".format(user_data.slimes, (value * mentions_count))
 							else:
 								user_data.slimes -= (value * mentions_count)
 
@@ -908,7 +1037,7 @@ async def on_message(message):
 									conn.close()
 
 								response = "Slime scores altered! {}".format(ewcfg.emote_slime1)
-								
+
 						else:
 							response = "Give how much slime?"
 
@@ -1061,7 +1190,7 @@ async def on_message(message):
 
 						if (roll1 + roll2) == 7:
 							winnings = 5 * value
-							response += "\n\n**You rolled a 7! It's your lucky day. You won {} slime.**".format(winnings)
+							response += "\n\n**You rolled a 7! It's your lucky day. You won {:,} slime.**".format(winnings)
 							user_data.slimes += winnings
 							market_data.slimes_casino -= (winnings - value)
 
@@ -1120,7 +1249,7 @@ async def on_message(message):
 					response = "You don't have enough slime."
 				else:
 					# Add some suspense...
-					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {} slime and pull the handle...".format(ewcfg.slimes_perslot)))
+					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} slime and pull the handle...".format(ewcfg.slimes_perslot)))
 					await asyncio.sleep(3)
 
 					# Spend slimes
@@ -1161,39 +1290,39 @@ async def on_message(message):
 					# Determine winnings.
 					if roll1 == ewcfg.emote_tacobell and roll2 == ewcfg.emote_tacobell and roll3 == ewcfg.emote_tacobell:
 						winnings = 5 * value
-						response += "\n\n**¡Ándale! ¡Arriba! The machine spits out {} slime.**".format(winnings)
+						response += "\n\n**¡Ándale! ¡Arriba! The machine spits out {:,} slime.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_pizzahut and roll2 == ewcfg.emote_pizzahut and roll3 == ewcfg.emote_pizzahut:
 						winnings = 5 * value
-						response += "\n\n**Oven-fired goodness! The machine spits out {} slime.**".format(winnings)
+						response += "\n\n**Oven-fired goodness! The machine spits out {:,} slime.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_kfc and roll2 == ewcfg.emote_kfc and roll3 == ewcfg.emote_kfc:
 						winnings = 5 * value
-						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {} slime.**".format(winnings)
+						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {:,} slime.**".format(winnings)
 
 					elif (roll1 == ewcfg.emote_tacobell or roll1 == ewcfg.emote_kfc or roll1 == ewcfg.emote_pizzahut) and (roll2 == ewcfg.emote_tacobell or roll2 == ewcfg.emote_kfc or roll2 == ewcfg.emote_pizzahut) and (roll3 == ewcfg.emote_tacobell or roll3 == ewcfg.emote_kfc or roll3 == ewcfg.emote_pizzahut):
 						winnings = value
-						response += "\n\n**You dine on fast food. The machine spits out {} slime.**".format(winnings)
+						response += "\n\n**You dine on fast food. The machine spits out {:,} slime.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_moon and roll2 == ewcfg.emote_moon and roll3 == ewcfg.emote_moon:
 						winnings = 5 * value
-						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {} slime.**".format(winnings)
-						
+						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {:,} slime.**".format(winnings)
+
 					elif roll1 == ewcfg.emote_111 and roll2 == ewcfg.emote_111 and roll3 == ewcfg.emote_111:
 						winnings = 1111
-						response += "\n\n**111111111111111111111111111111111111111111111111**\n\n**The machine spits out {} slime.**".format(winnings)
-						
+						response += "\n\n**111111111111111111111111111111111111111111111111**\n\n**The machine spits out {:,} slime.**".format(winnings)
+
 					elif roll1 == ewcfg.emote_copkiller and roll2 == ewcfg.emote_copkiller and roll3 == ewcfg.emote_copkiller:
 						winnings = 40 * value
-						response += "\n\n**How handsome!! The machine spits out {} slime.**".format(winnings)
-						
+						response += "\n\n**How handsome!! The machine spits out {:,} slime.**".format(winnings)
+
 					elif roll1 == ewcfg.emote_rowdyfucker and roll2 == ewcfg.emote_rowdyfucker and roll3 == ewcfg.emote_rowdyfucker:
 						winnings = 40 * value
-						response += "\n\n**So powerful!! The machine spits out {} slime.**".format(winnings)
-						
+						response += "\n\n**So powerful!! The machine spits out {:,} slime.**".format(winnings)
+
 					elif roll1 == ewcfg.emote_theeye and roll2 == ewcfg.emote_theeye and roll3 == ewcfg.emote_theeye:
 						winnings = 350 * value
-						response += "\n\n**JACKPOT!! The machine spews forth {} slime!**".format(winnings)
+						response += "\n\n**JACKPOT!! The machine spews forth {:,} slime!**".format(winnings)
 
 					else:
 						response += "\n\n*Nothing happens...*"
@@ -1217,7 +1346,7 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
-			
+
 		elif cmd == ewcfg.cmd_deadmega:
 			response = ""
 			roles_map_user = ewutils.getRoleMap(message.author.roles)
@@ -1229,16 +1358,16 @@ async def on_message(message):
 				user_data = EwUser(member=message.author)
 
 				if value > user_data.slimes:
-					response = "You don't have that much slime to lose ({}/{}).".format(user_data.slimes, value)
+					response = "You don't have that much slime to lose ({:,}/{:,}).".format(user_data.slimes, value)
 				else:
 					user_data.slimes -= value
 					user_data.persist()
-					response = "Alas, poor megaslime. You have {} slime remaining.".format(user_data.slimes)
+					response = "Alas, poor megaslime. You have {:,} slime remaining.".format(user_data.slimes)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-		# Invest in the slime exchange!
+		# Invest in the slime market!
 		elif cmd == ewcfg.cmd_invest:
 
 			if message.channel.name != ewcfg.channel_stockexchange:
@@ -1269,6 +1398,13 @@ async def on_message(message):
 						cursor.close()
 						conn.close()
 
+					# Apply a brokerage fee of ~5% (rate * 1.05)
+					rate_exchange = (market_data.rate_exchange / 1000000.0 * 1.05)
+
+					# The user can only buy a whole number of credits, so adjust their cost based on the actual number of credits purchased.
+					credits = int(value / rate_exchange)
+					value = int(credits * rate_exchange)
+
 					if value > user_data.slimes:
 						response = "You don't have that much slime to invest."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
@@ -1276,12 +1412,12 @@ async def on_message(message):
 						response = "You can't invest right now. Your slimebroker is busy."
 					else:
 						user_data.slimes -= value
-						user_data.slimecredit += value
+						user_data.slimecredit += credits
 						user_data.time_lastinvest = time_now
 						market_data.slimes_casino += value
 
-						response = "You have invested {} slime in the stock exchange.".format(value)
-						
+						response = "You exchange {slime:,} slime for {credit:,} SlimeCoin.".format(slime=value, credit=credits)
+
 						try:
 							conn = ewutils.databaseConnect()
 							cursor = conn.cursor()
@@ -1331,6 +1467,9 @@ async def on_message(message):
 						cursor.close()
 						conn.close()
 
+					rate_exchange = (market_data.rate_exchange / 1000000.0)
+					slimes = int(value * rate_exchange)
+					credits = int(slimes / rate_exchange)
 
 					if value > user_data.slimecredit:
 						response = "You don't have that much credit to withdraw."
@@ -1338,16 +1477,16 @@ async def on_message(message):
 						# Limit frequency of withdrawals
 						response = "You can't withdraw right now. Your slimebroker is busy."
 					else:
-						user_data.slimes += value
-						user_data.slimecredit -= value
+						user_data.slimes += slimes
+						user_data.slimecredit -= credits
 						user_data.time_lastinvest = time_now
-						market_data.slimes_casino -= value
+						market_data.slimes_casino -= slimes
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_invest_withdraw))
 
-						response = "You have withdrawn {} slime from the stock exchange.".format(value)
-						
+						response = "You exchange {credits:,} SlimeCoin for {slimes:,} slime.".format(credits=credits, slimes=slimes)
+
 						try:
 							conn = ewutils.databaseConnect()
 							cursor = conn.cursor()
@@ -1376,23 +1515,27 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-		# Show the current slime score of a player.
+		# Show the current slime market exchange rate (slime per credit).
+		elif cmd == ewcfg.cmd_exchangerate:
+			response = ""
+
+			market_data = EwMarket(id_server=message.server.id)
+
+			response = "The current market value of SlimeCoin is {cred:,.3f} slime per 1,000 coin.".format(cred=(market_data.rate_exchange / 1000.0))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# Show the player's slime credit.
 		elif cmd == ewcfg.cmd_slimecredit:
 			response = ""
 
-			if mentions_count == 0:
-				user_slimecredit = EwUser(member=message.author).slimecredit
-
-				# return my score
-				response = "You have {} in slime credit.".format(user_slimecredit)
-			else:
-
-				# return somebody's score
-				response = "You can't see another player's slime credit!"
+			user_slimecredit = EwUser(member=message.author).slimecredit
+			response = "You have {:,} SlimeCoin.".format(user_slimecredit)
 
 			# Send the response to the player.
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
-			
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))

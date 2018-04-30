@@ -1,5 +1,6 @@
 import MySQLdb
 import datetime
+import time
 
 import ewcfg
 
@@ -114,3 +115,60 @@ def calculatePvpTimer(current_time_expirpvp, desired_time_expirpvp):
 		return desired_time_expirpvp
 
 	return current_time_expirpvp
+
+""" Save a timestamped snapshot of the current market for historical purposes. """
+def persistMarketHistory(market_data=None, conn=None, cursor=None):
+	if market_data != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			# Save data
+			cursor.execute("INSERT INTO stats({}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, (SELECT sum({}) FROM users WHERE {} = %s), (SELECT sum({}) FROM users WHERE {} = %s), (SELECT count(*) FROM users WHERE {} = %s), (SELECT count(*) FROM users WHERE {} = %s AND {} > %s))".format(
+				# Insert columns
+				ewcfg.col_id_server,
+				ewcfg.col_slimes_casino,
+				ewcfg.col_rate_market,
+				ewcfg.col_rate_exchange,
+				ewcfg.col_total_slime,
+				ewcfg.col_total_slimecredit,
+				ewcfg.col_total_players,
+				ewcfg.col_total_players_pvp,
+
+				# Inner queries
+				ewcfg.col_slimes,
+				ewcfg.col_id_server,
+				ewcfg.col_slimecredit,
+				ewcfg.col_id_server,
+				ewcfg.col_id_server,
+				ewcfg.col_id_server,
+				ewcfg.col_time_expirpvp
+			), (
+				market_data.id_server,
+				market_data.slimes_casino,
+				market_data.rate_market,
+				market_data.rate_exchange,
+				market_data.id_server,
+				market_data.id_server,
+				market_data.id_server,
+				market_data.id_server,
+				int(time.time())
+			))
+
+			if our_cursor:
+				conn.commit()
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
