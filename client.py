@@ -38,6 +38,9 @@ last_crapsed_times = {}
 # exceeds 3 in 5 seconds, you die.
 last_mismined_times = {}
 
+# Map of server ID to a map of active users on that server.
+active_users_map = {}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -186,6 +189,18 @@ async def on_ready():
 						elif rate_market <= 970:
 							rate_market += 10
 
+						# Add participation bonus.
+						active_bonus = 0
+						active_map = active_users_map.get(server.id)
+						if active_map != None:
+							active_bonus = len(active_map)
+
+							if active_bonus > 20:
+								active_bonus = 20
+
+						active_users_map[server.id] = {}
+						rate_market += active_bonus
+
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
 							market_data.boombust += 1
@@ -292,6 +307,14 @@ async def on_message(message):
 	""" do not interact with our own messages """
 	if message.author.id == client.user.id or message.author.bot == True:
 		return
+
+	# Note that the user posted a message.
+	if message.server != None:
+		active_map = active_users_map.get(message.server.id)
+		if active_map == None:
+			active_map = {}
+			active_users_map[message.server.id] = active_map
+		active_map[message.author.id] = True
 
 	"""
 		Wake up if we need to respond to messages. Could be:
