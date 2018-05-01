@@ -911,6 +911,9 @@ async def on_message(message):
 
 			if ewcfg.role_corpse in roles_map_user:
 				await client.send_message(message.channel, ewutils.formatMessage(message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+			
+			elif 
+			
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
 					try:
@@ -918,17 +921,63 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						
+						if user_data.stamina >= 250:
+							mismined = last_mismined_times.get(message.author.id)
+							time_now = int(time.time())
 
-						# Increment slimes for this user.
-						user_data.slimes += ewcfg.slimes_permine
+							if mismined == None:
+								mismined = {
+									'time': time_now,
+									'count': 0
+								}
 
-						# Flag the user for PvP
-						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
+							if time_now - mismined['time'] < 5:
+								mismined['count'] += 1
+							else:
+								# Reset counter.
+								mismined['time'] = time_now
+								mismined['count'] = 1
 
-						user_data.persist(conn=conn, cursor=cursor)
+							last_mismined_times[message.author.id] = mismined
+
+							if mismined['count'] >= 3:
+								# Death
+								last_mismined_times[message.author.id] = None
+
+								try:
+									conn = ewutils.databaseConnect()
+									cursor = conn.cursor()
+
+									user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+									user_data.slimes = 0
+									user_data.persist(conn=conn, cursor=cursor)
+
+									conn.commit()
+								finally:
+									cursor.close()
+									conn.close()
 
 
-						conn.commit()
+								await client.edit_message(resp, ewutils.formatMessage(message.author, "You have died in a mining accident."))
+								await client.replace_roles(message.author, roles_map[ewcfg.role_corpse])
+							else:
+								await client.edit_message(resp, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
+
+						else:		
+							# Increment slimes for this user.
+							user_data.slimes += ewcfg.slimes_permine
+						
+							# Fatigue the miner.
+							user_data.stamina += 1
+
+							# Flag the user for PvP
+							user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
+
+							user_data.persist(conn=conn, cursor=cursor)
+
+
+							conn.commit()
 					finally:
 						cursor.close()
 						conn.close()
@@ -1164,7 +1213,7 @@ async def on_message(message):
 				response = "**ENOUGH**"
 			elif message.channel.name != ewcfg.channel_casino:
 				# Only allowed in the slime casino.
-				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
+				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
 			else:
 				last_crapsed_times[message.author.id] = time_now
 				value = None
@@ -1191,10 +1240,10 @@ async def on_message(message):
 						conn.close()
 
 
-					if value > user_data.slimes:
-						response = "You don't have that much slime to bet with."
+					if value > user_data.slimecredit:
+						response = "You don't have that much SlimeCoin to bet with."
 					else:
-						user_data.slimes -= value
+						user_data.slimecredit -= value
 
 						roll1 = random.randint(1,6)
 						roll2 = random.randint(1,6)
@@ -1213,13 +1262,11 @@ async def on_message(message):
 
 						if (roll1 + roll2) == 7:
 							winnings = 5 * value
-							response += "\n\n**You rolled a 7! It's your lucky day. You won {:,} slime.**".format(winnings)
-							user_data.slimes += winnings
-							market_data.slimes_casino -= (winnings - value)
+							response += "\n\n**You rolled a 7! It's your lucky day. You won {:,} SlimeCoin.**".format(winnings)
+							user_data.slimecredit += winnings
 
 						else:
-							response += "\n\nYou didn't roll 7. You lost your slime."
-							market_data.slimes_casino += value
+							response += "\n\nYou didn't roll 7. You lost your SlimeCoins."
 
 						try:
 							conn = ewutils.databaseConnect()
@@ -1233,7 +1280,7 @@ async def on_message(message):
 							cursor.close()
 							conn.close()
 				else:
-					response = "Specify how much slime you will wager."
+					response = "Specify how much SlimeCoin you will wager."
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -1252,7 +1299,7 @@ async def on_message(message):
 				response = "**ENOUGH**"
 			elif message.channel.name != ewcfg.channel_casino:
 				# Only allowed in the slime casino.
-				response = "You must go to the #{} to gamble your slime.".format(ewcfg.channel_casino)
+				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
 			else:
 				value = ewcfg.slimes_perslot
 				last_slotsed_times[message.author.id] = time_now
@@ -1268,16 +1315,15 @@ async def on_message(message):
 					cursor.close()
 					conn.close()
 
-				if value > user_data.slimes:
-					response = "You don't have enough slime."
+				if value > user_data.slimecredit:
+					response = "You don't have enough SlimeCoin."
 				else:
 					# Add some suspense...
-					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} slime and pull the handle...".format(ewcfg.slimes_perslot)))
+					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 					await asyncio.sleep(3)
 
 					# Spend slimes
-					user_data.slimes -= value
-					market_data.slimes_casino += value
+					user_data.slimecredit -= value
 
 					slots = [
 						ewcfg.emote_tacobell,
@@ -1313,46 +1359,45 @@ async def on_message(message):
 					# Determine winnings.
 					if roll1 == ewcfg.emote_tacobell and roll2 == ewcfg.emote_tacobell and roll3 == ewcfg.emote_tacobell:
 						winnings = 5 * value
-						response += "\n\n**¡Ándale! ¡Arriba! The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**¡Ándale! ¡Arriba! The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_pizzahut and roll2 == ewcfg.emote_pizzahut and roll3 == ewcfg.emote_pizzahut:
 						winnings = 5 * value
-						response += "\n\n**Oven-fired goodness! The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**Oven-fired goodness! The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_kfc and roll2 == ewcfg.emote_kfc and roll3 == ewcfg.emote_kfc:
 						winnings = 5 * value
-						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**The Colonel's dead eyes unnerve you deeply. The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif (roll1 == ewcfg.emote_tacobell or roll1 == ewcfg.emote_kfc or roll1 == ewcfg.emote_pizzahut) and (roll2 == ewcfg.emote_tacobell or roll2 == ewcfg.emote_kfc or roll2 == ewcfg.emote_pizzahut) and (roll3 == ewcfg.emote_tacobell or roll3 == ewcfg.emote_kfc or roll3 == ewcfg.emote_pizzahut):
 						winnings = value
-						response += "\n\n**You dine on fast food. The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**You dine on fast food. The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_moon and roll2 == ewcfg.emote_moon and roll3 == ewcfg.emote_moon:
 						winnings = 5 * value
-						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**Tonight seems like a good night for VIOLENCE. The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_111 and roll2 == ewcfg.emote_111 and roll3 == ewcfg.emote_111:
 						winnings = 1111
-						response += "\n\n**111111111111111111111111111111111111111111111111**\n\n**The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**111111111111111111111111111111111111111111111111**\n\n**The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_copkiller and roll2 == ewcfg.emote_copkiller and roll3 == ewcfg.emote_copkiller:
 						winnings = 40 * value
-						response += "\n\n**How handsome!! The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**How handsome!! The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_rowdyfucker and roll2 == ewcfg.emote_rowdyfucker and roll3 == ewcfg.emote_rowdyfucker:
 						winnings = 40 * value
-						response += "\n\n**So powerful!! The machine spits out {:,} slime.**".format(winnings)
+						response += "\n\n**So powerful!! The machine spits out {:,} SlimeCoin.**".format(winnings)
 
 					elif roll1 == ewcfg.emote_theeye and roll2 == ewcfg.emote_theeye and roll3 == ewcfg.emote_theeye:
 						winnings = 350 * value
-						response += "\n\n**JACKPOT!! The machine spews forth {:,} slime!**".format(winnings)
+						response += "\n\n**JACKPOT!! The machine spews forth {:,} SlimeCoin!**".format(winnings)
 
 					else:
 						response += "\n\n*Nothing happens...*"
 
 					# Add winnings (if there were any) and save the user data.
 					user_data.slimes += winnings
-					market_data.slimes_casino -= winnings
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
@@ -1369,6 +1414,55 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
+
+
+		# Order a refreshing slime and tonic!
+		elif cmd == ewcfg.cmd_drink:
+
+			if message.channel.name != ewcfg.channel_casino:
+				# Only allowed in the slime casino.
+				response = "You must go to the #{} to order a drink.".format(ewcfg.channel_casino)
+			else:
+				value = ewcfg.slimes_perdrink / (market_data.rate_exchange / 1000000)
+
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
+
+				finally:
+					cursor.close()
+					conn.close()
+
+				if value > user_data.slimecredit:
+					response = "A Slime and Tonic is {} Slimecoin.".format(value)
+				else:
+
+					# Spend slimes
+					user_data.slimecredit -= value
+					user_data.stamina == 0
+
+					response = "You slam {} SlimeCoin down on the bar and chug your refreshing Slime and Tonic. Delicious!!".format(value)
+
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data.persist(conn=conn, cursor=cursor)
+						market_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
 
 		elif cmd == ewcfg.cmd_deadmega:
 			response = ""
