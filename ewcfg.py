@@ -55,13 +55,15 @@ cmd_slimeslots = cmd_prefix + 'slimeslots'
 cmd_slimecraps = cmd_prefix + 'slimecraps'
 cmd_deadmega = cmd_prefix + 'deadmega'
 cmd_invest = cmd_prefix + 'invest'
-cmd_slimecredit = cmd_prefix + 'slimecredit'
+cmd_slimecredit = cmd_prefix + 'slimecoin'
 cmd_withdraw = cmd_prefix + 'withdraw'
 cmd_exchangerate = cmd_prefix + 'exchangerate'
+cmd_drink = cmd_prefix + 'drink'
 
 # Slime costs/values
 slimes_tokill = 20
 slimes_permine = 20
+slimes_perdrink = 500
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 420
@@ -113,6 +115,7 @@ col_id_server = 'id_server'
 col_id_user = 'id_user'
 col_slimes = 'slimes'
 col_slimelevel = 'slimelevel'
+col_stamina = 'stamina'
 col_slimecredit = 'slimecredit'
 col_time_lastkill = 'time_lastkill'
 col_time_lastrevive = 'time_lastrevive'
