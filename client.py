@@ -199,7 +199,7 @@ async def on_ready():
 								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += active_bonus
+						rate_market += active_bonus - 2
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
@@ -1428,7 +1428,9 @@ async def on_message(message):
 					credits = int(value / rate_exchange)
 					value = int(credits * rate_exchange)
 
-					if value > user_data.slimes:
+					if value <= 0:
+						response = "You need to invest more slime."
+					elif value > user_data.slimes:
 						response = "You don't have that much slime to invest."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 						# Limit frequency of investments.
@@ -1533,7 +1535,7 @@ async def on_message(message):
 
 
 				else:
-					response = "Specify how much slime you will invest."
+					response = "Specify how much slime you will withdraw."
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
