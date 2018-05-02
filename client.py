@@ -1369,6 +1369,222 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+						
+		# Play slime pachinko!
+		elif cmd == ewcfg.cmd_slimepachinko:
+			last_used = last_crapsed_times.get(message.author.id)
+			time_now = int(time.time())
+
+			if last_used == None:
+				last_used = 0
+
+			if last_used + 2 > time_now:
+				response = "**ENOUGH**"
+			elif message.channel.name != ewcfg.channel_casino:
+				# Only allowed in the slime casino.
+				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+			else:
+				last_crapsed_times[message.author.id] = time_now
+				value = ewcfg.slimes_perpachinko
+
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+
+
+					if value > user_data.slimecredit:
+						response = "You don't have that much SlimeCoin to bet with."
+					else:
+					
+						# Add some suspense...
+						await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perslot)))
+						await asyncio.sleep(3)
+						user_data.slimecredit -= value
+						
+						winballs = 0
+						
+						#10 balls go!
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)
+						
+						roll = random.randint(1,5)
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*plink*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						response += "*PLUNK*"
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						if roll = 5:
+							response += "**ding!**"
+							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+							winballs += 1
+						await asyncio.sleep(1)						
+						
+						winnings = winballs * 250
+						user_data.slimecredit += winnings
+						
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
+			
+			
+			
 
 		elif cmd == ewcfg.cmd_deadmega:
 			response = ""
