@@ -958,6 +958,8 @@ async def on_message(message):
 
 						# Fatigue the miner.
 						user_data.stamina += 1
+						if random.randrange(10) > 6:
+							user_data.stamina += 1
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
