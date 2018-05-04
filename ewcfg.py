@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.12"
+version = "v1.13"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -56,6 +56,7 @@ cmd_slimecraps = cmd_prefix + 'slimecraps'
 cmd_deadmega = cmd_prefix + 'deadmega'
 cmd_invest = cmd_prefix + 'invest'
 cmd_slimecredit = cmd_prefix + 'slimecoin'
+cmd_slimecredit_alt1 = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
 cmd_exchangerate = cmd_prefix + 'exchangerate'
 cmd_drink = cmd_prefix + 'drink'
