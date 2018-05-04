@@ -376,7 +376,7 @@ async def on_message(message):
 			return
 
 		# process command words
-		if cmd == ewcfg.cmd_kill:
+		if cmd == ewcfg.cmd_killDISABLED:
 			response = ""
 
 			if message.channel.name != ewcfg.channel_combatzone:
@@ -550,6 +550,216 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+			
+		# shoot (slime = hp)
+		if cmd == ewcfg.cmd_shoot or cmd == ewcfg.cmd_kill:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_combatzone:
+				response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
+
+			# Only allow one shot at a time.
+			elif mentions_count > 1:
+				response = "One shot at a time!"
+
+			elif mentions_count == 1:
+				# The roles assigned to the author of this message.
+				roles_map_user = ewutils.getRoleMap(message.author.roles)
+				time_now = int(time.time())
+
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					# Get shooting player's info.
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					if user_data.slimelevel <= 0:
+						user_data.slimelevel = 1
+					
+
+					# Flag the shooter for PvP no matter what happens next.
+					user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
+					user_data.persist(conn=conn, cursor=cursor)
+
+					# Get target's info.
+					member = mentions[0]
+					shootee_data = EwUser(member=member, conn=conn, cursor=cursor)
+
+					conn.commit()
+				finally:
+					cursor.close()
+					conn.close()
+
+				# Shot player's assigned Discord roles.
+				roles_map_target = ewutils.getRoleMap(member.roles)
+
+				# Slime level data. Levels are in powers of 10.
+				slimes_spent = (10**user_data.slimelevel)/10
+				slimes_damage = (10**user_data.slimelevel)/2
+				slimes_dropped = (10**user_data.slimelevel)
+
+				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
+				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+
+				# Add the PvP flag role.
+				if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+				elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+				elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+					await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+
+				if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+					# disallow killing generals
+					response = 'He is hiding in his ivory tower and playing video games like a retard.'
+
+				elif shootee_data.id_killer == user_data.id_user:
+					# disallow shot if the player is the id_killer of killed_data
+					response = "You have already proven your superiority over {}.".format(member.display_name)
+
+				elif time_now > shootee_data.time_expirpvp:
+					# target is not flagged for PvP
+					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
+
+				elif user_iskillers == False and user_isrowdys == False:
+					# Only killers, rowdys, the cop killer, and the rowdy fucker can shoot people
+					if ewcfg.role_juvenile in roles_map_user:
+						response = "Juveniles lack the moral fiber necessary for violence."
+					else:
+						response = "You lack the moral fiber necessary for violence."
+
+				elif ewcfg.role_corpse in roles_map_target:
+					# Target is already dead.
+					response = '{} is already dead.'.format(member.display_name)
+
+				elif (time_now - shootee_data.time_lastrevive) < ewcfg.invuln_onrevive:
+					# User is currently invulnerable
+					response = '{} has died too recently and is immune.'.format(member.display_name)
+
+				else:
+					# slimes from this kill might be awarded to the boss
+					role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
+					boss_slimes = 0
+
+					role_corpse = roles_map[ewcfg.role_corpse]
+
+					was_juvenile = False
+					was_killed = False
+					was_shot = False
+
+					if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+						# User can be shot.
+						if ewcfg.role_juvenile in roles_map_target:
+							was_juvenile = True
+
+
+						was_shot = True
+						
+					if was_shot = True and slimes_damage >= shootee_data.slimes:
+						was_killed = True
+						await client.replace_roles(member, role_corpse)
+						
+						# Remove !revive invulnerability.
+						user_data.time_lastrevive = 0
+
+					if was_shot= True:
+						user_data.slimes -= slimes_spent
+					
+					if was_shot = True and was_killed = False:
+						
+						shootee_data.slimes -= slimes_damage
+						
+						# player was killed
+						response = '{} is hit!! {} :gun:'.format(member.display_name, ewcfg.emote_slime5)
+						
+						
+					if was_killed == True:
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							if shootee_data.slimes > 0:
+								if was_juvenile == True:
+									# Add juvenile targets' dropped slimes to this player.
+									user_data.slimes += slimes_dropped
+									
+								else:
+									# Add adult tarets' dropped slimes to the boss.
+									boss_slimes += slimes_dropped
+
+							# Persist the player's data.
+							user_data.persist(conn=conn, cursor=cursor)
+
+							# Remove all slimes from the dead player.
+							shootee_data.slimes = 0
+							shootee_data.id_killer = message.author.id
+							shootee_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+						# give slimes to the boss if possible.
+						boss_member = None
+						if boss_slimes > 0:
+							for member_search in message.author.server.members:
+								if role_boss in ewutils.getRoleMap(member_search.roles):
+									boss_member = member_search
+									break
+							
+							if boss_member != None:
+								try:
+									conn = ewutils.databaseConnect()
+									cursor = conn.cursor()
+
+									boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
+									boss_data.slimes += boss_slimes
+									boss_data.persist(conn=conn, cursor=cursor)
+
+									conn.commit()
+								finally:
+									cursor.close()
+									conn.close()
+
+						# player was killed
+						response = '{} has been SLAUGHTERED. {} :gun:'.format(member.display_name, ewcfg.emote_slime5)
+						
+						#level up if approppriate
+						
+						new_level = len(str(user_data.slimes))
+						
+						if new_level > user_data.slimelevel:
+							
+							if new_level = 2:
+								response += "\n \n {} has been empowered by slime and is now a level 2 slimeboi!".format(message.author)
+							if new_level = 3:
+								response += "\n \n {} has been empowered by slime and is now a level 3 slimeboi!".format(message.author)
+							if new_level = 4:
+								response += "\n \n {} has been empowered by slime and is now a level 4 slimeboi!".format(message.author)
+							if new_level = 5:
+								response += "\n \n {} has been empowered by slime and is now a level 5 slimeboi!".format(message.author)
+							if new_level = 6:
+								response += "\n \n {} has been empowered by slime and is now a level 6 slimeboi!".format(message.author)
+							if new_level = 7:
+								response += "\n \n {} has been empowered by slime and is now a level 7 slimeboi!".format(message.author)
+							if new_level = 8:
+								response += "\n \n {} has been empowered by slime and is now a level 8 slimeboi!".format(message.author)
+								
+							user_data.slimelevel = new_level
+							
+							user_data.persist()
+							
+					else:
+						# teammate, or otherwise unkillable
+						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+
+			else:
+				response = 'Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name.'
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
+			
 
 		# Kill yourself to return slime to your general.
 		elif cmd == ewcfg.cmd_suicide:
@@ -759,22 +969,18 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						player_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						
+						#Endless War collects his fee
+						player_data.slimecredit -= int(player_data.slimecredit/10)
 
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
-
-						# Clear fatigue.
-						player_data.stamina = 0
-
-						# Clear PvP flag.
 						player_data.time_expirpvp = time_now - 1;
-
-						# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 						player_data.time_lastrevive = time_now
-
 						if(player_data.time_expirpvp > time_now):
 							player_is_pvp = True
-
+						player_data.slimelevel = len(str(player_data.slimes))
+						
 						player_data.persist(conn=conn, cursor=cursor)
 
 						# Give some slimes to every living player (currently online)
@@ -923,59 +1129,108 @@ async def on_message(message):
 
 			if ewcfg.role_corpse in roles_map_user:
 				await client.send_message(message.channel, ewutils.formatMessage(message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+			
+			
 			else:
 				if(message.channel.name == ewcfg.channel_mines):
-					user_data = EwUser(member=message.author)
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
 
-					if user_data.stamina >= 250:
-						mismined = last_mismined_times.get(message.author.id)
-						time_now = int(time.time())
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						
+						if user_data.stamina >= 250:
+							mismined = last_mismined_times.get(message.author.id)
+							time_now = int(time.time())
 
-						if mismined == None:
-							mismined = {
-								'time': time_now,
-								'count': 0
-							}
+							if mismined == None:
+								mismined = {
+									'time': time_now,
+									'count': 0
+								}
 
-						if time_now - mismined['time'] < 5:
-							mismined['count'] += 1
-						else:
-							# Reset counter.
-							mismined['time'] = time_now
-							mismined['count'] = 1
+							if time_now - mismined['time'] < 5:
+								mismined['count'] += 1
+							else:
+								# Reset counter.
+								mismined['time'] = time_now
+								mismined['count'] = 1
 
-						last_mismined_times[message.author.id] = mismined
+							last_mismined_times[message.author.id] = mismined
 
-						if mismined['count'] >= 3:
-							# Death
-							last_mismined_times[message.author.id] = None
-							user_data.slimes = 0
-							user_data.persist()
+							if mismined['count'] >= 3:
+								# Death
+								last_mismined_times[message.author.id] = None
 
-							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You have died in a mining accident."))
-							await client.replace_roles(message.author, roles_map[ewcfg.role_corpse])
-						else:
-							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
-					else:
-						# Add mined slime to the user.
-						user_data.slimes += ewcfg.slimes_permine
+								try:
+									conn = ewutils.databaseConnect()
+									cursor = conn.cursor()
 
-						# Fatigue the miner.
-						user_data.stamina += 1
-						if random.randrange(10) > 6:
+									user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+									user_data.slimes = 0
+									user_data.persist(conn=conn, cursor=cursor)
+
+									conn.commit()
+								finally:
+									cursor.close()
+									conn.close()
+
+
+								await client.edit_message(resp, ewutils.formatMessage(message.author, "You have died in a mining accident."))
+								await client.replace_roles(message.author, roles_map[ewcfg.role_corpse])
+							else:
+								await client.edit_message(resp, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
+
+						else:		
+							# Increment slimes for this user.
+							user_data.slimes += ewcfg.slimes_permine
+						
+							# Fatigue the miner.
 							user_data.stamina += 1
 
-						# Flag the user for PvP
-						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
-						user_data.persist()
+							#level up if approppriate
+						
+							new_level = len(str(user_data.slimes))
+							
+							if new_level > user_data.slimelevel:
+								
+								if new_level = 2:
+									response += "\n \n {} has been empowered by slime and is now a level 2 slimeboi!".format(message.author)
+								if new_level = 3:
+									response += "\n \n {} has been empowered by slime and is now a level 3 slimeboi!".format(message.author)
+								if new_level = 4:
+									response += "\n \n {} has been empowered by slime and is now a level 4 slimeboi!".format(message.author)
+								if new_level = 5:
+									response += "\n \n {} has been empowered by slime and is now a level 5 slimeboi!".format(message.author)
+								if new_level = 6:
+									response += "\n \n {} has been empowered by slime and is now a level 6 slimeboi!".format(message.author)
+								if new_level = 7:
+									response += "\n \n {} has been empowered by slime and is now a level 7 slimeboi!".format(message.author)
+								if new_level = 8:
+									response += "\n \n {} has been empowered by slime and is now a level 8 slimeboi!".format(message.author)
+									
+								user_data.slimelevel = new_level
+								
+								user_data.persist()
+							
+							# Flag the user for PvP
+							user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
 
-						# Add the PvP flag role.
-						if ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
-							await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
-						elif ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
-							await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
-						elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
-							await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+							user_data.persist(conn=conn, cursor=cursor)
+
+
+							conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+
+					# Add the PvP flag role.
+					if ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+					elif ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+					elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
 				else:
 					mismined = last_mismined_times.get(message.author.id)
 					time_now = int(time.time())
@@ -995,7 +1250,7 @@ async def on_message(message):
 
 					last_mismined_times[message.author.id] = mismined
 
-					if mismined['count'] >= 3:
+					if mismined['count'] >= 5:
 						# Death
 						last_mismined_times[message.author.id] = None
 
@@ -1016,7 +1271,7 @@ async def on_message(message):
 						await client.edit_message(resp, ewutils.formatMessage(message.author, "You have died in a mining accident."))
 						await client.replace_roles(message.author, roles_map[ewcfg.role_corpse])
 					else:
-						await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
+						await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))	
 
 
 		# Show the current slime score of a player.
@@ -1025,15 +1280,17 @@ async def on_message(message):
 
 			if mentions_count == 0:
 				user_slimes = EwUser(member=message.author).slimes
+				user_slimelevel = EwUser(member=message.author).slimes
 
 				# return my score
-				response = "Your slime score is {:,} {}".format(user_slimes, ewcfg.emote_slime1)
+				response = "You are a level {} slimeboi. You currently have {:,} slime. {}".format(user_slimelevel, user_slimes, ewcfg.emote_slime1)
 			else:
 				member = mentions[0]
 				user_slimes = EwUser(member=member).slimes
-
+				user_slimelevel = EwUser(member=member).slimelevel
+				
 				# return somebody's score
-				response = "{}'s slime score is {:,} {}".format(member.display_name, user_slimes, ewcfg.emote_slime1)
+				response = "{} is a level {} slimeboi with {:,} slime. {}".format(member.display_name, user_slimelevel, user_slimes, ewcfg.emote_slime1)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -1665,6 +1922,31 @@ async def on_message(message):
 							cursor.close()
 							conn.close()
 
+						#level up if approppriate
+						
+						new_level = len(str(user_data.slimes))
+						
+						if new_level > user_data.slimelevel:
+							
+							if new_level = 2:
+								response += "\n \n {} has been empowered by slime and is now a level 2 slimeboi!".format(message.author)
+							if new_level = 3:
+								response += "\n \n {} has been empowered by slime and is now a level 3 slimeboi!".format(message.author)
+							if new_level = 4:
+								response += "\n \n {} has been empowered by slime and is now a level 4 slimeboi!".format(message.author)
+							if new_level = 5:
+								response += "\n \n {} has been empowered by slime and is now a level 5 slimeboi!".format(message.author)
+							if new_level = 6:
+								response += "\n \n {} has been empowered by slime and is now a level 6 slimeboi!".format(message.author)
+							if new_level = 7:
+								response += "\n \n {} has been empowered by slime and is now a level 7 slimeboi!".format(message.author)
+							if new_level = 8:
+								response += "\n \n {} has been empowered by slime and is now a level 8 slimeboi!".format(message.author)
+								
+							user_data.slimelevel = new_level
+							
+							user_data.persist()	
+						
 						# Add the visible PvP flag role.
 						roles_map_user = ewutils.getRoleMap(message.author.roles)
 						if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
@@ -1676,7 +1958,7 @@ async def on_message(message):
 
 
 				else:
-					response = "Specify how much slime you will withdraw."
+					response = "Specify how much slime you will invest."
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
