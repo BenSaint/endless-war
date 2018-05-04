@@ -60,6 +60,7 @@ cmd_slimecredit_alt1 = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
 cmd_exchangerate = cmd_prefix + 'exchangerate'
 cmd_drink = cmd_prefix + 'drink'
+cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -72,6 +73,7 @@ slimes_perspar = 2500
 slimes_hauntratio = 20
 slimes_hauntmax = 1500
 slimes_perslot = 100
+slimes_perpachinko = 500
 
 # Lifetimes
 invuln_onrevive = 0

@@ -34,6 +34,10 @@ last_slotsed_times = {}
 # threw their dice.
 last_crapsed_times = {}
 
+# Map containing user IDs and the last time in UTC seconds since the pachinko
+# machine was used.
+last_pachinkoed_times = {}
+
 # Map of user ID to a map of recent miss-mining time to count. If the count
 # exceeds 3 in 5 seconds, you die.
 last_mismined_times = {}
@@ -1383,6 +1387,74 @@ async def on_message(message):
 					user_data.persist()
 
 				last_slotsed_times[message.author.id] = 0
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# Play slime pachinko!
+		elif cmd == ewcfg.cmd_slimepachinko:
+			last_used = last_pachinkoed_times.get(message.author.id)
+			time_now = int(time.time())
+
+			if last_used == None:
+				last_used = 0
+
+			response = ""
+
+			if last_used + 10 > time_now:
+				response = "**ENOUGH**"
+			elif message.channel.name != ewcfg.channel_casino:
+				# Only allowed in the slime casino.
+				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+			else:
+				last_pachinkoed_times[message.author.id] = time_now
+				value = ewcfg.slimes_perpachinko
+
+				user_data = EwUser(member=message.author)
+
+				if value > user_data.slimecredit:
+					response = "You don't have enough SlimeCoin to play."
+				else:
+					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
+					await asyncio.sleep(3)
+
+					ball_count = 10
+					response = ""
+					winballs = 0
+
+					# Drop ball_count balls
+					while ball_count > 0:
+						ball_count -= 1
+
+						roll = random.randint(1, 5)
+						response += "\n*plink*"
+
+						# Add a varying number of plinks to make it feel more random.
+						plinks = random.randint(1, 4)
+						while plinks > 0:
+							plinks -= 1
+							response += " *plink*"
+						response += " PLUNK"
+
+						# 1/5 chance to win.
+						if roll == 5:
+							response += " ... **ding!**"
+							winballs += 1
+
+						await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+						await asyncio.sleep(1)
+
+					winnings = winballs * 250
+					user_data.slimecredit += winnings
+					user_data.persist()
+
+					if winnings > 0:
+						response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
+					else:
+						response += "\n\nYou lost your SlimeCoin."
+
+				# Allow the player to pachinko again now that we're done.
+				last_pachinkoed_times[message.author.id] = 0
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
