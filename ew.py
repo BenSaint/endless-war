@@ -165,8 +165,8 @@ class EwUser:
 				if result != None:
 					# Record found: apply the data to this object.
 					self.slimes = result[0]
-					self.slimelevel = result [1]
-					self.stamina = result [2]
+					self.slimelevel = result[1]
+					self.stamina = result[2]
 					self.slimecredit = result[3]
 					self.time_lastkill = result[4]
 					self.time_lastrevive = result[5]
