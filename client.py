@@ -1582,7 +1582,7 @@ async def on_message(message):
 						user_data.time_lastinvest = time_now
 						market_data.slimes_casino += value
 
-						response = "You exchange {slime:,} slime for {credit:,} SlimeCoin.".format(slime=value, credit=credits)
+						response = "You exchange {slime:,} slime for {credit:,} SlimeCoin. Your slimebroker takes his nominal fee.".format(slime=value, credit=credits)
 
 						try:
 							conn = ewutils.databaseConnect()
@@ -1696,8 +1696,11 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_slimecredit or cmd == ewcfg.cmd_slimecredit_alt1:
 			response = ""
 
+			market_data = EwMarket(id_server=server.id)
+
 			user_slimecredit = EwUser(member=message.author).slimecredit
-			response = "You have {:,} SlimeCoin.".format(user_slimecredit)
+			net_worth = user_slimecredit*(market_data.rate_exchange/1000)
+			response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
