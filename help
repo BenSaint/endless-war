@@ -10,11 +10,6 @@ These are the commands I understand:
 		*Awards 20 slime.*
 		*Flags you for PvP combat for 3 minutes.*
 
-	**!drink**
-		Clears you of all fatigue.
-
-		*Used only in the #slime-casino.*
-
 	**!enlist**
 		Join the Rowdy Fuckers or the Cop Killers (if you have enough slime).
 		
@@ -46,33 +41,38 @@ These are the commands I understand:
 		*Used only when dead.*
 		*10 minute cooldown.*
 
+	**!slimecoin**
+		See how much SlimeCoin you have.
+
+	**!exchangerate**
+		See the current exchange rate of slimes per slime credit.
+
+**Used only in the #slime-stock-exchange:**
+	**!invest** #
+		Invest some slime in the market! You exchange slime for SlimeCoin
+		at the current exchange rate, plus a 5% brokerage fee.
+
+		*20 minute cooldown shared with !withdraw.*
+
+	**!withdraw** #
+		Cash in your SlimeCoin for cold, wet slime!
+
+		*20 minute cooldown shared with !invest.*
+		*Flags you for PvP combat for 3 minutes.*
+
+**Used only in the #slime-casino:**
+	**!drink**
+		Clears you of all mining-induced fatigue.
+
 	**!slimeslots**
 		Play the slime slot machine!
 
-		*Used only in the #slime-casino.*
 		*Costs 100 slime.*
 
 	**!slimecraps** #
 		Toss the dice! Wager some number of slimes and win big.
 
-		*Used only in the #slime-casino.*
+	**!slimepachinko**
+		Drop some balls in the slime pachinko machine!
 
-	**!invest** #
-		Invest some slime in the market! You exchange slime for slime credits
-		at the current exchange rate, plus a 5% brokerage fee.
-
-		*Used only in the #slime-stock-exchange*
-		*20 minute cooldown shared with !withdraw.*
-
-	**!withdraw** #
-		Cash in your slime credits for cold, wet slime!
-
-		*Used only in the #slime-stock-exchange*
-		*20 minute cooldown shared with !invest.*
-		*Flags you for PvP combat for 3 minutes.*
-
-	**!slimecredit**
-		See how many slime credits you have.
-
-	**!exchangerate**
-		See the current exchange rate of slimes per slime credit.
+		*Costs 500 slime.*
