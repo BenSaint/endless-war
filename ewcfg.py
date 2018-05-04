@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.13"
+version = "v1.14"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
