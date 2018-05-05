@@ -1421,6 +1421,9 @@ async def on_message(message):
 					ball_count = 10
 					response = ""
 					winballs = 0
+					
+					#subtract slimecoin from player
+					user_data.slimecredit -= value
 
 					# Drop ball_count balls
 					while ball_count > 0:
