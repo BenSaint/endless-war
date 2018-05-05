@@ -1639,11 +1639,12 @@ async def on_message(message):
 						conn.close()
 
 					rate_exchange = (market_data.rate_exchange / 1000000.0)
+										
+					credits = value
 					slimes = int(value * rate_exchange)
-					credits = int(slimes / rate_exchange)
 
 					if value > user_data.slimecredit:
-						response = "You don't have that much credit to withdraw."
+						response = "You don't have that many SlimeCoin to exchange."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 						# Limit frequency of withdrawals
 						response = "You can't withdraw right now. Your slimebroker is busy."
