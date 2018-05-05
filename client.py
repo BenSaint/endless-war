@@ -1569,7 +1569,7 @@ async def on_message(message):
 					# The user can only buy a whole number of credits, so adjust their cost based on the actual number of credits purchased.
 					gross_credits = int(value / rate_exchange)
 					
-					fee = int((credits * feerate) - credits)
+					fee = int((gross_credits * feerate) - gross_credits)
 					
 					net_credits = gross_credits - fee
 
@@ -1584,7 +1584,7 @@ async def on_message(message):
 						user_data.time_lastinvest = time_now
 						market_data.slimes_casino += value
 						
-						response = "You invest {slime:,} slime fand receive {credit:,} SlimeCoin. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, credit=net_credits, fee=fee)
+						response = "You invest {slime:,} slime and receive {credit:,} SlimeCoin. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, credit=net_credits, fee=fee)
 
 						try:
 							conn = ewutils.databaseConnect()
@@ -1698,9 +1698,16 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_slimecredit or cmd == ewcfg.cmd_slimecredit_alt1:
 			response = ""
 
-			market_data = EwMarket(id_server=server.id)
+			try:
+				conn = ewutils.databaseConnect()
+				cursor = conn.cursor()
 
-			user_slimecredit = EwUser(member=message.author).slimecredit
+				market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+				user_slimecredit = EwUser(member=message.author, conn=conn, cursor=cursor).slimecredit
+			finally:
+				cursor.close()
+				conn.close()
+
 			net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000.0))
 			response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit, net_worth)
 
