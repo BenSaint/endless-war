@@ -1563,26 +1563,28 @@ async def on_message(message):
 						conn.close()
 
 					# Apply a brokerage fee of ~5% (rate * 1.05)
-					rate_exchange = (market_data.rate_exchange / 1000000.0 * 1.05)
+					rate_exchange = (market_data.rate_exchange / 1000000.0)
+					feerate = 1.05
 
 					# The user can only buy a whole number of credits, so adjust their cost based on the actual number of credits purchased.
-					credits = int(value / rate_exchange)
-					value = int(credits * rate_exchange)
+					gross_credits = int(value / rate_exchange)
+					
+					fee = int((credits * feerate) - credits)
+					
+					net_credits = gross_credits - fee
 
-					if value <= 0:
-						response = "You need to invest more slime."
-					elif value > user_data.slimes:
+					if value > user_data.slimes:
 						response = "You don't have that much slime to invest."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 						# Limit frequency of investments.
 						response = "You can't invest right now. Your slimebroker is busy."
 					else:
 						user_data.slimes -= value
-						user_data.slimecredit += credits
+						user_data.slimecredit += net_credits
 						user_data.time_lastinvest = time_now
 						market_data.slimes_casino += value
-
-						response = "You exchange {slime:,} slime for {credit:,} SlimeCoin. Your slimebroker takes his nominal fee.".format(slime=value, credit=credits)
+						
+						response = "You invest {slime:,} slime fand receive {credit:,} SlimeCoin. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, credit=net_credits, fee=fee)
 
 						try:
 							conn = ewutils.databaseConnect()
