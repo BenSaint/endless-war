@@ -1708,7 +1708,7 @@ async def on_message(message):
 				cursor.close()
 				conn.close()
 
-			net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000.0))
+			net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000000.0))
 			response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit, net_worth)
 
 			# Send the response to the player.
