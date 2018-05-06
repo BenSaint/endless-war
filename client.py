@@ -203,7 +203,7 @@ async def on_ready():
 								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += active_bonus - 2
+						rate_market += (active_bonus / 2) - 2
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
