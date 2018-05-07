@@ -13,13 +13,14 @@ These are the commands I understand:
 	**!enlist**
 		Join the Rowdy Fuckers or the Cop Killers (if you have enough slime).
 		
-	**!kill** *@username*
-		Kill the mentioned users. Rowdys kill Killers. Killers kill Rowdys.
-		Both kill Juveniles.
+	**!shoot** *@username*
+		Shoot the mentioned player, dealing damage based on your slime level
+		and potentially killing them.
+
+		Rowdys kill Killers. Killers kill Rowdys. Both kill Juveniles.
 		
-		*Costs slime proportional your and your target's slime scores.*
 		*Used only in the #combat-zone.*
-		*1 minute cooldown.*
+		*5 second cooldown.*
 		*Flags you for PvP combat for 10 minutes.*
 
 	**!spar** *@username*
