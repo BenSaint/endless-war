@@ -115,6 +115,8 @@ class EwUser:
 	slimecredit = 0
 	slimelevel = 1
 	stamina = 0
+	weapon = 0
+	trauma = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -149,10 +151,12 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
+					ewcfg.col_weapon,
+					ewcfg.col_trauma,
 					ewcfg.col_slimecredit,
 					ewcfg.col_time_lastkill,
 					ewcfg.col_time_lastrevive,
@@ -172,14 +176,16 @@ class EwUser:
 					self.slimes = result[0]
 					self.slimelevel = result[1]
 					self.stamina = result[2]
-					self.slimecredit = result[3]
-					self.time_lastkill = result[4]
-					self.time_lastrevive = result[5]
-					self.id_killer = result[6]
-					self.time_lastspar = result[7]
-					self.time_expirpvp = result[8]
-					self.time_lasthaunt = result[9]
-					self.time_lastinvest = result[10]
+					self.weapon = result [3]
+					self.trauma = result [4]
+					self.slimecredit = result[5]
+					self.time_lastkill = result[6]
+					self.time_lastrevive = result[7]
+					self.id_killer = result[8]
+					self.time_lastspar = result[9]
+					self.time_expirpvp = result[10]
+					self.time_lasthaunt = result[11]
+					self.time_lastinvest = result[12]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -209,12 +215,14 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
 				ewcfg.col_slimelevel,
 				ewcfg.col_stamina,
+				ewcfg.col_weapon,
+				ewcfg.col_trauma,
 				ewcfg.col_slimecredit,
 				ewcfg.col_time_lastkill,
 				ewcfg.col_time_lastrevive,
@@ -229,6 +237,8 @@ class EwUser:
 				self.slimes,
 				self.slimelevel,
 				self.stamina,
+				self.weapon,
+				self.trauma,
 				self.slimecredit,
 				self.time_lastkill,
 				self.time_lastrevive,
