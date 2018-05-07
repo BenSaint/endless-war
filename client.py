@@ -1771,6 +1771,32 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+		# Show the total of negative slime in the world.
+		elif cmd == ewcfg.cmd_negaslime:
+			negaslime = 0
+
+			try:
+				conn = ewutils.databaseConnect()
+				cursor = conn.cursor()
+
+				cursor.execute("SELECT sum({}) FROM users WHERE id_server = %s AND {} < 0".format(
+					ewcfg.col_slimes,
+					ewcfg.col_slimes
+				), (message.server.id, ))
+
+				result = cursor.fetchone();
+
+				if result != None:
+					negaslime = result[0]
+
+					if negaslime == None:
+						negaslime = 0
+			finally:
+				cursor.close()
+				conn.close()
+
+			await client.edit_message(resp, ewutils.formatMessage(message.author, "The dead have amassed {:,} negaslime.".format(negaslime)))
+
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))

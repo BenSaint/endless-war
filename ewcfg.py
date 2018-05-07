@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.15"
+version = "v1.16"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -62,6 +62,7 @@ cmd_withdraw = cmd_prefix + 'withdraw'
 cmd_exchangerate = cmd_prefix + 'exchangerate'
 cmd_drink = cmd_prefix + 'drink'
 cmd_slimepachinko = cmd_prefix + 'slimepachinko'
+cmd_negaslime = cmd_prefix + 'negaslime'
 
 # Slime costs/values
 slimes_tokill = 20
