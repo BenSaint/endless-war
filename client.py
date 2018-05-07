@@ -506,7 +506,52 @@ async def on_message(message):
 							# Player was killed.
 							shootee_data.slimes = 0
 							shootee_data.id_killer = user_data.id_user
-							response = '{} has been SLAUGHTERED. {} :gun:'.format(member.display_name, ewcfg.emote_slime5)
+							if user_data.weapon = 0:
+								response = '{} has died mysteriously.'.format(member.display_name)
+								shootee_data.trauma = 0
+							
+							elif user_data.weapon = 1:
+								response = '{} puts their gun to {}\'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 1
+
+							elif user_data.weapon = 2:
+								response = '**RAT-TAT-TAT-TAT-TAT!!** {} rains a hail of bullets directly into {}!! They\'re officially toast! {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 2
+
+							elif user_data.weapon = 3:
+								response = '**HIIII-YAA!!** With expert timing, {} brutally batters {} to death, then strikes a sweet kung-fu pose. {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 3
+
+							elif user_data.weapon = 4:
+								response = 'Faster than the eye can follow, {}\'s blade glints in the greenish light. {} falls over, now in two pieces. {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 4
+
+							elif user_data.weapon = 5:
+								response = '{} pulls back for a brutal swing! **CRUNCCHHH.** {}\'s brains splatter over the sidewalk. {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 5
+
+							elif user_data.weapon = 6:
+								response = '{} quietly moves behind {} and... **!!!** After a brief struggle, only a cold body remains. {}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 6
+
+							elif user_data.weapon = 7:
+								response = '{} slugs {} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well.{}'.format(message.author, member.display_name, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 7
+
+							elif user_data.weapon = 8:
+								response = '**SMASH!** {}\'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {} is suspected of arson. {}'.format(member.display_name, message.author, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 8
+
+							elif user_data.weapon = 9:
+								response = 'A blade flashes through the air!! **THUNK.** {} is a goner, but {} slits their throat before fleeing the scene, just to be safe. {}'.format(message.member.display_name, message.author, ewcfg.emote_slimeskull)
+								shootee_data.trauma = 9
+								
+							else
+								response = '{} has died mysteriously.'.format(member.display_name)
+								shootee_data.trauma = 0
+								
+							shootee_data.persist()
+							
 						else:
 							# A non-lethal blow!
 							shootee_data.slimes -= slimes_damage
@@ -625,6 +670,73 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+			
+		# Choose your weapon
+		elif cmd == ewcfg.cmd_equip:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)	
+			
+			else:
+				if tokens_count > 1:
+					value = None
+					for token in tokens[1:]:
+						try:
+							weapon = token
+							break
+						except:
+							value = None
+				
+					#get user data
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					
+					if weapon = pistol or weapon = gun or weapon = pistols or weapon = dualpistols:
+						response = "You equip the dual pistols."
+						user_data.weapon = 1
+					
+					elif weapon = rifle or weapon = assaultrifle or weapon = machinegun:
+						response = "You equip the assault rifle."
+						user_data.weapon = 2
+						
+					elif weapon = nunchucks or weapon = nanchaku or weapon = numchucks:
+						response = "You equip the nun-chucks."
+						user_data.weapon = 3
+							
+					elif weapon = katana or weapon = sword or weapon = ninjasword:
+						response = "You equip the katana."
+						user_data.weapon = 4
+						
+					elif weapon = bat or weapon = club or weapon = batwithnails:
+						response = "You equip the bat with nails in it."
+						user_data.weapon = 5
+					
+					elif weapon = garrotte or weapon = wire or weapon = garrottewire:
+						response = "You equip the garrotte wire."
+						user_data.weapon = 6
+					
+					elif weapon = brassknuckles or weapon = knuckles or weapon = knuckledusters:
+						response = "You equip the brass knuckles."
+						user_data.weapon = 7
+						
+					elif weapon = molotov or weapon = firebomb or weapon = molotovcocktail:
+						response = "You equip the molotov cocktail."
+						user_data.weapon = 8
+						
+					elif weapon = knife or weapon = knives or weapon = dagger:
+						response = "You equip the knives."
+						user_data.weapon = 9
+					
+					else:
+						response = "Choose your weapon: pistols, assault rifle, nun-chucks, katana, bat, garrotte wire, brass knuckles, molotov cocktails, or steel chain."
+					
+					user_data.persist()		
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+			
 
 		# Spar with an ally
 		elif cmd == ewcfg.cmd_spar:
@@ -1059,7 +1171,25 @@ async def on_message(message):
 					user_data.persist()
 
 				# return my score
-				response = "You are a level {} slimeboi. You currently have {:,} slime. {}".format(user_data.slimelevel, user_data.slimes, ewcfg.emote_slime1)
+				response = "You are a level {} slimeboi. You currently have {:,} slime.".format(user_data.slimelevel, user_data.slimes)
+				if user_trauma = 1:
+					response += "You have scarring on both temples, which occasionally bleeds."
+				if user_trauma = 2:
+					response += "Your torso is riddles with scarred-over bulletholes."
+				if user_trauma = 3:
+					response += "You are covered in deep bruises. You hate martial arts of all kinds."
+				if user_trauma = 4:
+					response += "A single clean scar runs across the entire length of your body."
+				if user_trauma = 5:
+					response += "Your head appears to be slightly concave on one side."
+				if user_trauma = 6:
+					response += "There is noticeable bruising and scarring around your neck."
+				if user_trauma = 7:
+					response += "You've got two black eyes, missing teeth, and a profoundly crooked nose."
+				if user_trauma = 8:
+					response += "You're wrapped in bandages. What skin is showing appears burn-scarred."
+				if user_trauma = 6:
+					response += "You are covered in scarred-over lacerations and puncture wounds."
 			else:
 				member = mentions[0]
 				user_data = EwUser(member=member)
@@ -1073,7 +1203,25 @@ async def on_message(message):
 					user_data.persist()
 
 				# return somebody's score
-				response = "{} is a level {} slimeboi with {:,} slime. {}".format(member.display_name, user_data.slimelevel, user_data.slimes, ewcfg.emote_slime1)
+				response = "{} is a level {} slimeboi with {:,} slime. ".format(member.display_name, user_data.slimelevel, user_data.slimes)
+				if user_trauma = 1:
+					response += "They have scarring on both temples, which occasionally bleeds."
+				if user_trauma = 2:
+					response += "Their torso is riddles with scarred-over bulletholes."
+				if user_trauma = 3:
+					response += "They are covered in deep bruises. They hate martial arts of all kinds."
+				if user_trauma = 4:
+					response += "A single clean scar runs across the entire length of their body."
+				if user_trauma = 5:
+					response += "Their head appears to be slightly concave on one side."
+				if user_trauma = 6:
+					response += "There is noticeable bruising and scarring around their neck."
+				if user_trauma = 7:
+					response += "They've got two black eyes, missing teeth, and a profoundly crooked nose."
+				if user_trauma = 8:
+					response += "They're wrapped in bandages. What skin is showing appears burn-scarred."
+				if user_trauma = 6:
+					response += "They are covered in scarred-over lacerations and puncture wounds."
 
 			# Update the user's slime level.
 			if user_data != None:
