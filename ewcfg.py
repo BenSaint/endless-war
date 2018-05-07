@@ -64,6 +64,7 @@ cmd_exchangerate_alt1 = cmd_prefix + 'exchange'
 cmd_drink = cmd_prefix + 'drink'
 cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
+cmd_equip = cmd+prefix + 'equip'
 
 # Slime costs/values
 slimes_tokill = 20
