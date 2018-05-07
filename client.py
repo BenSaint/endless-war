@@ -420,7 +420,7 @@ async def on_message(message):
 				slimes_bylevel = int(10 ** user_data.slimelevel)
 				slimes_spent = int(slimes_bylevel / 10)
 				slimes_damage = int(slimes_bylevel / 2)
-				slimes_dropped = int(slimes_bylevel)
+				slimes_dropped = int(10 ** shootee_data.slimelevel)
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
 				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
@@ -496,7 +496,8 @@ async def on_message(message):
 							if was_juvenile:
 								user_data.slimes += slimes_dropped
 							else:
-								boss_slimes += slimes_dropped
+								user_data.slimes += (slimes_dropped / 2)
+								boss_slimes += (slimes_dropped / 2)
 
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
