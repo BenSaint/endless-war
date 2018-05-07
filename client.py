@@ -383,6 +383,8 @@ async def on_message(message):
 				response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
 			elif mentions_count > 1:
 				response = "One shot at a time!"
+			elif mentions_count <= 0:
+				response = "Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name."
 			elif mentions_count == 1:
 				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
@@ -509,7 +511,7 @@ async def on_message(message):
 							shootee_data.slimes -= slimes_damage
 							response = "{} is hit!! {} :gun:".format(member.display_name, ewcfg.emote_slime5)
 					else:
-						response = "You missed."
+						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
 					# Level up the player if appropriate.
 					new_level = len(str(user_data.slimes))
@@ -546,8 +548,6 @@ async def on_message(message):
 					# Assign the corpse role to the newly dead player.
 					if was_killed:
 						await client.replace_roles(member, role_corpse)
-			else:
-				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
