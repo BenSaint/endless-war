@@ -108,7 +108,7 @@ class EwUser:
 
 	slimes = 0
 	slimecredit = 0
-	slimelevel = 0
+	slimelevel = 1
 	stamina = 0
 
 	time_lastkill = 0

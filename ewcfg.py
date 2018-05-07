@@ -1,5 +1,5 @@
 # Global configuration options.
-version = "v1.14"
+version = "v1.15"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -80,7 +80,7 @@ slimes_perpachinko = 500
 invuln_onrevive = 0
 
 # Cooldowns
-cd_kill = 60
+cd_kill = 5
 cd_spar = 600
 cd_haunt = 600
 cd_invest = 1200
