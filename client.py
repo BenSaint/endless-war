@@ -1795,7 +1795,7 @@ async def on_message(message):
 				cursor.close()
 				conn.close()
 
-			await client.edit_message(resp, ewutils.formatMessage(message.author, "The dead have amassed {:,} negaslime.".format(negaslime)))
+			await client.edit_message(resp, ewutils.formatMessage(message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
