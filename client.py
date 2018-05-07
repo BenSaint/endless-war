@@ -417,10 +417,10 @@ async def on_message(message):
 				roles_map_target = ewutils.getRoleMap(member.roles)
 
 				# Slime level data. Levels are in powers of 10.
-				slimes_bylevel = int(10 ** user_data.slimelevel)
+				slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 				slimes_spent = int(slimes_bylevel / 10)
 				slimes_damage = int(slimes_bylevel / 2)
-				slimes_dropped = int(10 ** shootee_data.slimelevel)
+				slimes_dropped = int((10 ** shootee_data.slimelevel) / 10)
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
 				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
@@ -491,18 +491,18 @@ async def on_message(message):
 						user_data.time_lastrevive = 0
 						user_data.slimes -= slimes_spent
 
-						# Move around slime as a result of the shot.
-						if shootee_data.slimes > 0:
-							if was_juvenile:
-								user_data.slimes += slimes_dropped
-							else:
-								user_data.slimes += (slimes_dropped / 2)
-								boss_slimes += slimes_dropped
-
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
 
 						if was_killed:
+							# Move around slime as a result of the shot.
+							if shootee_data.slimes > 0:
+								if was_juvenile:
+									user_data.slimes += slimes_dropped
+								else:
+									user_data.slimes += (slimes_dropped / 2)
+									boss_slimes += (slimes_dropped / 2)
+
 							# Player was killed.
 							shootee_data.slimes = 0
 							shootee_data.id_killer = user_data.id_user
@@ -515,7 +515,7 @@ async def on_message(message):
 						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
 					# Level up the player if appropriate.
-					new_level = len(str(user_data.slimes))
+					new_level = len(str(int(user_data.slimes)))
 					if new_level > user_data.slimelevel:
 						response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(message.author.display_name, new_level)
 						user_data.slimelevel = new_level
@@ -974,7 +974,7 @@ async def on_message(message):
 
 						# Adjust slime level.
 						was_levelup = False
-						new_level = len(str(user_data.slimes))
+						new_level = len(str(int(user_data.slimes)))
 						if new_level > user_data.slimelevel:
 							was_levelup = True
 							user_data.slimelevel = new_level
@@ -1052,7 +1052,7 @@ async def on_message(message):
 
 				# Update the user's slime level.
 				if user_data != None:
-					new_level = len(str(user_data.slimes))
+					new_level = len(str((int(user_data.slimes))))
 					if new_level > user_data.slimelevel:
 						user_data.slimelevel = new_level
 
@@ -1066,7 +1066,7 @@ async def on_message(message):
 
 				# Update the user's slime level.
 				if user_data != None:
-					new_level = len(str(user_data.slimes))
+					new_level = len(str(int(user_data.slimes)))
 					if new_level > user_data.slimelevel:
 						user_data.slimelevel = new_level
 
@@ -1077,7 +1077,7 @@ async def on_message(message):
 
 			# Update the user's slime level.
 			if user_data != None:
-				new_level = len(str(user_data.slimes))
+				new_level = len(str(int(user_data.slimes)))
 				if new_level > user_data.slimelevel:
 					user_data.slimelevel = new_level
 
@@ -1707,7 +1707,7 @@ async def on_message(message):
 						response = "You exchange {credits:,} SlimeCoin for {slimes:,} slime.".format(credits=credits, slimes=slimes)
 
 						# Level up the player if appropriate.
-						new_level = len(str(user_data.slimes))
+						new_level = len(str(int(user_data.slimes)))
 						if new_level > user_data.slimelevel:
 							response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(message.author.display_name, new_level)
 							user_data.slimelevel = new_level
