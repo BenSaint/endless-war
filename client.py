@@ -497,7 +497,7 @@ async def on_message(message):
 								user_data.slimes += slimes_dropped
 							else:
 								user_data.slimes += (slimes_dropped / 2)
-								boss_slimes += (slimes_dropped / 2)
+								boss_slimes += slimes_dropped
 
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
