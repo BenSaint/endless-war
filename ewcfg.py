@@ -135,6 +135,7 @@ col_rate_exchange = 'rate_exchange'
 col_slimes_casino = 'slimes_casino'
 col_boombust = 'boombust'
 col_time_lasttick = 'time_lasttick'
+col_slimes_revivefee = 'slimes_revivefee'
 
 # Database columns for stats
 col_total_slime = 'total_slime'

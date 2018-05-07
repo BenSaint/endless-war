@@ -6,6 +6,7 @@ class EwMarket:
 	id_server = ""
 
 	slimes_casino = 0
+	slimes_revivefee = 0
 
 	rate_market = 1000
 	rate_exchange = 1000
@@ -31,12 +32,13 @@ class EwMarket:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
 					ewcfg.col_slimes_casino,
 					ewcfg.col_rate_market,
 					ewcfg.col_rate_exchange,
 					ewcfg.col_boombust,
-					ewcfg.col_time_lasttick
+					ewcfg.col_time_lasttick,
+					ewcfg.col_slimes_revivefee
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -47,6 +49,7 @@ class EwMarket:
 					self.rate_exchange = result[2]
 					self.boombust = result[3]
 					self.time_lasttick = result[4]
+					self.slimes_revivefee = result[5]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -75,20 +78,22 @@ class EwMarket:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_server,
 				ewcfg.col_slimes_casino,
 				ewcfg.col_rate_market,
 				ewcfg.col_rate_exchange,
 				ewcfg.col_boombust,
-				ewcfg.col_time_lasttick
+				ewcfg.col_time_lasttick,
+				ewcfg.col_slimes_revivefee
 			), (
 				self.id_server,
 				self.slimes_casino,
 				self.rate_market,
 				self.rate_exchange,
 				self.boombust,
-				self.time_lasttick
+				self.time_lasttick,
+				self.slimes_revivefee
 			))
 
 			if our_cursor:

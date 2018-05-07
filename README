@@ -31,6 +31,7 @@ CREATE TABLE markets (
 	rate_exchange bigint NOT NULL DEFAULT '1000000',
 	boombust int NOT NULL DEFAULT '0',
 	time_lasttick int NOT NULL DEFAULT '0',
+	slimes_revivefee bigint NOT NULL DEFAULT '0',
 
 	PRIMARY KEY (id_server)
 );

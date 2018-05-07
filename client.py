@@ -760,9 +760,12 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						player_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
 
 						# Endless War collects his fee.
-						player_data.slimecredit -= player_data.slimecredit / 10
+						fee = (player_data.slimecredit / 10)
+						player_data.slimecredit -= fee
+						market_data.slimes_revivefee += fee
 
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
@@ -783,6 +786,7 @@ async def on_message(message):
 						player_data.slimelevel = len(str(player_data.slimes))
 
 						player_data.persist(conn=conn, cursor=cursor)
+						market_data.persist(conn=conn, cursor=cursor)
 
 						# Give some slimes to every living player (currently online)
 						for member in message.server.members:
