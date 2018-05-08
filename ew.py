@@ -115,6 +115,9 @@ class EwUser:
 	slimecredit = 0
 	slimelevel = 1
 	stamina = 0
+	
+	maxslimes = 0
+	killbounty = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -149,11 +152,13 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
 					ewcfg.col_slimecredit,
+					ewcfg.col_maxslimes,
+					ewcfg.com_killbounty,
 					ewcfg.col_time_lastkill,
 					ewcfg.col_time_lastrevive,
 					ewcfg.col_id_killer,
@@ -173,6 +178,8 @@ class EwUser:
 					self.slimelevel = result[1]
 					self.stamina = result[2]
 					self.slimecredit = result[3]
+					self.maxslimes = result [4]
+					self.killbounty = result [5]
 					self.time_lastkill = result[4]
 					self.time_lastrevive = result[5]
 					self.id_killer = result[6]
@@ -209,12 +216,14 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
 				ewcfg.col_slimelevel,
 				ewcfg.col_stamina,
+				ewcfg.col_maxslimes,
+				ewcfg.col_killbounty
 				ewcfg.col_slimecredit,
 				ewcfg.col_time_lastkill,
 				ewcfg.col_time_lastrevive,
@@ -229,6 +238,8 @@ class EwUser:
 				self.slimes,
 				self.slimelevel,
 				self.stamina,
+				self.maxslimes,
+				self.killbounty
 				self.slimecredit,
 				self.time_lastkill,
 				self.time_lastrevive,
