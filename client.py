@@ -510,7 +510,70 @@ async def on_message(message):
 						else:
 							# A non-lethal blow!
 							shootee_data.slimes -= slimes_damage
-							response = "{} is hit!! {} :gun:".format(member.display_name, ewcfg.emote_slime5)
+							randombodypart == random.randint(1,20)
+						
+							if randombodypart = 1:
+								hitzone = "wrist"
+							elif randombodypart = 2:
+								hitzone = "leg"
+							elif randombodypart = 3:
+								hitzone = "arm"
+							elif randombodypart = 4:
+								hitzone = "upper back"
+							elif randombodypart = 5:
+								hitzone = "foot"
+							elif randombodypart = 6:
+								hitzone = "shoulder"
+							elif randombodypart = 7:
+								hitzone = "neck"
+							elif randombodypart = 8:
+								hitzone = "kneecap"
+							elif randombodypart = 9:
+								hitzone = "obliques"
+							elif randombodypart = 10:
+								hitzone = "solar plexus"
+							elif randombodypart = 11:
+								hitzone = "Achilles' tendon"
+							elif randombodypart = 12:
+								hitzone = "jaw"
+							elif randombodypart = 13:
+								hitzone = "ankle"
+							elif randombodypart = 14:
+								hitzone = "trapezius"
+							elif randombodypart = 15:
+								hitzone = "thigh"
+							elif randombodypart = 16:
+								hitzone = "chest"
+							elif randombodypart = 17:
+								hitzone = "gut"
+							elif randombodypart = 18:
+								hitzone = "abdomen"
+							elif randombodypart = 19:
+								hitzone = "lower back"
+							elif randombodypart = 20:
+								hitzone = "calf"
+
+							if user_data.weapon = 0:
+								response = '{} is hit!!'.format(member.display_name)						
+							elif user_data.weapon = 1:
+								response = '{} takes a bullet to the {)!!'.format(member.display_name, hitzone)							
+							elif user_data.weapon = 2:
+								response = 'Bullets rake over {}\'s {}!!'.format(member.display_name, hitzone)							
+							elif user_data.weapon = 3:
+								response = '{} takes a nun-chuck directly in the {}!!'.format(member.display_name, hitzone)
+							elif user_data.weapon = 4:
+								response = '{} is slashed across the {}!!'.format(member.display_name, hitzone)
+							elif user_data.weapon = 5:
+								response = '{} is struck with a hard blow to the {}!!'.format(member.display_name, hitzone)	
+							elif user_data.weapon = 6:
+								response = '{} closely escapes strangulation!!'.format(member.display_name, hitzone)
+							elif user_data.weapon = 7:
+								response = '{} is socked in the {}!!'.format(member.display_name, hitzone)
+							elif user_data.weapon = 8:
+								response = '{} dodges a bottle, but is singed on the {} by the blast!!'.format(member.display_name, hitzone)
+							elif user_data.weapon = 9:
+								response = '{} is stuck by a knife in the {}!!'.format(member.display_name, hitzone)
+							
 					else:
 						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
