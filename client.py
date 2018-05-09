@@ -998,7 +998,7 @@ async def on_message(message):
 
 						# Tell the player their slime level increased.
 						if was_levelup:
-							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You have been empowered by slime and are now a level {} slimeboi!".format(message.author.display_name, new_level)))
+							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)))
 				else:
 					mismined = last_mismined_times.get(message.author.id)
 					time_now = int(time.time())
@@ -1591,14 +1591,7 @@ async def on_message(message):
 			else:
 				value = None
 				if tokens_count > 1:
-					for token in tokens[1:]:
-						try:
-							value = int(token)
-							if value < 0:
-								value = None
-							break
-						except:
-							value = None
+					value = ewutils.getIntToken(tokens=tokens, allow_all=True)
 
 				if value != None:
 					time_now = int(time.time())
@@ -1612,6 +1605,13 @@ async def on_message(message):
 					finally:
 						cursor.close()
 						conn.close()
+
+					if value < 0:
+						value = user_data.slimes
+					if value <= 0:
+						value = None
+
+				if value != None:
 
 					# Apply a brokerage fee of ~5% (rate * 1.05)
 					rate_exchange = (market_data.rate_exchange / 1000000.0)
@@ -1663,14 +1663,7 @@ async def on_message(message):
 			else:
 				value = None
 				if tokens_count > 1:
-					for token in tokens[1:]:
-						try:
-							value = int(token)
-							if value < 0:
-								value = None
-							break
-						except:
-							value = None
+					value = ewutils.getIntToken(tokens=tokens, allow_all=True)
 
 				if value != None:
 					time_now = int(time.time())
@@ -1684,6 +1677,13 @@ async def on_message(message):
 					finally:
 						cursor.close()
 						conn.close()
+
+					if value < 0:
+						value = user_data.slimecredit
+					if value <= 0:
+						value = None
+
+				if value != None:
 
 					rate_exchange = (market_data.rate_exchange / 1000000.0)
 										
@@ -1741,7 +1741,7 @@ async def on_message(message):
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# Show the current slime market exchange rate (slime per credit).
-		elif cmd == ewcfg.cmd_exchangerate:
+		elif cmd == ewcfg.cmd_exchangerate or cmd == ewcfg.cmd_exchangerate_alt1:
 			response = ""
 
 			market_data = EwMarket(id_server=message.server.id)

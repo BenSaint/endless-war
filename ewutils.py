@@ -172,3 +172,22 @@ def persistMarketHistory(market_data=None, conn=None, cursor=None):
 				cursor.close()
 			if(our_conn):
 				conn.close()
+
+
+""" Parse a list of tokens and return an integer value. If allow_all, return -1 if the word 'all' is present. """
+def getIntToken(tokens=[], allow_all=False):
+	value = None
+
+	for token in tokens[1:]:
+		try:
+			value = int(token)
+			if value < 0:
+				value = None
+			break
+		except:
+			if allow_all and ("{}".format(token)).lower() == 'all':
+				value = -1
+			else:
+				value = None
+
+	return value
