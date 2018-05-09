@@ -115,8 +115,8 @@ class EwUser:
 	slimecredit = 0
 	slimelevel = 1
 	stamina = 0
-	weapon = 0
-	trauma = 0
+	weapon = ""
+	trauma = ""
 
 	time_lastkill = 0
 	time_lastrevive = 0
