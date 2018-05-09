@@ -92,6 +92,7 @@ async def on_ready():
 
 		time_now = int(time.time())
 		time_last_twitch = time_now
+		time_twitch_downed = 0
 		time_last_pvp = time_now
 		time_last_market = time_now
 
@@ -127,7 +128,10 @@ async def on_ready():
 						stream_was_live = stream_live
 						stream_live = True if data_count > 0 else False
 
-						if stream_was_live == False and stream_live == True:
+						if stream_was_live == True and stream_live == False:
+							time_twitch_downed = time_now
+
+						if stream_was_live == False and stream_live == True and (time_now - time_twitch_downed) > 600:
 							ewutils.logMsg("The stream is now live.")
 
 							# The stream has transitioned from offline to online. Make an announcement!
