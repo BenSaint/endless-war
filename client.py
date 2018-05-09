@@ -1411,12 +1411,13 @@ async def on_message(message):
 				if value > user_data.slimecredit:
 					response = "You don't have enough SlimeCoin."
 				else:
+					#subtract slimecoin from player
+					user_data.slimecredit -= value
+					user_data.persist()
+
 					# Add some suspense...
 					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 					await asyncio.sleep(3)
-
-					# Spend slimes
-					user_data.slimecredit -= value
 
 					slots = [
 						ewcfg.emote_tacobell,
@@ -1490,8 +1491,22 @@ async def on_message(message):
 						response += "\n\n*Nothing happens...*"
 
 					# Add winnings (if there were any) and save the user data.
-					user_data.slimecredit += winnings
-					user_data.persist()
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						# add winnings
+						user_data.slimecredit += winnings
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
 
 				last_slotsed_times[message.author.id] = 0
 
@@ -1522,15 +1537,16 @@ async def on_message(message):
 				if value > user_data.slimecredit:
 					response = "You don't have enough SlimeCoin to play."
 				else:
+					#subtract slimecoin from player
+					user_data.slimecredit -= value
+					user_data.persist()
+
 					await client.edit_message(resp, ewutils.formatMessage(message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
 					await asyncio.sleep(3)
 
 					ball_count = 10
 					response = ""
 					winballs = 0
-					
-					#subtract slimecoin from player
-					user_data.slimecredit -= value
 
 					# Drop ball_count balls
 					while ball_count > 0:
@@ -1555,8 +1571,22 @@ async def on_message(message):
 						await asyncio.sleep(1)
 
 					winnings = winballs * 250
-					user_data.slimecredit += winnings
-					user_data.persist()
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						# add winnings
+						user_data.slimecredit += winnings
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
 
 					if winnings > 0:
 						response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
