@@ -522,7 +522,6 @@ async def on_message(message):
 							randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 							if weapon != None:
-								shootee_data.trauma = weapon.id_weapon
 								response = weapon.str_damage.format(name_player=message.author.display_name, name_target=member.display_name, hitzone=randombodypart)
 							else:
 								response = "{} is hit!!".format(member.display_name)
@@ -825,8 +824,8 @@ async def on_message(message):
 						# Clear PvP flag.
 						player_data.time_expirpvp = time_now - 1;
 
-						# Clear trauma from previous deaths.
-						player_data.trauma = ""
+						# Clear weapon.
+						player_data.weapon = ""
 
 						# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 						player_data.time_lastrevive = time_now
