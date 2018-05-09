@@ -1,7 +1,7 @@
 from ewwep import EwWeapon
 
 # Global configuration options.
-version = "v1.17"
+version = "v1.18"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
