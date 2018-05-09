@@ -1111,9 +1111,14 @@ async def on_message(message):
 				# return my score
 				response = "You are a level {} slimeboi. You currently have {:,} slime.".format(user_data.slimelevel, user_data.slimes)
 
-				weapon = ewcfg.weapon_map.get(user_data.trauma)
+				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
+					response += " {}".format(weapon.str_weapon_self)
+					
+				trauma = ewcfg.weapon_map.get(user_data.trauma)
+				if trauma != None:
 					response += " {}".format(weapon.str_trauma_self)
+					
 			else:
 				member = mentions[0]
 				user_data = EwUser(member=member)
@@ -1129,8 +1134,12 @@ async def on_message(message):
 				# return somebody's score
 				response = "{} is a level {} slimeboi with {:,} slime.".format(member.display_name, user_data.slimelevel, user_data.slimes)
 
-				weapon = ewcfg.weapon_map.get(user_data.trauma)
+				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
+					response += " {}".format(weapon.str_weapon)
+					
+				trauma = ewcfg.weapon_map.get(user_data.trauma)
+				if trauma != None:
 					response += " {}".format(weapon.str_trauma)
 
 			# Update the user's slime level.
