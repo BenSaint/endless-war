@@ -16,12 +16,15 @@ These are the commands I understand:
 	**!shoot** *@username*
 		Shoot the mentioned player, dealing damage based on your slime level
 		and potentially killing them.
-
-		Rowdys kill Killers. Killers kill Rowdys. Both kill Juveniles.
 		
 		*Used only in the #combat-zone.*
 		*5 second cooldown.*
 		*Flags you for PvP combat for 10 minutes.*
+
+	**!equip** *weapon*
+		Equip a weapon to use against your foes.
+
+		*Used only in #the-dojo.*
 
 	**!spar** *@username*
 		Practice fighting with the targeted player of your faction.

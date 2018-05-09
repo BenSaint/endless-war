@@ -20,6 +20,8 @@ CREATE TABLE users (
 	slimecredit bigint NOT NULL DEFAULT '0',
 	slimelevel int NOT NULL DEFAULT '1',
 	stamina int NOT NULL DEFAULT '0',
+	weapon varchar(64) NOT NULL DEFAULT '',
+	weapon varchar(64) NOT NULL DEFAULT '',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );

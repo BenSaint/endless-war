@@ -39,7 +39,7 @@ def getTwitchClientId():
 	return getValueFromFileContents("twitch_client_id")
 
 """ print a list of strings with nice comma-and grammar """
-def formatNiceList(names):
+def formatNiceList(names=[], conjunction="and"):
 	l = len(names)
 
 	if l == 0:
@@ -48,7 +48,7 @@ def formatNiceList(names):
 	if l == 1:
 		return names[0]
 	
-	return ', '.join(names[0:-1]) + '{} and '.format(',' if l > 2 else '') + names[-1]
+	return ', '.join(names[0:-1]) + '{comma} {conj} '.format(comma=(',' if l > 2 else ''), conj=conjunction) + names[-1]
 
 """ turn a list of Users into a list of their respective names """
 def userListToNameString(list_user):

@@ -494,6 +494,9 @@ async def on_message(message):
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
 
+						# Weaponized flavor text.
+						weapon = ewcfg.weapon_map.get(user_data.weapon)
+
 						if was_killed:
 							# Move around slime as a result of the shot.
 							if shootee_data.slimes > 0:
@@ -506,11 +509,23 @@ async def on_message(message):
 							# Player was killed.
 							shootee_data.slimes = 0
 							shootee_data.id_killer = user_data.id_user
-							response = '{} has been SLAUGHTERED. {} :gun:'.format(member.display_name, ewcfg.emote_slime5)
+
+							if weapon != None:
+								response = weapon.str_kill.format(name_player=message.author.display_name, name_target=member.display_name, emote_skull=ewcfg.emote_slimeskull)
+								shootee_data.trauma = weapon.id_weapon
+							else:
+								response = '{} has died mysteriously.'.format(member.display_name)
+								shootee_data.trauma = ""
 						else:
 							# A non-lethal blow!
 							shootee_data.slimes -= slimes_damage
-							response = "{} is hit!! {} :gun:".format(member.display_name, ewcfg.emote_slime5)
+							randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+
+							if weapon != None:
+								shootee_data.trauma = weapon.id_weapon
+								response = weapon.str_damage.format(name_player=message.author.display_name, name_target=member.display_name, hitzone=randombodypart)
+							else:
+								response = "{} is hit!!".format(member.display_name)
 					else:
 						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
@@ -552,6 +567,39 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# Choose your weapon
+		elif cmd == ewcfg.cmd_equip:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				weapon = ewcfg.weapon_map.get(value)
+				if weapon != None:
+					response = weapon.str_equip
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						user_data.weapon = weapon.id_weapon
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose your weapon: {}".format(ewutils.formatNiceList(names=ewcfg.weapon_names, conjunction="or"))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 
 		# Kill yourself to return slime to your general.
 		elif cmd == ewcfg.cmd_suicide:
@@ -776,6 +824,9 @@ async def on_message(message):
 
 						# Clear PvP flag.
 						player_data.time_expirpvp = time_now - 1;
+
+						# Clear trauma from previous deaths.
+						player_data.trauma = ""
 
 						# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 						player_data.time_lastrevive = time_now
@@ -1059,7 +1110,11 @@ async def on_message(message):
 					user_data.persist()
 
 				# return my score
-				response = "You are a level {} slimeboi. You currently have {:,} slime. {}".format(user_data.slimelevel, user_data.slimes, ewcfg.emote_slime1)
+				response = "You are a level {} slimeboi. You currently have {:,} slime.".format(user_data.slimelevel, user_data.slimes)
+
+				weapon = ewcfg.weapon_map.get(user_data.trauma)
+				if weapon != None:
+					response += " {}".format(weapon.str_trauma_self)
 			else:
 				member = mentions[0]
 				user_data = EwUser(member=member)
@@ -1073,7 +1128,11 @@ async def on_message(message):
 					user_data.persist()
 
 				# return somebody's score
-				response = "{} is a level {} slimeboi with {:,} slime. {}".format(member.display_name, user_data.slimelevel, user_data.slimes, ewcfg.emote_slime1)
+				response = "{} is a level {} slimeboi with {:,} slime.".format(member.display_name, user_data.slimelevel, user_data.slimes)
+
+				weapon = ewcfg.weapon_map.get(user_data.trauma)
+				if weapon != None:
+					response += " {}".format(weapon.str_trauma)
 
 			# Update the user's slime level.
 			if user_data != None:
