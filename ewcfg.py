@@ -63,7 +63,7 @@ cmd_exchangerate = cmd_prefix + 'exchangerate'
 cmd_drink = cmd_prefix + 'drink'
 cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
-cmd_equip = cmd+prefix + 'equip'
+cmd_equip = cmd_prefix + 'equip'
 
 # Slime costs/values
 slimes_tokill = 20
