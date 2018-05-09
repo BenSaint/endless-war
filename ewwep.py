@@ -18,16 +18,28 @@ class EwWeapon:
 
 	# Displayed when viewing the !trauma of yourself.
 	str_trauma_self = ""
+	
+	# Displayed when viewing the !weapon of another player.
+	str_weapon = ""
+
+	# Displayed when viewing the !weapon of yourself.
+	str_weapon_self = ""
 
 	# Displayed when a non-lethal hit occurs.
 	str_damage = ""
+	
+	# Displayed when two players weilding the same weapon !spar with each other.
+	str_duel = ""
+	
 
-	def __init__(self, id_weapon="", alias=[], str_equip="", str_kill="", str_trauma="", str_trauma_self="", str_damage=""):
+	def __init__(self, id_weapon="", alias=[], str_equip="", str_kill="", str_trauma="", str_trauma_self="", str_weapon="", str_weapon_self="", str_damage=""):
 		self.id_weapon = id_weapon
 		self.alias = alias
 		self.str_equip = str_equip
 		self.str_kill = str_kill
 		self.str_trauma = str_trauma
 		self.str_trauma_self = str_trauma_self
+		self.str_weapon = str_weapon
+		self.str_weapon_self = str_weapon_self
 		self.str_damage = str_damage
-
+		self.str_duel = str_duel
