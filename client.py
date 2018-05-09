@@ -423,7 +423,7 @@ async def on_message(message):
 				# Slime level data. Levels are in powers of 10.
 				slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 				slimes_spent = int(slimes_bylevel / 10)
-				slimes_damage = int(slimes_bylevel / 2)
+				slimes_damage = int(slimes_bylevel / 5)
 				slimes_dropped = int((10 ** shootee_data.slimelevel) / 10)
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
@@ -725,10 +725,17 @@ async def on_message(message):
 						was_dead = False
 						was_player_tired = False
 						was_target_tired = False
+						duel = False
 
 						time_now = int(time.time())
 
 						roles_map_target = ewutils.getRoleMap(member.roles)
+
+						#Determine if the !spar is a duel:
+						weapon = None
+						if user_data.weapon != None and user_data.weapon != "" and user_data.weapon == sparred_data.weapon:
+							weapon = ewcfg.weapon_map.get(user_data.weapon)
+							duel = True
 
 						if ewcfg.role_corpse in roles_map_target:
 							# Target is already dead.
@@ -757,13 +764,22 @@ async def on_message(message):
 							user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
 
 							# Weaker player gains slime based on the slime of the stronger player.
-							weaker_player.slimes += ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
+							slimegain = ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
+							weaker_player.slimes += slimegain
+
+							# Bonus 50% slime to both players in a duel.
+							if duel:
+								weaker_player.slimes += int(slimegain / 2)
+								stronger_player.slimes += int(slimegain / 2)
+
 							weaker_player.time_lastspar = time_now
 							weaker_player.persist()
 
 							# Persist the user if he was the stronger player.
 							if user_data is not weaker_player:
 								user_data.persist()
+							elif duel:
+								stronger_player.persist()
 
 							# Add the PvP flag role.
 							if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
@@ -774,7 +790,10 @@ async def on_message(message):
 								await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
 
 							# player was sparred with
-							response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
+							if duel and weapon != None:
+								response = weapon.str_duel.format(name_player=message.author.display_name, name_target=member.display_name)
+							else:
+								response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
 						else:
 							if was_dead:
 								# target is already dead
@@ -1121,7 +1140,7 @@ async def on_message(message):
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:
-					response += " {}".format(weapon.str_trauma_self)
+					response += " {}".format(trauma.str_trauma_self)
 					
 			else:
 				member = mentions[0]
@@ -1144,7 +1163,7 @@ async def on_message(message):
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:
-					response += " {}".format(weapon.str_trauma)
+					response += " {}".format(trauma.str_trauma)
 
 			# Update the user's slime level.
 			if user_data != None:

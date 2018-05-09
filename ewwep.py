@@ -27,9 +27,12 @@ class EwWeapon:
 
 	# Displayed when a non-lethal hit occurs.
 	str_damage = ""
+
+	# Displayed when two players wielding the same weapon !spar with each other.
+	str_duel = ""
 	
 
-	def __init__(self, id_weapon="", alias=[], str_equip="", str_kill="", str_trauma="", str_trauma_self="", str_weapon="", str_weapon_self="", str_damage=""):
+	def __init__(self, id_weapon="", alias=[], str_equip="", str_kill="", str_trauma="", str_trauma_self="", str_weapon="", str_weapon_self="", str_damage="", str_duel=""):
 		self.id_weapon = id_weapon
 		self.alias = alias
 		self.str_equip = str_equip
@@ -39,3 +42,4 @@ class EwWeapon:
 		self.str_weapon = str_weapon
 		self.str_weapon_self = str_weapon_self
 		self.str_damage = str_damage
+		self.str_duel = str_duel

@@ -189,7 +189,8 @@ weapon_list = [
 		str_trauma_self="You have scarring on both templs, which occasionally bleeds.",
 		str_trauma="They have scarring on both temples, which occasionally bleeds.",
 		str_kill="{name_player} puts their gun to {name_target}'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {emote_skull}",
-		str_damage="{name_target} takes a bullet to the {hitzone}!!"
+		str_damage="{name_target} takes a bullet to the {hitzone}!!",
+		str_duel="**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads."
 	),
 	EwWeapon( # 2
 		id_weapon="rifle",
@@ -203,7 +204,8 @@ weapon_list = [
 		str_trauma_self="Your torso is riddled with scarred-over bulletholes.",
 		str_trauma="Their torso is riddled with scarred-over bulletholes.",
 		str_kill="**RAT-TAT-TAT-TAT-TAT!!** {name_player} rains a hail of bullets directly into {name_target}!! They're officially toast! {emote_skull}",
-		str_damage="Bullets rake over {name_target}'s {hitzone}!!"
+		str_damage="Bullets rake over {name_target}'s {hitzone}!!",
+		str_duel="**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts."
 	),
 	EwWeapon( # 3
 		id_weapon="nun-chucks",
@@ -218,7 +220,8 @@ weapon_list = [
 		str_trauma_self="You are covered in deep bruises. You hate martial arts of all kinds.",
 		str_trauma="They are covered in deep bruises. They hate martial arts of all kinds.",
 		str_kill="**HIIII-YAA!!** With expert timing, {name_player} brutally batters {name_target} to death, then strikes a sweet kung-fu pose. {emote_skull}",
-		str_damage="{name_target} takes a nun-chuck directly in the {hitzone}!!"
+		str_damage="{name_target} takes a nun-chuck directly in the {hitzone}!!",
+		str_duel="**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision."
 	),
 	EwWeapon( # 4
 		id_weapon="katana",
@@ -234,7 +237,8 @@ weapon_list = [
 		str_trauma_self="A single clean scar runs across the entire length of your body.",
 		str_trauma="A single clean scar runs across the entire length of their body.",
 		str_kill="Faster than the eye can follow, {name_player}'s blade glints in the greenish light. {name_target} falls over, now in two pieces. {emote_skull}",
-		str_damage="{name_target} is slashed across the {hitzone}!!"
+		str_damage="{name_target} is slashed across the {hitzone}!!",
+		str_duel="**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly."
 	),
 	EwWeapon( # 5
 		id_weapon="bat",
@@ -249,7 +253,8 @@ weapon_list = [
 		str_trauma_self="Your head appears to be slightly concave on one side.",
 		str_trauma="Their head appears to be slightly concave on one side.",
 		str_kill="{name_player} pulls back for a brutal swing! **CRUNCCHHH.** {name_target}'s brains splatter over the sidewalk. {emote_skull}",
-		str_damage="{name_target} is struck with a hard blow to the {hitzone}!!"
+		str_damage="{name_target} is struck with a hard blow to the {hitzone}!!",
+		str_duel="**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time."
 	),
 	EwWeapon( # 6
 		id_weapon="garrote",
@@ -263,7 +268,8 @@ weapon_list = [
 		str_trauma_self="There is noticeable bruising and scarring around your neck.",
 		str_trauma="There is noticeable bruising and scarring around their neck.",
 		str_kill="{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
-		str_damage="{name_target} closely escapes strangulation!!"
+		str_damage="{name_target} closely escapes strangulation!!",
+		str_duel="{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire."
 	),
 	EwWeapon( # 7
 		id_weapon="brassknuckles",
@@ -277,7 +283,8 @@ weapon_list = [
 		str_trauma_self="You've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_trauma="They've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_kill="{name_player} slugs {name_target} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well. {emote_skull}",
-		str_damage="{name_target} is socked in the {hitzone}!!"
+		str_damage="{name_target} is socked in the {hitzone}!!",
+		str_duel="**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good."
 	),
 	EwWeapon( # 8
 		id_weapon="molotov",
@@ -293,7 +300,8 @@ weapon_list = [
 		str_trauma_self="You're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_trauma="They're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_kill="**SMASH!** {name_target}'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {name_player} is suspected of arson. {emote_skull}",
-		str_damage="{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!"
+		str_damage="{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!",
+		str_duel="{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency."
 	),
 	EwWeapon( # 9
 		id_weapon="knives",
@@ -310,7 +318,8 @@ weapon_list = [
 		str_trauma_self="You are covered in scarred-over lacerations and puncture wounds.",
 		str_trauma="They are covered in scarred-over lacerations and puncture wounds.",
 		str_kill="A blade flashes through the air!! **THUNK.** {name_target} is a goner, but {name_player} slits their throat before fleeing the scene, just to be safe. {emote_skull}",
-		str_damage="{name_target} is stuck by a knife in the {hitzone}!!"
+		str_damage="{name_target} is stuck by a knife in the {hitzone}!!",
+		str_duel="**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air."
 	)
 ]
 
