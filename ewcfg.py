@@ -181,8 +181,19 @@ weapon_list = [
 		alias=[
 			"pistol",
 			"pistols",
-			"dualpistols"
+			"dualpistols",
 		],
+		str_effect=[
+			aim = (random.randint(1,10)
+			if aim = 1:
+				miss = True
+				slimes_damage = 0
+			if aim = 10:
+				crit = True
+				slimes_damage = (slimes_damage * 2)
+		],		
+		str_crit="**Critical Hit!** {name_player} has put dealt {name_target} a serious wound!",
+		str_miss="**You missed!** Your shot failed to land!",
 		str_equip="You equip the dual pistols.",
 		str_weapon_self="You are wielding dual pistols.",
 		str_weapon="They are wielding dual pistols.",
@@ -190,14 +201,25 @@ weapon_list = [
 		str_trauma="They have scarring on both temples, which occasionally bleeds.",
 		str_kill="{name_player} puts their gun to {name_target}'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {emote_skull}",
 		str_damage="{name_target} takes a bullet to the {hitzone}!!",
-		str_duel="**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads."
+		str_duel="**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads.",
 	),
 	EwWeapon( # 2
 		id_weapon="rifle",
 		alias=[
 			"assaultrifle",
-			"machinegun"
+			"machinegun",
 		],
+		str_effect=[
+			aim = (random.randint(1,10)
+			if aim <=2:
+				miss = True
+				slimes_damage = 0
+			if aim >= 9:
+				crit = True
+				slimes_damage += slimes_damage
+		],		
+		str_crit="**Critical hit!!** You unload an entire clip into the target!!",
+		str_miss="**You missed!** Not one of your bullets connected!!",
 		str_equip="You equip the assault rifle.",
 		str_weapon_self="You are wielding an assult rifle.",
 		str_weapon="They are wielding an assault rifle.",
@@ -205,23 +227,48 @@ weapon_list = [
 		str_trauma="Their torso is riddled with scarred-over bulletholes.",
 		str_kill="**RAT-TAT-TAT-TAT-TAT!!** {name_player} rains a hail of bullets directly into {name_target}!! They're officially toast! {emote_skull}",
 		str_damage="Bullets rake over {name_target}'s {hitzone}!!",
-		str_duel="**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts."
+		str_duel="**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts.",
 	),
 	EwWeapon( # 3
 		id_weapon="nun-chucks",
 		alias=[
 			"nanchacku",
 			"numchucks",
-			"nunchucks"
+			"nunchucks",
 		],
+		str_effect=[
+			strikes = 0
+			aim1 = (random.randint(-1,1)
+			aim2 = (random.randint(-1,1)
+			aim3 = (random.randint(-1,1)
+			aim4 = (random.randint(-1,1)
+			aim5 = (random.randint(-1,1)
+			if aim1 = 1:
+				strikes+1
+			if aim2 = 1:
+				strikes+1
+			if aim3 = 1:
+				strikes+1
+			if aim4 = 1:
+				strikes+1
+			if aim5 = 1:
+				strikes+1
+			if strikes = 5
+				crit = True
+			if strikes = 0
+				miss = True
+				user_data.slimes -= int(slimes_damage / 2)
+		],		
+		str_crit="**COMBO!** {name_player} strikes {name_target} with a flurry of 5 vicious blows!",
+		str_miss="**Whack!!** {name_player} fucks up his kung-fu routine and whacks himself in the head with his own nun-chucks!!",
 		str_equip="You equip the nun-chucks.",
 		str_weapon_self="You are wielding nun-chucks.",
 		str_weapon="They are wielding nun-chucks.",
 		str_trauma_self="You are covered in deep bruises. You hate martial arts of all kinds.",
 		str_trauma="They are covered in deep bruises. They hate martial arts of all kinds.",
 		str_kill="**HIIII-YAA!!** With expert timing, {name_player} brutally batters {name_target} to death, then strikes a sweet kung-fu pose. {emote_skull}",
-		str_damage="{name_target} takes a nun-chuck directly in the {hitzone}!!",
-		str_duel="**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision."
+		str_damage="{name_target} takes {str(strikes)} nun-chuck whacks directly in the {hitzone}!!",
+		str_duel="**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision.",
 	),
 	EwWeapon( # 4
 		id_weapon="katana",
@@ -229,8 +276,17 @@ weapon_list = [
 			"sword",
 			"ninjasword",
 			"samuraisword",
-			"blade"
+			"blade",
 		],
+		str_effect=[
+			aim = (random.randint(1,10)
+			slimes_damage = int(0.8 x slimes_damage)
+			if aim = 10:
+				crit = True
+				slimes_damage = (2 * slimes_damage)
+		],	
+		str_crit="**Critical hit!!** {name_target} is cut deep!!"
+		str_miss=""
 		str_equip="You equip the katana.",
 		str_weapon_self="You are wielding a katana.",
 		str_weapon="They are wielding a katana.",
@@ -238,7 +294,7 @@ weapon_list = [
 		str_trauma="A single clean scar runs across the entire length of their body.",
 		str_kill="Faster than the eye can follow, {name_player}'s blade glints in the greenish light. {name_target} falls over, now in two pieces. {emote_skull}",
 		str_damage="{name_target} is slashed across the {hitzone}!!",
-		str_duel="**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly."
+		str_duel="**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly.",
 	),
 	EwWeapon( # 5
 		id_weapon="bat",
@@ -247,6 +303,18 @@ weapon_list = [
 			"batwithnails",
 			"nailbat",
 		],
+		str_effect=[
+			aim = (random.randint(-10,10)
+			if aim <= -9:
+				miss = True
+				slimes_damage = 0
+			slimes_damage = int(slimes_damage * (1 + (aim/10)))
+			if aim >= 9:
+				crit = True
+				slimes_damage = int(slimes_damage * 1.5)
+		],		
+		str_crit=" **Critical hit!!** {name_player} has bashed {name_target} up real bad!",
+		str_miss="**MISS!!** {name_player} swung wide and didn't even come close!",
 		str_equip="You equip the bat with nails in it.",
 		str_weapon_self="You are wielding a bat full of nails.",
 		str_weapon="They are wielding a bat full of nails.",
@@ -254,29 +322,57 @@ weapon_list = [
 		str_trauma="Their head appears to be slightly concave on one side.",
 		str_kill="{name_player} pulls back for a brutal swing! **CRUNCCHHH.** {name_target}'s brains splatter over the sidewalk. {emote_skull}",
 		str_damage="{name_target} is struck with a hard blow to the {hitzone}!!",
-		str_duel="**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time."
+		str_duel="**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time.",
 	),
 	EwWeapon( # 6
 		id_weapon="garrote",
 		alias=[
 			"wire",
-			"garrottewire"
+			"garrottewire",
 		],
+		str_effect=[
+			slimes_damage = slimes_damage * 0.5
+			aim = random.randint(1,100)
+			if aim <= 50
+				miss = True
+				slimes_damage = 0
+			if aim = 100
+				slimes_damage = shootee_data.slimes
+				crit = True
+		],		
+		str_crit="**CRITICAL HIT!!** {name_player} got lucky and caught {name_target} completely unaware!!",
+		str_miss="**MISS!** {name_player}\'s target got away in time!",
 		str_equip="You equip the garrotte wire.",
 		str_weapon_self="You are wielding a garrotte wire.",
 		str_weapon="They are wielding a garrotte wire.",
 		str_trauma_self="There is noticeable bruising and scarring around your neck.",
 		str_trauma="There is noticeable bruising and scarring around their neck.",
 		str_kill="{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
-		str_damage="{name_target} closely escapes strangulation!!",
-		str_duel="{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire."
+		str_damage="{name_target} avoids strangulation!",
+		str_duel="{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire.",
 	),
 	EwWeapon( # 7
 		id_weapon="brassknuckles",
 		alias=[
 			"knuckles",
-			"knuckledusters"
+			"knuckledusters",
 		],
+		str_effect=[
+			aim1 = (random.randint(-10,-10)
+			aim2 = (random.randint(-10,-10)
+			whiff1 = 1
+			whiff2 = 1
+			if aim1 = -9:
+				whiff1 = 0
+			if aim2 = -9:
+				whiff2 = 0
+			if whiff1 = 0 and whiff2 = 0:
+				miss = True
+				slimes_damage = 0
+			slimes_damage = int((((slimes_damage * (1 + (aim1/20))) * whiff1) / 2) + (((slimes_damage * (1 + (aim2/20))) * whiff2) / 2)
+		],		
+		str_crit=""
+		str_miss="**MISS!** {name_player} couldn't land a single blow!!",
 		str_equip="You equip the brass knuckles.",
 		str_weapon_self="You are wielding brass knuckles.",
 		str_weapon="They are wielding brass knuckles.",
@@ -284,7 +380,7 @@ weapon_list = [
 		str_trauma="They've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_kill="{name_player} slugs {name_target} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well. {emote_skull}",
 		str_damage="{name_target} is socked in the {hitzone}!!",
-		str_duel="**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good."
+		str_duel="**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good.",
 	),
 	EwWeapon( # 8
 		id_weapon="molotov",
@@ -292,8 +388,20 @@ weapon_list = [
 			"firebomb",
 			"molotovcocktail",
 			"bomb",
-			"bombs"
+			"bombs",
 		],
+		str_effect=[
+			slimes_damage += int(slimes_damage/2)
+			aim	= random.randint (1, 100)
+			if aim <= 10
+				crit = True
+				user_data.slimes -= slimes_damage
+			if aim >10 and aim <=20
+				miss = True
+				slimes_damage = 0
+		],
+		str_crit="**Oh, the humanity!!** The bottle bursts in {name_player}\'s hand, burning them terribly!!",
+		str_miss="**A dud!!** the rag failed to ignite the molotov!",
 		str_equip="You equip the molotov cocktail.",
 		str_weapon_self="You are wielding molotov cocktails.",
 		str_weapon="They are wielding molotov cocktails.",
@@ -301,7 +409,7 @@ weapon_list = [
 		str_trauma="They're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_kill="**SMASH!** {name_target}'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {name_player} is suspected of arson. {emote_skull}",
 		str_damage="{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!",
-		str_duel="{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency."
+		str_duel="{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency.",
 	),
 	EwWeapon( # 9
 		id_weapon="knives",
@@ -310,8 +418,22 @@ weapon_list = [
 			"dagger",
 			"daggers",
 			"throwingknives",
-			"throwingknife"
+			"throwingknife",
 		],
+		str_effect=[
+			user_data.slimes += int(slimes_spent * 0.33)
+			slimes_damage == int(slimes_damage * 0.85)
+			aim	= random.randint (1, 10)
+			if aim <= 1:
+				miss = True
+				slimes_damage == 0
+			if aim >= 10:
+				crit = True
+				slimes_damage = (slimes_damage * 1.5)
+				
+		],
+		str_crit="**Critical hit!!** {name_player}\'s knife strikes a vital point!",
+		str_miss="**MISS!!** {name_player}\'s knife missed its target!",
 		str_equip="You equip the throwing knives.",
 		str_weapon_self="You are wielding throwing knives.",
 		str_weapon="They are wielding throwing knives.",
@@ -319,7 +441,7 @@ weapon_list = [
 		str_trauma="They are covered in scarred-over lacerations and puncture wounds.",
 		str_kill="A blade flashes through the air!! **THUNK.** {name_target} is a goner, but {name_player} slits their throat before fleeing the scene, just to be safe. {emote_skull}",
 		str_damage="{name_target} is stuck by a knife in the {hitzone}!!",
-		str_duel="**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air."
+		str_duel="**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air.",
 	)
 ]
 
