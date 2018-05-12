@@ -68,10 +68,12 @@ These are the commands I understand:
 	**!drink**
 		Clears you of all mining-induced fatigue.
 
+		*Cost varies.*
+
 	**!slimeslots**
 		Play the slime slot machine!
 
-		*Costs 100 slime.*
+		*Costs 100 SlimeCoin.*
 
 	**!slimecraps** #
 		Toss the dice! Wager some number of slimes and win big.
@@ -79,4 +81,4 @@ These are the commands I understand:
 	**!slimepachinko**
 		Drop some balls in the slime pachinko machine!
 
-		*Costs 500 slime.*
+		*Costs 500 SlimeCoin.*

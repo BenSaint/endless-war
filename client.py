@@ -17,6 +17,7 @@ import traceback
 import ewutils
 import ewcfg
 from ew import EwUser, EwMarket
+from ewwep import EwEffectContainer
 
 ewutils.logMsg('Starting up...')
 
@@ -207,7 +208,7 @@ async def on_ready():
 								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += (active_bonus / 2) - 2
+						rate_market += (active_bonus / 2) - 4
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
@@ -417,14 +418,22 @@ async def on_message(message):
 					cursor.close()
 					conn.close()
 
+				miss = False
+				crit = False
+				strikes = 0
+
 				# Shot player's assigned Discord roles.
 				roles_map_target = ewutils.getRoleMap(member.roles)
 
 				# Slime level data. Levels are in powers of 10.
 				slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 				slimes_spent = int(slimes_bylevel / 10)
-				slimes_damage = int((slimes_bylevel / 5) * (100 + (user_data.weaponskill * 5)))
+				slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
 				slimes_dropped = shootee_data.totaldamage
+
+				fumble_chance = (random.randrange(10) - 4)
+				if fumble_chance > user_data.weaponskill:
+					miss = True
 
 				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
 				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
@@ -443,7 +452,7 @@ async def on_message(message):
 
 				elif (slimes_spent > user_data.slimes):
 					# Not enough slime to shoot.
-					response = "You don't have enough slime to fire your level {} slime gun. ({:,}/{:,})".format(user_data.slimelevel, user_data.slimes, slimes_spent)
+					response = "You don't have enough slime to attack. ({:,}/{:,})".format(user_data.slimes, slimes_spent)
 
 				elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
 					# disallow kill if the player has killed recently
@@ -491,15 +500,42 @@ async def on_message(message):
 						was_shot = True
 
 					if was_shot:
+						# Weaponized flavor text.
+						weapon = ewcfg.weapon_map.get(user_data.weapon)
+						randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+
+						# Weapon-specific adjustments
+						if weapon != None and weapon.fn_effect != None:
+							# Build effect container
+							ctn = EwEffectContainer(
+								miss=miss,
+								crit=crit,
+								slimes_damage=slimes_damage,
+								slimes_spent=slimes_spent,
+								user_data=user_data,
+								shootee_data=shootee_data
+							)
+
+							# Make adjustments
+							weapon.fn_effect(ctn)
+
+							# Apply effects for non-reference values
+							miss = ctn.miss
+							crit = ctn.crit
+							slimes_damage = ctn.slimes_damage
+							slimes_spent = ctn.slimes_spent
+							strikes = ctn.strikes
+							# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
+
+							if miss:
+								slimes_damage = 0
+
 						# Remove !revive invulnerability.
 						user_data.time_lastrevive = 0
 						user_data.slimes -= slimes_spent
 
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
-
-						# Weaponized flavor text.
-						weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 						if was_killed:
 							# Move around slime as a result of the shot.
@@ -518,26 +554,64 @@ async def on_message(message):
 							shootee_data.id_killer = user_data.id_user
 
 							if weapon != None:
-								response = weapon.str_kill.format(name_player=message.author.display_name, name_target=member.display_name, emote_skull=ewcfg.emote_slimeskull)
+								response = weapon.str_damage.format(
+									name_player=message.author.display_name,
+									name_target=member.display_name,
+									hitzone=randombodypart,
+									strikes=strikes
+								)
+								if crit:
+									response += " {}".format(weapon.str_crit.format(
+										name_player=message.author.display_name,
+										name_target=member.display_name
+									))
+
+								response += "\n\n{}".format(weapon.str_kill.format(
+									name_player=message.author.display_name,
+									name_target=member.display_name,
+									emote_skull=ewcfg.emote_slimeskull
+								))
 								shootee_data.trauma = weapon.id_weapon
 							else:
-								response = '{} has died mysteriously.'.format(member.display_name)
+								response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target=member.display_name)
 								shootee_data.trauma = ""
 
 							#adjust kills bounty
 							user_data.kills += 1
 							user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
 
+							# Give a bonus to the player's weapon skill for killing a stronger player.
+							if shootee_data.slimelevel > user_data.slimelevel:
+								user_data.weaponskill += 1
+
 						else:
 							# A non-lethal blow!
 							shootee_data.slimes -= slimes_damage
 							shootee_data.totaldamage += slimes_damage
-							randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 							if weapon != None:
-								response = weapon.str_damage.format(name_player=message.author.display_name, name_target=member.display_name, hitzone=randombodypart)
+								if miss:
+									response = "{}".format(weapon.str_miss.format(
+										name_player=message.author.display_name,
+										name_target=member.display_name
+									))
+								else:
+									response = weapon.str_damage.format(
+										name_player=message.author.display_name,
+										name_target=member.display_name,
+										hitzone=randombodypart,
+										strikes=strikes
+									)
+									if crit:
+										response += " {}".format(weapon.str_crit.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name
+										))
 							else:
-								response = "{} is hit!!".format(member.display_name)
+								if miss:
+									response = "{} is unharmed.".format(member.display_name)
+								else:
+									response = "{} is hit!!".format(member.display_name)
 					else:
 						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
@@ -1198,14 +1272,20 @@ async def on_message(message):
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
-					response += " {}".format(weapon.str_weapon_self)
+					if user_data.weaponskill >= 5:
+						response += " {}".format(weapon.str_weaponmaster_self.format(rank=(user_data.weaponskill - 4)))
+					else:
+						response += " {}".format(weapon.str_weapon_self)
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:
 					response += " {}".format(trauma.str_trauma_self)
+
+				if user_data.kills > 0:
+					response += " You have {:,} confirmed kills.".format(user_data.kills)
 				
 				if coinbounty != 0:
-					response += "SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
+					response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 			else:
 				member = mentions[0]
 				try:
@@ -1231,14 +1311,20 @@ async def on_message(message):
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
-					response += " {}".format(weapon.str_weapon)
+					if user_data.weaponskill >= 5:
+						response += " {}".format(weapon.str_weaponmaster.format(rank=(user_data.weaponskill - 4)))
+					else:
+						response += " {}".format(weapon.str_weapon)
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:
 					response += " {}".format(trauma.str_trauma)
-				
+
+				if user_data.kills > 0:
+					response += " They have {:,} confirmed kills.".format(user_data.kills)
+
 				if coinbounty != 0:
-					response += "SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
+					response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 			# Update the user's slime level.
 			if user_data != None:
