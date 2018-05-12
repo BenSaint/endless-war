@@ -507,7 +507,7 @@ async def on_message(message):
 								if was_juvenile:
 									user_data.slimes += slimes_dropped
 								else:
-									market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
+									market_data = EwMarket(id_server=message.server.id)
 									coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 									user_data.slimecredit += coinbounty
 									user_data.slimes += int(slimes_dropped / 2)
