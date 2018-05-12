@@ -21,7 +21,10 @@ CREATE TABLE users (
 	slimelevel int NOT NULL DEFAULT '1',
 	stamina int NOT NULL DEFAULT '0',
 	weapon varchar(64) NOT NULL DEFAULT '',
-	weapon varchar(64) NOT NULL DEFAULT '',
+	totaldamage bigint NOT NULL DEFAULT '0',
+	kills int NOT NULL DEFAULT '0',
+	weaponskill int NOT NULL DEFAULT '0',
+	bounty bigint NOT NULL DEFAULT '0',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
