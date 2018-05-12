@@ -884,10 +884,11 @@ async def on_message(message):
 								response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
 
 							#Notify if max skill is reached	
-							if user_data.weaponskill == 5:
-								response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
-							if sparred_data.weaponskill == 5:
-								response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
+							if weapon != None:
+								if user_data.weaponskill == 5:
+									response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
+								if sparred_data.weaponskill == 5:
+									response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
 
 						else:
 							if was_dead:
