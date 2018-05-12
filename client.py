@@ -508,7 +508,7 @@ async def on_message(message):
 									user_data.slimes += slimes_dropped
 								else:
 									market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
-									coinbounty = int(user_data.bounty / (market_data.rate_exchange/1000000))
+									coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 									user_data.slimecredit += coinbounty
 									user_data.slimes += int(slimes_dropped / 2)
 									boss_slimes += int(slimes_dropped / 2)
@@ -523,11 +523,11 @@ async def on_message(message):
 							else:
 								response = '{} has died mysteriously.'.format(member.display_name)
 								shootee_data.trauma = ""
-							
+
 							#adjust kills bounty
 							user_data.kills += 1
 							user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
-							
+
 						else:
 							# A non-lethal blow!
 							shootee_data.slimes -= slimes_damage
@@ -808,13 +808,13 @@ async def on_message(message):
 								response = weapon.str_duel.format(name_player=message.author.display_name, name_target=member.display_name)
 							else:
 								response = '{} parries the attack. :knife: {}'.format(member.display_name, ewcfg.emote_slime5)
-								
+
 							#Notify if max skill is reached	
-							if user_data.weaponskill == 5
-								response += '{} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
-							if sparred_data.weaponskill == 5
-								response += '{} is a master of the {}.'.format(message.display_name, weapon.id_weapon)
-								
+							if user_data.weaponskill == 5:
+								response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
+							if sparred_data.weaponskill == 5:
+								response += ' {} is a master of the {}.'.format(message.display_name, weapon.id_weapon)
+
 						else:
 							if was_dead:
 								# target is already dead
@@ -1139,7 +1139,6 @@ async def on_message(message):
 					else:
 						await client.edit_message(resp, ewutils.formatMessage(message.author, "You can't mine here. Try #{}.".format(ewcfg.channel_mines)))
 
-
 		# Show the current slime score of a player.
 		elif cmd == ewcfg.cmd_score or cmd == ewcfg.cmd_score_alt1:
 			response = ""
@@ -1148,28 +1147,12 @@ async def on_message(message):
 			if mentions_count == 0:
 				user_data = EwUser(member=message.author)
 
-				# Update the user's slime level.
-				if user_data != None:
-					new_level = len(str((int(user_data.slimes))))
-					if new_level > user_data.slimelevel:
-						user_data.slimelevel = new_level
-
-					user_data.persist()
-
 				# return my score
 				response = "You currently have {:,} slime.".format(user_data.slimes)
-					
+
 			else:
 				member = mentions[0]
 				user_data = EwUser(member=member)
-
-				# Update the user's slime level.
-				if user_data != None:
-					new_level = len(str(int(user_data.slimes)))
-					if new_level > user_data.slimelevel:
-						user_data.slimelevel = new_level
-
-					user_data.persist()
 
 				# return somebody's score
 				response = "{} currently has {:,} slime.".format(member.display_name, user_data.slimes)
@@ -1191,22 +1174,27 @@ async def on_message(message):
 			user_data = None
 
 			if mentions_count == 0:
-				user_data = EwUser(member=message.author)
-				market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
 
-				# Update the user's slime level.
-				if user_data != None:
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+
+					# Update the user's slime level.
 					new_level = len(str((int(user_data.slimes))))
 					if new_level > user_data.slimelevel:
 						user_data.slimelevel = new_level
-
-					user_data.persist()
+						user_data.persist(conn=conn, cursor=cursor)
+						conn.commit()
+				finally:
+					cursor.close()
+					conn.close()
 
 				# return my data
-				
 				response = "You are a level {} slimeboi.".format(user_data.slimelevel)
 				
-				coinbounty = int(user_data.bounty / (market_data.rate_exchange/1000000))
+				coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
@@ -1218,24 +1206,28 @@ async def on_message(message):
 				
 				if coinbounty != 0:
 					response += "SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
-					
 			else:
 				member = mentions[0]
-				user_data = EwUser(member=member)
-				market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
 
-				# Update the user's slime level.
-				if user_data != None:
+					user_data = EwUser(member=member, conn=conn, cursor=cursor)
+					market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+
 					new_level = len(str(int(user_data.slimes)))
 					if new_level > user_data.slimelevel:
 						user_data.slimelevel = new_level
-
-					user_data.persist()
+						user_data.persist(conn=conn, cursor=cursor)
+						conn.commit()
+				finally:
+					cursor.close()
+					conn.close()
 
 				# return somebody's score
 				response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 				
-				coinbounty = int(user_data.bounty / (market_data.rate_exchange/1000000))
+				coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
@@ -1257,7 +1249,7 @@ async def on_message(message):
 				user_data.persist()
 
 			# Send the response to the player.
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))			
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# rowdy fucker and cop killer (leaders) can give slimes to anybody
 		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:

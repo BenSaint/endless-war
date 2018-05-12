@@ -67,6 +67,7 @@ cmd_drink = cmd_prefix + 'drink'
 cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
 cmd_equip = cmd_prefix + 'equip'
+cmd_data = cmd_prefix + 'data'
 
 # Slime costs/values
 slimes_tokill = 20
