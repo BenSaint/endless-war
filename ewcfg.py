@@ -138,6 +138,7 @@ col_time_lastspar = 'time_lastspar'
 col_time_expirpvp = 'time_expirpvp'
 col_time_lasthaunt = 'time_lasthaunt'
 col_time_lastinvest = 'time_lastinvest'
+col_bounty = 'bounty'
 
 # Database columns for markets
 col_rate_market = 'rate_market'
