@@ -9,7 +9,7 @@ class EwMarket:
 	slimes_revivefee = 0
 
 	rate_market = 1000
-	rate_exchange = 1000
+	rate_exchange = 1000000
 	boombust = 0
 	time_lasttick = 0
 
@@ -189,7 +189,7 @@ class EwUser:
 					self.kills = result[5]
 					self.weapon = result [6]
 					self.weaponskill = result[7]
-					self.trauma = result [8]
+					self.trauma = result[8]
 					self.slimecredit = result[9]
 					self.time_lastkill = result[10]
 					self.time_lastrevive = result[11]
