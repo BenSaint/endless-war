@@ -431,7 +431,7 @@ weapon_list = [
 		str_trauma_self="There is noticeable bruising and scarring around your neck.",
 		str_trauma="There is noticeable bruising and scarring around their neck.",
 		str_kill="{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
-		str_damage="{name_target} avoids strangulation!!",
+		str_damage="{name_target} is ensnared by {name_player}'s wire!!",
 		str_duel="{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire.",
 		fn_effect=wef_garrote
 	),
