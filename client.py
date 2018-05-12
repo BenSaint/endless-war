@@ -208,7 +208,7 @@ async def on_ready():
 								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += (active_bonus / 2) - 4
+						rate_market += (active_bonus / 2) - 5
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
@@ -887,7 +887,7 @@ async def on_message(message):
 							if user_data.weaponskill == 5:
 								response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
 							if sparred_data.weaponskill == 5:
-								response += ' {} is a master of the {}.'.format(message.display_name, weapon.id_weapon)
+								response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
 
 						else:
 							if was_dead:
