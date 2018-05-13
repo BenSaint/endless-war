@@ -888,7 +888,7 @@ async def on_message(message):
 								if user_data.weaponskill == 5:
 									response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
 								if sparred_data.weaponskill == 5:
-									response += ' {} is a master of the {}.'.format(message.author.display_name, weapon.id_weapon)
+									response += ' {} is a master of the {}.'.format(member.display_name, weapon.id_weapon)
 
 						else:
 							if was_dead:
