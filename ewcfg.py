@@ -79,8 +79,8 @@ slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 420
 slimes_perspar = 2500
-slimes_hauntratio = 20
-slimes_hauntmax = 1500
+slimes_hauntratio = 40
+slimes_hauntmax = 5000
 slimes_perslot = 100
 slimes_perpachinko = 500
 
