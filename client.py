@@ -345,7 +345,7 @@ async def on_message(message):
 			# Only send the help doc once every thirty seconds. There's no need to spam it.
 			if (time_now - time_last) > 30:
 				last_helped_times[message.author.id] = time_now
-				await client.send_message(message.channel, ewutils.getHelpText())
+				await client.send_message(message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
 
 			# Nothing else to do in a DM.
 			return
@@ -2085,7 +2085,7 @@ async def on_message(message):
 
 		# advertise help services
 		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
-			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Send me a DM for help.'))
+			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
