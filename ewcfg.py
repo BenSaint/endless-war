@@ -3,7 +3,7 @@ import random
 from ewwep import EwWeapon
 
 # Global configuration options.
-version = "v1.19"
+version = "v1.20"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3

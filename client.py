@@ -1447,9 +1447,6 @@ async def on_message(message):
 				elif time_now > haunted_data.time_expirpvp:
 					# Require the target to be flagged for PvP
 					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
-				elif ewcfg.role_juvenile in roles_map_target:
-					# Juveniles can't be haunted.
-					response = "The juveniles are innocent."
 				elif ewcfg.role_corpse in roles_map_target:
 					# Dead players can't be haunted.
 					response = "{} is already dead.".format(member.display_name)
