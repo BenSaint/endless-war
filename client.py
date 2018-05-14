@@ -534,6 +534,10 @@ async def on_message(message):
 						user_data.time_lastrevive = 0
 						user_data.slimes -= slimes_spent
 
+						# Don't allow attacking to cause you to go negative.
+						if user_data.slimes < 0:
+							user_data.slimes = 0
+
 						if slimes_damage >= shootee_data.slimes:
 							was_killed = True
 
