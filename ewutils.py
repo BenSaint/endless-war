@@ -235,10 +235,6 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 			if(our_conn):
 				conn.close()
 
-	# FIXME debug
-	for key in weaponskills:
-		print("{}: {}".format(key, weaponskills[key]))
-
 	return weaponskills
 
 """ Set an individual weapon skill value for a player. """

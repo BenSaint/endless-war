@@ -2105,7 +2105,6 @@ async def on_message(message):
 
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
-
 		# didn't match any of the command words.
 		else:
 			""" couldn't process the command. bail out!! """

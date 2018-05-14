@@ -52,3 +52,12 @@ CREATE TABLE stats (
 	rate_market bigint NOT NULL DEFAULT '1000',
 	rate_exchange bigint NOT NULL DEFAULT '1000000'
 );
+
+CREATE TABLE weaponskills (
+	id_user varchar(128) NOT NULL,
+	id_server varchar(128) NOT NULL,
+	weapon varchar(64) NOT NULL,
+	weaponskill int NOT NULL DEFAULT '0',
+
+	PRIMARY_KEY(id_user, id_server, weapon)
+);
