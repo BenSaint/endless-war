@@ -292,12 +292,12 @@ def wef_knives(ctn=None):
 		ctn.slimes_damage = 0
 	elif aim >= 10:
 		ctn.crit = True
-		ctn.slimes_damage = int(ctn.slimes_damage * 1.5)
+		ctn.slimes_damage = int(ctn.slimes_damage * 2)
 
 # weapon effect function for "scythe"
 def wef_scythe(ctn=None):
-	ctn.user_data.slimes += int(ctn.slimes_spent * 0.33)
-	ctn.slimes_damage = int(ctn.slimes_damage * 0.85)
+	ctn.user_data.slimes -= int(ctn.slimes_spent * 0.33)
+	ctn.slimes_damage = int(ctn.slimes_damage * 1.25)
 	aim = (random.randrange(10) + 1)
 
 	if aim <= 2:
