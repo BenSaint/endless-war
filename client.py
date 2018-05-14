@@ -208,7 +208,7 @@ async def on_ready():
 								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += (active_bonus / 2) - 5
+						rate_market += (active_bonus / 4) - 5
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
@@ -949,6 +949,7 @@ async def on_message(message):
 						# Clear weapon and weaponskill.
 						player_data.weapon = ""
 						player_data.weaponskill = 0
+						ewutils.weaponskills_clear(member=message.author, conn=conn, cursor=cursor)
 
 						# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 						player_data.time_lastrevive = time_now

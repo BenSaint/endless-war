@@ -191,3 +191,131 @@ def getIntToken(tokens=[], allow_all=False):
 				value = None
 
 	return value
+
+""" Get the map of weapon skills for the specified player. """
+def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, cursor=None):
+	weaponskills = {}
+
+	if member != None:
+		id_server = member.server.id
+		id_user = member.id
+
+	if id_server != None and id_user != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			cursor.execute("SELECT {weapon}, {weaponskill} FROM weaponskills WHERE {id_server} = %s AND {id_user} = %s".format(
+				weapon=ewcfg.col_weapon,
+				weaponskill=ewcfg.col_weaponskill,
+				id_server=ewcfg.col_id_server,
+				id_user=ewcfg.col_id_user
+			), (
+				id_server,
+				id_user
+			))
+
+			data = cursor.fetchall()
+			if data != None:
+				for row in data:
+					weaponskills[row[0]] = row[1]
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
+
+	# FIXME debug
+	for key in weaponskills:
+		print("{}: {}".format(key, weaponskills[key]))
+
+	return weaponskills
+
+""" Set an individual weapon skill value for a player. """
+def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, weaponskill=0, conn=None, cursor=None):
+	if member != None:
+		id_server = member.server.id
+		id_user = member.id
+
+	if id_server != None and id_user != None and weapon != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			cursor.execute("REPLACE INTO weaponskills({id_server}, {id_user}, {weapon}, {weaponskill}) VALUES(%s, %s, %s, %s)".format(
+				id_server=ewcfg.col_id_server,
+				id_user=ewcfg.col_id_user,
+				weapon=ewcfg.col_weapon,
+				weaponskill=ewcfg.col_weaponskill
+			), (
+				id_server,
+				id_user,
+				weapon,
+				weaponskill
+			))
+
+			if our_cursor:
+				conn.commit()
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
+
+""" Clear all weapon skills for a player (probably called on !revive). """
+def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cursor=None):
+	if member != None:
+		id_server = member.server.id
+		id_user = member.id
+
+	if id_server != None and id_user != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			# Clear any records that might exist.
+			cursor.execute("DELETE FROM weaponskills WHERE {id_server} = %s AND {id_user} = %s".format(
+				id_server=ewcfg.col_id_server,
+				id_user=ewcfg.col_id_user
+			), (
+				id_server,
+				id_user
+			))
+
+			if our_cursor:
+				conn.commit()
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()

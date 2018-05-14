@@ -155,7 +155,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -163,7 +163,6 @@ class EwUser:
 					ewcfg.col_bounty,
 					ewcfg.col_kills,
 					ewcfg.col_weapon,
-					ewcfg.col_weaponskill,
 					ewcfg.col_trauma,
 					ewcfg.col_slimecredit,
 					ewcfg.col_time_lastkill,
@@ -187,23 +186,36 @@ class EwUser:
 					self.totaldamage = result[3]
 					self.bounty = result[4]
 					self.kills = result[5]
-					self.weapon = result [6]
-					self.weaponskill = result[7]
-					self.trauma = result[8]
-					self.slimecredit = result[9]
-					self.time_lastkill = result[10]
-					self.time_lastrevive = result[11]
-					self.id_killer = result[12]
-					self.time_lastspar = result[13]
-					self.time_expirpvp = result[14]
-					self.time_lasthaunt = result[15]
-					self.time_lastinvest = result[16]
+					self.weapon = result[6]
+					self.trauma = result[7]
+					self.slimecredit = result[8]
+					self.time_lastkill = result[9]
+					self.time_lastrevive = result[10]
+					self.id_killer = result[11]
+					self.time_lastspar = result[12]
+					self.time_expirpvp = result[13]
+					self.time_lasthaunt = result[14]
+					self.time_lastinvest = result[15]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
 					
 					conn.commit()
 
+				# Get the skill for the user's current weapon.
+				if self.weapon != None and self.weapon != "":
+					skills = ewutils.weaponskills_get(
+						id_server=id_server,
+						id_user=id_user,
+						conn=conn,
+						cursor=cursor
+					)
+					self.weaponskill = skills.get(self.weapon)
+
+					if self.weaponskill == None:
+						self.weaponskill = 0
+				else:
+					self.weaponskill = 0
 			finally:
 				# Clean up the database handles.
 				if(our_cursor):
@@ -268,6 +280,20 @@ class EwUser:
 				self.time_lasthaunt,
 				self.time_lastinvest
 			))
+
+			# Save the current weapon's skill
+			if self.weapon != None and self.weapon != "":
+				if self.weaponskill == None:
+					self.weaponskill = 0
+
+				ewutils.weaponskills_set(
+					id_server=self.id_server,
+					id_user=self.id_user,
+					weapon=self.weapon,
+					weaponskill=self.weaponskill,
+					conn=conn,
+					cursor=cursor
+				)
 
 			if our_cursor:
 				conn.commit()
