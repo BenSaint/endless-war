@@ -701,8 +701,13 @@ async def on_message(message):
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						user_skills = ewutils.weaponskills_get(member=message.author, conn=conn, cursor=cursor)
+
 						user_data.weapon = weapon.id_weapon
-						user_data.weaponskill = 0
+						user_data.weaponskill = user_skills.get(weapon.id_weapon)
+						if user_data.weaponskill == None:
+							user_data.weaponskill = 0
+
 						user_data.persist(conn=conn, cursor=cursor)
 
 						conn.commit()
