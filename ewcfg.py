@@ -11,6 +11,9 @@ update_twitch = 60
 update_pvp = 60
 update_market = 900
 
+# Market delta
+max_iw_swing = 30
+
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
 role_juvenile_pvp = "juvenilepvp"
@@ -156,6 +159,7 @@ col_total_slime = 'total_slime'
 col_total_slimecredit = 'total_slimecredit'
 col_total_players = 'total_players'
 col_total_players_pvp = 'total_players_pvp'
+col_timestamp = 'timestamp'
 
 # Places you might get !shot
 hitzone_list = [

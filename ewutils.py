@@ -116,6 +116,54 @@ def calculatePvpTimer(current_time_expirpvp, desired_time_expirpvp):
 
 	return current_time_expirpvp
 
+""" Returns an array of the most recent counts of all invested slime coin, from newest at 0 to oldest. """
+def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
+	if id_server != None:
+		our_cursor = False
+		our_conn = False
+
+		values = []
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			count = int(count)
+			cursor.execute("SELECT {} FROM stats WHERE {} = %s ORDER BY {} DESC LIMIT %s".format(
+				ewcfg.col_total_slimecredit,
+				ewcfg.col_id_server,
+				ewcfg.col_timestamp,
+			), (
+				id_server,
+				(count if (count > 0) else 2)
+			))
+
+			for row in cursor.fetchall():
+				values.append(row[0])
+
+			# Make sure we return at least one value.
+			if len(values) == 0:
+				values.append(0)
+
+			# If we don't have enough data, pad out to count with the last value in the array.
+			value_last = values[-1]
+			while len(values) < count:
+				values.append(value_last)
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
+
+		return values
+
 """ Save a timestamped snapshot of the current market for historical purposes. """
 def persistMarketHistory(market_data=None, conn=None, cursor=None):
 	if market_data != None:

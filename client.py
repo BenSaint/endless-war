@@ -186,7 +186,15 @@ async def on_ready():
 			try:
 				for server in client.servers:
 					# Load market data from the database.
-					market_data = EwMarket(id_server=server.id)
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						market_data = EwMarket(id_server=server.id, conn=conn, cursor=cursor)
+						credit_totals = ewutils.getRecentTotalSlimeCoins(id_server=server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
 
 					if market_data.time_lasttick + ewcfg.update_market < time_now:
 						market_data.time_lasttick = time_now
@@ -204,11 +212,27 @@ async def on_ready():
 						if active_map != None:
 							active_bonus = len(active_map)
 
-							if active_bonus > 20:
-								active_bonus = 20
+							if active_bonus > 30:
+								active_bonus = 30
 
 						active_users_map[server.id] = {}
 						rate_market += (active_bonus / 4) - 5
+
+						# Invest/Withdraw effects
+						credit_rate = 0
+						if credit_totals[0] != credit_totals[1]:
+							# Positive if net investment, negative if net withdrawal.
+							credit_change = (credit_totals[0] - credit_totals[1])
+							credit_rate = ((credit_change * 1.0) / credit_totals[1])
+
+							if credit_rate > 1.0:
+								credit_rate = 1.0
+							elif credit_rate < -0.5:
+								credit_rate = -0.5
+
+							credit_rate = int((credit_rate * ewcfg.max_iw_swing) if credit_rate > 0 else (credit_rate * 2 * ewcfg.max_iw_swing))
+
+						rate_market += credit_rate
 
 						# Tick down the boombust cooldown.
 						if market_data.boombust < 0:
