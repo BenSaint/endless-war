@@ -405,7 +405,7 @@ async def on_message(message):
 			return
 
 		# process command words
-		if cmd == ewcfg.cmd_kill or cmd == ewcfg.cmd_shoot:
+		if cmd == ewcfg.cmd_kill or cmd == ewcfg.cmd_shoot or or cmd == ewcfg.cmd_kiai or cmd == ewcfg.cmd_stun or cmd == ewcfg.cmd_shoot or cmd == ewcfg.cmd_twinshot or cmd == ewcfg.cmd_unload or cmd == ewcfg.cmd_grapple or cmd == ewcfg.cmd_reap or cmd == ewcfg.cmd_aim:
 			response = ""
 
 			if message.channel.name != ewcfg.channel_combatzone:
@@ -441,243 +441,441 @@ async def on_message(message):
 				finally:
 					cursor.close()
 					conn.close()
-
-				miss = False
-				crit = False
-				strikes = 0
-
-				# Shot player's assigned Discord roles.
-				roles_map_target = ewutils.getRoleMap(member.roles)
-
-				# Slime level data. Levels are in powers of 10.
-				slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
-				slimes_spent = int(slimes_bylevel / 10)
-				slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
-				slimes_dropped = shootee_data.totaldamage
-
-				fumble_chance = (random.randrange(10) - 4)
-				if fumble_chance > user_data.weaponskill:
-					miss = True
-
-				user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
-				user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-
-				# Add the PvP flag role.
-				if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
-					await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
-				elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
-					await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
-				elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
-					await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
-
-				if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
-					# Disallow killing generals.
-					response = "He is hiding in his ivory tower and playing video games like a retard."
-
-				elif (slimes_spent > user_data.slimes):
-					# Not enough slime to shoot.
-					response = "You don't have enough slime to attack. ({:,}/{:,})".format(user_data.slimes, slimes_spent)
-
-				elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
-					# disallow kill if the player has killed recently
-					response = "Take a moment to appreciate your last slaughter."
-
-				elif shootee_data.id_killer == user_data.id_user:
-					# Don't allow the shootee to be shot by the same player twice.
-					response = "You have already proven your superiority over {}.".format(member.display_name)
-
-				elif time_now > shootee_data.time_expirpvp:
-					# Target is not flagged for PvP.
-					response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
-
-				elif user_iskillers == False and user_isrowdys == False:
-					# Only killers, rowdys, the cop killer, and rowdy fucker can shoot people.
-					if ewcfg.role_juvenile in roles_map_user:
-						response = "Juveniles lack the moral fiber necessary for violence."
-					else:
-						response = "You lack the moral fiber necessary for violence."
-
-				elif ewcfg.role_corpse in roles_map_target:
-					# Target is already dead.
-					response = "{} is already dead.".format(member.display_name)
-
-				elif (time_now - shootee_data.time_lastrevive) < ewcfg.invuln_onrevive:
-					# User is currently invulnerable.
-					response = "{} has died too recently and is immune.".format(member.display_name)
-
+				
+				#data on weapon selection and grappling status to determine if !kill is possible:
+				weapon = ewcfg.weapon_map.get(user_data.weapon)
+				grappler = user_data.grappling
+				grappler_data = EwUser(member=grappler, conn=conn, cursor=cursor)
+				
+				#Determine if anything is preventing player from !killing (maybe move down into the PvP flag section?):
+				
+				#out of ammo
+				if (weapon == "gun" or weapon == "rifle") and user_data.weaponcharge > 0:
+					response = "You are out of ammo! You'll need to reload!"
+				
+				#involved in an active grapple
+				elif user_data.grappling != "" and grappler_data.grappling == message.author.id and ((ewcfg.role_copkillers in roles_map_user and ewcfg.role_rowdyfuckers_pvp in roles_map_grappler) or (ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_copkillers_pvp in roles_map_grappler)):
+				
+					if (ewcfg.role_copkillers in roles_map_user and ewcfg.role_rowdyfuckers_pvp in roles_map_grappler) or (ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_copkillers_pvp in roles_map_grappler):
+					response = "You are too preoccupied grappling with {} to attack!".format(user_data.grappling)
+				
+				#Ready to kill!
 				else:
-					# Slimes from this shot might be awarded to the boss.
-					role_boss = (ewcfg.role_copkiller if user_iskillers else ewcfg.role_rowdyfucker)
-					boss_slimes = 0
+				
+					#automatically free user from any obsolete grapple
+					user_data.grappling = ""
+					if grappler_data.grappling == message.author.id
+						grappler_data.grappling = ""
+						
+						grappler_data.persist()
 
-					role_corpse = roles_map[ewcfg.role_corpse]
+					miss = False
+					crit = False
+					strikes = 0
 
-					was_juvenile = False
-					was_killed = False
-					was_shot = False
+					# Shot player's assigned Discord roles.
+					roles_map_target = ewutils.getRoleMap(member.roles)
 
-					if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
-						# User can be shot.
-						if ewcfg.role_juvenile in roles_map_target:
-							was_juvenile = True
+					# Slime level data. Levels are in powers of 10.
+					slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
+					slimes_spent = int(slimes_bylevel / 10)
+					slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+					slimes_dropped = shootee_data.totaldamage
 
-						was_shot = True
+					fumble_chance = (random.randrange(10) - 4)
+					if fumble_chance > user_data.weaponskill:
+						miss = True
 
-					if was_shot:
-						# Weaponized flavor text.
-						weapon = ewcfg.weapon_map.get(user_data.weapon)
-						randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
+					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
-						# Weapon-specific adjustments
-						if weapon != None and weapon.fn_effect != None:
-							# Build effect container
-							ctn = EwEffectContainer(
-								miss=miss,
-								crit=crit,
-								slimes_damage=slimes_damage,
-								slimes_spent=slimes_spent,
-								user_data=user_data,
-								shootee_data=shootee_data
-							)
+					# Add the PvP flag role.
+					if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+					elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+					elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+						await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
 
-							# Make adjustments
-							weapon.fn_effect(ctn)
+					if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+						# Disallow killing generals.
+						response = "He is hiding in his ivory tower and playing video games like a retard."
 
-							# Apply effects for non-reference values
-							miss = ctn.miss
-							crit = ctn.crit
-							slimes_damage = ctn.slimes_damage
-							slimes_spent = ctn.slimes_spent
-							strikes = ctn.strikes
-							# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
+					elif (slimes_spent > user_data.slimes):
+						# Not enough slime to shoot.
+						response = "You don't have enough slime to attack. ({:,}/{:,})".format(user_data.slimes, slimes_spent)
 
-							if miss:
-								slimes_damage = 0
+					elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
+						# disallow kill if the player has killed recently
+						response = "Take a moment to appreciate your last slaughter."
+						
+					elif (time_now - user_data.time_stunned) < ewcfg.cd_stun:
+						# disallow kill if the player has killed recently
+						response = "You have been momentarily stunned and cannot attack!"
 
-						# Remove !revive invulnerability.
-						user_data.time_lastrevive = 0
-						user_data.slimes -= slimes_spent
+					elif shootee_data.id_killer == user_data.id_user:
+						# Don't allow the shootee to be shot by the same player twice.
+						response = "You have already proven your superiority over {}.".format(member.display_name)
 
-						# Don't allow attacking to cause you to go negative.
-						if user_data.slimes < 0:
-							user_data.slimes = 0
+					elif time_now > shootee_data.time_expirpvp:
+						# Target is not flagged for PvP.
+						response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 
-						if slimes_damage >= shootee_data.slimes:
-							was_killed = True
-
-						if was_killed:
-							# Move around slime as a result of the shot.
-							if shootee_data.slimes > 0:
-								if was_juvenile:
-									user_data.slimes += slimes_dropped
-								else:
-									market_data = EwMarket(id_server=message.server.id)
-									coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
-									user_data.slimecredit += coinbounty
-									user_data.slimes += int(slimes_dropped / 2)
-									boss_slimes += int(slimes_dropped / 2)
-
-							# Player was killed.
-							shootee_data.slimes = 0
-							shootee_data.id_killer = user_data.id_user
-
-							if weapon != None:
-								response = weapon.str_damage.format(
-									name_player=message.author.display_name,
-									name_target=member.display_name,
-									hitzone=randombodypart,
-									strikes=strikes
-								)
-								if crit:
-									response += " {}".format(weapon.str_crit.format(
-										name_player=message.author.display_name,
-										name_target=member.display_name
-									))
-
-								response += "\n\n{}".format(weapon.str_kill.format(
-									name_player=message.author.display_name,
-									name_target=member.display_name,
-									emote_skull=ewcfg.emote_slimeskull
-								))
-								shootee_data.trauma = weapon.id_weapon
-							else:
-								response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target=member.display_name)
-								shootee_data.trauma = ""
-
-							#adjust kills bounty
-							user_data.kills += 1
-							user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
-
-							# Give a bonus to the player's weapon skill for killing a stronger player.
-							if shootee_data.slimelevel > user_data.slimelevel:
-								user_data.weaponskill += 1
-
+					elif user_iskillers == False and user_isrowdys == False:
+						# Only killers, rowdys, the cop killer, and rowdy fucker can shoot people.
+						if ewcfg.role_juvenile in roles_map_user:
+							response = "Juveniles lack the moral fiber necessary for violence."
 						else:
-							# A non-lethal blow!
-							shootee_data.slimes -= slimes_damage
-							shootee_data.totaldamage += slimes_damage
+							response = "You lack the moral fiber necessary for violence."
 
-							if weapon != None:
+					elif ewcfg.role_corpse in roles_map_target:
+						# Target is already dead.
+						response = "{} is already dead.".format(member.display_name)
+
+					elif (time_now - shootee_data.time_lastrevive) < ewcfg.invuln_onrevive:
+						# User is currently invulnerable.
+						response = "{} has died too recently and is immune.".format(member.display_name)
+
+					else:
+						# Slimes from this shot might be awarded to the boss.
+						role_boss = (ewcfg.role_copkiller if user_iskillers else ewcfg.role_rowdyfucker)
+						boss_slimes = 0
+
+						role_corpse = roles_map[ewcfg.role_corpse]
+
+						was_juvenile = False
+						was_killed = False
+						was_shot = False
+
+						if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+							# User can be shot.
+							if ewcfg.role_juvenile in roles_map_target:
+								was_juvenile = True
+
+							was_shot = True
+
+						if was_shot:
+							# Weaponized flavor text.
+							weapon = ewcfg.weapon_map.get(user_data.weapon)
+							randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+
+							# Weapon-specific adjustments
+							if weapon != None and weapon.fn_effect != None:
+								# Build effect container
+								ctn = EwEffectContainer(
+									miss=miss,
+									crit=crit,
+									slimes_damage=slimes_damage,
+									slimes_spent=slimes_spent,
+									user_data=user_data,
+									shootee_data=shootee_data
+								)
+
+								# Make adjustments
+								weapon.fn_effect(ctn)
+
+								# Apply effects for non-reference values
+								miss = ctn.miss
+								crit = ctn.crit
+								slimes_damage = ctn.slimes_damage
+								slimes_spent = ctn.slimes_spent
+								strikes = ctn.strikes
+								# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
+
 								if miss:
-									response = "{}".format(weapon.str_miss.format(
-										name_player=message.author.display_name,
-										name_target=member.display_name
-									))
-								else:
-									response = weapon.str_damage.format(
-										name_player=message.author.display_name,
-										name_target=member.display_name,
-										hitzone=randombodypart,
-										strikes=strikes
-									)
+									slimes_damage = 0
+
+							# Remove !revive invulnerability.
+							user_data.time_lastrevive = 0
+							user_data.slimes -= slimes_spent
+
+							# Don't allow attacking to cause you to go negative.
+							if user_data.slimes < 0:
+								user_data.slimes = 0
+
+							if slimes_damage >= shootee_data.slimes:
+								was_killed = True
+
+							if was_killed:
+								# Move around slime as a result of the shot.
+								if shootee_data.slimes > 0:
+									if was_juvenile:
+										user_data.slimes += slimes_dropped
+									else:
+										market_data = EwMarket(id_server=message.server.id)
+										coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+										user_data.slimecredit += coinbounty
+										user_data.slimes += int(slimes_dropped / 2)
+										boss_slimes += int(slimes_dropped / 2)
+
+								# Player was killed.
+								shootee_data.slimes = 0
+								shootee_data.id_killer = user_data.id_user
+
+								if weapon != None:
+									if secondary == False:
+										response = weapon.str_damage.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name,
+											hitzone=randombodypart,
+											strikes=strikes
+										)
+									if secondary == True:
+										response = weapon.str_secondary.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name,
+											hitzone=randombodypart,
+											strikes=strikes
+											reaped=reaped
+										)
 									if crit:
 										response += " {}".format(weapon.str_crit.format(
 											name_player=message.author.display_name,
 											name_target=member.display_name
 										))
-							else:
-								if miss:
-									response = "{} is unharmed.".format(member.display_name)
+
+									response += "\n\n{}".format(weapon.str_kill.format(
+										name_player=message.author.display_name,
+										name_target=member.display_name,
+										emote_skull=ewcfg.emote_slimeskull
+									))
+									shootee_data.trauma = weapon.id_weapon
 								else:
-									response = "{} is hit!!".format(member.display_name)
+									response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target=member.display_name)
+									shootee_data.trauma = ""
+
+								#adjust kills bounty
+								user_data.kills += 1
+								user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
+
+								# Give a bonus to the player's weapon skill for killing a stronger player.
+								if shootee_data.slimelevel > user_data.slimelevel:
+									user_data.weaponskill += 1
+
+							else:
+								# A non-lethal blow!
+								shootee_data.slimes -= slimes_damage
+								shootee_data.totaldamage += slimes_damage
+
+								if weapon != None:
+									if miss:
+										response = "{}".format(weapon.str_miss.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name
+										))
+									else:
+										if secondary == False:
+										response = weapon.str_damage.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name,
+											hitzone=randombodypart,
+											strikes=strikes
+										)
+										if secondary == True and user_data.weaponcharge < 5:
+										response = weapon.str_secondary.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name,
+											hitzone=randombodypart,
+											strikes=strikes
+											reaped=reaped
+										)
+										if secondary == True and user_data.weaponcharge >= 5:
+										response = weapon.str_tertiary.format(
+											name_player=message.author.display_name,
+											name_target=member.display_name,
+											hitzone=randombodypart,
+											strikes=strikes
+											reaped=reaped
+										)
+										
+										if crit:
+											response += " {}".format(weapon.str_crit.format(
+												name_player=message.author.display_name,
+												name_target=member.display_name
+											))
+								else:
+									if miss:
+										response = "{} is unharmed.".format(member.display_name)
+									else:
+										response = "{} is hit!!".format(member.display_name)
+						else:
+							response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+
+						# Level up the player if appropriate.
+						new_level = len(str(int(user_data.slimes)))
+						if new_level > user_data.slimelevel:
+							response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(message.author.display_name, new_level)
+							user_data.slimelevel = new_level
+
+						# Give slimes to the boss if possible.
+						boss_member = None
+						if boss_slimes > 0:
+							for member_search in message.author.server.members:
+								if role_boss in ewutils.getRoleMap(member_search.roles):
+									boss_member = member_search
+									break
+
+						# Persist every users' data.
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							shootee_data.persist(conn=conn, cursor=cursor)
+
+							if boss_member != None:
+								boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
+								boss_data.slimes += boss_slimes
+								boss_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+						# Assign the corpse role to the newly dead player.
+						if was_killed:
+							await client.replace_roles(member, role_corpse)
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+		
+		# targetless weapon abilities
+		elif cmd == ewcfg.cmd_focus or cmd == ewcfg.cmd_reload or cmd == ewcfg.cmd_struggle or cmd == ewcfg.cmd_inferno:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_combatzone:
+				response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
+			else:
+			
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+					if user_data.slimelevel <= 0:
+						user_data.slimelevel = 1
+
+					conn.commit()
+				finally:
+					cursor.close()
+					conn.close()
+				
+				if cmd == ewcfg.cmd_focus:
+					if user_data.weapon != "nun-chucks"
+						response = "You must be weilding nun-chucks to focus your ki!"
 					else:
-						response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+						if user_data.weaponcharge >= 4
+							response = "Your ki is fully focused! Your chakras are blitzed!!"
+						else:
+							user_data.weaponcharge += 3
+							response = weapon.str_secondary.format(
+								name_player=message.author.display_name,
+							)
+						user_data.persist()
 
-					# Level up the player if appropriate.
-					new_level = len(str(int(user_data.slimes)))
-					if new_level > user_data.slimelevel:
-						response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(message.author.display_name, new_level)
-						user_data.slimelevel = new_level
 
-					# Give slimes to the boss if possible.
-					boss_member = None
-					if boss_slimes > 0:
-						for member_search in message.author.server.members:
-							if role_boss in ewutils.getRoleMap(member_search.roles):
-								boss_member = member_search
-								break
-
-					# Persist every users' data.
-					try:
-						conn = ewutils.databaseConnect()
-						cursor = conn.cursor()
-
-						user_data.persist(conn=conn, cursor=cursor)
-						shootee_data.persist(conn=conn, cursor=cursor)
-
-						if boss_member != None:
-							boss_data = EwUser(member=boss_member, conn=conn, cursor=cursor)
-							boss_data.slimes += boss_slimes
-							boss_data.persist(conn=conn, cursor=cursor)
-
-						conn.commit()
-					finally:
-						cursor.close()
-						conn.close()
-
-					# Assign the corpse role to the newly dead player.
-					if was_killed:
-						await client.replace_roles(member, role_corpse)
+				elif cmd == ewcfg.cmd_reload:
+					if user_data.weapon != "gun"
+						response = "You must be wielding a gun to reload, jackass!"
+					elif weaponcharge <= 0:
+						response = "Your weapon is already loaded!"
+					else:
+						if user_data.weaponcharge >= 2
+							user_data.weaponcharge -= 1
+							response = weapon.str_quaternary.format(
+								name_player=message.author.display_name,
+							)
+						elif user_data.weaponcharge == 1:
+							user_data.weaponcharge -= 1
+							response = weapon.str_tertiary.format(
+								name_player=message.author.display_name,
+							)
+							
+						user_data.persist()
+				
+				elif cmd == ewcfg.cmd_struggle:
+					if user_data.grappling == ""
+						response = "You are not currently being restrained."
+					else:
+						grappler = user_data.grappling
+						
+						roles_map_user = ewutils.getRoleMap(message.author.roles)
+						roles_map_target = ewutils.getRoleMap(grappler.roles)
+						
+						if (ewcfg.role_copkillers in roles_map_user and ewcfg.role_rowdyfuckers_pvp in roles_map_target) or (ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_copkillers_pvp in roles_map_target):
+						
+							#get grappling player's info
+							
+							grappler_data = EwUser(member=grappler, conn=conn, cursor=cursor)
+							
+							if
+							
+							strugglecheck = random.randrange(100) + 1 + user_data.slimelevel
+							#check the weaponskill of the member stored in user_data.grappling
+							grip = grappler_data.weaponskill + grappler_data.slimelevel + 80
+							struggleresult =  strugglecheck - grip
+								if struggleresult >= 0:
+									response: "You struggle to break free from {}, but to no avail!!".format(grappler)
+									
+								if struggleresult > 0:
+									response = "You successfuly break free from {}\'s grapple!".format(grappler)
+									grappler_data.grappling = ""
+									user_data.grappling = ""
+									
+									user_data.persist()
+									grappler_data.persist()
+						
+						else:
+							response = "You successfuly break free from {}\'s grapple!".format(grappler)
+							grappler_data.grappling = ""
+							user_data.grappling = ""
+									
+							user_data.persist()
+							grappler_data.persist()
+				
+				elif cmd == ewcfg.cmd_inferno:
+					if user_data.weapon != "molotov"
+						response = "You need molotovs to create an inferno."
+					else:
+						fuel = (10 ** (user_data.slimelevel - 1)) * 5
+						if user_data.slime < fuel:
+							response = "You need more slime to fuel an inferno!"
+						else:
+							# Add the PvP flag role.
+							if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_copkillers_pvp])
+							elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
+							elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+								await client.add_roles(message.author, roles_map[ewcfg.role_juvenile_pvp])
+								
+							response = "Good thing you thought to douse this whole place in gasoline beforehand, just in case. Hands shaking, you strike a match and flick it onto the floorboards."
+							miss = False
+							fumble_chance = (random.randrange(12) - 4)
+							if fumble_chance > user_data.weaponskill:
+								miss = True
+							if miss == True:
+								response += "\n..................the match burns out on the floor. Well, this is awkward."
+								
+							if miss == False:
+								response += "\n\nThe floor ignites!! In an instant, the building and everyone in it are engulfed in flames!! \n:fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire::fire:"
+								damage = (10 ** (user_data.slimelevel - 1) * 2
+								# Damage every player flagged for PVP and kill the user
+								user_data.slimes = 0
+								user_data.trauma = "molotov"
+								await client.replace_roles(message.author, role_corpse)
+								user_data.persist()
+								for member in message.server.members:
+								if member.id != message.author.id and member.id != client.user.id:
+									if ewcfg.role_copkillers_pvp in ewutils.getRoleMap(member.roles) or ewcfg.role_rowdyfuckers_pvp in ewutils.getRoleMap(member.roles) or ewcfg.role_juvenile_pvp in ewutils.getRoleMap(member.roles):
+									member_data = EwUser(member=member, conn=conn, cursor=cursor)
+									member_data.slimes -= damage
+									if member_data.slimes <= 0:
+										member_data.slimes = 0
+										member_data.trauma = "molotov"
+										await client.replace_roles(member, role_corpse)
+									member_data.persist(conn=conn, cursor=cursor)
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
