@@ -121,6 +121,9 @@ class EwUser:
 	weapon = ""
 	weaponskill = 0
 	trauma = ""
+	stunned = 0
+	grappled = ""
+	weaponcharge = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -155,7 +158,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -164,6 +167,9 @@ class EwUser:
 					ewcfg.col_kills,
 					ewcfg.col_weapon,
 					ewcfg.col_trauma,
+					ewcfg.col_stunned,
+					ewcfg.col_grappled,
+					ewcfg.col_weaponcharge,
 					ewcfg.col_slimecredit,
 					ewcfg.col_time_lastkill,
 					ewcfg.col_time_lastrevive,
@@ -188,6 +194,9 @@ class EwUser:
 					self.kills = result[5]
 					self.weapon = result[6]
 					self.trauma = result[7]
+					self.stunned = result []
+					self.grappled = result []
+					self.weaponsharge = result []
 					self.slimecredit = result[8]
 					self.time_lastkill = result[9]
 					self.time_lastrevive = result[10]
@@ -239,7 +248,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -251,6 +260,9 @@ class EwUser:
 				ewcfg.col_weapon,
 				ewcfg.col_weaponskill,
 				ewcfg.col_trauma,
+				ewcfg.col_stunned,
+				ewcfg.col_grappled,
+				ewcfg.col_weaponcharge,
 				ewcfg.col_slimecredit,
 				ewcfg.col_time_lastkill,
 				ewcfg.col_time_lastrevive,
@@ -271,6 +283,9 @@ class EwUser:
 				self.weapon,
 				self.weaponskill,
 				self.trauma,
+				self.stunned,
+				self.grappled,
+				self.weaponcharge,
 				self.slimecredit,
 				self.time_lastkill,
 				self.time_lastrevive,
