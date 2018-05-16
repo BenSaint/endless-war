@@ -73,6 +73,15 @@ cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
 cmd_equip = cmd_prefix + 'equip'
 cmd_data = cmd_prefix + 'data'
+cmd_twinshot = cmd_prefix + 'twinshot'
+cmd_unload = cmd_prefix + 'unload'
+cmd_grapple = cmd_prefix + 'grapple'
+cmd_focus = cmd_prefix + 'focus'
+cmd_struggle = cmd_prefix + 'struggle'
+cmd_inferno = cmd_prefix + 'inferno'
+cmd_kiai = cmd_prefix + 'kiai'
+cmd_reap = cmd_prefix + 'reap'
+cmd_reload = cmd_prefix + 'reload'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -92,6 +101,8 @@ invuln_onrevive = 0
 
 # Cooldowns
 cd_kill = 5
+cd_technique = 3600
+cd_stun = 10
 cd_spar = 600
 cd_haunt = 600
 cd_invest = 1200
@@ -136,8 +147,12 @@ col_kills = 'kills'
 col_weapon = 'weapon'
 col_weaponskill = 'weaponskill'
 col_trauma = 'trauma'
+col_stunned = 'stunned'
+col_grappling = 'grappling'
+col_weaponcharge = 'weaponcharge'
 col_slimecredit = 'slimecredit'
 col_time_lastkill = 'time_lastkill'
+col_time_lasttechnique = 'time_lasttechnique'
 col_time_lastrevive = 'time_lastrevive'
 col_id_killer = 'id_killer'
 col_time_lastspar = 'time_lastspar'
@@ -187,6 +202,17 @@ hitzone_list = [
 
 # A Weapon Effect Function for "gun". Takes an EwEffectContainer as ctn.
 def wef_gun(ctn=None):
+	secondary = False
+	if cmd == ewcfg.cmd_twinshot:
+		secondary = True
+	
+	if secondary == True
+		ctn.slimes_damage *= 2
+		ctn.slimes_spent *= 2
+		ammo = (random.randrange(3) + 1)
+		if ammo == 3:
+			user_data.weaponcharge += 1
+			
 	aim = (random.randrange(10) + 1)
 
 	if aim == 1:
@@ -198,6 +224,15 @@ def wef_gun(ctn=None):
 
 # weapon effect function for "rifle"
 def wef_rifle(ctn=None):
+	secondary = False
+	if cmd == ewcfg.cmd_unload:
+		secondary = True
+	
+	if secondary == True
+		ctn.slimes_damage *= 5
+		ctn.slimes_spent *= 5
+		user_data.weaponcharge += 2
+		
 	aim = (random.randrange(10) + 1)
 
 	if aim <= 2:
@@ -211,13 +246,16 @@ def wef_rifle(ctn=None):
 def wef_nunchucks(ctn=None):
 	ctn.strikes = 0
 	count = 5
+	if user_data.weaponcharge > 0:
+		count += 1
+		user_data.weaponcharge -= 1
 	while count > 0:
 		if random.randrange(3) == 1:
 			ctn.strikes += 1
 
 		count -= 1
 
-	if ctn.strikes == 5:
+	if ctn.strikes >= 5:
 		ctn.crit = True
 	elif ctn.strikes == 0:
 		ctn.miss = True
@@ -226,23 +264,53 @@ def wef_nunchucks(ctn=None):
 # weapon effect function for "katana"
 def wef_katana(ctn=None):
 	ctn.miss = False
-	ctn.slimes_damage = int(0.8 * ctn.slimes_damage)
-	if(random.randrange(10) + 1) == 10:
-		ctn.crit = True
-		ctn.slimes_damage *= 2
+	secondary = False
+	if cmd = ewcfg.cmd_kiai:
+		secondary = True
+		
+	if secondary == False:
+		ctn.slimes_damage = int(0.8 * ctn.slimes_damage)
+		if(random.randrange(10) + 1) == 10:
+			ctn.crit = True
+			ctn.slimes_damage *= 2
+	if secondary == True:
+		if (time_now - user_data.time_lasttechnique) < ewcfg.cd_technique:			
+			response = "It's too soon since your last kiai!"
+		else:
+			ctn.slimes_damage = 0
+			user_data.lasttechnique = time_now
+			shootee_data.stunned = True
 
 # weapon effect function for "bat"
 def wef_bat(ctn=None):
+	secondary = False
+	if cmd = ewcfg.cmd_stun:
+		secondary = True
+		
 	aim = (random.randrange(21) - 10)
-	if aim <= -9:
-		ctn.miss = True
+	
+	if secondary == False:
+		if aim <= -9:
+			ctn.miss = True
+			ctn.slimes_damage = 0
+
+		ctn.slimes_damage = int(ctn.slimes_damage * (1 + (aim / 10)))
+
+		if aim >= 9:
+			ctn.crit = True
+			ctn.slimes_damage = int(slimes_damage * 1.5)
+			
+	if secondary == True:
 		ctn.slimes_damage = 0
+		if aim <= -9:
+			ctn.miss = True
+		
+		else:
+			shootee_data.stunned = time_now
 
-	ctn.slimes_damage = int(ctn.slimes_damage * (1 + (aim / 10)))
-
-	if aim >= 9:
-		ctn.crit = True
-		ctn.slimes_damage = int(slimes_damage * 1.5)
+		if aim >= 9:
+			ctn.crit = True
+			shootee_data.stunned += 5
 
 # weapon effect function for "garrote"
 def wef_garrote(ctn=None):
@@ -257,21 +325,32 @@ def wef_garrote(ctn=None):
 
 # weapon effect function for "brassknuckles"
 def wef_brassknuckles(ctn=None):
-	aim1 = (random.randrange(21) - 10)
-	aim2 = (random.randrange(21) - 10)
-	whiff1 = 1
-	whiff2 = 1
+	secondary = False
+	if cmd = ewcfg.cmd_grapple:
+		secondary = True
+	
+	if secondary == False:
+		aim1 = (random.randrange(21) - 10)
+		aim2 = (random.randrange(21) - 10)
+		whiff1 = 1
+		whiff2 = 1
 
-	if aim1 == -9:
-		whiff1 = 0
-	if aim2 == -9:
-		whiff2 = 0
+		if aim1 == -9:
+			whiff1 = 0
+		if aim2 == -9:
+			whiff2 = 0
 
-	if whiff1 == 0 and whiff2 == 0:
-		ctn.miss = True
-		ctn.slimes_damage = 0
-	else:
-		ctn.slimes_damage = int((((ctn.slimes_damage * (1 + (aim1 / 20))) * whiff1) / 2) + (((ctn.slimes_damage * (1 + (aim2 / 20))) * whiff2) / 2))
+		if whiff1 == 0 and whiff2 == 0:
+			ctn.miss = True
+			ctn.slimes_damage = 0
+		else:
+			ctn.slimes_damage = int((((ctn.slimes_damage * (1 + (aim1 / 20))) * whiff1) / 2) + (((ctn.slimes_damage * (1 + (aim2 / 20))) * whiff2) / 2))
+		
+	if secondary == True:
+		user_data.lasttechnique = time_now
+		user_data.grappling = "{}".format(member)
+		shootee_data.grappling = "{}".format(message.author.id)
+		
 
 # weapon effect function for "molotov"
 def wef_molotov(ctn=None):
@@ -287,20 +366,49 @@ def wef_molotov(ctn=None):
 
 # weapon effect function for "knives"
 def wef_knives(ctn=None):
-	ctn.user_data.slimes += int(ctn.slimes_spent * 0.33)
-	ctn.slimes_damage = int(ctn.slimes_damage * 0.85)
-	aim = (random.randrange(10) + 1)
+	secondary = False
+	if cmd = ewcfg.cmd_aim:
+		secondary = True
+	
+	if secondary = False:
+		aim = (random.randrange(10) + 1)
+		ctn.slimes_spent = int(ctn.slimes_spent * 0.67)
+		ctn.slimes_damage = int(ctn.slimes_damage * 0.85)
+		if user_data.target == member:
+			aim += user_data.weaponcharge
+			ctn.slimes_damage *= user_data.weaponskill
+			ctn.slimes_spent = int(ctn.slimes_spent * (user_data.weaponskill / 2)
+		user_data.weaponskill = 0
+		
+		aim 
 
-	if aim <= 1:
-		ctn.miss = True
-		ctn.slimes_damage = 0
-	elif aim >= 10:
-		ctn.crit = True
-		ctn.slimes_damage = int(ctn.slimes_damage * 2)
+		if aim <= 1:
+			ctn.miss = True
+			ctn.slimes_damage = 0
+		elif aim >= 10:
+			ctn.crit = True
+			ctn.slimes_damage = int(ctn.slimes_damage * 2)
+			
+	if secondary = True:
+		if user_data.target == member:
+			ctn.slimes_spent = 0
+			ctn.slimes_damage = 0
+			if user_data.weaponcharge < 4
+			user_data.weaponcharge += 1
+		if user_data.target != member:
+			user_data.weaponskill = 0
+			ctn.slimes_spent = 0
+			ctn.slimes_damage = 0
+			user_data.target = member
+			user_data.weaponcharge += 1
 
 # weapon effect function for "scythe"
 def wef_scythe(ctn=None):
-	ctn.user_data.slimes -= int(ctn.slimes_spent * 0.33)
+	secondary = False
+	if cmd = ewcfg.cmd_reap:
+		secondary = True
+		
+	ctn.slimes_spent = int(ctn.slimes_spent * 1.33)
 	ctn.slimes_damage = int(ctn.slimes_damage * 1.25)
 	aim = (random.randrange(10) + 1)
 
@@ -310,6 +418,12 @@ def wef_scythe(ctn=None):
 	elif aim >= 9:
 		ctn.crit = True
 		ctn.slimes_damage *= 2
+	
+	if secondary == True:
+		ctn.slimes_damage = int(ctn.slimes_damage * 0.25)
+		if ctn.slimes_damage < shootee_data.slimes:
+			ctn.slimes_spent = -ctn.slimes_damage
+			reaped = ctn.slimes_damage
 
 # All weapons in the game.
 weapon_list = [
@@ -332,6 +446,8 @@ weapon_list = [
 		str_kill="{name_player} puts their gun to {name_target}'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {emote_skull}",
 		str_damage="{name_target} takes a bullet to the {hitzone}!!",
 		str_duel="**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads.",
+		str_secondary="{name_player} takes aim and fires both pistols simultaneously at {name_target}!!",
+		str_tertiary="{name_player} tosses their empty pistols to either side, then reaches into their clothes and pulls out two more!",
 		fn_effect=wef_gun
 	),
 	EwWeapon( # 2
@@ -352,12 +468,15 @@ weapon_list = [
 		str_kill="**RAT-TAT-TAT-TAT-TAT!!** {name_player} rains a hail of bullets directly into {name_target}!! They're officially toast! {emote_skull}",
 		str_damage="Bullets rake over {name_target}'s {hitzone}!!",
 		str_duel="**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts.",
+		str_secondary="**RAT-TAT-TAT-TAT-TAT-TAT-TAT-TAT-TAT-TAT-TAT!!**{name_player} holds down the trigger of their assault rifle, unloading the rest of their magazine into {name_target}!!",
+		str_tertiary="{name_player} produces a new magazine and inserts it into their magazine well! They are locked and loaded!!",
+		str_quaternary="{name_player} detaches their empty magazine and reaches for a new one!",
 		fn_effect=wef_rifle
 	),
 	EwWeapon( # 3
 		id_weapon="nun-chucks",
 		alias=[
-			"nanchacku",
+			"nanchaku",
 			"numchucks",
 			"nunchucks"
 		],
@@ -373,6 +492,7 @@ weapon_list = [
 		str_kill="**HIIII-YAA!!** With expert timing, {name_player} brutally batters {name_target} to death, then strikes a sweet kung-fu pose. {emote_skull}",
 		str_damage="{name_target} takes {strikes} nun-chuck whacks directly in the {hitzone}!!",
 		str_duel="**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision.",
+		str_secondary="{name_player} pauses in the middle of their kata and focuses. Their aura becomes menacing!!",
 		fn_effect=wef_nunchucks
 	),
 	EwWeapon( # 4
@@ -395,6 +515,7 @@ weapon_list = [
 		str_kill="Faster than the eye can follow, {name_player}'s blade glints in the greenish light. {name_target} falls over, now in two pieces. {emote_skull}",
 		str_damage="{name_target} is slashed across the {hitzone}!!",
 		str_duel="**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly.",
+		str_secondary="{name_player} unleashes a fearsome yell!! {name_target}\'s resolve wavers!!",
 		fn_effect=wef_katana
 	),
 	EwWeapon( # 5
@@ -416,6 +537,7 @@ weapon_list = [
 		str_kill="{name_player} pulls back for a brutal swing! **CRUNCCHHH.** {name_target}'s brains splatter over the sidewalk. {emote_skull}",
 		str_damage="{name_target} is struck with a hard blow to the {hitzone}!!",
 		str_duel="**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time.",
+		str_secondary="{name_player} swings directly at {name_target}\'s head to deliver a stunning blow!!",
 		fn_effect=wef_bat
 	),
 	EwWeapon( # 6
@@ -437,6 +559,7 @@ weapon_list = [
 		str_kill="{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
 		str_damage="{name_target} is ensnared by {name_player}'s wire!!",
 		str_duel="{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire.",
+		str_secondary="",
 		fn_effect=wef_garrote
 	),
 	EwWeapon( # 7
@@ -458,6 +581,7 @@ weapon_list = [
 		str_kill="{name_player} slugs {name_target} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well. {emote_skull}",
 		str_damage="{name_target} is socked in the {hitzone}!!",
 		str_duel="**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good.",
+		str_secondary="{name_player} grabs {name_target}, locking him in a hold!",
 		fn_effect=wef_brassknuckles
 	),
 	EwWeapon( # 8
@@ -480,6 +604,7 @@ weapon_list = [
 		str_kill="**SMASH!** {name_target}'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {name_player} is suspected of arson. {emote_skull}",
 		str_damage="{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!",
 		str_duel="{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency.",
+		str_secondary="",
 		fn_effect=wef_molotov
 	),
 	EwWeapon( # 9
@@ -503,6 +628,8 @@ weapon_list = [
 		str_kill="A blade flashes through the air!! **THUNK.** {name_target} is a goner, but {name_player} slits their throat before fleeing the scene, just to be safe. {emote_skull}",
 		str_damage="{name_target} is stuck by a knife in the {hitzone}!!",
 		str_duel="**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air.",
+		str_secondary="{name_player} carefully takes aim at {name_target}!",
+		str_tertiary="{name_player} has {name_target} dead in their sights!!",
 		fn_effect=wef_knives
 	),
 	EwWeapon( # 10
@@ -522,6 +649,7 @@ weapon_list = [
 		str_kill="**SLASHH!!** {name_player}'s scythe cleaves the air, and {name_target} staggers. A moment later, {name_target}'s torso topples off their waist. {emote_skull}",
 		str_damage="{name_target} is cleaved through the {hitzone}!!",
 		str_duel="**WHOOSH, WHOOSH** {name_player} and {name_target} swing their blades in wide arcs, dodging one another's deadly slashes.",
+		str_secondary="{name_player} gouges into {name_target}, reaping {reaped} of their slime!!",
 		fn_effect=wef_scythe
 	)
 ]
