@@ -564,6 +564,10 @@ async def on_message(message):
 						user_data.time_lastrevive = 0
 						user_data.slimes -= slimes_spent
 
+						# Remove repeat killing protection if.
+						if user_data.id_killer == shootee_data.id_user:
+							user_data.id_killer = ""
+
 						# Don't allow attacking to cause you to go negative.
 						if user_data.slimes < 0:
 							user_data.slimes = 0
