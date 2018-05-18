@@ -852,6 +852,7 @@ async def on_message(message):
 						was_dead = False
 						was_player_tired = False
 						was_target_tired = False
+						was_enemy = False
 						duel = False
 
 						time_now = int(time.time())
@@ -880,6 +881,9 @@ async def on_message(message):
 						elif (user_iskillers and (ewcfg.role_copkillers in roles_map_target)) or (user_isrowdys and (ewcfg.role_rowdyfuckers in roles_map_target)):
 							# User can be sparred.
 							was_sparred = True
+						elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)):
+							# Target is a member of the opposing faction.
+							was_enemy = True
 
 
 						#if the duel is successful
@@ -943,6 +947,9 @@ async def on_message(message):
 							elif was_player_tired:
 								# player has sparred too recently
 								response = 'You are too tired to spar right now.'
+							elif was_enemy:
+								# target and player are different factions
+								response = "You cannot spar with your enemies."
 							else:
 								#otherwise unkillable
 								response = '{} cannot spar now.'.format(member.display_name)
