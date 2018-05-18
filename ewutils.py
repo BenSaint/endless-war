@@ -347,10 +347,12 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 				our_cursor = True
 
 			# Clear any records that might exist.
-			cursor.execute("DELETE FROM weaponskills WHERE {id_server} = %s AND {id_user} = %s".format(
+			cursor.execute("UPDATE weaponskills SET {weaponskill} = %s WHERE {weaponskill} > 3 AND {id_server} = %s AND {id_user} = %s".format(
+				weaponskill=ewcfg.col_weaponskill,
 				id_server=ewcfg.col_id_server,
 				id_user=ewcfg.col_id_user
 			), (
+				ewcfg.weaponskill_max_onrevive,
 				id_server,
 				id_user
 			))

@@ -161,6 +161,9 @@ col_total_players = 'total_players'
 col_total_players_pvp = 'total_players_pvp'
 col_timestamp = 'timestamp'
 
+# The highest level your weaponskill may be on revive. All skills over this level reset to this level.
+weaponskill_max_onrevive = 3
+
 # Places you might get !shot
 hitzone_list = [
 	"wrist",
