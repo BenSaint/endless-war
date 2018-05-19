@@ -245,7 +245,7 @@ def wef_bat(ctn=None):
 
 	if aim >= 9:
 		ctn.crit = True
-		ctn.slimes_damage = int(slimes_damage * 1.5)
+		ctn.slimes_damage = int(ctn.slimes_damage * 1.5)
 
 # weapon effect function for "garrote"
 def wef_garrote(ctn=None):
