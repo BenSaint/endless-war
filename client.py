@@ -275,6 +275,17 @@ async def on_ready():
 						# Apply the market change to the casino balance and exchange rate.
 						market_data.slimes_casino = int(market_data.slimes_casino * (rate_market / 1000.0))
 						market_data.rate_exchange = int(market_data.rate_exchange * (rate_market / 1000.0))
+						
+						# Advance the time and potentially change weather.
+						market_data.clock += 1
+						if market_data.clock >= 24:
+							market_data.clock = 0
+						weatherchange = random.randrange(30)
+						if market_data.weather == 'sunny' and weatherchange >= 29
+							market_data.weather == 'rainy'
+						
+						if market_data.weather == 'rainy' and weatherchange >= 29
+							market_data.weather == 'sunny'
 
 						try:
 							conn = ewutils.databaseConnect()
@@ -312,6 +323,12 @@ async def on_ready():
 						# Perfectly balanced
 						else:
 							response = 'The slimeconomy is holding steady. No change in slime stock value.'
+						
+						if market_data.clock == 6:
+							response += ' The Slime Stock Exchanged has closed for the night.'
+						
+						if market_data.clock == 19:
+							response += ' The Slime Stock Exchanged is now open for business.'
 
 						# Send the announcement.
 						channel = channels_stockmarket.get(server.id)
@@ -984,10 +1001,6 @@ async def on_message(message):
 						player_data.slimecredit -= fee
 						market_data.slimes_revivefee += fee
 
-						# Preserve negaslime
-						if player_data.slimes < 0:
-							market_data.negaslime += player_data.slimes
-
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
 
@@ -1390,6 +1403,48 @@ async def on_message(message):
 
 				user_data.persist()
 
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		#check what time it is, and the weather
+		elif cmd == ewcfg.cmd_time or cmd == ewcfg.cmd_clock or cmd == ewcfg.cmd_weather:
+			response = ""
+			market_data = EwMarket(id_server=message.author.server.id)
+			time = market_data.clock
+			displaytime = str(time)
+			ampm = ''
+			if time <= 12:
+				ampm = 'AM'
+			if time > 12:
+				displaytime = str(time - 12)
+				ampm = 'PM'
+			if time == 0:
+				displaytime = 'midnight'
+				ampm = ''
+			if time == 12:
+				displaytime = 'high noon'
+				ampm = ''
+			if weather == 'sunny':
+				if time >= 4 and time <= 5:
+					flair = 'The smog is beginning to clear in the sickly morning sunlight.'
+				if time >= 6 and time <= 16:
+					flair = 'The sun is blazing on the cracked streets, making the air shimmer.'
+				if time >= 17 and time <= 18:
+					flair = 'The sky is darkening, the low clouds an iridescent orange.'
+				if time >= 19 and time <= 4:
+					flair = 'The moon looms yellow as factories belch smoke all through the night.'
+			if weather == 'rainy':
+				if time >= 4 and time <= 5:
+					flair = 'Rain gently beats against the pavement as the sky starts to lighten.'
+				if time >= 6 and time <= 16:
+					flair = 'Rain pours down, collecting in oily rivers that run down sewer drains.'
+				if time >= 17 and time <= 18:
+					flair = 'Distant thunder rumbles as it rains, the sky now growing dark.'
+				if time >= 19 and time <= 4:
+					flair = 'Silverish clouds hide the moon, and the night is black in the heavy rain.'
+					
+			response += 'It is currently {}{} in NLACakaNM. {}".format(displaytime, ampm, flair)
+			
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
@@ -1918,10 +1973,16 @@ async def on_message(message):
 
 		# Invest in the slime market!
 		elif cmd == ewcfg.cmd_invest:
+			
+			market_data = EwMarket(id_server=message.author.server.id
 
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
 				response = "You must go to the #{} to invest your slime.".format(ewcfg.channel_stockexchange)
+				
+			elif market_data.clock >= 19 or market_data.clock <= 6:
+				response = "The Exchange has closed for the night."
+				
 			else:
 				value = None
 				if tokens_count > 1:
@@ -2113,7 +2174,6 @@ async def on_message(message):
 				conn = ewutils.databaseConnect()
 				cursor = conn.cursor()
 
-				# Count all negative slime currently possessed by dead players.
 				cursor.execute("SELECT sum({}) FROM users WHERE id_server = %s AND {} < 0".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimes
@@ -2126,10 +2186,6 @@ async def on_message(message):
 
 					if negaslime == None:
 						negaslime = 0
-
-				# Add persisted negative slime.
-				market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
-				negaslime += market_data.negaslime
 			finally:
 				cursor.close()
 				conn.close()
