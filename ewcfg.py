@@ -73,6 +73,9 @@ cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
 cmd_equip = cmd_prefix + 'equip'
 cmd_data = cmd_prefix + 'data'
+cmd_clock = cmd_prefix + 'clock'
+cmd_time = cmd_prefix + 'time'
+cmd_weather = cmd_prefix + 'weather'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -154,6 +157,8 @@ col_boombust = 'boombust'
 col_time_lasttick = 'time_lasttick'
 col_slimes_revivefee = 'slimes_revivefee'
 col_negaslime = 'negaslime'
+col_clock = 'clock'
+col_weather = 'weather'
 
 # Database columns for stats
 col_total_slime = 'total_slime'
