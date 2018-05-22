@@ -153,6 +153,7 @@ col_slimes_casino = 'slimes_casino'
 col_boombust = 'boombust'
 col_time_lasttick = 'time_lasttick'
 col_slimes_revivefee = 'slimes_revivefee'
+col_negaslime = 'negaslime'
 
 # Database columns for stats
 col_total_slime = 'total_slime'

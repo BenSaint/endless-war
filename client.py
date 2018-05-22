@@ -984,6 +984,10 @@ async def on_message(message):
 						player_data.slimecredit -= fee
 						market_data.slimes_revivefee += fee
 
+						# Preserve negaslime
+						if player_data.slimes < 0:
+							market_data.negaslime += player_data.slimes
+
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
 
@@ -2109,6 +2113,7 @@ async def on_message(message):
 				conn = ewutils.databaseConnect()
 				cursor = conn.cursor()
 
+				# Count all negative slime currently possessed by dead players.
 				cursor.execute("SELECT sum({}) FROM users WHERE id_server = %s AND {} < 0".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimes
@@ -2121,6 +2126,10 @@ async def on_message(message):
 
 					if negaslime == None:
 						negaslime = 0
+
+				# Add persisted negative slime.
+				market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+				negaslime += market_data.negaslime
 			finally:
 				cursor.close()
 				conn.close()
