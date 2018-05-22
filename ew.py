@@ -5,6 +5,9 @@ import ewcfg
 class EwMarket:
 	id_server = ""
 
+	clock = 0
+	weather = 'sunny'
+	
 	slimes_casino = 0
 	slimes_revivefee = 0
 
@@ -12,7 +15,6 @@ class EwMarket:
 	rate_exchange = 1000000
 	boombust = 0
 	time_lasttick = 0
-	negaslime = 0
 
 	""" Load the market data for this server from the database. """
 	def __init__(self, id_server=None, conn=None, cursor=None):
@@ -33,14 +35,15 @@ class EwMarket:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
 					ewcfg.col_slimes_casino,
 					ewcfg.col_rate_market,
 					ewcfg.col_rate_exchange,
 					ewcfg.col_boombust,
 					ewcfg.col_time_lasttick,
 					ewcfg.col_slimes_revivefee,
-					ewcfg.col_negaslime
+					ewcfg.col_clock
+					ewcfg.col_weather,
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -52,7 +55,8 @@ class EwMarket:
 					self.boombust = result[3]
 					self.time_lasttick = result[4]
 					self.slimes_revivefee = result[5]
-					self.negaslime = result[6]
+					self.clock = result[6]
+					self.weather = result [7]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -81,7 +85,7 @@ class EwMarket:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_server,
 				ewcfg.col_slimes_casino,
 				ewcfg.col_rate_market,
@@ -89,7 +93,8 @@ class EwMarket:
 				ewcfg.col_boombust,
 				ewcfg.col_time_lasttick,
 				ewcfg.col_slimes_revivefee,
-				ewcfg.col_negaslime
+				ewcfg.col_clock,
+				ewcfg.col_weather
 			), (
 				self.id_server,
 				self.slimes_casino,
@@ -98,7 +103,8 @@ class EwMarket:
 				self.boombust,
 				self.time_lasttick,
 				self.slimes_revivefee,
-				self.negaslime
+				self.clock,
+				self.weather
 			))
 
 			if our_cursor:
