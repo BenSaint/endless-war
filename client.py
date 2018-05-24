@@ -2215,6 +2215,10 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
+		# advertise patch notes
+		elif cmd == ewcfg.cmd_patchnotes:
+			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
+
 		# advertise help services
 		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
