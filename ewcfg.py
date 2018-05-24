@@ -77,6 +77,7 @@ cmd_clock = cmd_prefix + 'clock'
 cmd_time = cmd_prefix + 'time'
 cmd_weather = cmd_prefix + 'weather'
 cmd_patchnotes = cmd_prefix + 'patchnotes'
+cmd_howl = cmd_prefix + 'howl'
 
 # Slime costs/values
 slimes_tokill = 20

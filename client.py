@@ -97,6 +97,7 @@ async def on_ready():
 		time_last_pvp = time_now
 		time_last_market = time_now
 
+
 		# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
 		time_last_logged = time_now - ewcfg.update_hookstillactive + 60
 
@@ -363,6 +364,8 @@ async def on_message_delete(message):
 
 @client.event
 async def on_message(message):
+	time_now = int(time.time())
+
 	""" do not interact with our own messages """
 	if message.author.id == client.user.id or message.author.bot == True:
 		return
@@ -389,7 +392,6 @@ async def on_message(message):
 
 		""" reply to DMs with help document """
 		if message.server == None:
-			time_now = int(time.time())
 			time_last = last_helped_times.get(message.author.id, 0)
 
 			# Only send the help doc once every thirty seconds. There's no need to spam it.
@@ -443,8 +445,6 @@ async def on_message(message):
 			elif mentions_count == 1:
 				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
-
-				time_now = int(time.time())
 
 				# Get shooting player's info
 				try:
@@ -875,8 +875,6 @@ async def on_message(message):
 						was_enemy = False
 						duel = False
 
-						time_now = int(time.time())
-
 						roles_map_target = ewutils.getRoleMap(member.roles)
 
 						#Determine if the !spar is a duel:
@@ -989,7 +987,6 @@ async def on_message(message):
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
 				if ewcfg.role_corpse in roles_map_user:
-					time_now = int(time.time())
 					player_is_pvp = False
 
 					try:
@@ -1189,7 +1186,6 @@ async def on_message(message):
 
 					if user_data.stamina >= 250:
 						mismined = last_mismined_times.get(message.author.id)
-						time_now = int(time.time())
 
 						if mismined == None:
 							mismined = {
@@ -1249,7 +1245,6 @@ async def on_message(message):
 							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)))
 				else:
 					mismined = last_mismined_times.get(message.author.id)
-					time_now = int(time.time())
 
 					if mismined == None:
 						mismined = {
@@ -1532,8 +1527,6 @@ async def on_message(message):
 			if mentions_count > 1:
 				response = "You can only spook one person at a time. Who do you think you are, the Lord of Ghosts?"
 			elif mentions_count == 1:
-				time_now = int(time.time())
-
 				# A map of role names to Roles assigned to the current user.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -1609,7 +1602,6 @@ async def on_message(message):
 		# Toss the dice at slime craps!
 		elif cmd == ewcfg.cmd_slimecraps:
 			last_used = last_crapsed_times.get(message.author.id)
-			time_now = int(time.time())
 
 			if last_used == None:
 				last_used = 0
@@ -1693,7 +1685,6 @@ async def on_message(message):
 		# Pull the lever on a slot machine!
 		elif cmd == ewcfg.cmd_slimeslots:
 			last_used = last_slotsed_times.get(message.author.id)
-			time_now = int(time.time())
 
 			if last_used == None:
 				last_used = 0
@@ -1827,7 +1818,6 @@ async def on_message(message):
 		# Play slime pachinko!
 		elif cmd == ewcfg.cmd_slimepachinko:
 			last_used = last_pachinkoed_times.get(message.author.id)
-			time_now = int(time.time())
 
 			if last_used == None:
 				last_used = 0
@@ -2008,8 +1998,6 @@ async def on_message(message):
 					value = ewutils.getIntToken(tokens=tokens, allow_all=True)
 
 				if value != None:
-					time_now = int(time.time())
-
 					if value < 0:
 						value = user_data.slimes
 					if value <= 0:
@@ -2084,8 +2072,6 @@ async def on_message(message):
 					value = ewutils.getIntToken(tokens=tokens, allow_all=True)
 
 				if value != None:
-					time_now = int(time.time())
-
 					if value < 0:
 						value = user_data.slimecredit
 					if value <= 0:
@@ -2214,6 +2200,9 @@ async def on_message(message):
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+
+		elif cmd == ewcfg.cmd_howl:
+			await client.edit_message(resp, ewutils.formatMessage(message.author, '**AWOOOOOOOOOOOOOOOOOOOOOOOO**'))
 
 		# advertise patch notes
 		elif cmd == ewcfg.cmd_patchnotes:
