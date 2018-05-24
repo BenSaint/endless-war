@@ -57,7 +57,7 @@ class EwMarket:
 					self.boombust = result[3]
 					self.time_lasttick = result[4]
 					self.slimes_revivefee = result[5]
-					self.negaslime = result [6]
+					self.negaslime = result[6]
 					self.clock = result[7]
 					self.weather = result [8]
 				else:
