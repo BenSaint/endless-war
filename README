@@ -37,6 +37,9 @@ CREATE TABLE markets (
 	boombust int NOT NULL DEFAULT '0',
 	time_lasttick int NOT NULL DEFAULT '0',
 	slimes_revivefee bigint NOT NULL DEFAULT '0',
+	negaslime bigint NOT NULL DEFAULT '0',
+	clock int NOT NULL DEFAULT '0',
+	weather varchar(32) NOT NULL DEFAULT 'sunny',
 
 	PRIMARY KEY (id_server)
 );
