@@ -278,14 +278,18 @@ async def on_ready():
 						
 						# Advance the time and potentially change weather.
 						market_data.clock += 1
-						if market_data.clock >= 24:
+						if market_data.clock >= 24 or market_data.clock < 0:
 							market_data.clock = 0
 						weatherchange = random.randrange(30)
-						if market_data.weather == 'sunny' and weatherchange >= 29
-							market_data.weather == 'rainy'
-						
-						if market_data.weather == 'rainy' and weatherchange >= 29
-							market_data.weather == 'sunny'
+						if weatherchange >= 29:
+							# Weather is changing
+							if market_data.weather == 'sunny':
+								market_data.weather = 'rainy'
+							else:
+								market_data.weather = 'sunny'
+
+							# Log message for statistics tracking.
+							ewutils.logMsg("The weather changed. It's now {}.".format(market_data.weather))
 
 						try:
 							conn = ewutils.databaseConnect()
@@ -325,10 +329,9 @@ async def on_ready():
 							response = 'The slimeconomy is holding steady. No change in slime stock value.'
 						
 						if market_data.clock == 6:
-							response += ' The Slime Stock Exchanged has closed for the night.'
-						
-						if market_data.clock == 19:
-							response += ' The Slime Stock Exchanged is now open for business.'
+							response += ' The Slime Stock Exchange is now open for business.'
+						elif market_data.clock == 18:
+							response += ' The Slime Stock Exchange has closed for the night.'
 
 						# Send the announcement.
 						channel = channels_stockmarket.get(server.id)
@@ -1002,8 +1005,8 @@ async def on_message(message):
 						market_data.slimes_revivefee += fee
 						
 						# Preserve negaslime
--						if player_data.slimes < 0:
--							market_data.negaslime += player_data.slimes
+						if player_data.slimes < 0:
+							market_data.negaslime += player_data.slimes
 
 						# Give player some initial slimes.
 						player_data.slimes = ewcfg.slimes_onrevive
@@ -1414,40 +1417,44 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_time or cmd == ewcfg.cmd_clock or cmd == ewcfg.cmd_weather:
 			response = ""
 			market_data = EwMarket(id_server=message.author.server.id)
-			time = market_data.clock
-			displaytime = str(time)
+			time_current = market_data.clock
+			displaytime = str(time_current)
 			ampm = ''
-			if time <= 12:
+
+			if time_current <= 12:
 				ampm = 'AM'
-			if time > 12:
-				displaytime = str(time - 12)
+			if time_current > 12:
+				displaytime = str(time_current - 12)
 				ampm = 'PM'
-			if time == 0:
+
+			if time_current == 0:
 				displaytime = 'midnight'
 				ampm = ''
-			if time == 12:
+			if time_current == 12:
 				displaytime = 'high noon'
 				ampm = ''
-			if weather == 'sunny':
-				if time >= 4 and time <= 5:
+
+			flair = ''
+			if market_data.weather == 'sunny':
+				if time_current >= 4 and time_current <= 5:
 					flair = 'The smog is beginning to clear in the sickly morning sunlight.'
-				if time >= 6 and time <= 16:
+				if time_current >= 6 and time_current <= 16:
 					flair = 'The sun is blazing on the cracked streets, making the air shimmer.'
-				if time >= 17 and time <= 18:
+				if time_current >= 17 and time_current <= 18:
 					flair = 'The sky is darkening, the low clouds an iridescent orange.'
-				if time >= 19 and time <= 4:
+				if time_current >= 19 or time_current <= 4:
 					flair = 'The moon looms yellow as factories belch smoke all through the night.'
-			if weather == 'rainy':
-				if time >= 4 and time <= 5:
+			elif market_data.weather == 'rainy':
+				if time_current >= 4 and time_current <= 5:
 					flair = 'Rain gently beats against the pavement as the sky starts to lighten.'
-				if time >= 6 and time <= 16:
+				if time_current >= 6 and time_current <= 16:
 					flair = 'Rain pours down, collecting in oily rivers that run down sewer drains.'
-				if time >= 17 and time <= 18:
+				if time_current >= 17 and time_current <= 18:
 					flair = 'Distant thunder rumbles as it rains, the sky now growing dark.'
-				if time >= 19 and time <= 4:
+				if time_current >= 19 or time_current <= 4:
 					flair = 'Silverish clouds hide the moon, and the night is black in the heavy rain.'
 					
-			response += 'It is currently {}{} in NLACakaNM. {}".format(displaytime, ampm, flair)
+			response += "It is currently {}{} in NLACakaNM.{}".format(displaytime, ampm, (' ' + flair))
 			
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
@@ -1977,16 +1984,24 @@ async def on_message(message):
 
 		# Invest in the slime market!
 		elif cmd == ewcfg.cmd_invest:
-			
-			market_data = EwMarket(id_server=message.author.server.id
-
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
 				response = "You must go to the #{} to invest your slime.".format(ewcfg.channel_stockexchange)
-				
-			elif market_data.clock >= 19 or market_data.clock <= 6:
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+			try:
+				conn = ewutils.databaseConnect()
+				cursor = conn.cursor()
+
+				user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+				market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
+			finally:
+				cursor.close()
+				conn.close()
+
+			if market_data.clock >= 18 or market_data.clock < 6:
 				response = "The Exchange has closed for the night."
-				
 			else:
 				value = None
 				if tokens_count > 1:
@@ -1995,23 +2010,12 @@ async def on_message(message):
 				if value != None:
 					time_now = int(time.time())
 
-					try:
-						conn = ewutils.databaseConnect()
-						cursor = conn.cursor()
-
-						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
-					finally:
-						cursor.close()
-						conn.close()
-
 					if value < 0:
 						value = user_data.slimes
 					if value <= 0:
 						value = None
 
 				if value != None:
-
 					# Apply a brokerage fee of ~5% (rate * 1.05)
 					rate_exchange = (market_data.rate_exchange / 1000000.0)
 					feerate = 1.05
@@ -2059,6 +2063,21 @@ async def on_message(message):
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
 				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+			try:
+				conn = ewutils.databaseConnect()
+				cursor = conn.cursor()
+
+				user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+				market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
+			finally:
+				cursor.close()
+				conn.close()
+
+			if market_data.clock >= 18 or market_data.clock < 6:
+				response = "The Exchange has closed for the night."
 			else:
 				value = None
 				if tokens_count > 1:
@@ -2066,16 +2085,6 @@ async def on_message(message):
 
 				if value != None:
 					time_now = int(time.time())
-
-					try:
-						conn = ewutils.databaseConnect()
-						cursor = conn.cursor()
-
-						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-						market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
-					finally:
-						cursor.close()
-						conn.close()
 
 					if value < 0:
 						value = user_data.slimecredit
