@@ -1505,7 +1505,7 @@ async def on_message(message):
 				elif ewcfg.role_corpse in roles_map_target:
 					# Dead players can't be haunted.
 					response = "{} is already dead.".format(member.display_name)
-				elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target:
+				elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target or ewcfg.role_juvenile in roles_map_target:
 					# Target can be haunted by the player.
 					haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
 					if haunted_slimes > ewcfg.slimes_hauntmax:

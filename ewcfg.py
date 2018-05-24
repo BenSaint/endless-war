@@ -256,7 +256,7 @@ def wef_garrote(ctn=None):
 		ctn.miss = True
 		ctn.slimes_damage = 0
 	elif aim == 100:
-		ctn.slimes_damage = ctn.shootee_data.slimes
+		ctn.slimes_damage *= 100
 		ctn.crit = True
 
 # weapon effect function for "brassknuckles"
