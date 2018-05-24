@@ -2177,7 +2177,7 @@ async def on_message(message):
 			try:
 				conn = ewutils.databaseConnect()
 				cursor = conn.cursor()
-				
+
 				# Count all negative slime currently possessed by dead players.
 				cursor.execute("SELECT sum({}) FROM users WHERE id_server = %s AND {} < 0".format(
 					ewcfg.col_slimes,
@@ -2192,9 +2192,9 @@ async def on_message(message):
 					if negaslime == None:
 						negaslime = 0
 						
--				# Add persisted negative slime.
--				market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
--				negaslime += market_data.negaslime
+				# Add persisted negative slime.
+				market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+				negaslime += market_data.negaslime
 
 			finally:
 				cursor.close()
