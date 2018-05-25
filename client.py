@@ -1987,15 +1987,23 @@ async def on_message(message):
 				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 				return
 
+			member = mentions[0]
+			roles_map_target = ewutils.getRoleMap(member.roles)
+
+			if ewcfg.role_rowdyfucker in roles_map_target or ewcfg.role_copkiller in roles_map_target:
+				# Disallow transfers to RF and CK kingpins.
+				response = "You can't transfer SlimeCoin to a known criminal warlord."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+
 			try:
 				conn = ewutils.databaseConnect()
 				cursor = conn.cursor()
 
+				target_data = EwUser(member=member, conn=conn, cursor=cursor)
 				user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 				market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
-
-				member = mentions[0]
-				target_data = EwUser(member=member, conn=conn, cursor=cursor)
 			finally:
 				cursor.close()
 				conn.close()
