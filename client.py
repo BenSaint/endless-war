@@ -2066,6 +2066,13 @@ async def on_message(message):
 				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 				return
 
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			if ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow investments by RF and CK kingpins.
+				response = "You're too powerful to be playing the market."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
 			try:
 				conn = ewutils.databaseConnect()
 				cursor = conn.cursor()
