@@ -3,7 +3,7 @@ import random
 from ewwep import EwWeapon
 
 # Global configuration options.
-version = "v1.23"
+version = "v1.24"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -78,6 +78,8 @@ cmd_time = cmd_prefix + 'time'
 cmd_weather = cmd_prefix + 'weather'
 cmd_patchnotes = cmd_prefix + 'patchnotes'
 cmd_howl = cmd_prefix + 'howl'
+cmd_transfer = cmd_prefix + 'transfer'
+cmd_transfer_alt1 = cmd_prefix + 'xfer'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -127,6 +129,12 @@ emote_dice3 = "<:dice3:436942524041527298>"
 emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
+
+# Common strings.
+str_exchange_closed = "The Exchange has closed for the night."
+str_exchange_specify = "Specify how much {currency} you will {action}."
+str_exchange_channelreq = "You must go to the #" + channel_stockexchange + " to {action} your {currency}."
+str_exchange_busy = "You can't {action} right now. Your slimebroker is busy."
 
 # Common database columns
 col_id_server = 'id_server'

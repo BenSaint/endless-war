@@ -1972,11 +1972,89 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+
+		# Transfer slime between players. Shares a cooldown with investments.
+		elif cmd == ewcfg.cmd_transfer or cmd == ewcfg.cmd_transfer_alt1:
+			if message.channel.name != ewcfg.channel_stockexchange:
+				# Only allowed in the stock exchange.
+				response = ewcfg.str_exchange_channelreq.format(currency="SlimeCoin", action="transfer")
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+			if mentions_count != 1:
+				# Must have exactly one target to send to.
+				response = "Mention the player you want to send SlimeCoin to."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+			try:
+				conn = ewutils.databaseConnect()
+				cursor = conn.cursor()
+
+				user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+				market_data = EwMarket(id_server=message.author.server.id, conn=conn, cursor=cursor)
+
+				member = mentions[0]
+				target_data = EwUser(member=member, conn=conn, cursor=cursor)
+			finally:
+				cursor.close()
+				conn.close()
+
+			if market_data.clock >= 18 or market_data.clock < 6:
+				response = ewcfg.str_exchange_closed
+			else:
+				# Parse the slime value to send.
+				value = None
+				if tokens_count > 1:
+					value = ewutils.getIntToken(tokens=tokens, allow_all=True)
+
+				if value != None:
+					if value < 0:
+						value = user_data.slimes
+					if value <= 0:
+						value = None
+
+				if value != None:
+					# Cost including the 5% transfer fee.
+					cost_total = int(value * 1.05)
+
+					if user_data.slimecredit < cost_total:
+						response = "You don't have enough SlimeCoin. ({:,}/{:,})".format(user_data.slimecredit, cost_total)
+					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
+						# Limit frequency of investments.
+						response = ewcfg.str_exchange_busy.format(action="transfer")
+					else:
+						# Do the transfer if the player can afford it.
+						target_data.slimecredit += value
+						user_data.slimecredit -= cost_total
+						user_data.time_lastinvest = time_now
+
+						# Persist changes
+						response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, target_name=member.display_name, fee=(cost_total - value))
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							target_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+				else:
+					response = ewcfg.str_exchange_specify.format(currency="SlimeCoin", action="transfer")
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
 		# Invest in the slime market!
 		elif cmd == ewcfg.cmd_invest:
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
-				response = "You must go to the #{} to invest your slime.".format(ewcfg.channel_stockexchange)
+				response = ewcfg.str_exchange_channelreq.format(currency="slime", action="invest")
 				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 				return
 
@@ -1991,7 +2069,7 @@ async def on_message(message):
 				conn.close()
 
 			if market_data.clock >= 18 or market_data.clock < 6:
-				response = "The Exchange has closed for the night."
+				response = ewcfg.str_exchange_closed
 			else:
 				value = None
 				if tokens_count > 1:
@@ -2019,7 +2097,7 @@ async def on_message(message):
 						response = "You don't have that much slime to invest."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 						# Limit frequency of investments.
-						response = "You can't invest right now. Your slimebroker is busy."
+						response = ewcfg.str_exchange_busy.format(action="invest")
 					else:
 						user_data.slimes -= value
 						user_data.slimecredit += net_credits
@@ -2041,16 +2119,17 @@ async def on_message(message):
 							conn.close()
 
 				else:
-					response = "Specify how much slime you will invest."
+					response = ewcfg.str_exchange_specify.format(currency="slime", action="invest")
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 
 		# Withdraw your investments!
 		elif cmd == ewcfg.cmd_withdraw:
 			if message.channel.name != ewcfg.channel_stockexchange:
 				# Only allowed in the stock exchange.
-				response = "You must go to the #{} to withdraw your slime.".format(ewcfg.channel_stockexchange)
+				response = ewcfg.str_exchange_channelreq.format(currency="SlimeCoin", action="withdraw")
 				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 				return
 
@@ -2065,7 +2144,7 @@ async def on_message(message):
 				conn.close()
 
 			if market_data.clock >= 18 or market_data.clock < 6:
-				response = "The Exchange has closed for the night."
+				response = ewcfg.str_exchange_closed
 			else:
 				value = None
 				if tokens_count > 1:
@@ -2088,7 +2167,7 @@ async def on_message(message):
 						response = "You don't have that many SlimeCoin to exchange."
 					elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 						# Limit frequency of withdrawals
-						response = "You can't withdraw right now. Your slimebroker is busy."
+						response = ewcfg.str_exchange_busy.format(action="withdraw")
 					else:
 						user_data.slimes += slimes
 						user_data.slimecredit -= credits
@@ -2129,10 +2208,11 @@ async def on_message(message):
 
 
 				else:
-					response = "Specify how much slime you will withdraw."
+					response = ewcfg.str_exchange_specify.format(currency="SlimeCoin", action="withdraw")
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 
 		# Show the current slime market exchange rate (slime per credit).
 		elif cmd == ewcfg.cmd_exchangerate or cmd == ewcfg.cmd_exchangerate_alt1:
