@@ -1448,6 +1448,33 @@ async def on_message(message):
 					flair = 'Distant thunder rumbles as it rains, the sky now growing dark.'
 				if time_current >= 19 or time_current <= 4:
 					flair = 'Silverish clouds hide the moon, and the night is black in the heavy rain.'
+			elif market_data.weather == 'windy':
+				if time_current >= 4 and time_current <= 5:
+					flair = 'Wind whips through the city streets as the sun crests over the horizon.'
+				if time_current >= 6 and time_current <= 16:
+					flair = 'Paper and debris are whipped through the city streets by the winds, buffetting pedestrians.'
+				if time_current >= 17 and time_current <= 18:
+					flair = 'The few trees in the city bend and strain in the wind as the sun slowly sets.'
+				if time_current >= 19 or time_current <= 4:
+					flair = 'The dark streets howl, and battering apartment windows with viscious night winds.'
+			elif market_data.weather == 'lightning':
+				if time_current >= 4 and time_current <= 5:
+					flair = 'An ill-omened morning dawns as lighting streaks across the sky in the sunruse.'
+				if time_current >= 6 and time_current <= 16:
+					flair = 'Flashes of bright lightning and peals of thunder periodically startle the citizens out of their usual stupor.'
+				if time_current >= 17 and time_current <= 18:
+					flair = 'Bluish white arcs of electricity tear through the deep red dusky sky.'
+				if time_current >= 19 or time_current <= 4:
+					flair = 'The dark night periodically lit with bright whitish-green bolts that flash off the metal and glass of the skyscrapers.'
+			elif market_data.weather == 'cloudy':
+				if time_current >= 4 and time_current <= 5:
+					flair = 'The dim morning light spreads timidly across the thickly clouded sky.'
+				if time_current >= 6 and time_current <= 16:
+					flair = 'The air hangs thick, and the pavement is damp with mist from the clouds overhead.'
+				if time_current >= 17 and time_current <= 18:
+					flair = 'The dusky light blares angry red on a sky choked with clouds and smog.'
+				if time_current >= 19 or time_current <= 4:
+					flair = 'Everything is dark and still but the roiling clouds, reflecting the city\'s eerie light.'
 					
 			response += "It is currently {}{} in NLACakaNM.{}".format(displaytime, ampm, (' ' + flair))
 			
@@ -1899,55 +1926,84 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
-
-		# Order a refreshing slime and tonic!
-		elif cmd == ewcfg.cmd_drink:
+			
+		# See what's for sale in the Food Court.
+		elif cmd == ewcfg.cmd_menu:
 			response = ""
 
-			if message.channel.name != ewcfg.channel_casino:
+			if message.channel.name != ewcfg.channel_foodcourt:
 				# Only allowed in the slime casino.
-				response = "You must go to the #{} to order a drink.".format(ewcfg.channel_casino)
+				response = "You must go to the #{} to  see the menu.".format(ewcfg.channel_foodcourt)
+			
 			else:
-				try:
-					conn = ewutils.databaseConnect()
-					cursor = conn.cursor()
+				response= "NLACakaNM Food Court Menu: \n\n PIZZA HUT: pizza, pepperoni, meatlovers, wings \n KFC: chickenbucket, famousbowl, biscuit, coleslaw, bbqsauce \nTACO BELL: taco *(comes in secret flavors??)*, quesarito, steakvolcanoquesomachoriton \nMTN DEW FOUNTAIN: mtndew, bajablast, codered, pitchblack, livewire, whiteout \nBAR: slimentonic" 
+			
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))				
 
-					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-					market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
+		# Order a refreshing slime and tonic!
+		elif cmd == ewcfg.cmd_order:
+			response = ""
 
-				finally:
-					cursor.close()
-					conn.close()
+			if message.channel.name != ewcfg.channel_foodcourt:
+				# Only allowed in the slime casino.
+				response = "You must go to the #{} to order a drink.".format(ewcfg.channel_foodcourt)
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
 
-				value = int(ewcfg.slimes_perdrink / (market_data.rate_exchange / 1000000.0))
-				if value <= 0:
-					value = 1
-
-				if value > user_data.slimecredit:
-					# User doesn't have enough SlimeCoin to get a drink.
-					response = "A Slime and Tonic is {cost:,} SlimeCoin (and you only have {credits:,}).".format(cost=value, credits=user_data.slimecredit)
-				else:
-					# Spend slimes
-					user_data.slimecredit -= value
-					user_data.stamina = 0
-
-					# Give the casino the slime value of the drink.
-					market_data.slimes_casino += ewcfg.slimes_perdrink
-
-					response = "You slam {cost:,} SlimeCoin down on the bar and chug your refreshing Slime and Tonic. Delicious!!".format(cost=value)
-
+				food = ewcfg.food_map.get(value)
+				
+				if food != None:
+					
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
 
-						user_data.persist(conn=conn, cursor=cursor)
-						market_data.persist(conn=conn, cursor=cursor)
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
 
-						conn.commit()
 					finally:
 						cursor.close()
 						conn.close()
 
+					value = int(food.price / (market_data.rate_exchange / 1000000.0))
+					if value <= 0:
+						value = 1
+
+					if value > user_data.slimecredit:
+						# User doesn't have enough SlimeCoin to get a drink.
+						response = "A {} is {cost:,} SlimeCoin (and you only have {credits:,}).".format(food.full_name, cost=value, credits=user_data.slimecredit)
+					else:
+						# Spend slimes
+						recovery = food.recovery
+						user_data.slimecredit -= value
+						user_data.stamina -= recovery
+						if user_data.stamina <= 0:
+							user_data.stamina = 0
+
+						# Give the casino the slime value of the drink.
+						market_data.slimes_casino += food.price
+
+						response = "You slam {cost:,} SlimeCoin down at the {} for a {}. {}".format(cost=value, food.vendor, food.full_name, food.str_eat)
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+				else:
+					response = "Check the !menu for a list of items you can !order."
+				
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
