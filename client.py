@@ -1941,6 +1941,11 @@ async def on_message(message):
 					if value <= 0:
 						value = 1
 
+					# Kingpins eat free.
+					roles_map_user = ewutils.getRoleMap(message.author.roles)
+					if ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+						value = 0
+
 					if value > user_data.slimecredit:
 						# Not enough money.
 						response = "A {food} is {cost:,} SlimeCoin (and you only have {credits:,}).".format(
