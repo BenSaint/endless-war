@@ -282,12 +282,15 @@ async def on_ready():
 						if market_data.clock >= 24 or market_data.clock < 0:
 							market_data.clock = 0
 						weatherchange = random.randrange(30)
-						if weatherchange >= 29:
-							# Weather is changing
-							if market_data.weather == 'sunny':
-								market_data.weather = 'rainy'
-							else:
-								market_data.weather = 'sunny'
+						if weatherchange >= 29 or True: # FIXME debug
+							pattern_count = len(ewcfg.weather_list)
+							if pattern_count > 1:
+								weather_old = market_data.weather
+
+								# Randomly select a new weather pattern. Try again if we get the same one we currently have.
+								while market_data.weather == weather_old:
+									pick = random.randrange(len(ewcfg.weather_list))
+									market_data.weather = ewcfg.weather_list[pick].name
 
 							# Log message for statistics tracking.
 							ewutils.logMsg("The weather changed. It's now {}.".format(market_data.weather))
@@ -1430,24 +1433,16 @@ async def on_message(message):
 				ampm = ''
 
 			flair = ''
-			if market_data.weather == 'sunny':
+			weather_data = ewcfg.weather_map.get(market_data.weather)
+			if weather_data != None:
 				if time_current >= 4 and time_current <= 5:
-					flair = 'The smog is beginning to clear in the sickly morning sunlight.'
+					flair = weather_data.str_sunrise
 				if time_current >= 6 and time_current <= 16:
-					flair = 'The sun is blazing on the cracked streets, making the air shimmer.'
+					flair = weather_data.str_day
 				if time_current >= 17 and time_current <= 18:
-					flair = 'The sky is darkening, the low clouds an iridescent orange.'
+					flair = weather_data.str_sunset
 				if time_current >= 19 or time_current <= 4:
-					flair = 'The moon looms yellow as factories belch smoke all through the night.'
-			elif market_data.weather == 'rainy':
-				if time_current >= 4 and time_current <= 5:
-					flair = 'Rain gently beats against the pavement as the sky starts to lighten.'
-				if time_current >= 6 and time_current <= 16:
-					flair = 'Rain pours down, collecting in oily rivers that run down sewer drains.'
-				if time_current >= 17 and time_current <= 18:
-					flair = 'Distant thunder rumbles as it rains, the sky now growing dark.'
-				if time_current >= 19 or time_current <= 4:
-					flair = 'Silverish clouds hide the moon, and the night is black in the heavy rain.'
+					flair = weather_data.str_night
 					
 			response += "It is currently {}{} in NLACakaNM.{}".format(displaytime, ampm, (' ' + flair))
 			
@@ -2297,7 +2292,20 @@ async def on_message(message):
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
 		elif cmd == ewcfg.cmd_howl:
-			await client.edit_message(resp, ewutils.formatMessage(message.author, '**AWOOOOOOOOOOOOOOOOOOOOOOOO**'))
+			howls = [
+				'**AWOOOOOOOOOOOOOOOOOOOOOOOO**',
+				'**5 6 7 0 9**',
+				'**awwwwwWWWWWooooOOOOOOOOO**',
+				'**awwwwwwwwwooooooooooooooo**',
+				'*awoo* *awoo* **AWOOOOOOOOOOOOOO**',
+				'*awoo* *awoo* *awoo*',
+				'**awwwwwWWWWWooooOOOOOOOoo**',
+				'**AWOOOOOOOOOOOOOOOOOOOOOOOOOOOOO**',
+				'**AWOOOOOOOOOOOOOOOOOOOO**',
+				'**AWWWOOOOOOOOOOOOOOOOOOOO**'
+			]
+
+			await client.edit_message(resp, ewutils.formatMessage(message.author, howls[random.randrange(len(howls))]))
 
 		# advertise patch notes
 		elif cmd == ewcfg.cmd_patchnotes:
