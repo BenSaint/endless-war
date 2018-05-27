@@ -1980,57 +1980,6 @@ async def on_message(message):
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 
-		# Order a refreshing slime and tonic!
-		elif cmd == ewcfg.cmd_drink:
-			response = ""
-
-			if message.channel.name != ewcfg.channel_casino:
-				# Only allowed in the slime casino.
-				response = "You must go to the #{} to order a drink.".format(ewcfg.channel_casino)
-			else:
-				try:
-					conn = ewutils.databaseConnect()
-					cursor = conn.cursor()
-
-					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
-					market_data = EwMarket(id_server = message.server.id, conn=conn, cursor=cursor)
-
-				finally:
-					cursor.close()
-					conn.close()
-
-				value = int(ewcfg.slimes_perdrink / (market_data.rate_exchange / 1000000.0))
-				if value <= 0:
-					value = 1
-
-				if value > user_data.slimecredit:
-					# User doesn't have enough SlimeCoin to get a drink.
-					response = "A Slime and Tonic is {cost:,} SlimeCoin (and you only have {credits:,}).".format(cost=value, credits=user_data.slimecredit)
-				else:
-					# Spend slimes
-					user_data.slimecredit -= value
-					user_data.stamina = 0
-
-					# Give the casino the slime value of the drink.
-					market_data.slimes_casino += ewcfg.slimes_perdrink
-
-					response = "You slam {cost:,} SlimeCoin down on the bar and chug your refreshing Slime and Tonic. Delicious!!".format(cost=value)
-
-					try:
-						conn = ewutils.databaseConnect()
-						cursor = conn.cursor()
-
-						user_data.persist(conn=conn, cursor=cursor)
-						market_data.persist(conn=conn, cursor=cursor)
-
-						conn.commit()
-					finally:
-						cursor.close()
-						conn.close()
-
-			# Send the response to the player.
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
-
 		# Remove a megaslime (1 mil slime) from a general.
 		elif cmd == ewcfg.cmd_deadmega:
 			response = ""
