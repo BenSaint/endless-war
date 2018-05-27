@@ -282,7 +282,7 @@ async def on_ready():
 						if market_data.clock >= 24 or market_data.clock < 0:
 							market_data.clock = 0
 						weatherchange = random.randrange(30)
-						if weatherchange >= 29 or True: # FIXME debug
+						if weatherchange >= 29:
 							pattern_count = len(ewcfg.weather_list)
 							if pattern_count > 1:
 								weather_old = market_data.weather
