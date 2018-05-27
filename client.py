@@ -1187,7 +1187,7 @@ async def on_message(message):
 				if(message.channel.name == ewcfg.channel_mines):
 					user_data = EwUser(member=message.author)
 
-					if user_data.stamina >= 250:
+					if user_data.stamina >= ewcfg.max_stamina:
 						mismined = last_mismined_times.get(message.author.id)
 
 						if mismined == None:
@@ -1360,6 +1360,9 @@ async def on_message(message):
 				
 				if coinbounty != 0:
 					response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
+
+				if user_data.stamina > 0:
+					response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.max_stamina)
 			else:
 				member = mentions[0]
 				try:
@@ -1894,6 +1897,88 @@ async def on_message(message):
 
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# See what's for sale in the Food Court.
+		elif cmd == ewcfg.cmd_menu:
+			if message.channel.name != ewcfg.channel_foodcourt:
+				# Only allowed in the food court.
+				response = ewcfg.str_food_channelreq.format(action="see the menu")
+			else:
+				response = "NLACakaNM Food Court Menu:\n\n"
+
+				for vendor in ewcfg.food_vendor_inv:
+					response += "**{}**: *{}*\n".format(vendor, ewutils.formatNiceList(names=ewcfg.food_vendor_inv[vendor]))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# Order refreshing food and drinks!
+		elif cmd == ewcfg.cmd_order:
+			if message.channel.name != ewcfg.channel_foodcourt:
+				# Only allowed in the food court.
+				response = ewcfg.str_food_channelreq.format(action="order")
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				food = ewcfg.food_map.get(value)
+
+				if food == None:
+					response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
+				else:
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+						market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+					finally:
+						cursor.close()
+						conn.close()
+
+					value = int(food.price / (market_data.rate_exchange / 1000000.0))
+					if value <= 0:
+						value = 1
+
+					if value > user_data.slimecredit:
+						# Not enough money.
+						response = "A {food} is {cost:,} SlimeCoin (and you only have {credits:,}).".format(
+							food=food.str_name,
+							cost=value,
+							credits=user_data.slimecredit
+						)
+					else:
+						user_data.slimecredit -= value
+						user_data.stamina -= food.recover_stamina
+
+						if user_data.stamina < 0:
+							user_data.stamina = 0
+
+						market_data.slimes_casino += food.price
+
+						response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}. {flavor}".format(
+							cost=value,
+							vendor=food.vendor,
+							food=food.str_name,
+							flavor=food.str_eat
+						)
+
+						try:
+							conn = ewutils.databaseConnect()
+							cursor = conn.cursor()
+
+							user_data.persist(conn=conn, cursor=cursor)
+							market_data.persist(conn=conn, cursor=cursor)
+
+							conn.commit()
+						finally:
+							cursor.close()
+							conn.close()
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
 
 		# Order a refreshing slime and tonic!
 		elif cmd == ewcfg.cmd_drink:

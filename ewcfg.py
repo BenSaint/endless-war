@@ -2,9 +2,10 @@ import random
 
 from ewwep import EwWeapon
 from ewweather import EwWeather
+from ewfood import EwFood
 
 # Global configuration options.
-version = "v1.24"
+version = "v1.25"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -40,6 +41,7 @@ channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
 channel_stockexchange = "slime-stock-exchange"
+channel_foodcourt = "food-court"
 
 # Commands
 cmd_prefix = '!'
@@ -81,6 +83,8 @@ cmd_patchnotes = cmd_prefix + 'patchnotes'
 cmd_howl = cmd_prefix + 'howl'
 cmd_transfer = cmd_prefix + 'transfer'
 cmd_transfer_alt1 = cmd_prefix + 'xfer'
+cmd_menu = cmd_prefix + 'menu'
+cmd_order = cmd_prefix + 'order'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -94,6 +98,8 @@ slimes_hauntratio = 40
 slimes_hauntmax = 5000
 slimes_perslot = 100
 slimes_perpachinko = 500
+
+max_stamina = 250
 
 # Lifetimes
 invuln_onrevive = 0
@@ -136,6 +142,7 @@ str_exchange_closed = "The Exchange has closed for the night."
 str_exchange_specify = "Specify how much {currency} you will {action}."
 str_exchange_channelreq = "You must go to the #" + channel_stockexchange + " to {action} your {currency}."
 str_exchange_busy = "You can't {action} right now. Your slimebroker is busy."
+str_food_channelreq = "You must go to the #" + channel_foodcourt + " to {action}."
 
 # Common database columns
 col_id_server = 'id_server'
@@ -603,3 +610,271 @@ weather_list = [
 weather_map = {}
 for weather in weather_list:
 	weather_map[weather.name] = weather
+
+# All food items in the game.
+food_list = [
+	EwFood(
+		id_food="slimentonic",
+		alias=[
+			"tonic",
+		],
+		recover_stamina=250,
+		price=500,
+		str_name='slime n\' tonic',
+		vendor='bar',
+		str_eat="You chug a refreshing Slime n' Tonic. Delicious!!!"
+	),
+	EwFood(
+		id_food="pizza",
+		alias=[
+			"pizzaslice",
+		],
+		recover_stamina=40,
+		price=70,
+		str_name='slice of pizza',
+		vendor='Pizza Hut',
+		str_eat="You grab a hot slice of that cheesy pie! Radical!!"
+	),
+	EwFood(
+		id_food="pepperoni",
+		alias=[
+			"peperoni",
+		],
+		recover_stamina=60,
+		price=110,
+		str_name='slice of pepperoni pizza',
+		vendor='Pizza Hut',
+		str_eat="You chomp into the spicy sausage slice, bro! Cowabunga!!"
+	),
+	EwFood(
+		id_food="meatlovers",
+		alias=[
+			"meatpizza",
+		],
+		recover_stamina=70,
+		price=160,
+		str_name='slice of Meat Lover\'s pizza',
+		vendor='Pizza Hut',
+		str_eat="You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!"
+	),
+	EwFood(
+		id_food="wings",
+		alias=[
+			"buffalowings",
+		],
+		recover_stamina=90,
+		price=175,
+		str_name='buffalo wings',
+		vendor='Pizza Hut',
+		str_eat="Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!"
+	),
+	EwFood(
+		id_food="taco",
+		alias=[
+			"softtaco",
+		],
+		recover_stamina=30,
+		price=50,
+		str_name='soft taco',
+		vendor='Taco Bell',
+		str_eat="It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?"
+	),
+	EwFood(
+		id_food="nachocheesetaco",
+		alias=[
+			"nachocheese",
+			"nachotaco"
+		],
+		recover_stamina=40,
+		price=70,
+		str_name='Nacho Cheese taco',
+		vendor='Taco Bell',
+		str_eat="You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*"
+	),
+	EwFood(
+		id_food="coolranchtaco",
+		alias=[
+			"ranchtaco",
+		],
+		recover_stamina=40,
+		price=70,
+		str_name='Cool Ranch taco',
+		vendor='Taco Bell',
+		str_eat="You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*"
+	),
+	EwFood(
+		id_food="quesarito",
+		alias=[
+			"gordita",
+		],
+		recover_stamina=60,
+		price=100,
+		str_name='chicken quesarito',
+		vendor='Taco Bell',
+		str_eat="It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness."
+	),
+	EwFood(
+		id_food="steakvolcanoquesomachorito",
+		alias=[
+			"machorito",
+			"quesomachorito"
+		],
+		recover_stamina=140,
+		price=250,
+		str_name='SteakVolcanoQuesoMachoRito',
+		vendor='Taco Bell',
+		str_eat="It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!"
+	),
+	EwFood(
+		id_food="coleslaw",
+		alias=[
+			"slaw",
+		],
+		recover_stamina=20,
+		price=55,
+		str_name='tub of cole slaw',
+		vendor='KFC',
+		str_eat="It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?"
+	),
+	EwFood(
+		id_food="biscuitngravy",
+		alias=[
+			"biscuit",
+			"gravy"
+		],
+		recover_stamina=30,
+		price=55,
+		str_name='biscuit with a side of gravy',
+		vendor='KFC',
+		str_eat="You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*"
+	),
+	EwFood(
+		id_food="chickenbucket",
+		alias=[
+			"bucket",
+			"chicken",
+		],
+		recover_stamina=120,
+		price=220,
+		str_name='8-piece fried chicken bucket',
+		vendor='KFC',
+		str_eat="You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit."
+	),
+	EwFood(
+		id_food="famousbowl",
+		alias=[
+			"gordita",
+		],
+		recover_stamina=70,
+		price=130,
+		str_name='Famous Mashed Potato Bowl',
+		vendor='KFC',
+		str_eat="You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!"
+	),
+	EwFood(
+		id_food="barbecuesauce",
+		alias=[
+			"bbqsauce",
+			"sauce",
+			"saucepacket",
+		],
+		recover_stamina=5,
+		price=10,
+		str_name='packet of BBQ Sauce',
+		vendor='KFC',
+		str_eat="You disgard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
+	),
+	EwFood(
+		id_food="mtndew",
+		alias=[
+			"dew",
+			"mountaindew",
+			"greendew"
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with vivid green swill and gulp it down."
+	),
+	EwFood(
+		id_food="bajablast",
+		alias=[
+			"bluedew",
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew Baja Blast',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with light bluish swill and gulp it down."
+	),
+	EwFood(
+		id_food="codered",
+		alias=[
+			"reddew",
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew Code Red',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with red swill and gulp it down."
+	),
+	EwFood(
+		id_food="pitchblack",
+		alias=[
+			"blackdew",
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew Pitch Black',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with dark purple swill and gulp it down."
+	),
+	EwFood(
+		id_food="whiteout",
+		alias=[
+			"whitedew",
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew White-Out',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down."
+	),
+	EwFood(
+		id_food="livewire",
+		alias=[
+			"orangedew",
+		],
+		recover_stamina=20,
+		price=35,
+		str_name='Mtn Dew Livewire',
+		vendor='Mtn Dew Fountain',
+		str_eat="You fill your jumbo fountain drink vessel with orange swill and gulp it down."
+	)
+]
+
+# A map of id_food to EwFood objects.
+food_map = {}
+
+# A list of food names
+food_names = []
+
+# A map of vendor names to their foods.
+food_vendor_inv = {}
+
+# Populate food map, including all aliases.
+for food in food_list:
+	food_map[food.id_food] = food
+	food_names.append(food.id_food)
+
+	# Add food to its vendor's list.
+	vendor_list = food_vendor_inv.get(food.vendor)
+	if vendor_list == None:
+		vendor_list = []
+		food_vendor_inv[food.vendor] = vendor_list
+
+	vendor_list.append(food.id_food)
+
+	for alias in food.alias:
+		food_map[alias] = food
