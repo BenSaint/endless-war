@@ -213,11 +213,11 @@ async def on_ready():
 						if active_map != None:
 							active_bonus = len(active_map)
 
-							if active_bonus > 30:
-								active_bonus = 30
+							if active_bonus > 20:
+								active_bonus = 20
 
 						active_users_map[server.id] = {}
-						rate_market += (active_bonus / 4) - 3
+						rate_market += (active_bonus / 4)
 
 						# Invest/Withdraw effects
 						credit_rate = 0
