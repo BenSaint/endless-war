@@ -16,6 +16,7 @@ import traceback
 
 import ewutils
 import ewcfg
+import ewcmd
 from ew import EwUser, EwMarket
 from ewwep import EwEffectContainer
 
@@ -381,13 +382,16 @@ async def on_message(message):
 			active_users_map[message.server.id] = active_map
 		active_map[message.author.id] = True
 
-	"""
-		Wake up if we need to respond to messages. Could be:
-			message starts with !
-			direct message (server == None)
-			user is new/has no roles (len(roles) < 2)
-	"""
+	content_tolower = message.content.lower()
+
 	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
+		"""
+			Wake up if we need to respond to messages. Could be:
+				message starts with !
+				direct message (server == None)
+				user is new/has no roles (len(roles) < 2)
+		"""
+
 		# tokenize the message. the command should be the first word.
 		tokens = message.content.split(' ')
 		tokens_count = len(tokens)
@@ -605,7 +609,7 @@ async def on_message(message):
 									user_data.slimes += slimes_dropped
 								else:
 									market_data = EwMarket(id_server=message.server.id)
-									coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+									coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
 									user_data.slimecredit += coinbounty
 									user_data.slimes += int(slimes_dropped / 2)
 									boss_slimes += int(slimes_dropped / 2)
@@ -613,6 +617,7 @@ async def on_message(message):
 							# Player was killed.
 							shootee_data.slimes = 0
 							shootee_data.id_killer = user_data.id_user
+							shootee_data.bounty = 0
 
 							if weapon != None:
 								response = weapon.str_damage.format(
@@ -761,6 +766,8 @@ async def on_message(message):
 			# Only allowed in the combat zone.
 			if message.channel.name != ewcfg.channel_combatzone:
 				response = "You must go to the #{} to commit suicide.".format(ewcfg.channel_combatzone)
+			elif message.author.id == '295313459934003200':
+				response = "You can't do that, Doop."
 			else:
 				# Get the user data.
 				user_data = EwUser(member=message.author)
@@ -2330,21 +2337,9 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_harvest:
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
+		# AWOOOOO
 		elif cmd == ewcfg.cmd_howl:
-			howls = [
-				'**AWOOOOOOOOOOOOOOOOOOOOOOOO**',
-				'**5 6 7 0 9**',
-				'**awwwwwWWWWWooooOOOOOOOOO**',
-				'**awwwwwwwwwooooooooooooooo**',
-				'*awoo* *awoo* **AWOOOOOOOOOOOOOO**',
-				'*awoo* *awoo* *awoo*',
-				'**awwwwwWWWWWooooOOOOOOOoo**',
-				'**AWOOOOOOOOOOOOOOOOOOOOOOOOOOOOO**',
-				'**AWOOOOOOOOOOOOOOOOOOOO**',
-				'**AWWWOOOOOOOOOOOOOOOOOOOO**'
-			]
-
-			await client.edit_message(resp, ewutils.formatMessage(message.author, howls[random.randrange(len(howls))]))
+			await client.edit_message(resp, ewcmd.cmd_howl(message))
 
 		# advertise patch notes
 		elif cmd == ewcfg.cmd_patchnotes:
@@ -2390,6 +2385,9 @@ async def on_message(message):
 			await asyncio.sleep(2)
 			await client.delete_message(resp)
 
+	elif content_tolower.find(ewcfg.cmd_howl) >= 0:
+		""" Howl if !howl is in the message at all. """
+		await client.send_message(message.channel, ewcmd.cmd_howl(message))
 
 # find our REST API token
 token = ewutils.getToken()

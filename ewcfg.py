@@ -877,3 +877,16 @@ for food in food_list:
 
 	for alias in food.alias:
 		food_map[alias] = food
+
+howls = [
+	'**AWOOOOOOOOOOOOOOOOOOOOOOOO**',
+	'**5 6 7 0 9**',
+	'**awwwwwWWWWWooooOOOOOOOOO**',
+	'**awwwwwwwwwooooooooooooooo**',
+	'*awoo* *awoo* **AWOOOOOOOOOOOOOO**',
+	'*awoo* *awoo* *awoo*',
+	'**awwwwwWWWWWooooOOOOOOOoo**',
+	'**AWOOOOOOOOOOOOOOOOOOOOOOOOOOOOO**',
+	'**AWOOOOOOOOOOOOOOOOOOOO**',
+	'**AWWWOOOOOOOOOOOOOOOOOOOO**'
+]
