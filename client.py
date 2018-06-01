@@ -1616,6 +1616,8 @@ async def on_message(message):
 			elif message.channel.name != ewcfg.channel_casino:
 				# Only allowed in the slime casino.
 				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+			elif market_data.clock < 18 or market_data.clock >= 6:
+				response = ewcfg.str_casino_closed
 			else:
 				last_crapsed_times[message.author.id] = time_now
 				value = None
@@ -1700,6 +1702,8 @@ async def on_message(message):
 			elif message.channel.name != ewcfg.channel_casino:
 				# Only allowed in the slime casino.
 				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+			elif market_data.clock < 18 or market_data.clock >= 6:
+				response = ewcfg.str_casino_closed
 			else:
 				value = ewcfg.slimes_perslot
 				last_slotsed_times[message.author.id] = time_now
@@ -1834,6 +1838,8 @@ async def on_message(message):
 			elif message.channel.name != ewcfg.channel_casino:
 				# Only allowed in the slime casino.
 				response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+			elif market_data.clock < 18 or market_data.clock >= 6:
+				response = ewcfg.str_casino_closed
 			else:
 				last_pachinkoed_times[message.author.id] = time_now
 				value = ewcfg.slimes_perpachinko
