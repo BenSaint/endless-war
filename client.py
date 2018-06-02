@@ -449,6 +449,9 @@ async def on_message(message):
 				response = "One shot at a time!"
 			elif mentions_count <= 0:
 				response = "Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name."
+			user_data = EwUser(member=message.author)
+			elif user_data.stamina >= ewcfg.stamina_limit:
+				response = "You are too exhausted for gang violence right now. Go get some grub!"
 			elif mentions_count == 1:
 				# The roles assigned to the author of this message.
 				roles_map_user = ewutils.getRoleMap(message.author.roles)
@@ -557,6 +560,9 @@ async def on_message(message):
 						was_shot = True
 
 					if was_shot:
+						#stamina drain
+						user_data.stamina += 1
+						
 						# Weaponized flavor text.
 						weapon = ewcfg.weapon_map.get(user_data.weapon)
 						randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
@@ -844,12 +850,21 @@ async def on_message(message):
 			# Only allow one kill at a time.
 			elif mentions_count > 1:
 				response = "One sparring partner at a time!"
+				
+			user_data = EwUser(member=message.author)
+			elif user_data.stamina >= ewcfg.stamina_limit:
+				response = "You are too exhausted to train right now. Go get some grub!"
 
 			elif mentions_count == 1:
 				member = mentions[0]
 
 				if(member.id == message.author.id):
 					response = "How do you expect to spar with yourself?"
+					
+				sparred_data = EwUser(member=member)
+				elif sparred_data.stamina >= ewcfg.stamina_limit:
+				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
+				
 				else:
 
 					# The roles assigned to the author of this message.
@@ -925,6 +940,10 @@ async def on_message(message):
 							# Weaker player gains slime based on the slime of the stronger player.
 							slimegain = ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
 							weaker_player.slimes += slimegain
+							
+							#stamina drain for both players
+							user_data.stamina += 1
+							sparred_data.stamina += 1
 
 							# Bonus 50% slime to both players in a duel.
 							if duel:
