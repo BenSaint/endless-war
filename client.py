@@ -2338,7 +2338,7 @@ async def on_message(message):
 			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
 		# AWOOOOO
-		elif cmd == ewcfg.cmd_howl:
+		elif cmd == ewcfg.cmd_howl or cmd == ewcfg.cmd_howl_alt1:
 			await client.edit_message(resp, ewcmd.cmd_howl(message))
 
 		# advertise patch notes
@@ -2385,7 +2385,7 @@ async def on_message(message):
 			await asyncio.sleep(2)
 			await client.delete_message(resp)
 
-	elif content_tolower.find(ewcfg.cmd_howl) >= 0:
+	elif content_tolower.find(ewcfg.cmd_howl) >= 0 or content_tolower.find(ewcfg.cmd_howl_alt1) >= 0:
 		""" Howl if !howl is in the message at all. """
 		await client.send_message(message.channel, ewcmd.cmd_howl(message))
 
