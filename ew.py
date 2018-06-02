@@ -137,6 +137,19 @@ class EwUser:
 	weapon = ""
 	weaponskill = 0
 	trauma = ""
+	
+	slimeoid_level = 0
+	slimeoid_name = ''
+	slimeoid_ready = False
+	slimeoid_atk = 1
+	slimeoid_def = 1
+	slimeoid_int = 1
+	slimeoid_body = ''
+	slimeoid_head = ''
+	slimeoid_weapon = ''
+	slimeoid_armor = ''
+	slimeoid_special = ''
+	slimeoid_mobility = ''
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -171,7 +184,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -187,7 +200,19 @@ class EwUser:
 					ewcfg.col_time_lastspar,
 					ewcfg.col_time_expirpvp,
 					ewcfg.col_time_lasthaunt,
-					ewcfg.col_time_lastinvest
+					ewcfg.col_time_lastinvest,
+					ewcfg.col_slimeoid_level,
+					ewcfg.col_slimeoid_name,
+					ewcfg.col_slimeoid_ready,
+					ewcfg.col_slimeoid_atk,
+					ewcfg.col_slimeoid_def,
+					ewcfg.col_slimeoid_int,
+					ewcfg.col_slimeoid_body,
+					ewcfg.col_slimeoid_head,
+					ewcfg.col_slimeoid_weapon,
+					ewcfg.col_slimeoid_armor,
+					ewcfg.col_slimeoid_special,
+					ewcfg.col_slimeoid_mobility
 				), (
 					id_user,
 					id_server
@@ -212,6 +237,18 @@ class EwUser:
 					self.time_expirpvp = result[13]
 					self.time_lasthaunt = result[14]
 					self.time_lastinvest = result[15]
+					self.slimeoid_level = result[16]
+					self.slimeoid_name = result[17]
+					self.slimeoid_ready = result[18]
+					self.slimeoid_atk = result[19]
+					self.slimeoid_def = result[20]
+					self.slimeoid_int = result[21]
+					self.slimeoid_body = result[22]
+					self.slimeoid_head = result[23]
+					self.slimeoid_weapon = result[24]
+					self.slimeoid_armor = result[25]
+					self.slimeoid_special = result[26]
+					self.slimeoid_mobility = result[27]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -255,7 +292,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -274,7 +311,19 @@ class EwUser:
 				ewcfg.col_time_lastspar,
 				ewcfg.col_time_expirpvp,
 				ewcfg.col_time_lasthaunt,
-				ewcfg.col_time_lastinvest
+				ewcfg.col_time_lastinvest,
+				ewcfg.col_slimeoid_level,
+				ewcfg.col_slimeoid_name,
+				ewcfg.col_slimeoid_ready,
+				ewcfg.col_slimeoid_atk,
+				ewcfg.col_slimeoid_def,
+				ewcfg.col_slimeoid_int,
+				ewcfg.col_slimeoid_body,
+				ewcfg.col_slimeoid_head,
+				ewcfg.col_slimeoid_weapon,
+				ewcfg.col_slimeoid_armor,
+				ewcfg.col_slimeoid_special,
+				ewcfg.col_slimeoid_mobility
 			), (
 				self.id_user,
 				self.id_server,
@@ -294,7 +343,19 @@ class EwUser:
 				self.time_lastspar,
 				self.time_expirpvp,
 				self.time_lasthaunt,
-				self.time_lastinvest
+				self.time_lastinvest,
+				self.slimeoid_level,
+				self.slimeoid_name,
+				self.slimeoid_ready,
+				self.slimeoid_atk,
+				self.slimeoid_def,
+				self.slimeoid_int,
+				self.slimeoid_body,
+				self.slimeoid_head,
+				self.slimeoid_weapon,
+				self.slimeoid_armor,
+				self.slimeoid_special,
+				self.slimeoid_mobility
 			))
 
 			# Save the current weapon's skill
