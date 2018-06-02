@@ -42,6 +42,7 @@ channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
 channel_stockexchange = "slime-stock-exchange"
 channel_foodcourt = "food-court"
+channel_slimeoidlab = "slimecorp-labs"
 
 # Commands
 cmd_prefix = '!'
@@ -85,6 +86,18 @@ cmd_transfer = cmd_prefix + 'transfer'
 cmd_transfer_alt1 = cmd_prefix + 'xfer'
 cmd_menu = cmd_prefix + 'menu'
 cmd_order = cmd_prefix + 'order'
+cmd_labmanual = cmd_prefix + 'labmanual'
+cmd_incubate = cmd_prefix + 'incubate'
+cmd_growhead = cmd_prefix + 'growhead'
+cmd_growmobility = cmd_prefix + 'growmobility'
+cmd_growweapon = cmd_prefix + 'growweapon'
+cmd_growarmor = cmd_prefix + 'growarmor'
+cmd_growspecial = cmd_prefix + 'growspecial'
+cmd_nameslimeoid = cmd_prefix + 'nameslimeoid'
+cmd_growpower = cmd_prefix + 'growpower'
+cmd_spawn = cmd_prefix + 'spawn'
+cmd_dissolve = cmd_prefix + 'dissolve'
+cmd_slimeoid = cmd_prefix + 'slimeoid'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -166,6 +179,17 @@ col_time_expirpvp = 'time_expirpvp'
 col_time_lasthaunt = 'time_lasthaunt'
 col_time_lastinvest = 'time_lastinvest'
 col_bounty = 'bounty'
+col_slimeoid_level = 'slimeoid_level'
+col_slimeoid_name = 'slimeoid_name'
+col_slimeoid_atk = 'slimeoid_attack'
+col_slimeoid_def = 'slimeoid_def'
+col_slimeoid_int = 'slimeoid_int'
+col_slimeoid_body = 'slimeoid_body'
+col_slimeoid_head = 'slimeoid_head'
+col_slimeoid_weapon = 'slimeoid_weapon'
+col_slimeoid_armor = 'slimeoid_armor'
+col_slimeoid_special = 'slimeoid_special'
+col_slimeoid_mobility = 'slimeoid_mobility'
 
 # Database columns for markets
 col_rate_market = 'rate_market'
@@ -891,3 +915,344 @@ howls = [
 	'**AWOOOOOOOOOOOOOOOOOOOO**',
 	'**AWWWOOOOOOOOOOOOOOOOOOOO**'
 ]
+
+# Slimeoid attributes.
+
+# All body attributes in the game.
+body_list = [
+	EwBody( # body 1
+		id_body="teardrop",
+		alias=[
+		],
+		str_create="You spawn a teardrop-shaped Slimeoid.",
+		str_body="It is teardrop-shaped."
+	),
+	EwBody( # body 2
+		id_body="wormlike",
+		alias=[
+		],
+		str_create="You spawn a vaguely serpentine Slimeoid.",
+		str_body="It is long and wormlike."
+	),
+	EwBody( # body 3
+		id_body="spherical",
+		alias=[
+		],
+		str_create="You spawn an orb-shaped Slimeoid.",
+		str_body="It is generally orb-shaped."
+	),
+	EwBody( # body 4
+		id_body="humanoid",
+		alias=[
+		],
+		str_create="You spawn a vaguely humanoid Slimeoid.",
+		str_body="It is vaguely humanoid."
+	),
+	EwBody( # body 5
+		id_body="tentacled",
+		alias=[
+		],
+		str_create="You spawn a squid-like Slimeoid.",
+		str_body="It is a mass of tendrils."
+	),
+	EwBody( # body 6
+		id_body="amorphous",
+		alias=[
+		],
+		str_create="You spawn a goopy, amorphous Slimeoid.",
+		str_body="It had no defined shape."
+	),
+	EwBody( # body 7
+		id_body="quadruped",
+		alias=[
+		],
+		str_create="You spawn a four-legged Slimeoid.",
+		str_body="It stands on four legs."
+	)
+]
+
+# A map of id_body to EwBody objects.
+body_map = {}
+
+# A list of body names
+body_names = []
+
+# Populate body map, including all aliases.
+for body in body_list:
+	body_map[body.id_body] = body
+	body_names.append(body.id_body)
+
+	for alias in body.alias:
+		body_map[alias] = body
+
+# All head attributes in the game.
+head_list = [
+	EwHead( # head 1
+		id_head="eye",
+		alias=[
+		],
+		str_create="You give your Slimeoid a single huge eye.",
+		str_head="Its face is a single huge eye."
+	),
+	EwHead( # head 2
+		id_head="maw",
+		alias=[
+		],
+		str_create="You give your Slimeoid a face that's just a huge toothy mouth.",
+		str_head="Its face is a huge toothy mouth."
+	),
+	EwHead( # head 3
+		id_head="void",
+		alias=[
+		],
+		str_create="You give your Slimeoid an empty black void for a face.",
+		str_head="Its face is an empty black void."
+	),
+	EwHead( # head 4
+		id_head="beast",
+		alias=[
+		],
+		str_create="You give your Slimeoid the head of a vicious beast.",
+		str_head="Its face is that of a vicious beast."
+	),
+	EwHead( # head 5
+		id_head="insect",
+		alias=[
+		],
+		str_create="You give your Slimeoid bulging insectoid eyes and mandibles.",
+		str_head="It has bulging insectoid eyes and mandibles."
+	),
+	EwHead( # head 6
+		id_head="skull",
+		alias=[
+		],
+		str_create="You give your Slimeoid an unnerving skull-like head.",
+		str_head="Its face resembles a skull."
+	)
+]
+
+# A map of id_head to EwBody objects.
+head_map = {}
+
+# A list of head names
+head_names = []
+
+# Populate head map, including all aliases.
+for head in head_list:
+	head_map[head.id_head] = head
+	head_names.append(head.id_head)
+
+	for alias in head.alias:
+		head_map[alias] = head
+
+# All moblity attributes in the game.
+moblity_list = [
+	EwMoblity( # moblity 1
+		id_mobility="legs",
+		alias=[
+		],
+		str_advance="\n{active} barrels toward {inactive}!",
+		str_retreat="\n{active} leaps away from {inactive}!",
+		str_create="You give your Slimeoid legs.",
+		str_mobility="It walks around on legs."
+	),
+	EwMoblity( # moblity 2
+		id_mobility="rolling",
+		alias=[
+		],
+		str_advance="\n{active} rolls itself toward {inactive}!",
+		str_retreat="\n{active} rolls away from {inactive}!",
+		str_create="You give your Slimeoid the ability to roll around.",
+		str_mobility="It moves by rolling its body around."
+	),
+	EwMoblity( # moblity 3
+		id_mobility="flagella",
+		alias=[
+		],
+		str_advance="\n{active} slithers toward {inactive}!",
+		str_retreat="\n{active} slithers away from {inactive}!",
+		str_create="You give your Slimeoid flagella to let it move around.",
+		str_mobility="It moves by pulling itself around with its flagella."
+	),
+	EwMoblity( # moblity 4
+		id_mobility="jets",
+		alias=[
+		],
+		str_advance="\n{active} propels itself toward {inactive}!",
+		str_retreat="\n{active} propels itself away from {inactive}!",
+		str_create="You give your Slimeoid the ability to propel itself by squirting fluid.",
+		str_mobility="It moves via jet-propulsion by squirting fluids."
+	)
+]
+
+# A map of id_moblity to EwBody objects.
+moblity_map = {}
+
+# A list of moblity names
+moblity_names = []
+
+# Populate moblity map, including all aliases.
+for moblity in moblity_list:
+	moblity_map[moblity.id_moblity] = moblity
+	moblity_names.append(moblity.id_moblity)
+
+	for alias in moblity.alias:
+		moblity_map[alias] = moblity
+
+# All offense attributes in the game.
+offense_list = [
+	EwOffense( # offense 1
+		id_offense="blades",
+		alias=[
+		],
+		str_attack="\n{active} slashes at {inactive} with its blades!",
+		str_create="You give your Slimeoid the ability to slice foes with retractible blades.",
+		str_offense="It slices foes with retractible blades."
+	),
+	EwOffense( # offense 2
+		id_offense="teeth",
+		alias=[
+		],
+		str_attack="\n{active} sinks its teeth into {inactive}!",
+		str_create="You give your Slimeoid the ability to bite foes with deadly fangs.",
+		str_offense="It can bite foes with deadly fangs."
+	),
+	EwOffense( # offense 3
+		id_offense="grip",
+		alias=[
+		],
+		str_attack="\n{active} grabs {} and squeezes hard!",
+		str_create="You give your Slimeoid the ability to grab and crush foes with its limbs.",
+		str_offense="It can grab and crush its foes with its limbs."
+	),
+	EwOffense( # offense 4
+		id_offense="bludgeon",
+		alias=[
+		],
+		str_attack="\n{active} bashes {} with its limbs!",
+		str_create="You give your Slimeoid the ability to smash foes with heavy blows from its limbs.",
+		str_offense="It can smash foes with its limbs."
+	)
+]
+
+# A map of id_offense to EwBody objects.
+offense_map = {}
+
+# A list of offense names
+offense_names = []
+
+# Populate offense map, including all aliases.
+for offense in offense_list:
+	offense_map[offense.id_offense] = offense
+	offense_names.append(offense.id_offense)
+
+	for alias in offense.alias:
+		offense_map[alias] = offense
+
+# All defense attributes in the game.
+defense_list = [
+	EwDefense( # defense 1
+		id_defense="scales",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid protective scales.",
+		str_defense="It is covered in scales."
+	),
+	EwDefense( # defense 2
+		id_defense="boneplates",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid protective bone plates.",
+		str_defense="It is covered in bony plates."
+	),
+	EwDefense( # defense 3
+		id_defense="quantumfield",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid a protective quantum field.",
+		str_defense="It is enveloped in a field of quantum uncertainty."
+	),
+	EwDefense( # defense 4
+		id_defense="formless",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid the ability to take any shape.",
+		str_defense="It is malleable and can absorb blows with ease."
+	),
+]
+
+# A map of id_defense to EwBody objects.
+defense_map = {}
+
+# A list of defense names
+defense_names = []
+
+# Populate defense map, including all aliases.
+for defense in defense_list:
+	defense_map[defense.id_defense] = defense
+	defense_names.append(defense.id_defense)
+
+	for alias in defense.alias:
+		defense_map[alias] = defense
+
+# All special attributes in the game.
+special_list = [
+	EwSpecial( # special 1
+		id_special="spit",
+		alias=[
+		],
+		str_special_attack="\n{active} spits acidic slime all over {inactive}!",
+		str_create="You give your slimeoid the ability to spit acidic slime.",
+		str_special="It can spit acidic slime."
+	),
+	EwSpecial( # special 2
+		id_special="laser",
+		alias=[
+		],
+		str_special_attack="\n{active} sears {inactive} with a blast of radiation!",
+		str_create="You give your slimeoid the ability to fire a beam of radiation.",
+		str_special="It can fire beams of radiation."
+	),
+	EwSpecial( # special 3
+		id_special="spines",
+		alias=[
+		],
+		str_special_attack="\n{active} extends its spines, puncturing {inactive}!",
+		str_create="You give your slimeoid the ability to extrude deadly spikes.",
+		str_special="It can extrude deadly spikes."
+	),
+	EwSpecial( # special 4
+		id_special="swallow",
+		alias=[
+		],
+		str_special_attack="\n{active} engulfs {inactive} into its body!",
+		str_create="You give your slimeoid the ability to engulf an opponent with its body.",
+		str_special="It can engulf opponents with its body."
+	),
+	EwSpecial( # special 5
+		id_special="throw",
+		alias=[
+		],
+		str_special_attack="\n{active} picks up a chunk of rock and hurls it into {inactive}!",
+		str_create="You give your slimeoid the ability to hurl objects at foes.",
+		str_special="It can hurl objects at foes."
+	)
+]
+
+# A map of id_special to EwBody objects.
+special_map = {}
+
+# A list of special names
+special_names = []
+
+# Populate special map, including all aliases.
+for special in special_list:
+	special_map[special.id_special] = special
+	special_names.append(special.id_special)
+
+	for alias in special.alias:
+		special_map[alias] = special
