@@ -1,0 +1,114 @@
+""" A weapon object which adds flavor text to kill/shoot. """
+class EwBody:
+	id_body = ""
+	alias = []
+	str_create = ""
+	str_body = ""
+	def __init__(
+		self,
+		id_body="",
+		alias=[],
+		str_create="",
+		str_body=""
+	):
+		self.id_body = id_body
+		self.alias = alias
+		self.str_create = str_create
+		self.str_body = str_body
+
+class EwHead:
+	id_head = ""
+	alias = []
+	str_create = ""
+	str_head = ""
+	def __init__(
+		self,
+		id_head="",
+		alias=[],
+		str_create="",
+		str_head=""
+	):
+		self.id_head = id_head
+		self.alias = alias
+		self.str_create = str_create
+		self.str_head = str_head
+	
+class EwMobility:
+	id_mobility = ""
+	alias = []
+	str_advance = ""
+	str_retreat = ""
+	str_create = ""
+	str_mobility = ""
+	def __init__(
+		self,
+		id_mobility="",
+		alias=[],
+		str_advance="",
+		str_retreat="",
+		str_create="",
+		str_mobility=""
+	):
+		self.id_mobility = id_mobility
+		self.alias = alias
+		self.str_advance = str_advance
+		self.str_retreat = str_retreat
+		self.str_create = str_create
+		self.str_mobility = str_mobility
+
+class EwOffense:
+	id_offense = ""
+	alias = []
+	str_attack = ""
+	str_create = ""
+	str_offense = ""
+	def __init__(
+		self,
+		id_offense="",
+		alias=[],
+		str_attack=""
+		str_create="",
+		str_offense=""
+	):
+		self.id_offense = id_offense
+		self.alias = alias
+		self.str_attack = str_attack
+		self.str_create = str_create
+		self.str_offense = str_offense
+
+class EwDefense:
+	id_defense = ""
+	alias = []
+	str_create = ""
+	str_defense = ""
+	def __init__(
+		self,
+		id_defense="",
+		alias=[],
+		str_create="",
+		str_defense=""
+	):
+		self.id_defense = id_defense
+		self.alias = alias
+		self.str_create = str_create
+		self.str_defense = str_defense
+
+class EwSpecial:
+	id_special = ""
+	alias = []
+	str_special_attack = ""
+	str_create = ""
+	str_special = ""
+	def __init__(
+		self,
+		id_special="",
+		alias=[],
+		str_special_attack="",
+		str_create="",
+		str_special=""
+	):
+		self.id_special = id_special
+		self.alias = alias
+		self.str_special_attack = str_special_attack
+		self.str_create = str_create
+		self.str_special = str_special
