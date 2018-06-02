@@ -1,11 +1,9 @@
 import random
 
 from ewwep import EwWeapon
-from ewweather import EwWeather
-from ewfood import EwFood
 
 # Global configuration options.
-version = "v1.25"
+version = "v1.24"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -41,7 +39,7 @@ channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
 channel_stockexchange = "slime-stock-exchange"
-channel_foodcourt = "food-court"
+channel_slimeoidlab = "slimecorp-labs"
 
 # Commands
 cmd_prefix = '!'
@@ -71,6 +69,7 @@ cmd_slimecredit_alt1 = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
 cmd_exchangerate = cmd_prefix + 'exchangerate'
 cmd_exchangerate_alt1 = cmd_prefix + 'exchange'
+cmd_drink = cmd_prefix + 'drink'
 cmd_slimepachinko = cmd_prefix + 'slimepachinko'
 cmd_negaslime = cmd_prefix + 'negaslime'
 cmd_equip = cmd_prefix + 'equip'
@@ -80,11 +79,21 @@ cmd_time = cmd_prefix + 'time'
 cmd_weather = cmd_prefix + 'weather'
 cmd_patchnotes = cmd_prefix + 'patchnotes'
 cmd_howl = cmd_prefix + 'howl'
-cmd_howl_alt1 = cmd_prefix + '56709'
 cmd_transfer = cmd_prefix + 'transfer'
 cmd_transfer_alt1 = cmd_prefix + 'xfer'
-cmd_menu = cmd_prefix + 'menu'
-cmd_order = cmd_prefix + 'order'
+cmd_enslave = cmd_prefix + 'enslave'
+cmd_labmanual = cmd_prefix + 'labmanual'
+cmd_incubate = cmd_prefix + 'incubate'
+cmd_growhead = cmd_prefix + 'growhead'
+cmd_growmobility = cmd_prefix + 'growmobility'
+cmd_growweapon = cmd_prefix + 'growweapon'
+cmd_growarmor = cmd_prefix + 'growarmor'
+cmd_growspecial = cmd_prefix + 'growspecial'
+cmd_nameslimeoid = cmd_prefix + 'nameslimeoid'
+cmd_growpower = cmd_prefix + 'growpower'
+cmd_spawn = cmd_prefix + 'spawn'
+cmd_dissolve = cmd_prefix + 'dissolve'
+cmd_slimeoid = cmd_prefix + 'slimeoid'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -99,10 +108,11 @@ slimes_hauntmax = 5000
 slimes_perslot = 100
 slimes_perpachinko = 500
 
-max_stamina = 250
-
 # Lifetimes
 invuln_onrevive = 0
+
+# Stamina
+stamina_limit = 250
 
 # Cooldowns
 cd_kill = 5
@@ -142,7 +152,6 @@ str_exchange_closed = "The Exchange has closed for the night."
 str_exchange_specify = "Specify how much {currency} you will {action}."
 str_exchange_channelreq = "You must go to the #" + channel_stockexchange + " to {action} your {currency}."
 str_exchange_busy = "You can't {action} right now. Your slimebroker is busy."
-str_food_channelreq = "You must go to the #" + channel_foodcourt + " to {action}."
 
 # Common database columns
 col_id_server = 'id_server'
@@ -150,6 +159,7 @@ col_id_server = 'id_server'
 # Database columns for users
 col_id_user = 'id_user'
 col_slimes = 'slimes'
+col_slimepoudrins = 'slimepoudrins'
 col_slimelevel = 'slimelevel'
 col_stamina = 'stamina'
 col_totaldamage = 'totaldamage'
@@ -166,6 +176,21 @@ col_time_expirpvp = 'time_expirpvp'
 col_time_lasthaunt = 'time_lasthaunt'
 col_time_lastinvest = 'time_lastinvest'
 col_bounty = 'bounty'
+col_master = 'master'
+col_slave = 'slave'
+
+col_slimeoid_level = 'slimeoid_level'
+col_slimeoid_name = 'slimeoid_name'
+col_slimeoid_atk = 'slimeoid_attack'
+col_slimeoid_def = 'slimeoid_def'
+col_slimeoid_int = 'slimeoid_int'
+col_slimeoid_body = 'slimeoid_body'
+col_slimeoid_head = 'slimeoid_head'
+col_slimeoid_weapon = 'slimeoid_weapon'
+col_slimeoid_armor = 'slimeoid_armor'
+col_slimeoid_special = 'slimeoid_special'
+col_slimeoid_mobility = 'slimeoid_mobility'
+
 
 # Database columns for markets
 col_rate_market = 'rate_market'
@@ -566,328 +591,344 @@ for weapon in weapon_list:
 
 	for alias in weapon.alias:
 		weapon_map[alias] = weapon
+		
+# Slimeoid attributes.
 
-# All weather effects in the game.
-weather_list = [
-	EwWeather(
-		name="sunny",
-		sunrise="The smog is beginning to clear in the sickly morning sunlight.",
-		day="The sun is blazing on the cracked streets, making the air shimmer.",
-		sunset="The sky is darkening, the low clouds an iridescent orange.",
-		night="The moon looms yellow as factories belch smoke all through the night."
+# All body attributes in the game.
+body_list = [
+	EwBody( # body 1
+		id_body="teardrop",
+		alias=[
+		],
+		str_create="You spawn a teardrop-shaped Slimeoid.",
+		str_body="It is teardrop-shaped."
 	),
-	EwWeather(
-		name="rainy",
-		sunrise="Rain gently beats against the pavement as the sky starts to lighten.",
-		day="Rain pours down, collecting in oily rivers that run down sewer drains.",
-		sunset="Distant thunder rumbles as it rains, the sky now growing dark.",
-		night="Silverish clouds hide the moon, and the night is black in the heavy rain."
+	EwBody( # body 2
+		id_body="wormlike",
+		alias=[
+		],
+		str_create="You spawn a vaguely serpentine Slimeoid.",
+		str_body="It is long and wormlike."
 	),
-	EwWeather(
-		name="windy",
-		sunrise="Wind whips through the city streets as the sun crests over the horizon.",
-		day="Paper and debris are whipped through the city streets by the winds, buffetting pedestrians.",
-		sunset="The few trees in the city bend and strain in the wind as the sun slowly sets.",
-		night="The dark streets howl, battering apartment windows with vicious night winds."
+	EwBody( # body 3
+		id_body="spherical",
+		alias=[
+		],
+		str_create="You spawn an orb-shaped Slimeoid.",
+		str_body="It is generally orb-shaped."
 	),
-	EwWeather(
-		name="lightning",
-		sunrise="An ill-omened morning dawns as lighting streaks across the sky in the sunrise.",
-		day="Flashes of bright lightning and peals of thunder periodically startle the citizens out of their usual stupor.",
-		sunset="Bluish white arcs of electricity tear through the deep red dusky sky.",
-		night="The dark night periodically lit with bright whitish-green bolts that flash off the metal and glass of the skyscrapers."
+	EwBody( # body 4
+		id_body="humanoid",
+		alias=[
+		],
+		str_create="You spawn a vaguely humanoid Slimeoid.",
+		str_body="It is vaguely humanoid."
 	),
-	EwWeather(
-		name="cloudy",
-		sunrise="The dim morning light spreads timidly across the thickly clouded sky.",
-		day="The air hangs thick, and the pavement is damp with mist from the clouds overhead.",
-		sunset="The dusky light blares angry red on a sky choked with clouds and smog.",
-		night="Everything is dark and still but the roiling clouds, reflecting the city's eerie light."
+	EwBody( # body 5
+		id_body="tentacled",
+		alias=[
+		],
+		str_create="You spawn a squid-like Slimeoid.",
+		str_body="It is a mass of tendrils."
+	),
+	EwBody( # body 6
+		id_body="amorphous",
+		alias=[
+		],
+		str_create="You spawn a goopy, amorphous Slimeoid.",
+		str_body="It had no defined shape."
+	),
+	EwBody( # body 7
+		id_body="quadruped",
+		alias=[
+		],
+		str_create="You spawn a four-legged Slimeoid.",
+		str_body="It stands on four legs."
 	)
 ]
 
-# A map of name to EwWeather objects.
-weather_map = {}
-for weather in weather_list:
-	weather_map[weather.name] = weather
+# A map of id_body to EwBody objects.
+body_map = {}
 
-# All food items in the game.
-food_list = [
-	EwFood(
-		id_food="slimentonic",
+# A list of body names
+body_names = []
+
+# Populate body map, including all aliases.
+for body in body_list:
+	body_map[body.id_body] = body
+	body_names.append(body.id_body)
+
+	for alias in body.alias:
+		body_map[alias] = body
+
+# All head attributes in the game.
+head_list = [
+	EwHead( # head 1
+		id_head="eye",
 		alias=[
-			"tonic",
 		],
-		recover_stamina=250,
-		price=500,
-		str_name='slime n\' tonic',
-		vendor='bar',
-		str_eat="You chug a refreshing Slime n' Tonic. Delicious!!!"
+		str_create="You give your Slimeoid a single huge eye.",
+		str_head="Its face is a single huge eye."
 	),
-	EwFood(
-		id_food="pizza",
+	EwHead( # head 2
+		id_head="maw",
 		alias=[
-			"pizzaslice",
 		],
-		recover_stamina=40,
-		price=70,
-		str_name='slice of pizza',
-		vendor='Pizza Hut',
-		str_eat="You grab a hot slice of that cheesy pie! Radical!!"
+		str_create="You give your Slimeoid a face that's just a huge toothy mouth.",
+		str_head="Its face is a huge toothy mouth."
 	),
-	EwFood(
-		id_food="pepperoni",
+	EwHead( # head 3
+		id_head="void",
 		alias=[
-			"peperoni",
 		],
-		recover_stamina=60,
-		price=110,
-		str_name='slice of pepperoni pizza',
-		vendor='Pizza Hut',
-		str_eat="You chomp into the spicy sausage slice, bro! Cowabunga!!"
+		str_create="You give your Slimeoid an empty black void for a face.",
+		str_head="Its face is an empty black void."
 	),
-	EwFood(
-		id_food="meatlovers",
+	EwHead( # head 4
+		id_head="beast",
 		alias=[
-			"meatpizza",
 		],
-		recover_stamina=70,
-		price=160,
-		str_name='slice of Meat Lover\'s pizza',
-		vendor='Pizza Hut',
-		str_eat="You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!"
+		str_create="You give your Slimeoid the head of a vicious beast.",
+		str_head="Its face is that of a vicious beast."
 	),
-	EwFood(
-		id_food="wings",
+	EwHead( # head 5
+		id_head="insect",
 		alias=[
-			"buffalowings",
 		],
-		recover_stamina=90,
-		price=175,
-		str_name='buffalo wings',
-		vendor='Pizza Hut',
-		str_eat="Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!"
+		str_create="You give your Slimeoid bulging insectoid eyes and mandibles.",
+		str_head="It has bulging insectoid eyes and mandibles."
 	),
-	EwFood(
-		id_food="taco",
+	EwHead( # head 6
+		id_head="skull",
 		alias=[
-			"softtaco",
 		],
-		recover_stamina=30,
-		price=50,
-		str_name='soft taco',
-		vendor='Taco Bell',
-		str_eat="It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?"
-	),
-	EwFood(
-		id_food="nachocheesetaco",
-		alias=[
-			"nachocheese",
-			"nachotaco"
-		],
-		recover_stamina=40,
-		price=70,
-		str_name='Nacho Cheese taco',
-		vendor='Taco Bell',
-		str_eat="You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*"
-	),
-	EwFood(
-		id_food="coolranchtaco",
-		alias=[
-			"ranchtaco",
-		],
-		recover_stamina=40,
-		price=70,
-		str_name='Cool Ranch taco',
-		vendor='Taco Bell',
-		str_eat="You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*"
-	),
-	EwFood(
-		id_food="quesarito",
-		alias=[
-			"gordita",
-		],
-		recover_stamina=60,
-		price=100,
-		str_name='chicken quesarito',
-		vendor='Taco Bell',
-		str_eat="It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness."
-	),
-	EwFood(
-		id_food="steakvolcanoquesomachorito",
-		alias=[
-			"machorito",
-			"quesomachorito"
-		],
-		recover_stamina=140,
-		price=250,
-		str_name='SteakVolcanoQuesoMachoRito',
-		vendor='Taco Bell',
-		str_eat="It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!"
-	),
-	EwFood(
-		id_food="coleslaw",
-		alias=[
-			"slaw",
-		],
-		recover_stamina=20,
-		price=55,
-		str_name='tub of cole slaw',
-		vendor='KFC',
-		str_eat="It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?"
-	),
-	EwFood(
-		id_food="biscuitngravy",
-		alias=[
-			"biscuit",
-			"gravy"
-		],
-		recover_stamina=30,
-		price=55,
-		str_name='biscuit with a side of gravy',
-		vendor='KFC',
-		str_eat="You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*"
-	),
-	EwFood(
-		id_food="chickenbucket",
-		alias=[
-			"bucket",
-			"chicken",
-		],
-		recover_stamina=120,
-		price=220,
-		str_name='8-piece fried chicken bucket',
-		vendor='KFC',
-		str_eat="You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit."
-	),
-	EwFood(
-		id_food="famousbowl",
-		alias=[
-			"gordita",
-		],
-		recover_stamina=70,
-		price=130,
-		str_name='Famous Mashed Potato Bowl',
-		vendor='KFC',
-		str_eat="You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!"
-	),
-	EwFood(
-		id_food="barbecuesauce",
-		alias=[
-			"bbqsauce",
-			"sauce",
-			"saucepacket",
-		],
-		recover_stamina=5,
-		price=10,
-		str_name='packet of BBQ Sauce',
-		vendor='KFC',
-		str_eat="You disgard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
-	),
-	EwFood(
-		id_food="mtndew",
-		alias=[
-			"dew",
-			"mountaindew",
-			"greendew"
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with vivid green swill and gulp it down."
-	),
-	EwFood(
-		id_food="bajablast",
-		alias=[
-			"bluedew",
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew Baja Blast',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with light bluish swill and gulp it down."
-	),
-	EwFood(
-		id_food="codered",
-		alias=[
-			"reddew",
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew Code Red',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with red swill and gulp it down."
-	),
-	EwFood(
-		id_food="pitchblack",
-		alias=[
-			"blackdew",
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew Pitch Black',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with dark purple swill and gulp it down."
-	),
-	EwFood(
-		id_food="whiteout",
-		alias=[
-			"whitedew",
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew White-Out',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down."
-	),
-	EwFood(
-		id_food="livewire",
-		alias=[
-			"orangedew",
-		],
-		recover_stamina=20,
-		price=35,
-		str_name='Mtn Dew Livewire',
-		vendor='Mtn Dew Fountain',
-		str_eat="You fill your jumbo fountain drink vessel with orange swill and gulp it down."
+		str_create="You give your Slimeoid an unnerving skull-like head.",
+		str_head="Its face resembles a skull."
 	)
 ]
 
-# A map of id_food to EwFood objects.
-food_map = {}
+# A map of id_head to EwBody objects.
+head_map = {}
 
-# A list of food names
-food_names = []
+# A list of head names
+head_names = []
 
-# A map of vendor names to their foods.
-food_vendor_inv = {}
+# Populate head map, including all aliases.
+for head in head_list:
+	head_map[head.id_head] = head
+	head_names.append(head.id_head)
 
-# Populate food map, including all aliases.
-for food in food_list:
-	food_map[food.id_food] = food
-	food_names.append(food.id_food)
+	for alias in head.alias:
+		head_map[alias] = head
 
-	# Add food to its vendor's list.
-	vendor_list = food_vendor_inv.get(food.vendor)
-	if vendor_list == None:
-		vendor_list = []
-		food_vendor_inv[food.vendor] = vendor_list
-
-	vendor_list.append(food.id_food)
-
-	for alias in food.alias:
-		food_map[alias] = food
-
-howls = [
-	'**AWOOOOOOOOOOOOOOOOOOOOOOOO**',
-	'**5 6 7 0 9**',
-	'**awwwwwWWWWWooooOOOOOOOOO**',
-	'**awwwwwwwwwooooooooooooooo**',
-	'*awoo* *awoo* **AWOOOOOOOOOOOOOO**',
-	'*awoo* *awoo* *awoo*',
-	'**awwwwwWWWWWooooOOOOOOOoo**',
-	'**AWOOOOOOOOOOOOOOOOOOOOOOOOOOOOO**',
-	'**AWOOOOOOOOOOOOOOOOOOOO**',
-	'**AWWWOOOOOOOOOOOOOOOOOOOO**'
+# All moblity attributes in the game.
+moblity_list = [
+	EwMoblity( # moblity 1
+		id_mobility="legs",
+		alias=[
+		],
+		str_advance="\n{active} barrels toward {inactive}!",
+		str_retreat="\n{active} leaps away from {inactive}!",
+		str_create="You give your Slimeoid legs.",
+		str_mobility="It walks around on legs."
+	),
+	EwMoblity( # moblity 2
+		id_mobility="rolling",
+		alias=[
+		],
+		str_advance="\n{active} rolls itself toward {inactive}!",
+		str_retreat="\n{active} rolls away from {inactive}!",
+		str_create="You give your Slimeoid the ability to roll around.",
+		str_mobility="It moves by rolling its body around."
+	),
+	EwMoblity( # moblity 3
+		id_mobility="flagella",
+		alias=[
+		],
+		str_advance="\n{active} slithers toward {inactive}!",
+		str_retreat="\n{active} slithers away from {inactive}!",
+		str_create="You give your Slimeoid flagella to let it move around.",
+		str_mobility="It moves by pulling itself around with its flagella."
+	),
+	EwMoblity( # moblity 4
+		id_mobility="jets",
+		alias=[
+		],
+		str_advance="\n{active} propels itself toward {inactive}!",
+		str_retreat="\n{active} propels itself away from {inactive}!",
+		str_create="You give your Slimeoid the ability to propel itself by squirting fluid.",
+		str_mobility="It moves via jet-propulsion by squirting fluids."
+	)
 ]
+
+# A map of id_moblity to EwBody objects.
+moblity_map = {}
+
+# A list of moblity names
+moblity_names = []
+
+# Populate moblity map, including all aliases.
+for moblity in moblity_list:
+	moblity_map[moblity.id_moblity] = moblity
+	moblity_names.append(moblity.id_moblity)
+
+	for alias in moblity.alias:
+		moblity_map[alias] = moblity
+
+# All offense attributes in the game.
+offense_list = [
+	EwOffense( # offense 1
+		id_offense="blades",
+		alias=[
+		],
+		str_attack="\n{active} slashes at {inactive} with its blades!",
+		str_create="You give your Slimeoid the ability to slice foes with retractible blades.",
+		str_offense="It slices foes with retractible blades."
+	),
+	EwOffense( # offense 2
+		id_offense="teeth",
+		alias=[
+		],
+		str_attack="\n{active} sinks its teeth into {inactive}!",
+		str_create="You give your Slimeoid the ability to bite foes with deadly fangs.",
+		str_offense="It can bite foes with deadly fangs."
+	),
+	EwOffense( # offense 3
+		id_offense="grip",
+		alias=[
+		],
+		str_attack="\n{active} grabs {} and squeezes hard!",
+		str_create="You give your Slimeoid the ability to grab and crush foes with its limbs.",
+		str_offense="It can grab and crush its foes with its limbs."
+	),
+	EwOffense( # offense 4
+		id_offense="bludgeon",
+		alias=[
+		],
+		str_attack="\n{active} bashes {} with its limbs!",
+		str_create="You give your Slimeoid the ability to smash foes with heavy blows from its limbs.",
+		str_offense="It can smash foes with its limbs."
+	)
+]
+
+# A map of id_offense to EwBody objects.
+offense_map = {}
+
+# A list of offense names
+offense_names = []
+
+# Populate offense map, including all aliases.
+for offense in offense_list:
+	offense_map[offense.id_offense] = offense
+	offense_names.append(offense.id_offense)
+
+	for alias in offense.alias:
+		offense_map[alias] = offense
+
+# All defense attributes in the game.
+defense_list = [
+	EwDefense( # defense 1
+		id_defense="scales",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid protective scales.",
+		str_defense="It is covered in scales."
+	),
+	EwDefense( # defense 2
+		id_defense="boneplates",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid protective bone plates.",
+		str_defense="It is covered in bony plates."
+	),
+	EwDefense( # defense 3
+		id_defense="quantumfield",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid a protective quantum field.",
+		str_defense="It is enveloped in a field of quantum uncertainty."
+	),
+	EwDefense( # defense 4
+		id_defense="formless",
+		alias=[
+		],
+		str_defense="",
+		str_create="You give your slimeoid the ability to take any shape.",
+		str_defense="It is malleable and can absorb blows with ease."
+	),
+]
+
+# A map of id_defense to EwBody objects.
+defense_map = {}
+
+# A list of defense names
+defense_names = []
+
+# Populate defense map, including all aliases.
+for defense in defense_list:
+	defense_map[defense.id_defense] = defense
+	defense_names.append(defense.id_defense)
+
+	for alias in defense.alias:
+		defense_map[alias] = defense
+
+# All special attributes in the game.
+special_list = [
+	EwSpecial( # special 1
+		id_special="spit",
+		alias=[
+		],
+		str_special_attack="\n{active} spits acidic slime all over {inactive}!",
+		str_create="You give your slimeoid the ability to spit acidic slime.",
+		str_special="It can spit acidic slime."
+	),
+	EwSpecial( # special 2
+		id_special="laser",
+		alias=[
+		],
+		str_special_attack="\n{active} sears {inactive} with a blast of radiation!",
+		str_create="You give your slimeoid the ability to fire a beam of radiation.",
+		str_special="It can fire beams of radiation."
+	),
+	EwSpecial( # special 3
+		id_special="spines",
+		alias=[
+		],
+		str_special_attack="\n{active} extends its spines, puncturing {inactive}!",
+		str_create="You give your slimeoid the ability to extrude deadly spikes.",
+		str_special="It can extrude deadly spikes."
+	),
+	EwSpecial( # special 4
+		id_special="swallow",
+		alias=[
+		],
+		str_special_attack="\n{active} engulfs {inactive} into its body!",
+		str_create="You give your slimeoid the ability to engulf an opponent with its body.",
+		str_special="It can engulf opponents with its body."
+	),
+	EwSpecial( # special 5
+		id_special="throw",
+		alias=[
+		],
+		str_special_attack="\n{active} picks up a chunk of rock and hurls it into {inactive}!",
+		str_create="You give your slimeoid the ability to hurl objects at foes.",
+		str_special="It can hurl objects at foes."
+	)
+]
+
+# A map of id_special to EwBody objects.
+special_map = {}
+
+# A list of special names
+special_names = []
+
+# Populate special map, including all aliases.
+for special in special_list:
+	special_map[special.id_special] = special
+	special_names.append(special.id_special)
+
+	for alias in special.alias:
+		special_map[alias] = special
