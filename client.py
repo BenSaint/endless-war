@@ -1959,9 +1959,16 @@ async def on_message(message):
 			else:
 				value = None
 				if tokens_count > 1:
-					value = tokens[1]
+					for token in tokens[1:]:
+						if token.startswith('<@') == False:
+							value = token
+							break
 
 				food = ewcfg.food_map.get(value)
+
+				member = None
+				if mentions_count == 1:
+					member = mentions[0]
 
 				if food == None:
 					response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
@@ -1972,6 +1979,10 @@ async def on_message(message):
 
 						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 						market_data = EwMarket(id_server=message.server.id, conn=conn, cursor=cursor)
+
+						target_data = None
+						if member != None:
+							target_data = EwUser(member=member, conn=conn, cursor=cursor)
 					finally:
 						cursor.close()
 						conn.close()
@@ -1994,17 +2005,23 @@ async def on_message(message):
 						)
 					else:
 						user_data.slimecredit -= value
-						user_data.stamina -= food.recover_stamina
 
-						if user_data.stamina < 0:
-							user_data.stamina = 0
+						if target_data != None:
+							target_data.stamina -= food.recover_stamina
+							if target_data.stamina < 0:
+								target_data.stamina = 0
+						else:
+							user_data.stamina -= food.recover_stamina
+							if user_data.stamina < 0:
+								user_data.stamina = 0
 
 						market_data.slimes_casino += food.price
 
-						response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}. {flavor}".format(
+						response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{sharetext}{flavor}".format(
 							cost=value,
 							vendor=food.vendor,
 							food=food.str_name,
+							sharetext=(". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
 							flavor=food.str_eat
 						)
 
@@ -2014,6 +2031,9 @@ async def on_message(message):
 
 							user_data.persist(conn=conn, cursor=cursor)
 							market_data.persist(conn=conn, cursor=cursor)
+
+							if target_data != None:
+								target_data.persist(conn=conn, cursor=cursor)
 
 							conn.commit()
 						finally:
