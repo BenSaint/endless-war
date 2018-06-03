@@ -1969,6 +1969,8 @@ async def on_message(message):
 				member = None
 				if mentions_count == 1:
 					member = mentions[0]
+				if member.id == message.author.id:
+					member = None
 
 				if food == None:
 					response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
