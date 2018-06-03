@@ -99,7 +99,11 @@ slimes_hauntmax = 5000
 slimes_perslot = 100
 slimes_perpachinko = 500
 
-max_stamina = 250
+# stamina
+stamina_max = 250
+stamina_pershot = 1
+stamina_perspar = 1
+stamina_permine = 1
 
 # Lifetimes
 invuln_onrevive = 0

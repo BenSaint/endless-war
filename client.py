@@ -443,14 +443,15 @@ async def on_message(message):
 		if cmd == ewcfg.cmd_kill or cmd == ewcfg.cmd_shoot:
 			response = ""
 
+			user_data = EwUser(member=message.author)
+
 			if message.channel.name != ewcfg.channel_combatzone:
 				response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
 			elif mentions_count > 1:
 				response = "One shot at a time!"
 			elif mentions_count <= 0:
 				response = "Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name."
-			user_data = EwUser(member=message.author)
-			elif user_data.stamina >= ewcfg.stamina_limit:
+			elif user_data.stamina >= ewcfg.stamina_max:
 				response = "You are too exhausted for gang violence right now. Go get some grub!"
 			elif mentions_count == 1:
 				# The roles assigned to the author of this message.
@@ -461,7 +462,6 @@ async def on_message(message):
 					conn = ewutils.databaseConnect()
 					cursor = conn.cursor()
 
-					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
 					if user_data.slimelevel <= 0:
 						user_data.slimelevel = 1
 
@@ -561,7 +561,7 @@ async def on_message(message):
 
 					if was_shot:
 						#stamina drain
-						user_data.stamina += 1
+						user_data.stamina += ewcfg.stamina_pershot
 						
 						# Weaponized flavor text.
 						weapon = ewcfg.weapon_map.get(user_data.weapon)
@@ -851,22 +851,12 @@ async def on_message(message):
 			elif mentions_count > 1:
 				response = "One sparring partner at a time!"
 				
-			user_data = EwUser(member=message.author)
-			elif user_data.stamina >= ewcfg.stamina_limit:
-				response = "You are too exhausted to train right now. Go get some grub!"
-
 			elif mentions_count == 1:
 				member = mentions[0]
 
 				if(member.id == message.author.id):
 					response = "How do you expect to spar with yourself?"
-					
-				sparred_data = EwUser(member=member)
-				elif sparred_data.stamina >= ewcfg.stamina_limit:
-				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
-				
 				else:
-
 					# The roles assigned to the author of this message.
 					roles_map_user = ewutils.getRoleMap(message.author.roles)
 
@@ -888,8 +878,12 @@ async def on_message(message):
 					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
-					# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
-					if user_iskillers == False and user_isrowdys == False:
+					if user_data.stamina >= ewcfg.stamina_max:
+						response = "You are too exhausted to train right now. Go get some grub!"
+					elif sparred_data.stamina >= ewcfg.stamina_max:
+						response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
+					elif user_iskillers == False and user_isrowdys == False:
+						# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
 						response = "Juveniles lack the backbone necessary for combat."
 					else:
 						was_juvenile = False
@@ -942,8 +936,8 @@ async def on_message(message):
 							weaker_player.slimes += slimegain
 							
 							#stamina drain for both players
-							user_data.stamina += 1
-							sparred_data.stamina += 1
+							user_data.stamina += ewcfg.stamina_perspar
+							sparred_data.stamina += ewcfg.stamina_perspar
 
 							# Bonus 50% slime to both players in a duel.
 							if duel:
@@ -955,13 +949,18 @@ async def on_message(message):
 									stronger_player.weaponskill += 1
 
 							weaker_player.time_lastspar = time_now
-							weaker_player.persist()
 
-							# Persist the user if he was the stronger player.
-							if user_data is not weaker_player:
-								user_data.persist()
-							elif duel:
-								stronger_player.persist()
+							try:
+								conn = ewutils.databaseConnect()
+								cursor = conn.cursor()
+
+								user_data.persist(conn=conn, cursor=cursor)
+								sparred_data.persist(conn=conn, cursor=cursor)
+
+								conn.commit()
+							finally:
+								cursor.close()
+								conn.close()
 
 							# Add the PvP flag role.
 							if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
@@ -1213,7 +1212,7 @@ async def on_message(message):
 				if(message.channel.name == ewcfg.channel_mines):
 					user_data = EwUser(member=message.author)
 
-					if user_data.stamina >= ewcfg.max_stamina:
+					if user_data.stamina >= ewcfg.stamina_max:
 						mismined = last_mismined_times.get(message.author.id)
 
 						if mismined == None:
@@ -1253,9 +1252,9 @@ async def on_message(message):
 							user_data.slimelevel = new_level
 
 						# Fatigue the miner.
-						user_data.stamina += 1
+						user_data.stamina += ewcfg.stamina_permine
 						if random.randrange(10) > 6:
-							user_data.stamina += 1
+							user_data.stamina += ewcfg.stamina_permine
 
 						# Flag the user for PvP
 						user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
@@ -1388,7 +1387,7 @@ async def on_message(message):
 					response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 				if user_data.stamina > 0:
-					response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.max_stamina)
+					response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
 			else:
 				member = mentions[0]
 				try:
