@@ -5,7 +5,7 @@ from ewweather import EwWeather
 from ewfood import EwFood
 
 # Global configuration options.
-version = "v1.25"
+version = "v1.26"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
