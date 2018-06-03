@@ -2386,6 +2386,463 @@ async def on_message(message):
 				conn.close()
 
 			await client.edit_message(resp, ewutils.formatMessage(message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))
+			
+		# Read the Lab Instructions
+		elif cmd == ewcfg.cmd_labmanual
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to research how to create a Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			else:
+				response = "In SlimeCorp Labs, you can create a Slimeoid minion.\n!incubate to begin the birthing process. Then choose its form and abilities with !growhead, !growmobility, !growoffense, !growdefense, and !growspecial.\nUse !growpower to allocate 6 points between your Slimeoid's ATK, DEF, and INT stats. Use !nameslimeoid to give it a name. Finally, !spawn to complete your Slimeoid's incubation and birth it into the world.\n Should you decide your Slimeoid is unfit, !dissolve to re-incorporate the unfortunate Slimeoid back into SlimeCorp's slime vats."
+				# Send the response to the player.
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# Create a slimeoid
+		elif cmd == ewcfg.cmd_incubate:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to create a Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				body = ewcfg.body_map.get(value)
+				
+				if user_data.slimeoid_weapon != ''
+					response = "You have already created a Slimeoid."
+				
+				elif body = None:
+					response = offense.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_body = body.id_body
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose what your Slimeoid's form will be: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.body_names, conjunction="or"))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+		
+		# shape your slimeoid's head
+		elif cmd == ewcfg.cmd_growhead:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to modify your Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				head = ewcfg.head_map.get(value)
+				
+				if user_data.slimeoid_head != ''
+					response = "You have already chosen the shape of {}\'s head.".format(user_data.slimeoid_name)
+				
+				elif user_data.slimeoid_body == ''
+					response = "You must !incubate to create a Slimeoid first."
+				
+				elif head = None:
+					response = head.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_head = head.id_head
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose a head shape for {}: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.head_names, conjunction="or"))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+		# shape your slimeoid's legs
+		elif cmd == ewcfg.cmd_growmobility:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to modify your Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				mobility = ewcfg.mobility_map.get(value)
+				
+				if user_data.slimeoid_mobility != ''
+					response = "You have already given {} a means of mobility.".format(user_data.slimeoid_name)
+				
+				elif user_data.slimeoid_body == ''
+					response = "You must !incubate to create a Slimeoid first."
+				
+				elif mobility = None:
+					response = mobility.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_mobility = mobility.id_mobility
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose a means of mobility for {}: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.mobility_names, conjunction="or"))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# shape your slimeoid's weapon
+		elif cmd == ewcfg.cmd_growweapon:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to modify your Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				offense = ewcfg.offense_map.get(value)
+				
+				if user_data.slimeoid_weapon != ''
+					response = "You have already given {} a means of offense.".format(user_data.slimeoid_name)
+				
+				elif user_data.slimeoid_body == ''
+					response = "You must !spawnslimeoid to create a Slimeoid first."
+				
+				elif offense = None:
+					response = offense.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_weapon = offense.id_offense
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose a means of offense for {}: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.offense_names, conjunction="or"))
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# shape your slimeoid's armor
+		elif cmd == ewcfg.cmd_growarmor:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to modify your Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				defense = ewcfg.defense_map.get(value)
+				
+				if user_data.slimeoid_armor != ''
+					response = "You have already given {} a means of defense.".format(user_data.slimeoid_name)
+					
+				elif user_data.slimeoid_body == ''
+					response = "You must !spawnslimeoid to create a Slimeoid first."
+				
+				elif offense = None:
+					response = defense.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_armor = defense.id_defense
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose a means of defense for {}: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.defense_names, conjunction="or"))
+				
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# shape your slimeoid's special ability
+		elif cmd == ewcfg.cmd_growspecial:
+			response = ""
+
+			if message.channel.name != ewcfg.channel_dojo:
+				response = "You must go to the #{} to modify your Slimeoid.".format(ewcfg.channel_slimeoidlab)
+			
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			else:
+				value = None
+				if tokens_count > 1:
+					value = tokens[1]
+
+				user_data = EwUser(member=message.author)
+				special = ewcfg.offense_map.get(value)
+				
+				if user_data.slimeoid_special != ''
+					response = "You have already given {} a special ability.".format(user_data.slimeoid_name)
+					
+				elif user_data.slimeoid_body == ''
+					response = "You must !spawnslimeoid to create a Slimeoid first."
+				
+				elif special = None:
+					response = special.str_create
+					try:
+						conn = ewutils.databaseConnect()
+						cursor = conn.cursor()
+
+						user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+						user_data.slimeoid_special = offense.id_offense
+
+						user_data.persist(conn=conn, cursor=cursor)
+
+						conn.commit()
+					finally:
+						cursor.close()
+						conn.close()
+				else:
+					response = "Choose a special ability for {}: {}".format(user_data.slimeoid_name, ewutils.formatNiceList(names=ewcfg.special_names, conjunction="or"))
+				user_data.persist()
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				
+		# Name your slimeoid.
+		elif cmd = ewcfg.cmd_nameslimeoid
+		
+			if message.channel.name != ewcfg.channel_slimeoidlab:
+				# Only allowed in the stock exchange.
+				response = "Go to Slimecorp's slimeoid Labs to create and customize your Slimeoid."
+
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				
+			user_data = EwUser(member=message.author)	
+			elif user_data.slimeoid_name != ''
+				response = "You have already given {} a name.".format(user_data.slimeoid_name)				
+			
+			elif user_data.slimeoid_body == ''
+					response = "You must !spawnslimeoid to create a Slimeoid first."
+			
+			else:
+				name = ""
+				if tokens_count > 1:
+					name = tokens[1].lower()
+					user_data = EwUser(member=message.author)
+					user_data.slimeoid_name = name
+					response = "You hereby dub your slimeoid '{}'.".format(name)
+				
+				user_data.persist()
+					
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+		
+		# LVL up your SLimeoid
+		elif cmd = ewcfg.cmd_growpower
+		
+			if message.channel.name != ewcfg.channel_slimeoidlab:
+				# Only allowed in the stock exchange.
+				response = "Go to Slimecorp's slimeoid Labs to create and customize your Slimeoid."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+
+			roles_map_user = ewutils.getRoleMap(message.author.roles)
+			elif ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+				# Disallow slimeoids by RF and CK kingpins.
+				response = "SlimeCorp has banned you from using their facilities."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+			
+			else:
+				if tokens_count > 1:
+					stat = tokens[1].lower()
+					user_data = EwUser(member=message.author)
+					if user_data.slimeoid_level >= 5
+						response = "Your Slimeoid is at full power."
+					else:
+						if stat = "atk":
+							user_data.slimeoid_atk += 1
+							response = "{}\'s offensive ability has increased.".format(user_data.slimeoid_name)
+							user_data.slimeoid_level += 1
+						elif stat = "def":
+							user_data.slimeoid_def += 1
+							response = "{}\'s offensive ability has increased.".format(user_data.slimeoid_name)
+							user_data.slimeoid_level += 1
+						elif stat = "int":
+							user_data.slimeoid_int += 1
+							response = "{}\'s offensive ability has increased.".format(user_data.slimeoid_name)
+							user_data.slimeoid_level += 1
+						else:
+							Specify which of your Slimeoid's attributes you will enhance: ATK, DEF, or INT
+				
+				user_data.persist()
+					
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			
+		# Complete your Slimeoid
+		elif cmd == ewcfg.cmd_spawn:
+			response = ""
+			user_data = EwUser(member=message.author)
+			if user_data.slimeoid_level = 5 and user_data.slimeoid_body != '' and user_data.slimeoid_head != '' and user_data.slimeoid_weapon != '' and user_data.slimeoid_armor != '' and user_data.slimeoid_special != '' and user_data.slimeoid_name != '':
+				user_data.slimeoid_ready = True
+				response = "Congratulations! You are now the proud owner of {} the Slimeoid!".format(user_data.slimeoid_name)
+				user_data.persist()
+			else:
+				response = "Your Slimeoid is not ready to be spawned yet."
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				
+		# dissolve your Slimeoid
+		elif cmd == ewcfg.cmd_dissolve:
+			response = ""
+			if message.channel.name != ewcfg.channel_slimeoidlab:
+				# Only allowed in the stock exchange.
+				response = "Go to Slimecorp's slimeoid Labs to dissolve your Slimeoid."
+				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+				return
+			else:
+				user_data = EwUser(member=message.author)
+				user_data.slimeoid_level = 0
+				user_data.slimeoid_body != ''
+				user_data.slimeoid_head != ''
+				user_data.slimeoid_weapon != ''
+				user_data.slimeoid_armor != ''
+				user_data.slimeoid_special != ''
+				user_data.slimeoid_name != '':
+				user_data.slimeoid_ready = False
+				response = "You dissolve your Slimeoid into the SlimeCorp slime vats. Use !incubate to begin creating a replacement."
+			
+		# Show a player's slimeoid data.
+		elif cmd == ewcfg.cmd_slimeoid:
+			response = ""
+			user_data = None
+
+			if mentions_count == 0:
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=message.author, conn=conn, cursor=cursor)
+
+				finally:
+					cursor.close()
+					conn.close()
+
+				# return my data
+				if user_data.slimeoid_ready = True:
+					response = "{} is a 2-foot-tall Slimeoid.".format(user_data.slimeoid_name)
+					response += " {}".format(slimeoid.str_body)
+					response += " {}".format(slimeoid.str_head)
+					response += " {}".format(slimeoid.str_mobility)
+					response += " {}".format(slimeoid.str_weapon)
+					response += " {}".format(slimeoid.str_armor)
+					response += " {}".format(slimeoid.str_special)
+				
+				else:
+					response = "You  have not spawned a Slimeoid."
+					
+			else:
+				member = mentions[0]
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					user_data = EwUser(member=member, conn=conn, cursor=cursor)
+				finally:
+					cursor.close()
+					conn.close()
+
+				# return somebody's score
+				if user_data.slimeoid_ready = True:
+					response = "{} is a 2-foot-tall Slimeoid.".format(user_data.slimeoid_name)
+					response += " {}".format(slimeoid.str_body)
+					response += " {}".format(slimeoid.str_head)
+					response += " {}".format(slimeoid.str_mobility)
+					response += " {}".format(slimeoid.str_weapon)
+					response += " {}".format(slimeoid.str_armor)
+					response += " {}".format(slimeoid.str_special)
+				
+				else:
+					response = "They have not spawned a Slimeoid."
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
