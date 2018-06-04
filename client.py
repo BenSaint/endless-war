@@ -1242,7 +1242,7 @@ async def on_message(message):
 							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 					else:
 						# Add mined slime to the user.
-						user_data.slimes += ewcfg.slimes_permine
+						user_data.slimes += (ewcfg.slimes_permine * user_data.slimelevel)
 
 						# Adjust slime level.
 						was_levelup = False
