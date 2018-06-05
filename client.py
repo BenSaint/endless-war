@@ -936,7 +936,7 @@ async def on_message(message):
 							user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
 
 							# Weaker player gains slime based on the slime of the stronger player.
-							slimegain = ewcfg.slimes_perspar if (stronger_player.slimes / 2) > ewcfg.slimes_perspar else (stronger_player.slimes / 2)
+							slimegain = (3000 * (2 ** weaker_player.slimelevel)) if (stronger_player.slimes / 10) > (3000 * (2 ** weaker_player.slimelevel)) else (stronger_player.slimes / 10)
 							weaker_player.slimes += slimegain
 							
 							#stamina drain for both players
@@ -1254,7 +1254,7 @@ async def on_message(message):
 							poudrinamount = (random.randrange(2) + 1)
 							
 						# Add mined slime to the user.
-						user_data.slimes += (ewcfg.slimes_permine * user_data.slimelevel)
+						user_data.slimes += (10 * (2 ** user_data.slimelevel))
 						user_data.slimepoudrins += poudrinamount
 
 						# Adjust slime level.
