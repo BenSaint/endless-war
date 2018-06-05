@@ -751,9 +751,13 @@ async def on_message(message):
 						user_skills = ewutils.weaponskills_get(member=message.author, conn=conn, cursor=cursor)
 
 						user_data.weapon = weapon.id_weapon
-						user_data.weaponskill = user_skills.get(weapon.id_weapon)
-						if user_data.weaponskill == None:
+						weaponskillinfo = user_skills.get(weapon.id_weapon)
+						if weaponskillinfo == None:
 							user_data.weaponskill = 0
+							user_data.weaponname = ""
+						else:
+							user_data.weaponskill = weaponskillinfo.get('skill')
+							user_data.weaponname = weaponskillinfo.get('name')
 
 						user_data.persist(conn=conn, cursor=cursor)
 
@@ -1372,6 +1376,40 @@ async def on_message(message):
 			# Send the response to the player.
 			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
 
+
+		# Name your current weapon.
+		elif cmd == ewcfg.cmd_annoint:
+			response = ""
+
+			if tokens_count < 2:
+				response = "Specify a name for your weapon!"
+			else:
+				annoint_name = message.content[(len(ewcfg.cmd_annoint)):].strip()
+
+				if len(annoint_name) > 32:
+					response = "That name is too long. ({:,}/32)".format(len(annoint_name))
+				else:
+					user_data = EwUser(member=message.author)
+
+					if user_data.slimepoudrins < 1:
+						response = "You need a slime poudrin."
+					elif user_data.slimes < 100:
+						response = "You need more slime."
+					else:
+						# Perform the ceremony.
+						user_data.slimes -= 100
+						user_data.slimepoudrins -= 1
+						user_data.weaponskill += 2
+						user_data.weaponname = annoint_name
+
+						user_data.persist()
+
+						response = "You place your weapon atop the poudrin and annoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(annoint_name)
+
+			# Send the response to the player.
+			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+
 		# Show a player's combat data.
 		elif cmd == ewcfg.cmd_data:
 			response = ""
@@ -1402,10 +1440,9 @@ async def on_message(message):
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
+					response += " {} {}{}.".format(ewcfg.str_weapon_wielding_self, ("" if len(user_data.weaponname) == 0 else "{}, ".format(user_data.weaponname)), weapon.str_weapon)
 					if user_data.weaponskill >= 5:
 						response += " {}".format(weapon.str_weaponmaster_self.format(rank=(user_data.weaponskill - 4)))
-					else:
-						response += " {}".format(weapon.str_weapon_self)
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:
@@ -1444,10 +1481,9 @@ async def on_message(message):
 
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				if weapon != None:
+					response += " {} {}{}.".format(ewcfg.str_weapon_wielding, ("" if len(user_data.weaponname) == 0 else "{}, ".format(user_data.weaponname)), weapon.str_weapon)
 					if user_data.weaponskill >= 5:
 						response += " {}".format(weapon.str_weaponmaster.format(rank=(user_data.weaponskill - 4)))
-					else:
-						response += " {}".format(weapon.str_weapon)
 					
 				trauma = ewcfg.weapon_map.get(user_data.trauma)
 				if trauma != None:

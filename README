@@ -26,6 +26,7 @@ CREATE TABLE users (
 	weaponskill int NOT NULL DEFAULT '0',
 	bounty bigint NOT NULL DEFAULT '0',
 	slimepoudrins bigint NOT NULL DEFAULT '0',
+	weaponname varchar(32) NOT NULL DEFAULT '',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
@@ -62,6 +63,7 @@ CREATE TABLE weaponskills (
 	id_server varchar(128) NOT NULL,
 	weapon varchar(64) NOT NULL,
 	weaponskill int NOT NULL DEFAULT '0',
+	name varchar(32) NOT NULL DEFAULT '',
 
 	PRIMARY_KEY(id_user, id_server, weapon)
 );

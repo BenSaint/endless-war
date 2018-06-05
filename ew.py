@@ -137,6 +137,7 @@ class EwUser:
 	kills = 0
 	weapon = ""
 	weaponskill = 0
+	weaponname = ""
 	trauma = ""
 
 	time_lastkill = 0
@@ -172,7 +173,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -189,7 +190,8 @@ class EwUser:
 					ewcfg.col_time_expirpvp,
 					ewcfg.col_time_lasthaunt,
 					ewcfg.col_time_lastinvest,
-					ewcfg.col_slimepoudrins
+					ewcfg.col_slimepoudrins,
+					ewcfg.col_weaponname
 				), (
 					id_user,
 					id_server
@@ -215,6 +217,7 @@ class EwUser:
 					self.time_lasthaunt = result[14]
 					self.time_lastinvest = result[15]
 					self.slimepoudrins = result[16]
+					self.weaponname = result[17]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -229,12 +232,20 @@ class EwUser:
 						conn=conn,
 						cursor=cursor
 					)
-					self.weaponskill = skills.get(self.weapon)
+					skill_data = skills.get(self.weapon)
+					if skill_data != None:
+						self.weaponskill = skill_data['skill']
+						self.weaponname = skill_data['name']
+					else:
+						self.weaponskill = 0
+						self.weaponname = ""
 
 					if self.weaponskill == None:
 						self.weaponskill = 0
+						self.weaponname = ""
 				else:
 					self.weaponskill = 0
+					self.weaponname = ""
 			finally:
 				# Clean up the database handles.
 				if(our_cursor):
@@ -258,7 +269,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -278,7 +289,8 @@ class EwUser:
 				ewcfg.col_time_expirpvp,
 				ewcfg.col_time_lasthaunt,
 				ewcfg.col_time_lastinvest,
-				ewcfg.col_slimepoudrins
+				ewcfg.col_slimepoudrins,
+				ewcfg.col_weaponname
 			), (
 				self.id_user,
 				self.id_server,
@@ -299,19 +311,22 @@ class EwUser:
 				self.time_expirpvp,
 				self.time_lasthaunt,
 				self.time_lastinvest,
-				self.slimepoudrins
+				self.slimepoudrins,
+				self.weaponname
 			))
 
 			# Save the current weapon's skill
 			if self.weapon != None and self.weapon != "":
 				if self.weaponskill == None:
 					self.weaponskill = 0
+					self.weaponname = ""
 
 				ewutils.weaponskills_set(
 					id_server=self.id_server,
 					id_user=self.id_user,
 					weapon=self.weapon,
 					weaponskill=self.weaponskill,
+					weaponname=self.weaponname,
 					conn=conn,
 					cursor=cursor
 				)

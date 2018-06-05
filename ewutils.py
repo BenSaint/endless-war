@@ -262,9 +262,10 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 				cursor = conn.cursor();
 				our_cursor = True
 
-			cursor.execute("SELECT {weapon}, {weaponskill} FROM weaponskills WHERE {id_server} = %s AND {id_user} = %s".format(
+			cursor.execute("SELECT {weapon}, {weaponskill}, {weaponname} FROM weaponskills WHERE {id_server} = %s AND {id_user} = %s".format(
 				weapon=ewcfg.col_weapon,
 				weaponskill=ewcfg.col_weaponskill,
+				weaponname=ewcfg.col_name,
 				id_server=ewcfg.col_id_server,
 				id_user=ewcfg.col_id_user
 			), (
@@ -275,7 +276,10 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 			data = cursor.fetchall()
 			if data != None:
 				for row in data:
-					weaponskills[row[0]] = row[1]
+					weaponskills[row[0]] = {
+						'skill': row[1],
+						'name': row[2]
+					}
 		finally:
 			# Clean up the database handles.
 			if(our_cursor):
@@ -286,7 +290,7 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 	return weaponskills
 
 """ Set an individual weapon skill value for a player. """
-def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, weaponskill=0, conn=None, cursor=None):
+def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, weaponskill=0, weaponname="", conn=None, cursor=None):
 	if member != None:
 		id_server = member.server.id
 		id_user = member.id
@@ -305,16 +309,18 @@ def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, wea
 				cursor = conn.cursor();
 				our_cursor = True
 
-			cursor.execute("REPLACE INTO weaponskills({id_server}, {id_user}, {weapon}, {weaponskill}) VALUES(%s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO weaponskills({id_server}, {id_user}, {weapon}, {weaponskill}, {weaponname}) VALUES(%s, %s, %s, %s, %s)".format(
 				id_server=ewcfg.col_id_server,
 				id_user=ewcfg.col_id_user,
 				weapon=ewcfg.col_weapon,
-				weaponskill=ewcfg.col_weaponskill
+				weaponskill=ewcfg.col_weaponskill,
+				weaponname=ewcfg.col_name
 			), (
 				id_server,
 				id_user,
 				weapon,
-				weaponskill
+				weaponskill,
+				weaponname
 			))
 
 			if our_cursor:
@@ -347,11 +353,12 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 				our_cursor = True
 
 			# Clear any records that might exist.
-			cursor.execute("UPDATE weaponskills SET {weaponskill} = %s WHERE {weaponskill} > 3 AND {id_server} = %s AND {id_user} = %s".format(
+			cursor.execute("UPDATE weaponskills SET {weaponskill} = %s WHERE {weaponskill} > %s AND {id_server} = %s AND {id_user} = %s".format(
 				weaponskill=ewcfg.col_weaponskill,
 				id_server=ewcfg.col_id_server,
 				id_user=ewcfg.col_id_user
 			), (
+				ewcfg.weaponskill_max_onrevive,
 				ewcfg.weaponskill_max_onrevive,
 				id_server,
 				id_user
