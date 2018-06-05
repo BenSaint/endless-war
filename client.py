@@ -613,15 +613,18 @@ async def on_message(message):
 							if shootee_data.slimes > 0:
 								if was_juvenile:
 									user_data.slimes += slimes_dropped
+									user_data.slimepoudrins += shootee_data.slimepoudrins
 								else:
 									market_data = EwMarket(id_server=message.server.id)
 									coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
 									user_data.slimecredit += coinbounty
 									user_data.slimes += int(slimes_dropped / 2)
+									user_data.slimepoudrins += shootee_data.slimepoudrins
 									boss_slimes += int(slimes_dropped / 2)
 
 							# Player was killed.
 							shootee_data.slimes = 0
+							shootee_data.slimepoudrins = 0
 							shootee_data.id_killer = user_data.id_user
 							shootee_data.bounty = 0
 
@@ -802,9 +805,10 @@ async def on_message(message):
 					# Assign the corpse role to the player. He dead.
 					await client.replace_roles(message.author, role_corpse)
 
-					# Set the id_killer to the player himself, remove his slime.
+					# Set the id_killer to the player himself, remove his slime and slime poudrins.
 					user_data.id_killer = message.author.id
 					user_data.slimes = 0
+					user_data.slimepoudrins = 0
 					user_data.persist()
 
 					# Give slimes to the boss if possible.
@@ -1241,8 +1245,17 @@ async def on_message(message):
 						else:
 							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 					else:
+						# Determine if a poudrin is found.
+						poudrin = False
+						poudrinamount = 0
+						poudrinchance = (random.randrange(3600) + 1)
+						if poudrinchance == 3600:
+							poudrin = True
+							poudrinamount = (random.randrange(2) + 1)
+							
 						# Add mined slime to the user.
 						user_data.slimes += (10 * (2 ** user_data.slimelevel))
+						user_data.slimepoudrins += poudrinamount
 
 						# Adjust slime level.
 						was_levelup = False
@@ -1268,9 +1281,22 @@ async def on_message(message):
 						elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
 							await client.add_roles(message.author, roles_map[ewcfg.role_rowdyfuckers_pvp])
 
-						# Tell the player their slime level increased.
-						if was_levelup:
-							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)))
+						# Tell the player their slime level increased and/or a poudrin was found.
+						if was_levelup or poudrin:
+							response = ""
+
+							if poudrin:
+								if poudrinamount == 1:
+									response += "You unearthed a slime poudrin! "
+								elif poudrinamount == 2:
+									response += "You unearthed two slime poudrins! "
+
+								ewutils.logMsg('{} has found {} poudrin(s)!'.format(message.author.display_name, poudrinamount))
+
+							if was_levelup:
+								response += "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)
+
+							await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
 				else:
 					mismined = last_mismined_times.get(message.author.id)
 
@@ -1322,6 +1348,8 @@ async def on_message(message):
 
 				# return my score
 				response = "You currently have {:,} slime.".format(user_data.slimes)
+				if user_data.slimepoudrins > 0:
+					response = "You currently have {:,} slime and {} slime poudrins.".format(user_data.slimes, user_data.slimepoudrins)
 
 			else:
 				member = mentions[0]
@@ -1329,6 +1357,8 @@ async def on_message(message):
 
 				# return somebody's score
 				response = "{} currently has {:,} slime.".format(member.display_name, user_data.slimes)
+				if user_data.slimepoudrins > 0:
+					response = "{} currently has {:,} slime and {} slime poudrins.".format(member.display_name, user_data.slimes, user_data.slimepoudrins)
 
 			# Update the user's slime level.
 			if user_data != None:
