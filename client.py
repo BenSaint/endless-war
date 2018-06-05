@@ -1291,7 +1291,7 @@ async def on_message(message):
 								elif poudrinamount == 2:
 									response += "You unearthed two slime poudrins! "
 
-								ewutils.logMsg('{} has found {} poudrin(s)!'.format(mesasge.author.display_name, poudrinamount))
+								ewutils.logMsg('{} has found {} poudrin(s)!'.format(message.author.display_name, poudrinamount))
 
 							if was_levelup:
 								response += "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)
