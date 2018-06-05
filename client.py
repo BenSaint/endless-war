@@ -1246,11 +1246,12 @@ async def on_message(message):
 							await client.send_message(message.channel, ewutils.formatMessage(message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 					else:
 						# Determine if a poudrin is found.
+						poudrin = False
 						poudrinamount = 0
-						poudrinchance = random.randrange(3600)
+						poudrinchance = (random.randrange(3600) + 1)
 						if poudrinchance == 3600:
 							poudrin = True
-							poudrinamount = random.randrange(1,2)
+							poudrinamount = (random.randrange(2) + 1)
 							
 						# Add mined slime to the user.
 						user_data.slimes += (ewcfg.slimes_permine * user_data.slimelevel)
@@ -1283,13 +1284,19 @@ async def on_message(message):
 						# Tell the player their slime level increased and/or a poudrin was found.
 						if was_levelup or poudrin:
 							response = ""
-							if poudrin == True and poudrinamount = 1:
-								response += "You unearthed a slime poudrin! "
-							if poudrin == True and poudrinamount = 2:
-								response += "You unearthed two slime poudrins! "
+
+							if poudrin:
+								if poudrinamount == 1:
+									response += "You unearthed a slime poudrin! "
+								elif poudrinamount == 2:
+									response += "You unearthed two slime poudrins! "
+
+								ewutils.logMsg('{} has found {} poudrin(s)!'.format(mesasge.author.display_name, poudrinamount))
+
 							if was_levelup:
 								response += "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)
-							await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+
+							await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
 				else:
 					mismined = last_mismined_times.get(message.author.id)
 
