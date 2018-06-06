@@ -623,6 +623,7 @@ async def on_message(message):
 									boss_slimes += int(slimes_dropped / 2)
 
 							# Player was killed.
+							shootee_data.totaldamage += shootee_data.slimes
 							shootee_data.slimes = 0
 							shootee_data.slimepoudrins = 0
 							shootee_data.id_killer = user_data.id_user
@@ -885,11 +886,14 @@ async def on_message(message):
 
 					user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 					user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+					user_isdead = ewcfg.role_corpse in roles_map_user
 
 					if user_data.stamina >= ewcfg.stamina_max:
 						response = "You are too exhausted to train right now. Go get some grub!"
 					elif sparred_data.stamina >= ewcfg.stamina_max:
 						response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
+					elif user_isdead == True:
+						response = "The dead think they're too cool for conventional combat. Pricks."
 					elif user_iskillers == False and user_isrowdys == False:
 						# Only killers, rowdys, the cop killer, and the rowdy fucker can spar
 						response = "Juveniles lack the backbone necessary for combat."
@@ -953,6 +957,8 @@ async def on_message(message):
 								weaker_player.slimes += int(slimegain / 2)
 								stronger_player.slimes += int(slimegain / 2)
 								if weaker_player.weaponskill < 5:
+									weaker_player.weaponskill += 1
+								elif (weaker_player.weaponskill + 1) < stronger_player.weaponskill:
 									weaker_player.weaponskill += 1
 								if stronger_player.weaponskill < 5:
 									stronger_player.weaponskill += 1
@@ -1399,7 +1405,8 @@ async def on_message(message):
 						# Perform the ceremony.
 						user_data.slimes -= 100
 						user_data.slimepoudrins -= 1
-						user_data.weaponskill += 2
+						if user_data.weaponskill < 10:
+							user_data.weaponskill += 1
 						user_data.weaponname = annoint_name
 
 						user_data.persist()
@@ -2093,6 +2100,8 @@ async def on_message(message):
 							sharetext=(". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
 							flavor=food.str_eat
 						)
+						if member == None and user_data.stamina = 0:
+							response += " You're stuffed!"
 
 						try:
 							conn = ewutils.databaseConnect()
