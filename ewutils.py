@@ -372,3 +372,13 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 				cursor.close()
 			if(our_conn):
 				conn.close()
+
+""" add the PvP flag role to a member """
+async def add_pvp_role(member):
+	roles_map_user = ewutils.getRoleMap(member.roles)
+	if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
+		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_copkillers_pvp])
+	elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:
+		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_rowdyfuckers_pvp])
+	elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
+		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_juvenile_pvp])
