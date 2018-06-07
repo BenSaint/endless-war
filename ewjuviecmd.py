@@ -127,7 +127,7 @@ async def mine(cmd):
 				user_data.persist()
 
 				# Add the PvP flag role.
-				await ewutils.add_pvp_role(cmd.message.author)
+				await ewutils.add_pvp_role(cmd = cmd)
 
 				# Tell the player their slime level increased and/or a poudrin was found.
 				if was_levelup or poudrin:

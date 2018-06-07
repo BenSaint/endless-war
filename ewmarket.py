@@ -1,5 +1,6 @@
 import time
 
+import ewcmd
 import ewutils
 import ewcfg
 from ew import EwUser, EwMarket
@@ -164,7 +165,7 @@ async def withdraw(cmd):
 					conn.close()
 
 				# Add the visible PvP flag role.
-				await ewutils.add_pvp_role(cmd.message.author)
+				await ewutils.add_pvp_role(cmd = cmd)
 
 		else:
 			response = ewcfg.str_exchange_specify.format(currency="SlimeCoin", action="withdraw")

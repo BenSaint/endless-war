@@ -10,7 +10,7 @@ from ew import EwUser, EwMarket
 
 """ revive yourself from the dead. """
 async def revive(cmd):
-	resp = await ewcmd.start(cmd = cmd_obj)
+	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -96,7 +96,7 @@ async def revive(cmd):
 
 """ haunt living players to steal slime """
 async def haunt(cmd):
-	resp = await ewcmd.start(cmd = cmd_obj)
+	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -176,6 +176,7 @@ async def haunt(cmd):
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def negaslime(cmd):
+	resp = await ewcmd.start(cmd = cmd)
 	negaslime = 0
 
 	try:

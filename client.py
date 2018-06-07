@@ -548,7 +548,7 @@ async def on_message(message):
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:
-			await client.edit_message(resp, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
 		# AWOOOOO
 		elif cmd == ewcfg.cmd_howl or cmd == ewcfg.cmd_howl_alt1 or re_awoo.match(cmd):
@@ -556,11 +556,11 @@ async def on_message(message):
 
 		# advertise patch notes
 		elif cmd == ewcfg.cmd_patchnotes:
-			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
 
 		# advertise help services
 		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
-			await client.edit_message(resp, ewutils.formatMessage(message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
@@ -585,6 +585,8 @@ async def on_message(message):
 
 		# didn't match any of the command words.
 		else:
+			resp = await ewcmd.start(cmd = cmd_obj)
+
 			""" couldn't process the command. bail out!! """
 			""" bot rule 0: be cute """
 			randint = random.randint(1,3)

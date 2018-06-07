@@ -50,8 +50,8 @@ async def start(cmd = None, message = '...', channel = None, client = None):
 	return None
 
 """ pure flavor command, howls """
-async def cmd_howl(cmd_obj):
-	await cmd_obj.client.send_message(cmd_obj.message.channel, ewutils.formatMessage(cmd_obj.message.author, ewcfg.howls[random.randrange(len(ewcfg.howls))]))
+async def cmd_howl(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, ewcfg.howls[random.randrange(len(ewcfg.howls))]))
 
 """ returns true if it's night time and the casino is open, else false. """
 def is_casino_open(time):
@@ -96,7 +96,7 @@ async def score(cmd):
 
 """ show player information and description """
 async def data(cmd):
-	resp = await start(cmd = cmd_obj)
+	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
 
@@ -193,7 +193,7 @@ async def data(cmd):
 
 """ time and weather information """
 async def weather(cmd):
-	resp = await start(cmd = cmd_obj)
+	resp = await start(cmd = cmd)
 	response = ""
 	market_data = EwMarket(id_server = cmd.message.author.server.id)
 	time_current = market_data.clock

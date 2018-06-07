@@ -228,7 +228,7 @@ def getIntToken(tokens=[], allow_all=False):
 
 	for token in tokens[1:]:
 		try:
-			value = int(token)
+			value = int(token.replace(",", ""))
 			if value < 0:
 				value = None
 			break
@@ -374,8 +374,10 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 				conn.close()
 
 """ add the PvP flag role to a member """
-async def add_pvp_role(member):
-	roles_map_user = ewutils.getRoleMap(member.roles)
+async def add_pvp_role(cmd = None):
+	member = cmd.message.author
+	roles_map_user = getRoleMap(member.roles)
+
 	if ewcfg.role_copkillers in roles_map_user and ewcfg.role_copkillers_pvp not in roles_map_user:
 		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_copkillers_pvp])
 	elif ewcfg.role_rowdyfuckers in roles_map_user and ewcfg.role_rowdyfuckers_pvp not in roles_map_user:

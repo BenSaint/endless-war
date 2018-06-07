@@ -187,7 +187,7 @@ async def attack(cmd):
 		user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
 		# Add the PvP flag role.
-		await ewutils.add_pvp_role(cmd.message.author)
+		await ewutils.add_pvp_role(cmd = cmd)
 
 		if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
 			# Disallow killing generals.
@@ -533,7 +533,7 @@ async def suicide(cmd):
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 """ Player spars with a friendly player to gain slime. """
-async def spar(cmd_obj):
+async def spar(cmd):
 	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
@@ -664,7 +664,7 @@ async def spar(cmd_obj):
 						conn.close()
 
 					# Add the PvP flag role.
-					await ewutils.add_pvp_role(cmd.message.author)
+					await ewutils.add_pvp_role(cmd = cmd)
 
 					# player was sparred with
 					if duel and weapon != None:
@@ -720,6 +720,8 @@ async def annoint(cmd):
 				response = "You need a slime poudrin."
 			elif user_data.slimes < 100:
 				response = "You need more slime."
+			elif user_data.weapon == "":
+				response = "Equip a weapon first."
 			else:
 				# Perform the ceremony.
 				user_data.slimes -= 100
