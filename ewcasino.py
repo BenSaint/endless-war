@@ -139,14 +139,7 @@ async def craps(cmd):
 		value = None
 
 		if cmd.tokens_count > 1:
-			for token in cmd.tokens[1:]:
-				try:
-					value = int(token)
-					if value < 0:
-						value = None
-					break
-				except:
-					value = None
+			value = ewutils.getIntToken(tokens=cmd.tokens, allow_all=True)
 
 		if value != None:
 			try:
@@ -180,7 +173,6 @@ async def craps(cmd):
 				]
 
 				response = " {} {}".format(emotes_dice[roll1 - 1], emotes_dice[roll2 - 1])
-				crapstokens = cmd.message.content.split(' ')
 
 				if (roll1 + roll2) == 7:
 					winnings = 5 * value
