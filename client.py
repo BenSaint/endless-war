@@ -424,6 +424,7 @@ async def on_message(message):
 
 		# Scold/ignore offline players.
 		if message.author.status == discord.Status.offline:
+			resp = await ewcmd.start(cmd = cmd_obj)
 			response = "You cannot participate in the ENDLESS WAR while offline."
 
 			if resp != None:
