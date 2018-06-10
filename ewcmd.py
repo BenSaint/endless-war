@@ -99,6 +99,7 @@ async def data(cmd):
 	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
+	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
 	if cmd.mentions_count == 0:
 		try:
@@ -109,7 +110,8 @@ async def data(cmd):
 			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
 
 			# Update the user's slime level.
-			new_level = len(str((int(user_data.slimes))))
+			if role_corpse not in roles_map_user:
+				new_level = len(str(int(user_data.slimes)))
 			if new_level > user_data.slimelevel:
 				user_data.slimelevel = new_level
 				user_data.persist(conn = conn, cursor = cursor)
@@ -119,7 +121,11 @@ async def data(cmd):
 			conn.close()
 
 		# return my data
-		response = "You are a level {} slimeboi.".format(user_data.slimelevel)
+		
+		if role_corpse in roles_map_user:
+			response = "You are a level {} deadboi.".format(user_data.slimelevel)
+		else:
+			response = "You are a level {} slimeboi.".format(user_data.slimelevel)
 		
 		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 
@@ -143,6 +149,7 @@ async def data(cmd):
 			response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
 	else:
 		member = cmd.mentions[0]
+		roles_map_target = ewutils.getRoleMap(member.roles)
 		try:
 			conn = ewutils.databaseConnect()
 			cursor = conn.cursor()
@@ -150,7 +157,8 @@ async def data(cmd):
 			user_data = EwUser(member = member, conn = conn, cursor = cursor)
 			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
 
-			new_level = len(str(int(user_data.slimes)))
+			if role_corpse not in roles_map_user:
+				new_level = len(str(int(user_data.slimes)))
 			if new_level > user_data.slimelevel:
 				user_data.slimelevel = new_level
 				user_data.persist(conn = conn, cursor = cursor)
@@ -160,7 +168,10 @@ async def data(cmd):
 			conn.close()
 
 		# return somebody's score
-		response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
+		if role_corpse in roles_map_target:
+			response = "{} is a level {} deadboi.".format(member.display_name, user_data.slimelevel)
+		else:
+			response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 		
 		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 
@@ -180,9 +191,10 @@ async def data(cmd):
 		if coinbounty != 0:
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
-	# Update the user's slime level.
+	# Update the user's slime level if they're alive.
 	if user_data != None:
-		new_level = len(str(int(user_data.slimes)))
+		if role_corpse not in roles_map_user:
+			new_level = len(str(int(user_data.slimes)))
 		if new_level > user_data.slimelevel:
 			user_data.slimelevel = new_level
 
