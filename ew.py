@@ -249,6 +249,8 @@ class EwUser:
 
 				if self.stamina > ewcfg.stamina_max:
 					self.stamina = ewcfg.stamina_max
+				if self.inebriation < 0:
+					self.inebriation = 0
 			finally:
 				# Clean up the database handles.
 				if(our_cursor):
