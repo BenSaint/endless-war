@@ -631,7 +631,7 @@ food_list = [
 		price=160,
 		inebriation=2,
 		str_name='slime n\' tonic',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="You stir your slime n\' tonic with a thin straw before chugging it lustily."
 	),
 	EwFood(
@@ -643,7 +643,7 @@ food_list = [
 		price=200,
 		inebriation=2,
 		str_name='slima colada',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain."
 	),
 	EwFood(
@@ -656,7 +656,7 @@ food_list = [
 		price=90,
 		inebriation=2,
 		str_name='shot of slimeka',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor."
 	),
 	EwFood(
@@ -671,8 +671,8 @@ food_list = [
 		price=3000,
 		inebriation=4,
 		str_name='bottle of vintage cabernet slimeignon',
-		vendor='bar',
-		str_eat="Ahh, you have a keen eye. 19XX was an excellent vintage. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
+		vendor='The Slippery Molotov Bar & Lounge',
+		str_eat="Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
 	),
 	EwFood(
 		id_food="slimynipple",
@@ -683,7 +683,7 @@ food_list = [
 		price=180,
 		inebriation=2,
 		str_name='slimy nipple',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="You drink the small glass of creamy, greenish layered fluids in one gulp."
 	),
 	EwFood(
@@ -695,8 +695,32 @@ food_list = [
 		price=240,
 		inebriation=2,
 		str_name='slime on the beach',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!"
+	),
+		EwFood(
+		id_food="goobalibre",
+		alias=[
+			"goo",
+		],
+		recover_stamina=30,
+		price=160,
+		inebriation=2,
+		str_name='goo-ba libre',
+		vendor='The Slippery Molotov Bar & Lounge',
+		str_eat="The drink oozes tartly down your throat. It's pretty nasty, but you still like it."
+	),
+		EwFood(
+		id_food="manhattanproject",
+		alias=[
+			"manhattan",
+		],
+		recover_stamina=25,
+		price=200,
+		inebriation=3,
+		str_name='slime on the beach',
+		vendor='The Slippery Molotov Bar & Lounge',
+		str_eat="Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
 	EwFood(
 		id_food="slimymary",
@@ -704,11 +728,24 @@ food_list = [
 			"mary",
 		],
 		recover_stamina=35,
-		price=,
+		price=140,
 		inebriation=2,
 		str_name='slimy mary',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?"
+	),
+	EwFood(
+		id_food="slimestout",
+		alias=[
+			"stout",
+			"beer",
+		],
+		recover_stamina=30,
+		price=150,
+		inebriation=2,
+		str_name='stein of dark slime stout',
+		vendor='The Slippery Molotov Bar & Lounge',
+		str_eat="The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it."
 	),
 	EwFood(
 		id_food="water",
@@ -719,7 +756,7 @@ food_list = [
 		price=0,
 		inebriation=0,
 		str_name='glass of water',
-		vendor='bar',
+		vendor='The Slippery Molotov Bar & Lounge',
 		str_eat="The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though."
 	),
 	EwFood(
