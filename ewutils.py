@@ -197,6 +197,38 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			if(our_conn):
 				conn.close()
 
+def pushdownServerStamina(id_server = None, conn = None, cursor = None):
+	if id_server != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			# Save data
+			cursor.execute("UPDATE users SET {stamina} = {stamina} + {tick} WHERE id_server = %s AND stamina < {limit}".format(
+				stamina = ewcfg.col_inebriation,
+				tick = ewcfg.inebriation_pertick,
+				limit = 0
+			), (
+				id_server,
+			))
+
+			if our_cursor:
+				conn.commit()
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
 
 """ Save a timestamped snapshot of the current market for historical purposes. """
 def persistMarketHistory(market_data=None, conn=None, cursor=None):
