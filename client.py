@@ -379,6 +379,23 @@ async def on_message(message):
 
 	content_tolower = message.content.lower()
 	re_awoo = re.compile('.*![a]+[w]+o[o]+.*')
+	
+	user_data = EwUser(member = cmd.message.author)
+	
+	#garble the message if the player is inebriated
+	text = message.content
+	if user_data.inebriation > 0:
+	textlist = list(text)
+	length = len(text)
+	text = ""
+	for x in textlist:
+		drunk = random.randrange(80)
+		if drunk < user_data.inebriation:
+			scramble = random.randrange(length)
+			x = textlist[scramble]
+		text += x
+	
+	message.content = text
 
 	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
 		"""
