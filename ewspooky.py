@@ -93,14 +93,65 @@ async def revive(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
+""" leave your corpse and haunt NLACakaNM as a ghost """
+async def disembody(cmd):
+	resp = await ewcmd.start(cmd = cmd)
+	time_now = int(time.time())
+	
+	response = ""
+	
+	# A map of role names to Roles assigned to the current user.
+	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
-""" haunt living players to steal slime """
+	# Get the user data from the database.
+	try:
+		conn = ewutils.databaseConnect()
+		cursor = conn.cursor()
+
+		user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
+
+	finally:
+		cursor.close()
+		conn.close()
+
+	if ewcfg.role_corpse not in roles_map_user:
+		# Only dead players can haunt.
+		response = "You're trapped in your disgusting, living body. Try {}.".format(ewcfg.cmd_suicide)
+		
+	elif user_data.slime >= 0:
+		# You need Antislime to haunt.
+		response = "You've lost all your antislime. Nothing to do now but !revive."
+	
+	else:
+		user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp))
+
+		# Persist changes to the database.
+		try:
+			conn = ewutils.databaseConnect()
+			cursor = conn.cursor()
+
+			user_data.persist(conn = conn, cursor = cursor)
+
+			conn.commit()
+		finally:
+			cursor.close()
+			conn.close()
+
+	await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_corpse], cmd.roles_map[ewcfg.role_corpse_pvp])
+
+	if response != ""
+		# Send the response to the player.
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
+""" haunt living players to steal slime and convert it to antislime """
 async def haunt(cmd):
 	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
-
-	if cmd.mentions_count > 1:
+	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+	
+	
+	elif cmd.mentions_count > 1:
 		response = "You can only spook one person at a time. Who do you think you are, the Lord of Ghosts?"
 	elif cmd.mentions_count == 1:
 		# A map of role names to Roles assigned to the current user.
@@ -124,10 +175,13 @@ async def haunt(cmd):
 
 		if ewcfg.role_corpse not in roles_map_user:
 			# Only dead players can haunt.
-			response = "You can't haunt now. Try {}.".format(ewcfg.cmd_suicide)
+			response = "You can't haunt while alive. Try {}.".format(ewcfg.cmd_suicide)
+		elif ewcfg.role_corpse_pvp not in roles_map_user:
+			# Only disembodies ghosts can haunt.
+			response = "You'll need to leave your dead body behind first. Try {}.".format(ewcfg.cmd_disembody)
 		elif cmd.message.channel.name != ewcfg.channel_sewers:
-			# Allowed only from the-sewers.
-			response = "You must haunt from #{}.".format(ewcfg.channel_sewers)
+			# Allowed only in the combat zone.
+			response = "You must go to the #{} to haunt the living.".format(ewcfg.channel_combatzone)
 		elif ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
 			# Disallow haunting of generals.
 			response = "He is too far from the sewers in his ivory tower, and thus cannot be haunted."
@@ -142,13 +196,16 @@ async def haunt(cmd):
 			response = "{} is already dead.".format(member.display_name)
 		elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target or ewcfg.role_juvenile in roles_map_target:
 			# Target can be haunted by the player.
+			hauntmax = int(10 ** (user_data.slimelevel - 2))
 			haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
-			if haunted_slimes > ewcfg.slimes_hauntmax:
-				haunted_slimes = ewcfg.slimes_hauntmax
+			
+			if haunted_slimes > hauntmax:
+				haunted_slimes = hauntmax
 
 			haunted_data.slimes -= haunted_slimes
+			haunted_data.totaldamage += haunted_slimes
 			user_data.slimes -= haunted_slimes
-			user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_haunt))
+			user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp))
 			user_data.time_lasthaunt = time_now
 
 			# Persist changes to the database.
@@ -164,7 +221,7 @@ async def haunt(cmd):
 				cursor.close()
 				conn.close()
 
-			response = "{} has been haunted by a discontent corpse! Slime has been lost!".format(member.display_name)
+			response = "{} has been haunted by the ghost of {}! Slime has been lost!".format(member.display_name, message.author.display_name)
 		else:
 			# Some condition we didn't think of.
 			response = "You cannot haunt {}.".format(member.display_name)
