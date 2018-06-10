@@ -132,6 +132,7 @@ class EwUser:
 	slimepoudrins = 0
 	slimelevel = 1
 	stamina = 0
+	inebriation = 0
 	totaldamage = 0
 	bounty = 0
 	kills = 0
@@ -173,10 +174,11 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
+					ewcfg.col_inebriation,
 					ewcfg.col_totaldamage,
 					ewcfg.col_bounty,
 					ewcfg.col_kills,
@@ -203,21 +205,22 @@ class EwUser:
 					self.slimes = result[0]
 					self.slimelevel = result[1]
 					self.stamina = result[2]
-					self.totaldamage = result[3]
-					self.bounty = result[4]
-					self.kills = result[5]
-					self.weapon = result[6]
-					self.trauma = result[7]
-					self.slimecredit = result[8]
-					self.time_lastkill = result[9]
-					self.time_lastrevive = result[10]
-					self.id_killer = result[11]
-					self.time_lastspar = result[12]
-					self.time_expirpvp = result[13]
-					self.time_lasthaunt = result[14]
-					self.time_lastinvest = result[15]
-					self.slimepoudrins = result[16]
-					self.weaponname = result[17]
+					self.inebriation = result[3]
+					self.totaldamage = result[4]
+					self.bounty = result[5]
+					self.kills = result[6]
+					self.weapon = result[7]
+					self.trauma = result[8]
+					self.slimecredit = result[9]
+					self.time_lastkill = result[10]
+					self.time_lastrevive = result[11]
+					self.id_killer = result[12]
+					self.time_lastspar = result[13]
+					self.time_expirpvp = result[14]
+					self.time_lasthaunt = result[15]
+					self.time_lastinvest = result[16]
+					self.slimepoudrins = result[17]
+					self.weaponname = result[18]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -274,12 +277,13 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
 				ewcfg.col_slimelevel,
 				ewcfg.col_stamina,
+				ewcfg.com_inebriation,
 				ewcfg.col_totaldamage,
 				ewcfg.col_bounty,
 				ewcfg.col_kills,
@@ -302,6 +306,7 @@ class EwUser:
 				self.slimes,
 				self.slimelevel,
 				self.stamina,
+				self.inebriation,
 				self.totaldamage,
 				self.bounty,
 				self.kills,
