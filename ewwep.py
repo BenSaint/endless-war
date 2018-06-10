@@ -642,6 +642,8 @@ async def suicide(cmd):
 
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
 			user_data.id_killer = cmd.message.author.id
+			shootee_data.totaldamage += shootee_data.slimes
+			shootee_data.slimes = -int(shootee_data.totaldamage / 10)
 			user_data.slimes = 0
 			user_data.slimepoudrins = 0
 			user_data.persist()
