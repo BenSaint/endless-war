@@ -300,6 +300,7 @@ async def on_ready():
 
 							# Increase stamina for all players below the max.
 							ewutils.pushupServerStamina(id_server = server.id, conn = conn, cursor = cursor)
+							ewutils.pushdownServerInebriation(id_server = server.id, conn = conn, cursor = cursor)
 
 							conn.commit()
 						finally:
@@ -461,6 +462,10 @@ async def on_message(message):
 		# move from juvenile to one of the armies (rowdys or killers)
 		elif cmd == ewcfg.cmd_enlist:
 			return await ewjuviecmd.enlist(cmd_obj)
+		
+		# juvies go pvp to mine
+		elif cmd == ewcfg.cmd_toil:
+			return await ewjuviecmd.toil(cmd_obj)
 
 		# gives slime to the miner (message.author)
 		elif cmd == ewcfg.cmd_mine:
@@ -478,6 +483,10 @@ async def on_message(message):
 		#check what time it is, and the weather
 		elif cmd == ewcfg.cmd_time or cmd == ewcfg.cmd_clock or cmd == ewcfg.cmd_weather:
 			return await ewcmd.weather(cmd_obj)
+		
+		# killers and rowdies wage !war to go pvp
+		elif cmd == ewcfg.cmd_war:
+			return await ewcmd.war(cmd_obj)
 
 
 		# Show the total of negative slime in the world.
@@ -487,6 +496,10 @@ async def on_message(message):
 		# revive yourself as a juvenile after having been killed.
 		elif cmd == ewcfg.cmd_revive:
 			return await ewspooky.revive(cmd_obj)
+		
+		# Ghosts can leave the sewers by going pvp.
+		elif cmd == ewcfg.cmd_disembody:
+			return await ewspooky.disembody(cmd_obj)
 
 		# Ghosts can haunt enlisted players to reduce their slime score.
 		elif cmd == ewcfg.cmd_haunt:
