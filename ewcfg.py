@@ -26,6 +26,7 @@ role_copkiller = "copkiller"
 role_copkillers = "killers"
 role_copkillers_pvp = "killerpvp"
 role_corpse = "corpse"
+role_corpse_pvp = "corpsepvp"
 role_kingpin = "kingpin"
 
 # Faction names
@@ -86,6 +87,7 @@ cmd_transfer_alt1 = cmd_prefix + 'xfer'
 cmd_menu = cmd_prefix + 'menu'
 cmd_order = cmd_prefix + 'order'
 cmd_annoint = cmd_prefix + 'annoint'
+cmd_disembody = cmd_prefix + 'disembody'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -122,6 +124,7 @@ time_pvp_kill = 600
 time_pvp_mine = 180
 time_pvp_haunt = 600
 time_pvp_invest_withdraw = 180
+time_pvp = 1800
 
 # Emotes
 emote_tacobell = "<:tacobell:431273890195570699>"
@@ -178,6 +181,8 @@ col_bounty = 'bounty'
 col_slimepoudrins = 'slimepoudrins'
 col_weaponname = 'weaponname'
 col_name = 'name'
+col_inebriation = 'inebriation'
+col_ghostbust = 'ghostbust'
 
 # Database columns for markets
 col_rate_market = 'rate_market'
