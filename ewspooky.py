@@ -124,6 +124,9 @@ async def disembody(cmd):
 	
 	else:
 		user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp))
+		
+		# Add the PvP flag role.
+		await ewutils.add_pvp_role(cmd = cmd)
 
 		# Persist changes to the database.
 		try:
@@ -136,8 +139,6 @@ async def disembody(cmd):
 		finally:
 			cursor.close()
 			conn.close()
-
-	await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_corpse], cmd.roles_map[ewcfg.role_corpse_pvp])
 
 	if response != ""
 		# Send the response to the player.
@@ -220,6 +221,9 @@ async def haunt(cmd):
 			finally:
 				cursor.close()
 				conn.close()
+				
+			# Add the PvP flag role.
+			await ewutils.add_pvp_role(cmd = cmd)
 
 			response = "{} has been haunted by the ghost of {}! Slime has been lost!".format(member.display_name, message.author.display_name)
 		else:
