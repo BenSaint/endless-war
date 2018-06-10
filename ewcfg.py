@@ -88,6 +88,8 @@ cmd_menu = cmd_prefix + 'menu'
 cmd_order = cmd_prefix + 'order'
 cmd_annoint = cmd_prefix + 'annoint'
 cmd_disembody = cmd_prefix + 'disembody'
+cmd_war = cmd_prefix + 'war'
+cmd_toil = cmd_prefix + 'toil'
 
 # Slime costs/values
 slimes_tokill = 20
