@@ -111,6 +111,9 @@ stamina_perspar = 1
 stamina_permine = 1
 stamina_pertick = 3
 
+#inebriation
+inebriation_pertick = -2
+
 # Lifetimes
 invuln_onrevive = 0
 
