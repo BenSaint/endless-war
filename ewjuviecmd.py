@@ -56,6 +56,44 @@ async def enlist(cmd):
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	
+""" Get to work, juvie. """
++async def toil(cmd):
++	resp = await ewcmd.start(cmd = cmd)
++	time_now = int(time.time())
++	
++	response = ""
++	
++	# A map of role names to Roles assigned to the current user.
++	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
++
++	# Get the user data from the database.
++	try:
++		conn = ewutils.databaseConnect()
++		cursor = conn.cursor()
++
++		user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
++
++	finally:
++		cursor.close()
++		conn.close()
++
++	if ewcfg.role_corpse in roles_map_user:
++		# The dead can't toil.
++		response = "You lack a working body with which to perform backbreaking labor. Try {}.".format(ewcfg.cmd_revive)
+
+	elif ewcfg.role_juvenile not in roles_map_user:
++		# The dead can't toil.
++		response = "Come on, you're better than that!."
++	
++	else:
++		user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp))
+		# Add the PvP flag role.
+		await ewutils.add_pvp_role(cmd = cmd)
+
+	if response != ""
+		# Send the response to the player.
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 """ mine for slime """
 async def mine(cmd):
