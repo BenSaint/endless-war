@@ -197,7 +197,7 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			if(our_conn):
 				conn.close()
 
-def pushdownServerStamina(id_server = None, conn = None, cursor = None):
+def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
 	if id_server != None:
 		our_cursor = False
 		our_conn = False
