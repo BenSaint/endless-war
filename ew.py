@@ -246,6 +246,9 @@ class EwUser:
 				else:
 					self.weaponskill = 0
 					self.weaponname = ""
+
+				if self.stamina > ewcfg.stamina_max:
+					self.stamina = ewcfg.stamina_max
 			finally:
 				# Clean up the database handles.
 				if(our_cursor):

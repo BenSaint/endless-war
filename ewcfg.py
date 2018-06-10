@@ -105,6 +105,7 @@ stamina_max = 250
 stamina_pershot = 1
 stamina_perspar = 1
 stamina_permine = 1
+stamina_pertick = 3
 
 # Lifetimes
 invuln_onrevive = 0

@@ -570,7 +570,7 @@ async def spar(cmd):
 
 			user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 			user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-			user_idead = ewcfg.role_corpse in roles_map_user
+			user_isdead = ewcfg.role_corpse in roles_map_user
 
 			if user_data.stamina >= ewcfg.stamina_max:
 				response = "You are too exhausted to train right now. Go get some grub!"

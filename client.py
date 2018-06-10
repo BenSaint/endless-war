@@ -298,6 +298,9 @@ async def on_ready():
 							# Create a historical snapshot.
 							ewutils.persistMarketHistory(market_data=market_data, conn=conn, cursor=cursor)
 
+							# Increase stamina for all players below the max.
+							ewutils.pushupServerStamina(id_server = server.id, conn = conn, cursor = cursor)
+
 							conn.commit()
 						finally:
 							cursor.close()
