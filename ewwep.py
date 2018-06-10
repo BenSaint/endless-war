@@ -333,20 +333,6 @@ async def attack(cmd):
 			else:
 				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
-			# Level up the player if appropriate.
-			new_level = len(str(int(user_data.slimes)))
-			if new_level > user_data.slimelevel:
-				response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(cmd.message.author.display_name, new_level)
-				user_data.slimelevel = new_level
-
-			# Give slimes to the boss if possible.
-			boss_member = None
-			if boss_slimes > 0:
-				for member_search in cmd.message.server.members:
-					if role_boss in ewutils.getRoleMap(member_search.roles):
-						boss_member = member_search
-						break
-
 			# Persist every users' data.
 			try:
 				conn = ewutils.databaseConnect()
@@ -453,6 +439,7 @@ async def attack(cmd):
 					# Player was killed.
 					shootee_data.totaldamage += shootee_data.slimes
 					shootee_data.slimes = -int(shootee_data.totaldamage / 10)
+					shootee_data.slimelevel = len(str(int(user_data.slimes))) - 1
 					shootee_data.slimepoudrins = 0
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.bounty = 0
