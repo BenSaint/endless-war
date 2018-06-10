@@ -418,3 +418,5 @@ async def add_pvp_role(cmd = None):
 		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_rowdyfuckers_pvp])
 	elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
 		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_juvenile_pvp])
+	elif ewcfg.role_corpse in roles_map_user and ewcfg.role_corpse_pvp not in roles_map_user:
+		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_corpse_pvp])
