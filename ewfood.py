@@ -127,10 +127,17 @@ async def order(cmd):
 					target_data.stamina -= food.recover_stamina
 					if target_data.stamina < 0:
 						target_data.stamina = 0
+					target_data.inebriation += food.inebriation
+					if target_data.inebriation > 20:
+						target_data.inebriation = 20
+					
 				else:
 					user_data.stamina -= food.recover_stamina
 					if user_data.stamina < 0:
 						user_data.stamina = 0
+					user_data.inebriation += food.inebriation
+					if user_data.inebriation > 20:
+						user_data.inebriation = 20
 
 				market_data.slimes_casino += food.price
 
