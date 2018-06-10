@@ -64,6 +64,8 @@ async def mine(cmd):
 
 	if ewcfg.role_corpse in roles_map_user:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+	elif ewcfg.role_juvenile_pvp not in roles_map_user:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're still home in your pitiful cozy juvie house. Go and {} in the mines.".format(ewcfg.cmd_toil)))
 	else:
 		if(cmd.message.channel.name == ewcfg.channel_mines):
 			user_data = EwUser(member = cmd.message.author)
