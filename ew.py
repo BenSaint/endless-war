@@ -149,6 +149,15 @@ class EwUser:
 	time_lasthaunt = 0
 	time_lastinvest = 0
 
+	""" fix data in this object if it's out of acceptable ranges """
+	def limit_fix(self):
+		if self.stamina > ewcfg.stamina_max:
+			self.stamina = ewcfg.stamina_max
+
+		if self.inebriation < 0:
+			self.inebriation = 0
+
+
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member=None, conn=None, cursor=None, id_user=None, id_server=None):
 		if(id_user == None) and (id_server == None):
@@ -253,11 +262,7 @@ class EwUser:
 					self.weaponskill = 0
 					self.weaponname = ""
 
-				if self.stamina > ewcfg.stamina_max:
-					self.stamina = ewcfg.stamina_max
-
-				if self.inebriation < 0:
-					self.inebriation = 0
+				self.limit_fix();
 			finally:
 				# Clean up the database handles.
 				if(our_cursor):
@@ -279,6 +284,8 @@ class EwUser:
 
 				cursor = conn.cursor();
 				our_cursor = True
+
+			self.limit_fix();
 
 			# Save the object.
 			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(

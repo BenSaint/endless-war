@@ -164,6 +164,7 @@ def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
 
 		return values
 
+""" Reduce stamina (relieve fatigue) for every player in the server. """
 def pushupServerStamina(id_server = None, conn = None, cursor = None):
 	if id_server != None:
 		our_cursor = False
@@ -197,6 +198,39 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			if(our_conn):
 				conn.close()
 
+""" Reduce inebriation for every player in the server. """
+def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
+	if id_server != None:
+		our_cursor = False
+		our_conn = False
+
+		try:
+			# Get database handles if they weren't passed.
+			if(cursor == None):
+				if(conn == None):
+					conn = databaseConnect()
+					our_conn = True
+
+				cursor = conn.cursor();
+				our_cursor = True
+
+			# Save data
+			cursor.execute("UPDATE users SET {inebriation} = {inebriation} - {tick} WHERE id_server = %s AND {inebriation} > {limit}".format(
+				inebriation = ewcfg.col_inebriation,
+				tick = ewcfg.inebriation_pertick,
+				limit = 0
+			), (
+				id_server,
+			))
+
+			if our_cursor:
+				conn.commit()
+		finally:
+			# Clean up the database handles.
+			if(our_cursor):
+				cursor.close()
+			if(our_conn):
+				conn.close()
 
 """ Save a timestamped snapshot of the current market for historical purposes. """
 def persistMarketHistory(market_data=None, conn=None, cursor=None):
@@ -418,3 +452,5 @@ async def add_pvp_role(cmd = None):
 		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_rowdyfuckers_pvp])
 	elif ewcfg.role_juvenile in roles_map_user and ewcfg.role_juvenile_pvp not in roles_map_user:
 		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_juvenile_pvp])
+	elif ewcfg.role_corpse in roles_map_user and ewcfg.role_corpse_pvp not in roles_map_user:
+		await cmd.client.add_roles(member, cmd.roles_map[ewcfg.role_corpse_pvp])
