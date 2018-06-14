@@ -85,7 +85,12 @@ async def score(cmd):
 
 	# Update the user's slime level.
 	if user_data != None:
-		new_level = len(str(int(user_data.slimes)))
+		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+		new_level = 0
+
+		if ewcfg.role_corpse not in roles_map_user:
+			new_level = len(str(int(user_data.slimes)))
+
 		if new_level > user_data.slimelevel:
 			user_data.slimelevel = new_level
 
@@ -99,9 +104,11 @@ async def data(cmd):
 	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
-	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+	roles_map_user = {}
 
 	if cmd.mentions_count == 0:
+		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+
 		try:
 			conn = ewutils.databaseConnect()
 			cursor = conn.cursor()
@@ -109,9 +116,13 @@ async def data(cmd):
 			user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
 			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
 
-			# Update the user's slime level.
-			if role_corpse not in roles_map_user:
+			new_level = 0
+
+			# Ghosts don't have a slime level.
+			if ewcfg.role_corpse not in roles_map_user:
 				new_level = len(str(int(user_data.slimes)))
+
+			# Update the user's slime level.
 			if new_level > user_data.slimelevel:
 				user_data.slimelevel = new_level
 				user_data.persist(conn = conn, cursor = cursor)
@@ -121,8 +132,7 @@ async def data(cmd):
 			conn.close()
 
 		# return my data
-		
-		if role_corpse in roles_map_user:
+		if ewcfg.role_corpse in roles_map_user:
 			response = "You are a level {} deadboi.".format(user_data.slimelevel)
 		else:
 			response = "You are a level {} slimeboi.".format(user_data.slimelevel)
@@ -149,7 +159,8 @@ async def data(cmd):
 			response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
 	else:
 		member = cmd.mentions[0]
-		roles_map_target = ewutils.getRoleMap(member.roles)
+		roles_map_user = ewutils.getRoleMap(member.roles)
+
 		try:
 			conn = ewutils.databaseConnect()
 			cursor = conn.cursor()
@@ -157,8 +168,10 @@ async def data(cmd):
 			user_data = EwUser(member = member, conn = conn, cursor = cursor)
 			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
 
-			if role_corpse not in roles_map_user:
+			new_level = 0
+			if ewcfg.role_corpse not in roles_map_target:
 				new_level = len(str(int(user_data.slimes)))
+
 			if new_level > user_data.slimelevel:
 				user_data.slimelevel = new_level
 				user_data.persist(conn = conn, cursor = cursor)
@@ -168,7 +181,7 @@ async def data(cmd):
 			conn.close()
 
 		# return somebody's score
-		if role_corpse in roles_map_target:
+		if ewcfg.role_corpse in roles_map_target:
 			response = "{} is a level {} deadboi.".format(member.display_name, user_data.slimelevel)
 		else:
 			response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
@@ -193,8 +206,11 @@ async def data(cmd):
 
 	# Update the user's slime level if they're alive.
 	if user_data != None:
-		if role_corpse not in roles_map_user:
+		new_level = 0
+
+		if ewcfg.role_corpse not in roles_map_user:
 			new_level = len(str(int(user_data.slimes)))
+
 		if new_level > user_data.slimelevel:
 			user_data.slimelevel = new_level
 
