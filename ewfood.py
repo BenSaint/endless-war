@@ -26,6 +26,9 @@ class EwFood:
 	# Flavor text displayed when you eat this food.
 	str_eat = ""
 
+	# Alcoholic effect
+	inebriation = 0
+
 	def __init__(
 		self,
 		id_food = "",
@@ -34,7 +37,8 @@ class EwFood:
 		price = 0,
 		str_name = "",
 		vendor = "",
-		str_eat = ""
+		str_eat = "",
+		inebriation = 0
 	):
 		self.id_food = id_food
 		self.alias = alias
@@ -43,6 +47,7 @@ class EwFood:
 		self.str_name = str_name
 		self.vendor = vendor
 		self.str_eat = str_eat
+		self.inebriation = inebriation
 
 
 """ show all available food items """
@@ -137,7 +142,7 @@ async def order(cmd):
 					flavor = food.str_eat
 				)
 				if member == None and user_data.stamina <= 0:
-					response += " You're stuffed!"
+					response += "\n\nYou're stuffed!"
 
 				try:
 					conn = ewutils.databaseConnect()
