@@ -139,7 +139,7 @@ class EwUser:
 	weaponskill = 0
 	weaponname = ""
 	trauma = ""
-	ghostbust = 0
+	ghostbust = False
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -220,7 +220,7 @@ class EwUser:
 					self.time_lastinvest = result[15]
 					self.slimepoudrins = result[16]
 					self.weaponname = result[17]
-					self.ghostbust = result[18]
+					self.ghostbust = (result[18] == 1)
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -320,7 +320,7 @@ class EwUser:
 				self.time_lastinvest,
 				self.slimepoudrins,
 				self.weaponname,
-				self.ghostbust
+				(1 if self.ghostbust == True else 0)
 			))
 
 			# Save the current weapon's skill
