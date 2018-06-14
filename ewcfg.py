@@ -618,6 +618,13 @@ weather_list = [
 	)
 ]
 
+# Food vendor names
+vendor_slipperymolotov = 'The Slippery Molotov Bar & Lounge'
+vendor_pizzahut = 'Pizza Hut'
+vendor_tacobell = 'Taco Bell'
+vendor_kfc = 'KFC'
+vendor_mtndew = 'Mtn Dew Fountain'
+
 # A map of name to EwWeather objects.
 weather_map = {}
 for weather in weather_list:
@@ -634,8 +641,8 @@ food_list = [
 		price=160,
 		inebriation=2,
 		str_name='slime n\' tonic',
-		vendor='The Slippery Molotov Bar & Lounge',
-		str_eat="You stir your slime n\' tonic with a thin straw before chugging it lustily."
+		vendor=vendor_slipperymolotov,
+		str_eat="You stir your slime n' tonic with a thin straw before chugging it lustily."
 	),
 	EwFood(
 		id_food="slimacolada",
@@ -646,7 +653,7 @@ food_list = [
 		price=200,
 		inebriation=2,
 		str_name='slima colada',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain."
 	),
 	EwFood(
@@ -659,7 +666,7 @@ food_list = [
 		price=90,
 		inebriation=2,
 		str_name='shot of slimeka',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor."
 	),
 	EwFood(
@@ -674,7 +681,7 @@ food_list = [
 		price=3000,
 		inebriation=4,
 		str_name='bottle of vintage cabernet slimeignon',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
 	),
 	EwFood(
@@ -686,7 +693,7 @@ food_list = [
 		price=180,
 		inebriation=2,
 		str_name='slimy nipple',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="You drink the small glass of creamy, greenish layered fluids in one gulp."
 	),
 	EwFood(
@@ -698,7 +705,7 @@ food_list = [
 		price=240,
 		inebriation=2,
 		str_name='slime on the beach',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!"
 	),
 		EwFood(
@@ -710,7 +717,7 @@ food_list = [
 		price=160,
 		inebriation=2,
 		str_name='goo-ba libre',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="The drink oozes tartly down your throat. It's pretty nasty, but you still like it."
 	),
 		EwFood(
@@ -722,7 +729,7 @@ food_list = [
 		price=200,
 		inebriation=3,
 		str_name='slime on the beach',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
 	EwFood(
@@ -734,7 +741,7 @@ food_list = [
 		price=140,
 		inebriation=2,
 		str_name='slimy mary',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?"
 	),
 	EwFood(
@@ -747,7 +754,7 @@ food_list = [
 		price=150,
 		inebriation=2,
 		str_name='stein of dark slime stout',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it."
 	),
 	EwFood(
@@ -759,7 +766,7 @@ food_list = [
 		price=0,
 		inebriation=0,
 		str_name='glass of water',
-		vendor='The Slippery Molotov Bar & Lounge',
+		vendor=vendor_slipperymolotov,
 		str_eat="The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though."
 	),
 	EwFood(
@@ -771,7 +778,7 @@ food_list = [
 		price=70,
 		inebriation=0,
 		str_name='slice of pizza',
-		vendor='Pizza Hut',
+		vendor=vendor_pizzahut,
 		str_eat="You grab a hot slice of that cheesy pie! Radical!!"
 	),
 	EwFood(
@@ -783,7 +790,7 @@ food_list = [
 		price=110,
 		inebriation=0,
 		str_name='slice of pepperoni pizza',
-		vendor='Pizza Hut',
+		vendor=vendor_pizzahut,
 		str_eat="You chomp into the spicy sausage slice, bro! Cowabunga!!"
 	),
 	EwFood(
@@ -795,7 +802,7 @@ food_list = [
 		price=160,
 		inebriation=0,
 		str_name='slice of Meat Lover\'s pizza',
-		vendor='Pizza Hut',
+		vendor=vendor_pizzahut,
 		str_eat="You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!"
 	),
 	EwFood(
@@ -807,7 +814,7 @@ food_list = [
 		price=175,
 		inebriation=0,
 		str_name='buffalo wings',
-		vendor='Pizza Hut',
+		vendor=vendor_pizzahut,
 		str_eat="Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!"
 	),
 	EwFood(
@@ -819,7 +826,7 @@ food_list = [
 		price=50,
 		inebriation=0,
 		str_name='soft taco',
-		vendor='Taco Bell',
+		vendor=vendor_tacobell,
 		str_eat="It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?"
 	),
 	EwFood(
@@ -832,7 +839,7 @@ food_list = [
 		price=70,
 		inebriation=0,
 		str_name='Nacho Cheese taco',
-		vendor='Taco Bell',
+		vendor=vendor_tacobell,
 		str_eat="You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*"
 	),
 	EwFood(
@@ -844,7 +851,7 @@ food_list = [
 		price=70,
 		inebriation=0,
 		str_name='Cool Ranch taco',
-		vendor='Taco Bell',
+		vendor=vendor_tacobell,
 		str_eat="You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*"
 	),
 	EwFood(
@@ -856,7 +863,7 @@ food_list = [
 		price=100,
 		inebriation=0,
 		str_name='chicken quesarito',
-		vendor='Taco Bell',
+		vendor=vendor_tacobell,
 		str_eat="It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness."
 	),
 	EwFood(
@@ -869,7 +876,7 @@ food_list = [
 		price=250,
 		inebriation=0,
 		str_name='SteakVolcanoQuesoMachoRito',
-		vendor='Taco Bell',
+		vendor=vendor_tacobell,
 		str_eat="It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!"
 	),
 	EwFood(
@@ -881,7 +888,7 @@ food_list = [
 		price=55,
 		inebriation=0,
 		str_name='tub of cole slaw',
-		vendor='KFC',
+		vendor=vendor_kfc,
 		str_eat="It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?"
 	),
 	EwFood(
@@ -894,7 +901,7 @@ food_list = [
 		price=55,
 		inebriation=0,
 		str_name='biscuit with a side of gravy',
-		vendor='KFC',
+		vendor=vendor_kfc,
 		str_eat="You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*"
 	),
 	EwFood(
@@ -907,7 +914,7 @@ food_list = [
 		price=220,
 		inebriation=0,
 		str_name='8-piece fried chicken bucket',
-		vendor='KFC',
+		vendor=vendor_kfc,
 		str_eat="You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit."
 	),
 	EwFood(
@@ -919,7 +926,7 @@ food_list = [
 		price=130,
 		inebriation=0,
 		str_name='Famous Mashed Potato Bowl',
-		vendor='KFC',
+		vendor=vendor_kfc,
 		str_eat="You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!"
 	),
 	EwFood(
@@ -933,7 +940,7 @@ food_list = [
 		price=10,
 		inebriation=0,
 		str_name='packet of BBQ Sauce',
-		vendor='KFC',
+		vendor=vendor_kfc,
 		str_eat="You disgard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
 	),
 	EwFood(
@@ -947,7 +954,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with vivid green swill and gulp it down."
 	),
 	EwFood(
@@ -959,7 +966,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew Baja Blast',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with light bluish swill and gulp it down."
 	),
 	EwFood(
@@ -971,7 +978,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew Code Red',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with red swill and gulp it down."
 	),
 	EwFood(
@@ -983,7 +990,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew Pitch Black',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with dark purple swill and gulp it down."
 	),
 	EwFood(
@@ -995,7 +1002,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew White-Out',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down."
 	),
 	EwFood(
@@ -1007,7 +1014,7 @@ food_list = [
 		price=35,
 		inebriation=0,
 		str_name='Mtn Dew Livewire',
-		vendor='Mtn Dew Fountain',
+		vendor=vendor_mtndew,
 		str_eat="You fill your jumbo fountain drink vessel with orange swill and gulp it down."
 	)
 ]
