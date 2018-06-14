@@ -27,6 +27,7 @@ CREATE TABLE users (
 	bounty bigint NOT NULL DEFAULT '0',
 	slimepoudrins bigint NOT NULL DEFAULT '0',
 	weaponname varchar(32) NOT NULL DEFAULT '',
+	ghostbust int NOT NULL DEFAULT '0',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );

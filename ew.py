@@ -139,6 +139,7 @@ class EwUser:
 	weaponskill = 0
 	weaponname = ""
 	trauma = ""
+	ghostbust = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -173,7 +174,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -191,7 +192,8 @@ class EwUser:
 					ewcfg.col_time_lasthaunt,
 					ewcfg.col_time_lastinvest,
 					ewcfg.col_slimepoudrins,
-					ewcfg.col_weaponname
+					ewcfg.col_weaponname,
+					ewcfg.col_ghostbust
 				), (
 					id_user,
 					id_server
@@ -218,6 +220,7 @@ class EwUser:
 					self.time_lastinvest = result[15]
 					self.slimepoudrins = result[16]
 					self.weaponname = result[17]
+					self.ghostbust = result[18]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -272,7 +275,7 @@ class EwUser:
 				our_cursor = True
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -293,7 +296,8 @@ class EwUser:
 				ewcfg.col_time_lasthaunt,
 				ewcfg.col_time_lastinvest,
 				ewcfg.col_slimepoudrins,
-				ewcfg.col_weaponname
+				ewcfg.col_weaponname,
+				ewcfg.col_ghostbust
 			), (
 				self.id_user,
 				self.id_server,
@@ -315,7 +319,8 @@ class EwUser:
 				self.time_lasthaunt,
 				self.time_lastinvest,
 				self.slimepoudrins,
-				self.weaponname
+				self.weaponname,
+				self.ghostbust
 			))
 
 			# Save the current weapon's skill
