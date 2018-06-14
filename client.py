@@ -301,6 +301,9 @@ async def on_ready():
 							# Increase stamina for all players below the max.
 							ewutils.pushupServerStamina(id_server = server.id, conn = conn, cursor = cursor)
 
+							# Decrease inebriation for all players above min (0).
+							ewutils.pushdownServerInebriation(id_server = server.id, conn = conn, cursor = cursor)
+
 							conn.commit()
 						finally:
 							cursor.close()

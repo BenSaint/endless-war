@@ -164,6 +164,7 @@ def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
 
 		return values
 
+""" Reduce stamina (relieve fatigue) for every player in the server. """
 def pushupServerStamina(id_server = None, conn = None, cursor = None):
 	if id_server != None:
 		our_cursor = False
@@ -197,6 +198,7 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			if(our_conn):
 				conn.close()
 
+""" Reduce inebriation for every player in the server. """
 def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
 	if id_server != None:
 		our_cursor = False
@@ -213,8 +215,8 @@ def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
 				our_cursor = True
 
 			# Save data
-			cursor.execute("UPDATE users SET {stamina} = {stamina} + {tick} WHERE id_server = %s AND stamina < {limit}".format(
-				stamina = ewcfg.col_inebriation,
+			cursor.execute("UPDATE users SET {inebriation} = {inebriation} - {tick} WHERE id_server = %s AND {inebriation} > {limit}".format(
+				inebriation = ewcfg.col_inebriation,
 				tick = ewcfg.inebriation_pertick,
 				limit = 0
 			), (
