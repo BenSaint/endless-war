@@ -164,6 +164,13 @@ str_weapon_wielding = "They are wielding"
 # Common database columns
 col_id_server = 'id_server'
 
+# Database columns for server
+col_icon = "icon"
+
+# Database columns for players
+col_avatar = "avatar"
+col_display_name = "display_name"
+
 # Database columns for users
 col_id_user = 'id_user'
 col_slimes = 'slimes'

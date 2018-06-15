@@ -25,6 +25,8 @@ import ewjuviecmd
 import ewmarket
 import ewspooky
 import ewkingpin
+import ewplayer
+import ewserver
 from ew import EwUser, EwMarket
 
 ewutils.logMsg('Starting up...')
@@ -65,288 +67,292 @@ async def on_ready():
 	else:
 		ewutils.logMsg("Enabled Twitch integration.")
 
-		# Channels in the connected discord servers to announce to.
-		channels_announcement = []
+	# Channels in the connected discord servers to announce to.
+	channels_announcement = []
 
-		# Channels in the connected discord servers to send stock market updates to. Map of server ID to channel.
-		channels_stockmarket = {}
+	# Channels in the connected discord servers to send stock market updates to. Map of server ID to channel.
+	channels_stockmarket = {}
 
-		for server in client.servers:
-			ewutils.logMsg("connected to: {}".format(server.name))
-			for channel in server.channels:
-				if(channel.type == discord.ChannelType.text):
-					if(channel.name == ewcfg.channel_twitch_announcement):
-						channels_announcement.append(channel)
-						ewutils.logMsg("• found for announcements: {}".format(channel.name))
+	for server in client.servers:
+		# Update server data in the database
+		ewserver.server_update(server = server)
 
-					elif(channel.name == ewcfg.channel_stockexchange):
-						channels_stockmarket[server.id] = channel
-						ewutils.logMsg("• found for stock exchange: {}".format(channel.name))
+		# Grep around for channels
+		ewutils.logMsg("connected to: {}".format(server.name))
+		for channel in server.channels:
+			if(channel.type == discord.ChannelType.text):
+				if(channel.name == ewcfg.channel_twitch_announcement):
+					channels_announcement.append(channel)
+					ewutils.logMsg("• found for announcements: {}".format(channel.name))
 
+				elif(channel.name == ewcfg.channel_stockexchange):
+					channels_stockmarket[server.id] = channel
+					ewutils.logMsg("• found for stock exchange: {}".format(channel.name))
+
+	time_now = int(time.time())
+	time_last_twitch = time_now
+	time_twitch_downed = 0
+	time_last_pvp = time_now
+	time_last_market = time_now
+
+
+	# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
+	time_last_logged = time_now - ewcfg.update_hookstillactive + 60
+
+	stream_live = None
+	while True:
 		time_now = int(time.time())
-		time_last_twitch = time_now
-		time_twitch_downed = 0
-		time_last_pvp = time_now
-		time_last_market = time_now
 
+		# Periodic message to log that this stuff is still running.
+		if (time_now - time_last_logged) >= ewcfg.update_hookstillactive:
+			time_last_logged = time_now
 
-		# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
-		time_last_logged = time_now - ewcfg.update_hookstillactive + 60
+			ewutils.logMsg("Periodic hook still active.")
 
-		stream_live = None
-		while True:
-			time_now = int(time.time())
+		# Check to see if a stream is live via the Twitch API.
+		if twitch_client_id != None and (time_now - time_last_twitch) >= ewcfg.update_twitch:
+			time_last_twitch = time_now
 
-			# Periodic message to log that this stuff is still running.
-			if (time_now - time_last_logged) >= ewcfg.update_hookstillactive:
-				time_last_logged = time_now
+			try:
+				# Twitch API call to see if there are any active streams.
+				json_string = ""
+				p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
+				for line in p.stdout.readlines():
+					json_string += line.decode('utf-8')
+				json_parsed = json.loads(json_string)
 
-				ewutils.logMsg("Periodic hook still active.")
+				# When a stream is up, data is an array of stream information objects.
+				data = json_parsed.get('data')
+				if data != None:
+					data_count = len(data)
+					stream_was_live = stream_live
+					stream_live = True if data_count > 0 else False
 
-			# Check to see if a stream is live via the Twitch API.
-			if (time_now - time_last_twitch) >= ewcfg.update_twitch:
-				time_last_twitch = time_now
+					if stream_was_live == True and stream_live == False:
+						time_twitch_downed = time_now
 
-				try:
-					# Twitch API call to see if there are any active streams.
-					json_string = ""
-					p = subprocess.Popen("curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), shell=True, stdout=subprocess.PIPE)
-					for line in p.stdout.readlines():
-						json_string += line.decode('utf-8')
-					json_parsed = json.loads(json_string)
+					if stream_was_live == False and stream_live == True and (time_now - time_twitch_downed) > 600:
+						ewutils.logMsg("The stream is now live.")
 
-					# When a stream is up, data is an array of stream information objects.
-					data = json_parsed.get('data')
-					if data != None:
-						data_count = len(data)
-						stream_was_live = stream_live
-						stream_live = True if data_count > 0 else False
-
-						if stream_was_live == True and stream_live == False:
-							time_twitch_downed = time_now
-
-						if stream_was_live == False and stream_live == True and (time_now - time_twitch_downed) > 600:
-							ewutils.logMsg("The stream is now live.")
-
-							# The stream has transitioned from offline to online. Make an announcement!
-							for channel in channels_announcement:
-								await client.send_message(
-									channel,
-									"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
-										"https://www.twitch.tv/rowdyfrickerscopkillers"
-									)
+						# The stream has transitioned from offline to online. Make an announcement!
+						for channel in channels_announcement:
+							await client.send_message(
+								channel,
+								"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
+									"https://www.twitch.tv/rowdyfrickerscopkillers"
 								)
-				except:
-					ewutils.logMsg('Twitch handler hit an exception (continuing):')
-					traceback.print_exc(file=sys.stdout)
+							)
+			except:
+				ewutils.logMsg('Twitch handler hit an exception (continuing):')
+				traceback.print_exc(file=sys.stdout)
 
-			# Clear PvP roles from players who are no longer flagged.
-			if (time_now - time_last_pvp) >= ewcfg.update_pvp:
-				time_last_pvp = time_now
+		# Clear PvP roles from players who are no longer flagged.
+		if (time_now - time_last_pvp) >= ewcfg.update_pvp:
+			time_last_pvp = time_now
 
-				try:
-					for server in client.servers:
-						roles_map = ewutils.getRoleMap(server.roles)
-
-						role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
-						role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
-						role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
-
-						# Monitor all user roles and update if a user is no longer flagged for PvP.
-						for member in server.members:
-							pvp_role = None
-
-							if role_juvenile_pvp in member.roles:
-								pvp_role = role_juvenile_pvp
-							elif role_copkillers_pvp in member.roles:
-								pvp_role = role_copkillers_pvp
-							elif role_rowdyfuckers_pvp in member.roles:
-								pvp_role = role_rowdyfuckers_pvp
-
-							if pvp_role != None:
-								# Retrieve user data from the database.
-								user_data = EwUser(member=member)
-
-								# If the user's PvP expire time is historical, remove the PvP role.
-								if user_data.time_expirpvp < int(time.time()):
-									await client.remove_roles(member, pvp_role)
-
-				except:
-					ewutils.logMsg('An error occurred in the scheduled role update task:')
-					traceback.print_exc(file=sys.stdout)
-
-			# Adjust the exchange rate of slime for the market.
 			try:
 				for server in client.servers:
-					# Load market data from the database.
+					roles_map = ewutils.getRoleMap(server.roles)
+
+					role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
+					role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
+					role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
+
+					# Monitor all user roles and update if a user is no longer flagged for PvP.
+					for member in server.members:
+						pvp_role = None
+
+						if role_juvenile_pvp in member.roles:
+							pvp_role = role_juvenile_pvp
+						elif role_copkillers_pvp in member.roles:
+							pvp_role = role_copkillers_pvp
+						elif role_rowdyfuckers_pvp in member.roles:
+							pvp_role = role_rowdyfuckers_pvp
+
+						if pvp_role != None:
+							# Retrieve user data from the database.
+							user_data = EwUser(member=member)
+
+							# If the user's PvP expire time is historical, remove the PvP role.
+							if user_data.time_expirpvp < int(time.time()):
+								await client.remove_roles(member, pvp_role)
+
+			except:
+				ewutils.logMsg('An error occurred in the scheduled role update task:')
+				traceback.print_exc(file=sys.stdout)
+
+		# Adjust the exchange rate of slime for the market.
+		try:
+			for server in client.servers:
+				# Load market data from the database.
+				try:
+					conn = ewutils.databaseConnect()
+					cursor = conn.cursor()
+
+					market_data = EwMarket(id_server=server.id, conn=conn, cursor=cursor)
+					credit_totals = ewutils.getRecentTotalSlimeCoins(id_server=server.id, conn=conn, cursor=cursor)
+				finally:
+					cursor.close()
+					conn.close()
+
+				if market_data.time_lasttick + ewcfg.update_market < time_now:
+					market_data.time_lasttick = time_now
+
+					# Nudge the value back to stability.
+					rate_market = market_data.rate_market
+					if rate_market >= 1030:
+						rate_market -= 10
+					elif rate_market <= 970:
+						rate_market += 10
+
+					# Add participation bonus.
+					active_bonus = 0
+					active_map = active_users_map.get(server.id)
+					if active_map != None:
+						active_bonus = len(active_map)
+
+						if active_bonus > 20:
+							active_bonus = 20
+
+					active_users_map[server.id] = {}
+					rate_market += (active_bonus / 4)
+
+					# Invest/Withdraw effects
+					credit_rate = 0
+					if credit_totals[0] != credit_totals[1]:
+						# Positive if net investment, negative if net withdrawal.
+						credit_change = (credit_totals[0] - credit_totals[1])
+						credit_rate = ((credit_change * 1.0) / credit_totals[1])
+
+						if credit_rate > 1.0:
+							credit_rate = 1.0
+						elif credit_rate < -0.5:
+							credit_rate = -0.5
+
+						credit_rate = int((credit_rate * ewcfg.max_iw_swing) if credit_rate > 0 else (credit_rate * 2 * ewcfg.max_iw_swing))
+
+					rate_market += credit_rate
+
+					# Tick down the boombust cooldown.
+					if market_data.boombust < 0:
+						market_data.boombust += 1
+					elif market_data.boombust > 0:
+						market_data.boombust -= 1
+
+					# Adjust the market rate.
+					fluctuation = 0 #(random.randrange(5) - 2) * 100
+					noise = (random.randrange(19) - 9) * 2
+					subnoise = (random.randrange(13) - 6)
+
+					# Some extra excitement!
+					if noise == 0 and subnoise == 0:
+						boombust = (random.randrange(3) - 1) * 200
+
+						# If a boombust occurs shortly after a previous boombust, make sure it's the opposite effect. (Boom follows bust, bust follows boom.)
+						if (market_data.boombust > 0 and boombust > 0) or (market_data.boombust < 0 and boombust < 0):
+							boombust *= -1
+
+						if boombust != 0:
+							market_data.boombust = ewcfg.cd_boombust
+
+							if boombust < 0:
+								market_data.boombust *= -1
+					else:
+						boombust = 0
+
+					rate_market += fluctuation + noise + subnoise + boombust
+					if rate_market < 300:
+						rate_market = (300 + noise + subnoise)
+
+					percentage = ((rate_market / 10) - 100)
+					percentage_abs = percentage * -1
+
+					# If the value hits 0, we're stuck there forever.
+					if market_data.rate_exchange <= 100:
+						market_data.rate_exchange = 100
+
+					# Apply the market change to the casino balance and exchange rate.
+					market_data.slimes_casino = int(market_data.slimes_casino * (rate_market / 1000.0))
+					market_data.rate_exchange = int(market_data.rate_exchange * (rate_market / 1000.0))
+					
+					# Advance the time and potentially change weather.
+					market_data.clock += 1
+					if market_data.clock >= 24 or market_data.clock < 0:
+						market_data.clock = 0
+					weatherchange = random.randrange(30)
+					if weatherchange >= 29:
+						pattern_count = len(ewcfg.weather_list)
+						if pattern_count > 1:
+							weather_old = market_data.weather
+
+							# Randomly select a new weather pattern. Try again if we get the same one we currently have.
+							while market_data.weather == weather_old:
+								pick = random.randrange(len(ewcfg.weather_list))
+								market_data.weather = ewcfg.weather_list[pick].name
+
+						# Log message for statistics tracking.
+						ewutils.logMsg("The weather changed. It's now {}.".format(market_data.weather))
+
 					try:
 						conn = ewutils.databaseConnect()
 						cursor = conn.cursor()
 
-						market_data = EwMarket(id_server=server.id, conn=conn, cursor=cursor)
-						credit_totals = ewutils.getRecentTotalSlimeCoins(id_server=server.id, conn=conn, cursor=cursor)
+						# Persist new data.
+						market_data.rate_market = rate_market
+						market_data.persist(conn=conn, cursor=cursor)
+
+						# Create a historical snapshot.
+						ewutils.persistMarketHistory(market_data=market_data, conn=conn, cursor=cursor)
+
+						# Increase stamina for all players below the max.
+						ewutils.pushupServerStamina(id_server = server.id, conn = conn, cursor = cursor)
+
+						# Decrease inebriation for all players above min (0).
+						ewutils.pushdownServerInebriation(id_server = server.id, conn = conn, cursor = cursor)
+
+						conn.commit()
 					finally:
 						cursor.close()
 						conn.close()
 
-					if market_data.time_lasttick + ewcfg.update_market < time_now:
-						market_data.time_lasttick = time_now
+					# Give some indication of how the market is doing to the users.
+					response = "..."
 
-						# Nudge the value back to stability.
-						rate_market = market_data.rate_market
-						if rate_market >= 1030:
-							rate_market -= 10
-						elif rate_market <= 970:
-							rate_market += 10
+					# Market is up ...
+					if rate_market > 1200:
+						response = 'The slimeconomy is skyrocketing!!! Slime stock is up {p:.3g}%!!!'.format(p=percentage)
+					elif rate_market > 1100:
+						response = 'The slimeconomy is booming! Slime stock is up {p:.3g}%!'.format(p=percentage)
+					elif rate_market > 1000:
+						response = 'The slimeconomy is doing well. Slime stock is up {p:.3g}%.'.format(p=percentage)
+					# Market is down ...
+					elif rate_market < 800:
+						response = 'The slimeconomy is plummetting!!! Slime stock is down {p:.3g}%!!!'.format(p=percentage_abs)
+					elif rate_market < 900:
+						response = 'The slimeconomy is stagnating! Slime stock is down {p:.3g}%!'.format(p=percentage_abs)
+					elif rate_market < 1000:
+						response = 'The slimeconomy is a bit sluggish. Slime stock is down {p:.3g}%.'.format(p=percentage_abs)
+					# Perfectly balanced
+					else:
+						response = 'The slimeconomy is holding steady. No change in slime stock value.'
+					
+					if market_data.clock == 6:
+						response += ' The Slime Stock Exchange is now open for business.'
+					elif market_data.clock == 18:
+						response += ' The Slime Stock Exchange has closed for the night.'
 
-						# Add participation bonus.
-						active_bonus = 0
-						active_map = active_users_map.get(server.id)
-						if active_map != None:
-							active_bonus = len(active_map)
+					# Send the announcement.
+					channel = channels_stockmarket.get(server.id)
+					if channel != None:
+						await client.send_message(channel, ('**' + response + '**'))
+					else:
+						ewutils.logMsg('No stock market channel for server {}'.format(server.name))
+		except:
+			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
+			traceback.print_exc(file=sys.stdout)
 
-							if active_bonus > 20:
-								active_bonus = 20
-
-						active_users_map[server.id] = {}
-						rate_market += (active_bonus / 4)
-
-						# Invest/Withdraw effects
-						credit_rate = 0
-						if credit_totals[0] != credit_totals[1]:
-							# Positive if net investment, negative if net withdrawal.
-							credit_change = (credit_totals[0] - credit_totals[1])
-							credit_rate = ((credit_change * 1.0) / credit_totals[1])
-
-							if credit_rate > 1.0:
-								credit_rate = 1.0
-							elif credit_rate < -0.5:
-								credit_rate = -0.5
-
-							credit_rate = int((credit_rate * ewcfg.max_iw_swing) if credit_rate > 0 else (credit_rate * 2 * ewcfg.max_iw_swing))
-
-						rate_market += credit_rate
-
-						# Tick down the boombust cooldown.
-						if market_data.boombust < 0:
-							market_data.boombust += 1
-						elif market_data.boombust > 0:
-							market_data.boombust -= 1
-
-						# Adjust the market rate.
-						fluctuation = 0 #(random.randrange(5) - 2) * 100
-						noise = (random.randrange(19) - 9) * 2
-						subnoise = (random.randrange(13) - 6)
-
-						# Some extra excitement!
-						if noise == 0 and subnoise == 0:
-							boombust = (random.randrange(3) - 1) * 200
-
-							# If a boombust occurs shortly after a previous boombust, make sure it's the opposite effect. (Boom follows bust, bust follows boom.)
-							if (market_data.boombust > 0 and boombust > 0) or (market_data.boombust < 0 and boombust < 0):
-								boombust *= -1
-
-							if boombust != 0:
-								market_data.boombust = ewcfg.cd_boombust
-
-								if boombust < 0:
-									market_data.boombust *= -1
-						else:
-							boombust = 0
-
-						rate_market += fluctuation + noise + subnoise + boombust
-						if rate_market < 300:
-							rate_market = (300 + noise + subnoise)
-
-						percentage = ((rate_market / 10) - 100)
-						percentage_abs = percentage * -1
-
-						# If the value hits 0, we're stuck there forever.
-						if market_data.rate_exchange <= 100:
-							market_data.rate_exchange = 100
-
-						# Apply the market change to the casino balance and exchange rate.
-						market_data.slimes_casino = int(market_data.slimes_casino * (rate_market / 1000.0))
-						market_data.rate_exchange = int(market_data.rate_exchange * (rate_market / 1000.0))
-						
-						# Advance the time and potentially change weather.
-						market_data.clock += 1
-						if market_data.clock >= 24 or market_data.clock < 0:
-							market_data.clock = 0
-						weatherchange = random.randrange(30)
-						if weatherchange >= 29:
-							pattern_count = len(ewcfg.weather_list)
-							if pattern_count > 1:
-								weather_old = market_data.weather
-
-								# Randomly select a new weather pattern. Try again if we get the same one we currently have.
-								while market_data.weather == weather_old:
-									pick = random.randrange(len(ewcfg.weather_list))
-									market_data.weather = ewcfg.weather_list[pick].name
-
-							# Log message for statistics tracking.
-							ewutils.logMsg("The weather changed. It's now {}.".format(market_data.weather))
-
-						try:
-							conn = ewutils.databaseConnect()
-							cursor = conn.cursor()
-
-							# Persist new data.
-							market_data.rate_market = rate_market
-							market_data.persist(conn=conn, cursor=cursor)
-
-							# Create a historical snapshot.
-							ewutils.persistMarketHistory(market_data=market_data, conn=conn, cursor=cursor)
-
-							# Increase stamina for all players below the max.
-							ewutils.pushupServerStamina(id_server = server.id, conn = conn, cursor = cursor)
-
-							# Decrease inebriation for all players above min (0).
-							ewutils.pushdownServerInebriation(id_server = server.id, conn = conn, cursor = cursor)
-
-							conn.commit()
-						finally:
-							cursor.close()
-							conn.close()
-
-						# Give some indication of how the market is doing to the users.
-						response = "..."
-
-						# Market is up ...
-						if rate_market > 1200:
-							response = 'The slimeconomy is skyrocketing!!! Slime stock is up {p:.3g}%!!!'.format(p=percentage)
-						elif rate_market > 1100:
-							response = 'The slimeconomy is booming! Slime stock is up {p:.3g}%!'.format(p=percentage)
-						elif rate_market > 1000:
-							response = 'The slimeconomy is doing well. Slime stock is up {p:.3g}%.'.format(p=percentage)
-						# Market is down ...
-						elif rate_market < 800:
-							response = 'The slimeconomy is plummetting!!! Slime stock is down {p:.3g}%!!!'.format(p=percentage_abs)
-						elif rate_market < 900:
-							response = 'The slimeconomy is stagnating! Slime stock is down {p:.3g}%!'.format(p=percentage_abs)
-						elif rate_market < 1000:
-							response = 'The slimeconomy is a bit sluggish. Slime stock is down {p:.3g}%.'.format(p=percentage_abs)
-						# Perfectly balanced
-						else:
-							response = 'The slimeconomy is holding steady. No change in slime stock value.'
-						
-						if market_data.clock == 6:
-							response += ' The Slime Stock Exchange is now open for business.'
-						elif market_data.clock == 18:
-							response += ' The Slime Stock Exchange has closed for the night.'
-
-						# Send the announcement.
-						channel = channels_stockmarket.get(server.id)
-						if channel != None:
-							await client.send_message(channel, ('**' + response + '**'))
-						else:
-							ewutils.logMsg('No stock market channel for server {}'.format(server.name))
-			except:
-				ewutils.logMsg('An error occurred in the scheduled slime market update task:')
-				traceback.print_exc(file=sys.stdout)
-
-			# Wait a while before running periodic tasks.
-			await asyncio.sleep(15)
+		# Wait a while before running periodic tasks.
+		await asyncio.sleep(15)
 
 @client.event
 async def on_member_join(member):
@@ -371,13 +377,19 @@ async def on_message(message):
 	if message.author.id == client.user.id or message.author.bot == True:
 		return
 
-	# Note that the user posted a message.
 	if message.server != None:
+		# Note that the user posted a message.
 		active_map = active_users_map.get(message.server.id)
 		if active_map == None:
 			active_map = {}
 			active_users_map[message.server.id] = active_map
 		active_map[message.author.id] = True
+
+		# Update player information.
+		ewplayer.player_update(
+			member = message.author,
+			server = message.server
+		)
 
 	content_tolower = message.content.lower()
 	re_awoo = re.compile('.*![a]+[w]+o[o]+.*')
