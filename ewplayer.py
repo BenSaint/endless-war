@@ -19,7 +19,7 @@ class EwPlayer:
 	def __init__(
 		self,
 		id_user = None,
-		id_server = "",
+		id_server = None,
 		conn = None,
 		cursor = None
 	):
@@ -53,7 +53,7 @@ class EwPlayer:
 					self.id_server = result[0]
 					self.avatar = result[1]
 					self.display_name = result[2]
-				else:
+				elif id_server != None:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO players({}, {}) VALUES(%s, %s)".format(
 						ewcfg.col_id_user,

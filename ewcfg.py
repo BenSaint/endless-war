@@ -3,6 +3,7 @@ import random
 from ewwep import EwWeapon
 from ewweather import EwWeather
 from ewfood import EwFood
+from ewitem import EwItemDef
 
 # Global configuration options.
 version = "v1.27"
@@ -90,6 +91,11 @@ cmd_annoint = cmd_prefix + 'annoint'
 cmd_disembody = cmd_prefix + 'disembody'
 cmd_war = cmd_prefix + 'war'
 cmd_toil = cmd_prefix + 'toil'
+cmd_inventory = cmd_prefix + 'inventory'
+cmd_inventory_alt1 = cmd_prefix + 'inv'
+cmd_inventory_alt2 = cmd_prefix + 'stuff'
+cmd_inventory_alt3 = cmd_prefix + 'bag'
+
 
 # Slime costs/values
 slimes_tokill = 20
@@ -163,6 +169,15 @@ str_weapon_wielding = "They are wielding"
 
 # Common database columns
 col_id_server = 'id_server'
+
+# Database columns for items
+col_id_item = "id_item"
+col_item_type = "item_type"
+col_time_expir = "time_expir"
+col_value = "value"
+col_stack_max = 'stack_max'
+col_stack_size = 'stack_size'
+col_soulbound = 'soulbound'
 
 # Database columns for server
 col_icon = "icon"
@@ -1063,3 +1078,39 @@ howls = [
 	'**AWOOOOOOOOOOOOOOOOOOOO**',
 	'**AWWWOOOOOOOOOOOOOOOOOOOO**'
 ]
+
+"""
+	The list of item definitions. Instances of items are always based on these
+	skeleton definitions.
+"""
+item_def_list = [
+	EwItemDef(
+		# Unique item identifier. Not shown to players.
+		item_type = "demo",
+
+		# The name of the item that players will see.
+		str_name = "Demo",
+
+		# The description shown when you look at an item.
+		str_desc = "A demonstration item."
+	),
+
+	# A customizable award object.
+	EwItemDef(
+		item_type = "medal",
+		str_name = "{medal_name}",
+		str_desc = "{medal_desc}",
+		soulbound = True,
+		item_props = {
+			'medal_name': 'Blank Medal',
+			'medal_desc': 'An uninscribed medal with no remarkable features.'
+		}
+	),
+]
+
+# A map of item_type to EwItemDef objects.
+item_def_map = {}
+
+# Populate the item def map.
+for item_def in item_def_list:
+	item_def_map[item_def.item_type] = item_def

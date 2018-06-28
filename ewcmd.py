@@ -36,7 +36,8 @@ class EwCmd:
 			self.tokens_count = len(tokens)
 			self.cmd = tokens[0]
 
-		self.roles_map = ewutils.getRoleMap(message.server.roles)
+		if message.server != None:
+			self.roles_map = ewutils.getRoleMap(message.server.roles)
 
 """ Send an initial message you intend to edit later while processing the command. Returns handle to the message. """
 async def start(cmd = None, message = '...', channel = None, client = None):

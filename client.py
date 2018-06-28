@@ -27,6 +27,9 @@ import ewspooky
 import ewkingpin
 import ewplayer
 import ewserver
+import ewitem
+from ewitem import EwItem
+
 from ew import EwUser, EwMarket
 
 ewutils.logMsg('Starting up...')
@@ -407,23 +410,8 @@ async def on_message(message):
 		tokens_count = len(tokens)
 		cmd = tokens[0].lower()
 
-		""" reply to DMs with help document """
-		if message.server == None:
-			time_last = last_helped_times.get(message.author.id, 0)
-
-			# Only send the help doc once every thirty seconds. There's no need to spam it.
-			if (time_now - time_last) > 30:
-				last_helped_times[message.author.id] = time_now
-				await client.send_message(message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
-
-			# Nothing else to do in a DM.
-			return
-
 		# remove mentions to us
 		mentions = list(filter(lambda user : user.id != client.user.id, message.mentions))
-
-		# common data we'll need
-		roles_map = ewutils.getRoleMap(message.server.roles)
 		mentions_count = len(mentions)
 
 		# Create command object
@@ -431,8 +419,27 @@ async def on_message(message):
 			tokens = tokens,
 			message = message,
 			client = client,
-			mentions = mentions,
+			mentions = mentions
 		)
+
+		""" reply to DMs with help document """
+		if message.server == None:
+			# Direct message the player their inventory.
+			if ewitem.cmd_is_inventory(cmd):
+				return await ewitem.inventory(cmd_obj)
+			else:
+				time_last = last_helped_times.get(message.author.id, 0)
+
+				# Only send the help doc once every thirty seconds. There's no need to spam it.
+				if (time_now - time_last) > 30:
+					last_helped_times[message.author.id] = time_now
+					await client.send_message(message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
+
+			# Nothing else to do in a DM.
+			return
+
+		# common data we'll need
+		roles_map = cmd_obj.roles_map
 
 		# assign the juveniles role to a user with only 1 or 0 roles.
 		if len(message.author.roles) < 2:
@@ -564,6 +571,32 @@ async def on_message(message):
 		elif cmd == ewcfg.cmd_deadmega:
 			return await ewkingpin.deadmega(cmd_obj)
 
+
+		# FIXME debug
+		# Test item creation
+		elif cmd == '!create':
+			item_id = ewitem.item_create(
+				item_type = 'medal',
+				id_user = message.author.id,
+				id_server = message.server.id,
+				item_props = {
+					'medal_name': 'Test Award',
+					'medal_desc': '**{medal_name}**: *Awarded to Krak by Krak for testing shit.*'
+				}
+			)
+
+			ewutils.logMsg('Created item: {}'.format(item_id))
+			item = EwItem(id_item = item_id)
+			item.item_props['test'] = 'meow'
+			item.persist()
+
+			item = EwItem(id_item = item_id)
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
+
+		# Direct message the player their inventory.
+		elif ewitem.cmd_is_inventory(cmd):
+			return await ewitem.inventory(cmd_obj)
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:

@@ -88,3 +88,27 @@ CREATE TABLE servers (
 
 	PRIMARY KEY (id_server)
 );
+
+CREATE TABLE items (
+	id_item int NOT NULL AUTO_INCREMENT,
+	id_server varchar(128) NOT NULL,
+	id_user varchar(128) NOT NULL,
+	item_type varchar(64) NOT NULL,
+	time_expir int,
+	stack_max int NOT NULL DEFAULT '-1',
+	stack_size int NOT NULL DEFAULT '1',
+	soulbound int NOT NULL DEFAULT '0',
+
+	PRIMARY KEY (id_item)
+);
+
+CREATE TABLE items_prop (
+	id_item int NOT NULL,
+
+	name varchar(64) NOT NULL,
+	value varchar(2048),
+
+	FOREIGN KEY (id_item)
+		REFERENCES items(id_item)
+		ON DELETE CASCADE
+);
