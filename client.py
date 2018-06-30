@@ -426,7 +426,7 @@ async def on_message(message):
 		if message.server == None:
 			# Direct message the player their inventory.
 			if ewitem.cmd_is_inventory(cmd):
-				return await ewitem.inventory(cmd_obj)
+				return await ewitem.inventory_print(cmd_obj)
 			else:
 				time_last = last_helped_times.get(message.author.id, 0)
 
@@ -594,9 +594,24 @@ async def on_message(message):
 
 			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
 
+		# FIXME debug
+		# Test item deletion
+		elif cmd == '!delete':
+			items = ewitem.inventory(
+				id_user = message.author.id,
+				id_server = message.server.id
+			)
+
+			for item in items:
+				ewitem.item_delete(
+					id_item = item.get('id_item')
+				)
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'ok'))
+
 		# Direct message the player their inventory.
 		elif ewitem.cmd_is_inventory(cmd):
-			return await ewitem.inventory(cmd_obj)
+			return await ewitem.inventory_print(cmd_obj)
 
 		# !harvest is not a command
 		elif cmd == ewcfg.cmd_harvest:

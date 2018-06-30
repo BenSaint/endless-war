@@ -217,6 +217,42 @@ def item_look(item):
 
 
 """
+	Delete the specified item by ID. Also deletes all items_prop values.
+"""
+def item_delete(
+	id_item = None,
+	conn = None,
+	cursor = None
+):
+	our_cursor = False
+	our_conn = False
+
+	try:
+		# Get database handles if they weren't passed.
+		if(cursor == None):
+			if(conn == None):
+				conn = ewutils.databaseConnect()
+				our_conn = True
+
+			cursor = conn.cursor()
+			our_cursor = True
+
+		# Create the item in the database.
+		cursor.execute("DELETE FROM items WHERE {} = %s".format(
+			ewcfg.col_id_item
+		), (
+			id_item,
+		))
+
+		conn.commit()
+	finally:
+		# Clean up the database handles.
+		if(our_cursor):
+			cursor.close()
+		if(our_conn):
+			conn.close()
+
+"""
 	Create a new item and give it to a player.
 
 	Returns the unique database ID of the newly created item.
@@ -298,21 +334,32 @@ def item_create(
 def cmd_is_inventory(cmd):
 	return (cmd == ewcfg.cmd_inventory or cmd == ewcfg.cmd_inventory_alt1 or cmd == ewcfg.cmd_inventory_alt2 or cmd == ewcfg.cmd_inventory_alt3)
 
-
 """
-	Dump out a player's inventory.
+	Get a list of items for the specified player.
 """
-async def inventory(cmd):
-	resp = await cmd.client.send_message(cmd.message.author, '...')
-	response = "You are holding:\n"
+def inventory(
+	id_user = "",
+	id_server = None,
+	conn = None,
+	cursor = None
+):
+	our_cursor = False
+	our_conn = False
+	items = []
 
 	try:
-		conn = ewutils.databaseConnect()
-		cursor = conn.cursor()
+		# Get database handles if they weren't passed.
+		if(cursor == None):
+			if(conn == None):
+				conn = ewutils.databaseConnect()
+				our_conn = True
+
+			cursor = conn.cursor()
+			our_cursor = True
 
 		player = EwPlayer(
-			id_user = cmd.message.author.id,
-			id_server = (cmd.message.server.id if (cmd.message.server != None) else None),
+			id_user = id_user,
+			id_server = id_server,
 			conn = conn,
 			cursor = cursor
 		)
@@ -332,7 +379,6 @@ async def inventory(cmd):
 				player.id_server
 			))
 
-			items = []
 			for row in cursor:
 				id_item = row[0]
 				item_type = row[1]
@@ -362,6 +408,8 @@ async def inventory(cmd):
 				if item.get('stack_max') > 0:
 					quantity = item.get('stack_size')
 
+				item['quantity'] = quantity
+
 				# Name requires variable substitution. Look up the item properties.
 				if name.find('{') >= 0:
 					item_inst = EwItem(
@@ -376,14 +424,37 @@ async def inventory(cmd):
 						if name.find('{') >= 0:
 							name = name.format_map(item_inst.item_props)
 
-				response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
-					id_item = id_item,
-					name = name,
-					soulbound_style = ("**" if item.get('soulbound') else ""),
-					quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
-				)
+				item['name'] = name
 	finally:
-		cursor.close()
-		conn.close()
+		# Clean up the database handles.
+		if(our_cursor):
+			cursor.close()
+		if(our_conn):
+			conn.close()
+
+	return items
+
+"""
+	Dump out a player's inventory.
+"""
+async def inventory_print(cmd):
+	resp = await cmd.client.send_message(cmd.message.author, '...')
+	response = "You are holding:\n"
+
+	items = inventory(
+		id_user = cmd.message.author.id,
+		id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
+	)
+
+	for item in items:
+		id_item = item.get('id_item')
+		quantity = item.get('quantity')
+
+		response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
+			id_item = item.get('id_item'),
+			name = item.get('name'),
+			soulbound_style = ("**" if item.get('soulbound') else ""),
+			quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
+		)
 
 	await cmd.client.edit_message(resp, response)
