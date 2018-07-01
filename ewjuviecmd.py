@@ -32,7 +32,13 @@ async def enlist(cmd):
 		if user_slimes < ewcfg.slimes_toenlist:
 			response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)
 		else:
+			if faction == "":
+				faction = user_data.faction
+
 			if faction == ewcfg.faction_rowdys:
+				user_data.faction = faction
+				user_data.persist()
+
 				if user_is_pvp:
 					await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_rowdyfuckers], cmd.roles_map[ewcfg.role_rowdyfuckers_pvp])
 				else:
@@ -40,6 +46,9 @@ async def enlist(cmd):
 
 				response = "Enlisted in the {}.".format(ewcfg.faction_rowdys)
 			elif faction == ewcfg.faction_killers:
+				user_data.faction = faction
+				user_data.persist()
+
 				if user_is_pvp:
 					await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_copkillers], cmd.roles_map[ewcfg.role_copkillers_pvp])
 				else:

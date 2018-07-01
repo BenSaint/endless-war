@@ -141,6 +141,7 @@ class EwUser:
 	trauma = ""
 	ghostbust = False
 	inebriation = 0
+	faction = ""
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -184,7 +185,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -204,7 +205,8 @@ class EwUser:
 					ewcfg.col_slimepoudrins,
 					ewcfg.col_weaponname,
 					ewcfg.col_ghostbust,
-					ewcfg.col_inebriation
+					ewcfg.col_inebriation,
+					ewcfg.col_faction
 				), (
 					id_user,
 					id_server
@@ -233,6 +235,7 @@ class EwUser:
 					self.weaponname = result[17]
 					self.ghostbust = (result[18] == 1)
 					self.inebriation = result[19]
+					self.faction = result[20]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -288,7 +291,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -311,7 +314,8 @@ class EwUser:
 				ewcfg.col_slimepoudrins,
 				ewcfg.col_weaponname,
 				ewcfg.col_ghostbust,
-				ewcfg.col_inebriation
+				ewcfg.col_inebriation,
+				ewcfg.col_faction
 			), (
 				self.id_user,
 				self.id_server,
@@ -335,7 +339,8 @@ class EwUser:
 				self.slimepoudrins,
 				self.weaponname,
 				(1 if self.ghostbust == True else 0),
-				self.inebriation
+				self.inebriation,
+				self.faction
 			))
 
 			# Save the current weapon's skill

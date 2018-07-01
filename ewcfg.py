@@ -210,6 +210,7 @@ col_weaponname = 'weaponname'
 col_name = 'name'
 col_inebriation = 'inebriation'
 col_ghostbust = 'ghostbust'
+col_faction = 'faction'
 
 # Database columns for markets
 col_rate_market = 'rate_market'

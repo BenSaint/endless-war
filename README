@@ -29,6 +29,7 @@ CREATE TABLE users (
 	weaponname varchar(32) NOT NULL DEFAULT '',
 	ghostbust int NOT NULL DEFAULT '0',
 	inebriation int NOT NULL DEFAULT '0',
+	faction varchar(32) NOT NULL default '',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
