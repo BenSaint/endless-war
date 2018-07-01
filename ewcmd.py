@@ -157,7 +157,7 @@ async def data(cmd):
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if user_data.stamina > 0:
-			response += " You are {}% fatigued.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
+			response += " You are {}% hungry.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
 	else:
 		member = cmd.mentions[0]
 		roles_map_user = ewutils.getRoleMap(member.roles)
