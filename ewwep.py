@@ -472,9 +472,6 @@ async def suicide(cmd):
 		# The roles assigned to the author of this message.
 		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
-		# Slime transfer
-		boss_slimes = user_data.slimes - (ewcfg.slimes_tokill + int(user_data.slimes * 3 / 5))
-
 		user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 		user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 		user_isgeneral = ewcfg.role_copkiller in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
@@ -498,31 +495,6 @@ async def suicide(cmd):
 			user_data.slimes = 0
 			user_data.slimepoudrins = 0
 			user_data.persist()
-
-			# Give slimes to the boss if possible.
-			boss_member = None
-			if boss_slimes > 0:
-				role_boss = (ewcfg.role_copkiller if user_iskillers == True else ewcfg.role_rowdyfucker)
-
-				for member_search in cmd.message.author.server.members:
-					boss_roles = ewutils.getRoleMap(member_search.roles)
-					if role_boss in boss_roles and ewcfg.role_kingpin in boss_roles:
-						boss_member = member_search
-						break
-
-				if boss_member != None:
-					try:
-						conn = ewutils.databaseConnect()
-						cursor = conn.cursor()
-
-						boss_data = EwUser(member = boss_member, conn = conn, cursor = cursor)
-						boss_data.slimes += boss_slimes
-						boss_data.persist(conn = conn, cursor = cursor)
-
-						conn.commit()
-					finally:
-						cursor.close()
-						conn.close()
 
 			response = '{} has willingly returned to the slime. {}'.format(cmd.message.author.display_name, ewcfg.emote_slimeskull)
 		else:
