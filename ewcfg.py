@@ -638,6 +638,20 @@ weather_list = [
 		day="The air hangs thick, and the pavement is damp with mist from the clouds overhead.",
 		sunset="The dusky light blares angry red on a sky choked with clouds and smog.",
 		night="Everything is dark and still but the roiling clouds, reflecting the city's eerie light."
+	),
+	EwWeather(
+		name="snow",
+		sunrise="The morning sun glints off the thin layer or powdery snow that blankets the city.",
+		day="Flakes of snow clump together and whip through the bitter cold air in the winder wind.",
+		sunset="The cold air grows colder as the sky darkens and the snow piles higher in the streets.",
+		night="Icy winds whip through the city, white snowflakes glittering in the black of night."
+	),
+		EwWeather(
+		name="foggy",
+		sunrise="Fog hangs thick in the air, stubbornly refusing to dissipate as the sun clears the horizon.",
+		day="You can barely see to the next block in the sickly greenish NLAC smog.",
+		sunset="Visibility only grows worse in the fog as the sun sets and the daylight fades.",
+		night="Everything is obscured by the darkness of night and the thick city smog."
 	)
 ]
 
