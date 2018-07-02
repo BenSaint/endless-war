@@ -33,7 +33,7 @@ async def invest(cmd):
 		cursor.close()
 		conn.close()
 
-	if market_data.clock >= 18 or market_data.clock < 6:
+	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
 	else:
 		value = None
@@ -110,7 +110,7 @@ async def withdraw(cmd):
 		cursor.close()
 		conn.close()
 
-	if market_data.clock >= 18 or market_data.clock < 6:
+	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
 	else:
 		value = None
@@ -211,7 +211,7 @@ async def xfer(cmd):
 		cursor.close()
 		conn.close()
 
-	if market_data.clock >= 18 or market_data.clock < 6:
+	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
 	else:
 		# Parse the slime value to send.
