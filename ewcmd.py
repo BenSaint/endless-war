@@ -245,13 +245,13 @@ async def weather(cmd):
 	flair = ''
 	weather_data = ewcfg.weather_map.get(market_data.weather)
 	if weather_data != None:
-		if time_current >= 4 and time_current <= 5:
+		if time_current >= 6 and time_current <= 7:
 			flair = weather_data.str_sunrise
-		if time_current >= 6 and time_current <= 16:
+		if time_current >= 8 and time_current <= 17:
 			flair = weather_data.str_day
-		if time_current >= 17 and time_current <= 18:
+		if time_current >= 18 and time_current <= 19:
 			flair = weather_data.str_sunset
-		if time_current >= 19 or time_current <= 4:
+		if time_current >= 20 or time_current <= 5:
 			flair = weather_data.str_night
 			
 	response += "It is currently {}{} in NLACakaNM.{}".format(displaytime, ampm, (' ' + flair))
