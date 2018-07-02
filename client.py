@@ -154,7 +154,7 @@ async def on_ready():
 			time_last_pvp = time_now
 
 			try:
-				for server in client.servers:
+				for sexcvxcbvxcvrver in client.servers:
 					roles_map = ewutils.getRoleMap(server.roles)
 
 					role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
