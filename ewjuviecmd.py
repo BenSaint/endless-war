@@ -68,11 +68,17 @@ async def enlist(cmd):
 
 """ mine for slime """
 async def mine(cmd):
+	market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
 	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 	time_now = int(time.time())
+	
 
 	if ewcfg.role_corpse in roles_map_user:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+	if ewcfg.role_rowdyfuckers and market_data.clock >= 8 and market_data.clock <= 17:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Rowdies only mine in the daytime. Wait for full daylight at 8am.".format(ewcfg.cmd_revive)))
+	if ewcfg.role_copkillers and market_data.clock >= 20 and market_data.clock <= 5:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Killers only mine under cover of darkness. Wait for nightfall at 8pm.".format(ewcfg.cmd_revive)))
 	else:
 		if(cmd.message.channel.name == ewcfg.channel_mines):
 			user_data = EwUser(member = cmd.message.author)
