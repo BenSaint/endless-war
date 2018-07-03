@@ -24,14 +24,15 @@ async def invest(cmd):
 		return
 
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
 		market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
 
 	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
@@ -72,7 +73,8 @@ async def invest(cmd):
 				response = "You invest {slime:,} slime and receive {credit:,} SlimeCoin. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, credit=net_credits, fee=fee)
 
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					user_data.persist(conn=conn, cursor=cursor)
@@ -81,7 +83,7 @@ async def invest(cmd):
 					conn.commit()
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 		else:
 			response = ewcfg.str_exchange_specify.format(currency="slime", action="invest")
@@ -101,14 +103,15 @@ async def withdraw(cmd):
 		return
 
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
 		market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
 
 	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
@@ -153,7 +156,8 @@ async def withdraw(cmd):
 					user_data.slimelevel = new_level
 
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					user_data.persist(conn=conn, cursor=cursor)
@@ -162,7 +166,7 @@ async def withdraw(cmd):
 					conn.commit()
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 				# Add the visible PvP flag role.
 				await ewutils.add_pvp_role(cmd = cmd)
@@ -201,7 +205,8 @@ async def xfer(cmd):
 
 
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		target_data = EwUser(member=member, conn=conn, cursor=cursor)
@@ -209,7 +214,7 @@ async def xfer(cmd):
 		market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
 
 	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
@@ -244,7 +249,8 @@ async def xfer(cmd):
 				response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, target_name=member.display_name, fee=(cost_total - value))
 
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					user_data.persist(conn=conn, cursor=cursor)
@@ -253,7 +259,7 @@ async def xfer(cmd):
 					conn.commit()
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 		else:
 			response = ewcfg.str_exchange_specify.format(currency="SlimeCoin", action="transfer")
 
@@ -278,14 +284,15 @@ async def slimecoin(cmd):
 	response = ""
 
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		market_data = EwMarket(id_server=cmd.message.server.id, conn=conn, cursor=cursor)
 		user_slimecredit = EwUser(member=cmd.message.author, conn=conn, cursor=cursor).slimecredit
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
 
 	net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000000.0))
 	response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit, net_worth)

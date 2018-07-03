@@ -91,7 +91,8 @@ async def order(cmd):
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
 		else:
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -102,7 +103,7 @@ async def order(cmd):
 					target_data = EwUser(member = member, conn = conn, cursor = cursor)
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			value = int(food.price / (market_data.rate_exchange / 1000000.0))
 			if value <= 0:
@@ -152,7 +153,8 @@ async def order(cmd):
 					response += "\n\nYou're stuffed!"
 
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					user_data.persist(conn = conn, cursor = cursor)
@@ -164,7 +166,7 @@ async def order(cmd):
 					conn.commit()
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

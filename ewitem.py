@@ -79,7 +79,8 @@ class EwItem:
 				# Get database handles if they weren't passed.
 				if(cursor == None):
 					if(conn == None):
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						our_conn = True
 
 					cursor = conn.cursor()
@@ -129,7 +130,7 @@ class EwItem:
 				if(our_cursor):
 					cursor.close()
 				if(our_conn):
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 	""" Save user data object to the database. """
 	def persist(self, conn=None, cursor=None):
@@ -140,7 +141,8 @@ class EwItem:
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor()
@@ -193,7 +195,7 @@ class EwItem:
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 """
 	Return the visible description of an item.
@@ -231,7 +233,8 @@ def item_delete(
 		# Get database handles if they weren't passed.
 		if(cursor == None):
 			if(conn == None):
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				our_conn = True
 
 			cursor = conn.cursor()
@@ -250,7 +253,7 @@ def item_delete(
 		if(our_cursor):
 			cursor.close()
 		if(our_conn):
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 """
 	Create a new item and give it to a player.
@@ -278,7 +281,8 @@ def item_create(
 		# Get database handles if they weren't passed.
 		if(cursor == None):
 			if(conn == None):
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				our_conn = True
 
 			cursor = conn.cursor()
@@ -323,7 +327,7 @@ def item_create(
 		if(our_cursor):
 			cursor.close()
 		if(our_conn):
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 
 	return item_id
@@ -351,7 +355,8 @@ def inventory(
 		# Get database handles if they weren't passed.
 		if(cursor == None):
 			if(conn == None):
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				our_conn = True
 
 			cursor = conn.cursor()
@@ -430,7 +435,7 @@ def inventory(
 		if(our_cursor):
 			cursor.close()
 		if(our_conn):
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 	return items
 

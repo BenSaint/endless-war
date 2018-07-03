@@ -23,7 +23,8 @@ async def revive(cmd):
 			player_is_pvp = False
 
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				player_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -79,7 +80,7 @@ async def revive(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			if player_is_pvp:
 				await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_juvenile], cmd.roles_map[ewcfg.role_juvenile_pvp])
@@ -108,7 +109,8 @@ async def haunt(cmd):
 
 		# Get the user and target data from the database.
 		try:
-			conn = ewutils.databaseConnect()
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
 			user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -117,7 +119,7 @@ async def haunt(cmd):
 			haunted_data = EwUser(member = member, conn = conn, cursor = cursor)
 		finally:
 			cursor.close()
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 		# A map of role names to Roles assigned to the targeted user.
 		roles_map_target = ewutils.getRoleMap(member.roles)
@@ -153,7 +155,8 @@ async def haunt(cmd):
 
 			# Persist changes to the database.
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data.persist(conn = conn, cursor = cursor)
@@ -162,7 +165,7 @@ async def haunt(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			response = "{} has been haunted by a discontent corpse! Slime has been lost!".format(member.display_name)
 		else:
@@ -180,7 +183,8 @@ async def negaslime(cmd):
 	negaslime = 0
 
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		# Count all negative slime currently possessed by dead players.
@@ -203,6 +207,6 @@ async def negaslime(cmd):
 
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
 
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))

@@ -111,7 +111,8 @@ async def data(cmd):
 		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
 		try:
-			conn = ewutils.databaseConnect()
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
 			user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -130,7 +131,7 @@ async def data(cmd):
 				conn.commit()
 		finally:
 			cursor.close()
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 		# return my data
 		if ewcfg.role_corpse in roles_map_user:
@@ -163,7 +164,8 @@ async def data(cmd):
 		roles_map_user = ewutils.getRoleMap(member.roles)
 
 		try:
-			conn = ewutils.databaseConnect()
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
 			user_data = EwUser(member = member, conn = conn, cursor = cursor)
@@ -179,7 +181,7 @@ async def data(cmd):
 				conn.commit()
 		finally:
 			cursor.close()
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 		# return somebody's score
 		if ewcfg.role_corpse in roles_map_target:

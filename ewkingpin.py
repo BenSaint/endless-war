@@ -24,7 +24,8 @@ async def devour(cmd):
 			members_na = []
 
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
@@ -53,7 +54,7 @@ async def devour(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			role_corpse = cmd.roles_map[ewcfg.role_corpse]
 			for member in members_devoured:
@@ -104,7 +105,8 @@ async def giveslime(cmd):
 					user_slimes = 0
 					member_slimes = []
 					try:
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						cursor = conn.cursor()
 
 						user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
@@ -114,7 +116,7 @@ async def giveslime(cmd):
 							member_slimes.append(EwUser(member=member, conn=conn, cursor=cursor))
 					finally:
 						cursor.close()
-						conn.close()
+						ewutils.databaseClose(conn_info)
 
 					if (value * cmd.mentions_count) > user_data.slimes:
 						response = "You don't have that much slime to give ({:,}/{:,}).".format(user_data.slimes, (value * cmd.mentions_count))
@@ -122,7 +124,8 @@ async def giveslime(cmd):
 						user_data.slimes -= (value * cmd.mentions_count)
 
 						try:
-							conn = ewutils.databaseConnect()
+							conn_info = ewutils.databaseConnect()
+							conn = conn_info.get('conn')
 							cursor = conn.cursor()
 
 							user_data.persist(conn=conn, cursor=cursor)
@@ -135,7 +138,7 @@ async def giveslime(cmd):
 							conn.commit()
 						finally:
 							cursor.close()
-							conn.close()
+							ewutils.databaseClose(conn_info)
 
 						response = "Slime scores altered! {}".format(ewcfg.emote_slime1)
 

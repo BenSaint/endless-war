@@ -186,7 +186,8 @@ async def mine(cmd):
 				last_mismined_times[cmd.message.author.id] = None
 
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -196,7 +197,7 @@ async def mine(cmd):
 					conn.commit()
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 
 				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))

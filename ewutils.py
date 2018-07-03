@@ -4,6 +4,9 @@ import time
 
 import ewcfg
 
+db_pool = {}
+db_pool_id = 0
+
 """ Write the string to stdout with a timestamp. """
 def logMsg(string):
 	print("[{}] {}".format(datetime.datetime.now(), string))
@@ -70,7 +73,53 @@ def getRoleMap(roles):
 
 """ connect to the database """
 def databaseConnect():
-	return MySQLdb.connect(host="localhost", user="rfck-bot", passwd="rfck", db="rfck")
+	conn_info = None
+
+	conn_id_todelete = []
+
+	global db_pool
+	global db_pool_id
+
+	# Iterate through open connections and find the currently active one.
+	for pool_id in db_pool:
+		conn_info_iter = db_pool.get(pool_id)
+
+		if conn_info_iter['closed'] == True:
+			if conn_info_iter['count'] <= 0:
+				conn_id_todelete.append(pool_id)
+		else:
+			conn_info = conn_info_iter
+
+	# Close and remove dead connections.
+	if len(conn_id_todelete) > 0:
+		for pool_id in conn_id_todelete:
+			conn_info_iter = db_pool[pool_id]
+			conn_info_iter['conn'].close()
+
+			del db_pool[pool_id]
+
+	# Create a new connection.
+	if conn_info == None:
+		db_pool_id += 1
+		conn_info = {
+			'conn': MySQLdb.connect(host="localhost", user="rfck-bot", passwd="rfck", db="rfck"),
+			'created': int(time.time()),
+			'count': 1,
+			'closed': False
+		}
+		db_pool[db_pool_id] = conn_info
+	else:
+		conn_info['count'] += 1
+
+	return conn_info
+
+""" close (maybe) the active database connection """
+def databaseClose(conn_info):
+	conn_info['count'] -= 1
+
+	# Expire old database connections.
+	if (conn_info['created'] + 60) < int(time.time()):
+		conn_info['closed'] = True
 
 """ get the slime count for the specified member (player). sets to 0 if they aren't in the database """
 def getSlimesForPlayer(conn, cursor, member):
@@ -128,7 +177,8 @@ def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -160,7 +210,7 @@ def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 		return values
 
@@ -174,7 +224,8 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -196,7 +247,7 @@ def pushupServerStamina(id_server = None, conn = None, cursor = None):
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 """ Reduce inebriation for every player in the server. """
 def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
@@ -208,7 +259,8 @@ def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -230,7 +282,7 @@ def pushdownServerInebriation(id_server = None, conn = None, cursor = None):
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 """ Save a timestamped snapshot of the current market for historical purposes. """
 def persistMarketHistory(market_data=None, conn=None, cursor=None):
@@ -242,7 +294,8 @@ def persistMarketHistory(market_data=None, conn=None, cursor=None):
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -287,7 +340,7 @@ def persistMarketHistory(market_data=None, conn=None, cursor=None):
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 
 """ Parse a list of tokens and return an integer value. If allow_all, return -1 if the word 'all' is present. """
@@ -324,7 +377,8 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -353,7 +407,7 @@ def weaponskills_get(id_server=None, id_user=None, member=None, conn=None, curso
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 	return weaponskills
 
@@ -371,7 +425,8 @@ def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, wea
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -398,7 +453,7 @@ def weaponskills_set(id_server=None, id_user=None, member=None, weapon=None, wea
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 """ Clear all weapon skills for a player (probably called on !revive). """
 def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cursor=None):
@@ -414,7 +469,8 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = databaseConnect()
+					conn_info = databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -439,7 +495,7 @@ def weaponskills_clear(id_server=None, id_user=None, member=None, conn=None, cur
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				databaseClose(conn_info)
 
 """ add the PvP flag role to a member """
 async def add_pvp_role(cmd = None):

@@ -29,7 +29,8 @@ class EwMarket:
 				# Get database handles if they weren't passed.
 				if(cursor == None):
 					if(conn == None):
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						our_conn = True
 
 					cursor = conn.cursor();
@@ -70,7 +71,7 @@ class EwMarket:
 				if(our_cursor):
 					cursor.close()
 				if(our_conn):
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 	""" Save market data object to the database. """
 	def persist(self, conn=None, cursor=None):
@@ -81,7 +82,8 @@ class EwMarket:
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -119,7 +121,7 @@ class EwMarket:
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 """ User model for database persistence """
 class EwUser:
@@ -178,7 +180,8 @@ class EwUser:
 				# Get database handles if they weren't passed.
 				if(cursor == None):
 					if(conn == None):
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						our_conn = True
 
 					cursor = conn.cursor();
@@ -271,7 +274,7 @@ class EwUser:
 				if(our_cursor):
 					cursor.close()
 				if(our_conn):
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 	""" Save this user object to the database. """
 	def persist(self, conn=None, cursor=None):
@@ -282,7 +285,8 @@ class EwUser:
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor();
@@ -366,4 +370,4 @@ class EwUser:
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				ewutils.databaseClose(conn_info)

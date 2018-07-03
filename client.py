@@ -189,14 +189,15 @@ async def on_ready():
 			for server in client.servers:
 				# Load market data from the database.
 				try:
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					cursor = conn.cursor()
 
 					market_data = EwMarket(id_server=server.id, conn=conn, cursor=cursor)
 					credit_totals = ewutils.getRecentTotalSlimeCoins(id_server=server.id, conn=conn, cursor=cursor)
 				finally:
 					cursor.close()
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 				if market_data.time_lasttick + ewcfg.update_market < time_now:
 					market_data.time_lasttick = time_now
@@ -297,7 +298,8 @@ async def on_ready():
 						ewutils.logMsg("The weather changed. It's now {}.".format(market_data.weather))
 
 					try:
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						cursor = conn.cursor()
 
 						# Persist new data.
@@ -316,7 +318,7 @@ async def on_ready():
 						conn.commit()
 					finally:
 						cursor.close()
-						conn.close()
+						ewutils.databaseClose(conn_info)
 
 					# Give some indication of how the market is doing to the users.
 					response = "..."

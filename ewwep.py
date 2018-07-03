@@ -147,7 +147,8 @@ async def attack(cmd):
 
 		# Get shooting player's info
 		try:
-			conn = ewutils.databaseConnect()
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
 			if user_data.slimelevel <= 0:
@@ -164,7 +165,7 @@ async def attack(cmd):
 			conn.commit()
 		finally:
 			cursor.close()
-			conn.close()
+			ewutils.databaseClose(conn_info)
 
 		miss = False
 		crit = False
@@ -331,7 +332,8 @@ async def attack(cmd):
 
 			# Persist every users' data.
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data.persist(conn = conn, cursor = cursor)
@@ -345,7 +347,7 @@ async def attack(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
@@ -517,7 +519,8 @@ async def attack(cmd):
 
 			# Persist every users' data.
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data.persist(conn = conn, cursor = cursor)
@@ -531,7 +534,7 @@ async def attack(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			# Assign the corpse role to the newly dead player.
 			if was_killed:
@@ -556,7 +559,8 @@ async def equip(cmd):
 		if weapon != None:
 			response = weapon.str_equip
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
@@ -576,7 +580,7 @@ async def equip(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 		else:
 			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
 
@@ -654,7 +658,8 @@ async def spar(cmd):
 			roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
 			try:
-				conn = ewutils.databaseConnect()
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
 				# Get killing player's info.
@@ -666,7 +671,7 @@ async def spar(cmd):
 				conn.commit()
 			finally:
 				cursor.close()
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 			user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 			user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
@@ -752,7 +757,8 @@ async def spar(cmd):
 					weaker_player.time_lastspar = time_now
 
 					try:
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						cursor = conn.cursor()
 
 						user_data.persist(conn = conn, cursor = cursor)
@@ -761,7 +767,7 @@ async def spar(cmd):
 						conn.commit()
 					finally:
 						cursor.close()
-						conn.close()
+						ewutils.databaseClose(conn_info)
 
 					# Add the PvP flag role.
 					await ewutils.add_pvp_role(cmd = cmd)

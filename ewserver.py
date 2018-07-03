@@ -27,7 +27,8 @@ class EwServer:
 				# Get database handles if they weren't passed.
 				if(cursor == None):
 					if(conn == None):
-						conn = ewutils.databaseConnect()
+						conn_info = ewutils.databaseConnect()
+						conn = conn_info.get('conn')
 						our_conn = True
 
 					cursor = conn.cursor()
@@ -57,7 +58,7 @@ class EwServer:
 				if(our_cursor):
 					cursor.close()
 				if(our_conn):
-					conn.close()
+					ewutils.databaseClose(conn_info)
 
 	""" Save server data object to the database. """
 	def persist(self, conn=None, cursor=None):
@@ -68,7 +69,8 @@ class EwServer:
 			# Get database handles if they weren't passed.
 			if(cursor == None):
 				if(conn == None):
-					conn = ewutils.databaseConnect()
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
 					our_conn = True
 
 				cursor = conn.cursor()
@@ -92,13 +94,14 @@ class EwServer:
 			if(our_cursor):
 				cursor.close()
 			if(our_conn):
-				conn.close()
+				ewutils.databaseClose(conn_info)
 
 
 """ update the player record with the current data. """
 def server_update(server = None):
 	try:
-		conn = ewutils.databaseConnect()
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
 		dbserver = EwServer(
@@ -119,4 +122,4 @@ def server_update(server = None):
 		conn.commit()
 	finally:
 		cursor.close()
-		conn.close()
+		ewutils.databaseClose(conn_info)
