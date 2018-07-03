@@ -219,119 +219,115 @@ async def attack(cmd):
 		elif (time_now - shootee_data.time_lastrevive) < ewcfg.invuln_onrevive:
 			# User is currently invulnerable.
 			response = "{} has died too recently and is immune.".format(member.display_name)
-		
+
 		elif ewcfg.role_corpse in roles_map_target and ewcfg.role_corpse_pvp not in roles_map_target:
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
-		
+
 		elif ewcfg.role_corpse_pvp in roles_map_target and user_data.ghostbust == False:
 			# Target is a ghost, user can't attack ghosts:
 			response = "{} is already dead.".format(member.display_name)
-		
+
 		elif ewcfg.role_corpse_pvp in roles_map_target and user_data.ghostbust == True:
 			# Attack a ghostly target
 			role_corpse = cmd.roles_map[ewcfg.role_corpse]
 
 			was_busted = False
-			was_shot = True
 
-			if was_shot:
-				#stamina drain
-				user_data.stamina += ewcfg.stamina_pershot
+			#stamina drain
+			user_data.stamina += ewcfg.stamina_pershot
+			
+			# Weaponized flavor text.
+			weapon = ewcfg.weapon_map.get(user_data.weapon)
+			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+
+			# Weapon-specific adjustments
+			if weapon != None and weapon.fn_effect != None:
+				# Build effect container
+				ctn = EwEffectContainer(
+					miss = miss,
+					crit = crit,
+					slimes_damage = slimes_damage,
+					slimes_spent = slimes_spent,
+					user_data = user_data,
+					shootee_data = shootee_data
+				)
+
+				# Make adjustments
+				weapon.fn_effect(ctn)
+
+				# Apply effects for non-reference values
+				miss = ctn.miss
+				crit = ctn.crit
+				slimes_damage = ctn.slimes_damage
+				slimes_spent = ctn.slimes_spent
+				strikes = ctn.strikes
+				# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
+
+				if miss:
+					slimes_damage = 0
+
+			# Remove !revive invulnerability.
+			user_data.time_lastrevive = 0
+			user_data.slimes -= slimes_spent
+
+			# Remove repeat killing protection if.
+			if user_data.id_killer == shootee_data.id_user:
+				user_data.id_killer = ""
+
+			# Don't allow attacking to cause you to go negative.
+			if user_data.slimes < 0:
+				user_data.slimes = 0
+
+			if slimes_damage >= -shootee_data.slimes:
+				was_busted = True
+
+			if was_busted:
+				# Move around slime as a result of the shot.
+				market_data = EwMarket(id_server = cmd.message.server.id)
+				coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
+				user_data.slimecredit += coinbounty
+
+				# Player was busted.
+				shootee_data.slimes = 0
+				shootee_data.slimepoudrins = 0
+				shootee_data.bounty = 0
+
+				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 				
-				# Weaponized flavor text.
-				weapon = ewcfg.weapon_map.get(user_data.weapon)
-				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
+				if coinbounty > 0:
+					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbonty), message.author.display_name)
 
-				# Weapon-specific adjustments
-				if weapon != None and weapon.fn_effect != None:
-					# Build effect container
-					ctn = EwEffectContainer(
-						miss = miss,
-						crit = crit,
-						slimes_damage = slimes_damage,
-						slimes_spent = slimes_spent,
-						user_data = user_data,
-						shootee_data = shootee_data
-					)
+				#adjust busts
+				user_data.busts += 1
 
-					# Make adjustments
-					weapon.fn_effect(ctn)
+			else:
+				# A non-lethal blow!
+				shootee_data.slimes += slimes_damage
 
-					# Apply effects for non-reference values
-					miss = ctn.miss
-					crit = ctn.crit
-					slimes_damage = ctn.slimes_damage
-					slimes_spent = ctn.slimes_spent
-					strikes = ctn.strikes
-					# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
-
+				if weapon != None:
 					if miss:
-						slimes_damage = 0
-
-				# Remove !revive invulnerability.
-				user_data.time_lastrevive = 0
-				user_data.slimes -= slimes_spent
-
-				# Remove repeat killing protection if.
-				if user_data.id_killer == shootee_data.id_user:
-					user_data.id_killer = ""
-
-				# Don't allow attacking to cause you to go negative.
-				if user_data.slimes < 0:
-					user_data.slimes = 0
-
-				if slimes_damage >= -shootee_data.slimes:
-					was_busted = True
-
-				if was_busted:
-					# Move around slime as a result of the shot.
-					market_data = EwMarket(id_server = cmd.message.server.id)
-					coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
-					user_data.slimecredit += coinbounty
-
-					# Player was busted.
-					shootee_data.slimes = 0
-					shootee_data.slimepoudrins = 0
-					shootee_data.bounty = 0
-
-					response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
-					
-					if coinbounty > 0:
-						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbonty), message.author.display_name)
-
-					#adjust busts
-					user_data.busts += 1
-
-				else:
-					# A non-lethal blow!
-					shootee_data.slimes += slimes_damage
-
-					if weapon != None:
-						if miss:
-							response = "{}".format(weapon.str_miss.format(
+						response = "{}".format(weapon.str_miss.format(
+							name_player = cmd.message.author.display_name,
+							name_target = member.display_name + "\'s ghost"
+						))
+					else:
+						response = weapon.str_damage.format(
+							name_player = cmd.message.author.display_name,
+							name_target = member.display_name + "\'s ghost",
+							hitzone = randombodypart,
+							strikes = strikes
+						)
+						if crit:
+							response += " {}".format(weapon.str_crit.format(
 								name_player = cmd.message.author.display_name,
 								name_target = member.display_name + "\'s ghost"
 							))
-						else:
-							response = weapon.str_damage.format(
-								name_player = cmd.message.author.display_name,
-								name_target = member.display_name + "\'s ghost",
-								hitzone = randombodypart,
-								strikes = strikes
-							)
-							if crit:
-								response += " {}".format(weapon.str_crit.format(
-									name_player = cmd.message.author.display_name,
-									name_target = member.display_name + "\'s ghost"
-								))
+				else:
+					if miss:
+						response = "{}\'s ghost is unharmed.".format(member.display_name)
 					else:
-						if miss:
-							response = "{}\'s ghost is unharmed.".format(member.display_name)
-						else:
-							response = "{}\'s ghost is hit!!".format(member.display_name)
-			else:
-				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+						response = "{}\'s ghost is hit!!".format(member.display_name)
 
 			# Persist every users' data.
 			try:
@@ -350,10 +346,6 @@ async def attack(cmd):
 			finally:
 				cursor.close()
 				conn.close()
-
-			# Assign the corpse role to the newly dead player.
-			if was_killed:
-				await cmd.client.replace_roles(member, role_corpse)
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
