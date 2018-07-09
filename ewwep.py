@@ -305,6 +305,7 @@ async def attack(cmd):
 			else:
 				# A non-lethal blow!
 				shootee_data.slimes += slimes_damage
+				damage = str(slimes_damage)
 
 				if weapon != None:
 					if miss:
@@ -324,11 +325,18 @@ async def attack(cmd):
 								name_player = cmd.message.author.display_name,
 								name_target = member.display_name + "\'s ghost"
 							))
+						response += " {target_name} loses {damage} antislime!".format(
+							target_name = (member.display_name + "\'s ghost"),
+							damage = damage
+						)
 				else:
 					if miss:
 						response = "{}\'s ghost is unharmed.".format(member.display_name)
 					else:
-						response = "{}\'s ghost is hit!!".format(member.display_name)
+						response = "{target_name} is hit!! {target_name} loses {damage} antislime!".format(
+							target_name = (member.display_name + "\'s ghost"),
+							damage = damage
+						)
 
 			# Persist every users' data.
 			try:
@@ -476,6 +484,7 @@ async def attack(cmd):
 					# A non-lethal blow!
 					shootee_data.slimes -= slimes_damage
 					shootee_data.totaldamage += slimes_damage
+					damage = str(slimes_damage)
 
 					if weapon != None:
 						if miss:
@@ -495,11 +504,18 @@ async def attack(cmd):
 									name_player = cmd.message.author.display_name,
 									name_target = member.display_name
 								))
+							response += " {target_name} loses {damage} slime!".format(
+								target_name = member.display_name,
+								damage = damage
+							)
 					else:
 						if miss:
 							response = "{} is unharmed.".format(member.display_name)
 						else:
-							response = "{} is hit!!".format(member.display_name)
+							response = "{target_name} is hit!! {target_name} loses {damage} slime!".format(
+								target_name = member.display_name,
+								damage = damage
+							)
 			else:
 				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
 
