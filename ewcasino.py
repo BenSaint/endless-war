@@ -19,6 +19,126 @@ last_crapsed_times = {}
 # machine was used.
 last_slotsed_times = {}
 
+async def roulette(cmd):
+	resp = await ewcmd.start(cmd = cmd)
+	time_now = int(time.time())
+
+	global last_rouletted_times
+	last_used = last_rouletted_times.get(cmd.message.author.id)
+
+	if last_used == None:
+		last_used = 0
+
+	if last_used + 2 > time_now:
+		response = "**ENOUGH**"
+	elif cmd.message.channel.name != ewcfg.channel_casino:
+		# Only allowed in the slime casino.
+		response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+	else:
+		last_rouletted_times[cmd.message.author.id] = time_now
+		value = None	
+	
+		if cmd.tokens_count > 1:
+			value = ewutils.getIntToken(tokens=cmd.tokens, allow_all=True)
+			
+		all_bets = ["0", "00", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "1strow", "2ndrow", "3rdrow", "1st12", "2nd12", "3rd12", "1to18", "19to36", "even", "odd", "pink", "purple"]
+
+		if value != None:
+			try:
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
+
+				user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
+				market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
+			finally:
+				cursor.close()
+				ewutils.databaseClose(conn_info)
+
+			if ewcmd.is_casino_open(market_data.clock) == False:
+				response = ewcfg.str_casino_closed
+			elif value > user_data.slimecredit:
+				response = "You don't have that much SlimeCoin to bet with."	
+			elif bet not in all_bets:
+				response = "The dealer didn't understand your wager. Use !help to see a guide to the casino."
+			else:
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "https://i.imgur.com/zHBjvDy.gif"))
+				await asyncio.sleep(8)
+				
+				roll = str(random.randint(1,38))
+				if roll == "37"
+					roll = "0"
+				if roll == "38"
+					roll = "00"
+				
+				straight = ["0", "00", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
+				odd = ["1", "3", "5", "7", "9", "11", "13", "15", "17", "19", "21", "23","25","27","29","31","33", "35"]
+				even = ["2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34", "36"]
+				firstrow =  ["1", "4", "7", "10", "13", "16", "19", "22", "25", "28", "31", "34"]
+				secondrow = ["2", "5", "8", "11", "14", "17", "20", "23", "26", "29", "32", "35"]
+				thirdrow =  ["3", "6", "9", "12", "15", "18", "21", "24", "27", "30", "33", "36"]
+				firsttwelve = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+				secondtwelve = ["13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"]
+				thirdtwelve = ["25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
+				onetoeighteen = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18"]
+				nineteentothirtysix = ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
+				pink = ["2", "4", "6", "8", "10", "11", "13", "15", "17", "20", "22", "24", "26", "28", "29", "31", "33", "35"]
+				purple = ["1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "23","25","27","30","32","34", "36"]				
+				
+				if roll == bet:
+					winnings = (value * 35)
+				elif bet = "1strow" and roll in firstrow:
+					winnings = (value * 2)
+				elif bet = "2ndrow" and roll in secondrow:
+					winnings = (value * 2)
+				elif bet = "3rdrow" and roll in thirdrow:
+					winnings = (value * 2)
+				elif bet = "1st12" and roll in firsttwelve:
+					winnings = (value * 2)
+				elif bet = "2nd12" and roll in secondtwelve:
+					winnings = (value * 2)
+				elif bet = "3rd12" and roll in thirdtwelve:
+					winnings = (value * 2)
+				elif bet = "1to18" and roll in onetoeighteen:
+					winnings = value
+				elif bet = "19to36" and roll in nineteentothirtysix:
+					winnings = value
+				elif bet = "odd" and roll in odd:
+					winnings = value
+				elif bet in "even" and roll in even:
+					winnings = value
+				elif bet in "pink" and roll in pink:
+					winnings = value
+				elif bet in "purple" and roll in purple:
+					winnings = value
+				else:
+					winnings = -value
+					
+				user_data.slimecredit += winnings				
+
+				response = "The ball landed on {}!".format(roll)				
+				if winnings > 0:
+					esponse += " You won {} SlimeCoin!".format(winnings)
+				else:
+					response += " You lost your bet..."
+
+				try:
+					conn_info = ewutils.databaseConnect()
+					conn = conn_info.get('conn')
+					cursor = conn.cursor()
+
+					user_data.persist(conn=conn, cursor=cursor)
+					market_data.persist(conn=conn, cursor=cursor)
+
+					conn.commit()
+				finally:
+					cursor.close()
+					ewutils.databaseClose(conn_info)
+		else:
+			response = "Specify how much SlimeCoin you will wager."
+
+	# Send the response to the player.
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))	
 
 async def pachinko(cmd):
 	resp = await ewcmd.start(cmd = cmd)
