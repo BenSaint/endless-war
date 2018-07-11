@@ -188,7 +188,7 @@ def getRecentTotalSlimeCoins(id_server=None, count=2, conn=None, cursor=None):
 			cursor.execute("SELECT {} FROM stats WHERE {} = %s ORDER BY {} DESC LIMIT %s".format(
 				ewcfg.col_total_slimecredit,
 				ewcfg.col_id_server,
-				ewcfg.col_timestamp,
+				ewcfg.col_timestamp
 			), (
 				id_server,
 				(count if (count > 0) else 2)
