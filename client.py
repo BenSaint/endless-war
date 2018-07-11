@@ -43,6 +43,120 @@ last_helped_times = {}
 # Map of server ID to a map of active users on that server.
 active_users_map = {}
 
+# Map of all command words in the game to their implementing function.
+cmd_map = {
+	# Attack another player
+	ewcfg.cmd_kill: ewwep.attack,
+	ewcfg.cmd_shoot: ewwep.attack,
+
+	# Choose your weapon
+	ewcfg.cmd_equip: ewwep.equip,
+
+	# Kill yourself
+	ewcfg.cmd_suicide: ewwep.suicide,
+
+	# Spar with an ally
+	ewcfg.cmd_spar: ewwep.spar,
+
+	# Name your current weapon.
+	ewcfg.cmd_annoint: ewwep.annoint,
+
+
+	# move from juvenile to one of the armies (rowdys or killers)
+	ewcfg.cmd_enlist: ewjuviecmd.enlist,
+
+	# gives slime to the miner (message.author)
+	ewcfg.cmd_mine: ewjuviecmd.mine,
+
+	# Show the current slime score of a player.
+	ewcfg.cmd_score: ewcmd.score,
+	ewcfg.cmd_score_alt1: ewcmd.score,
+
+	# Show a player's combat data.
+	ewcfg.cmd_data: ewcmd.data,
+
+	#check what time it is, and the weather
+	ewcfg.cmd_time: ewcmd.weather,
+	ewcfg.cmd_clock: ewcmd.weather,
+	ewcfg.cmd_weather: ewcmd.weather,
+
+
+	# Show the total of negative slime in the world.
+	ewcfg.cmd_negaslime: ewspooky.negaslime,
+
+	# revive yourself as a juvenile after having been killed.
+	ewcfg.cmd_revive: ewspooky.revive,
+
+	# Ghosts can haunt enlisted players to reduce their slime score.
+	ewcfg.cmd_haunt: ewspooky.haunt,
+
+
+	# Play slime pachinko!
+	ewcfg.cmd_slimepachinko: ewcasino.pachinko,
+
+	# Toss the dice at slime craps!
+	ewcfg.cmd_slimecraps: ewcasino.craps,
+
+	# Pull the lever on a slot machine!
+	ewcfg.cmd_slimeslots: ewcasino.slots,
+
+
+	# See what's for sale in the Food Court.
+	ewcfg.cmd_menu: ewfood.menu,
+
+	# Order refreshing food and drinks!
+	ewcfg.cmd_order: ewfood.order,
+
+	# Transfer slime between players. Shares a cooldown with investments.
+	ewcfg.cmd_transfer: ewmarket.xfer,
+	ewcfg.cmd_transfer_alt1: ewmarket.xfer,
+
+	# Invest in the slime market!
+	ewcfg.cmd_invest: ewmarket.invest,
+
+	# Withdraw your investments!
+	ewcfg.cmd_withdraw: ewmarket.withdraw,
+
+	# Show the current slime market exchange rate (slime per credit).
+	ewcfg.cmd_exchangerate: ewmarket.rate,
+	ewcfg.cmd_exchangerate_alt1: ewmarket.rate,
+
+	# Show the player's slime credit.
+	ewcfg.cmd_slimecredit: ewmarket.slimecoin,
+	ewcfg.cmd_slimecredit_alt1: ewmarket.slimecoin,
+
+	# faction leader consumes the mentioned players of their own faction to absorb their slime count
+	# kills the mentioned players
+	ewcfg.cmd_devour: ewkingpin.devour,
+
+	# rowdy fucker and cop killer (leaders) can give slimes to anybody
+	ewcfg.cmd_giveslime: ewkingpin.giveslime,
+	ewcfg.cmd_giveslime_alt1: ewkingpin.giveslime,
+
+	# Remove a megaslime (1 mil slime) from a general.
+	ewcfg.cmd_deadmega: ewkingpin.deadmega,
+
+
+	# awoooooo
+	ewcfg.cmd_howl: ewcmd.cmd_howl,
+	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
+
+
+	# show player inventory
+	ewcfg.cmd_inventory: ewitem.inventory_print,
+	ewcfg.cmd_inventory_alt1: ewitem.inventory_print,
+	ewcfg.cmd_inventory_alt2: ewitem.inventory_print,
+	ewcfg.cmd_inventory_alt3: ewitem.inventory_print,
+
+
+	# Misc bullshit
+	ewcfg.cmd_harvest: ewcmd.harvest,
+	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
+	ewcfg.cmd_help: ewcmd.help,
+	ewcfg.cmd_help_alt1: ewcmd.help,
+	ewcfg.cmd_help_alt2: ewcmd.help
+}
+
 debug = False
 while sys.argv:
 	if sys.argv[0].lower() == '--debug':
@@ -338,118 +452,13 @@ async def on_message(message):
 
 			return
 
-		# process command words
-		if cmd == ewcfg.cmd_kill or cmd == ewcfg.cmd_shoot:
-			return await ewwep.attack(cmd_obj)
+		# Check the main command map for the requested command.
+		global cmd_map
+		cmd_fn = cmd_map.get(cmd)
 
-		# Choose your weapon
-		elif cmd == ewcfg.cmd_equip:
-			return await ewwep.equip(cmd_obj)
-
-		# Kill yourself to return slime to your general.
-		elif cmd == ewcfg.cmd_suicide:
-			return await ewwep.suicide(cmd_obj)
-
-		# Spar with an ally
-		elif cmd == ewcfg.cmd_spar:
-			return await ewwep.spar(cmd_obj)
-
-		# Name your current weapon.
-		elif cmd == ewcfg.cmd_annoint:
-			return await ewwep.annoint(cmd_obj)
-
-
-		# move from juvenile to one of the armies (rowdys or killers)
-		elif cmd == ewcfg.cmd_enlist:
-			return await ewjuviecmd.enlist(cmd_obj)
-
-		# gives slime to the miner (message.author)
-		elif cmd == ewcfg.cmd_mine:
-			return await ewjuviecmd.mine(cmd_obj)
-
-
-		# Show the current slime score of a player.
-		elif cmd == ewcfg.cmd_score or cmd == ewcfg.cmd_score_alt1:
-			return await ewcmd.score(cmd_obj)
-
-		# Show a player's combat data.
-		elif cmd == ewcfg.cmd_data:
-			return await ewcmd.data(cmd_obj)
-			
-		#check what time it is, and the weather
-		elif cmd == ewcfg.cmd_time or cmd == ewcfg.cmd_clock or cmd == ewcfg.cmd_weather:
-			return await ewcmd.weather(cmd_obj)
-
-
-		# Show the total of negative slime in the world.
-		elif cmd == ewcfg.cmd_negaslime:
-			return await ewspooky.negaslime(cmd_obj)
-
-		# revive yourself as a juvenile after having been killed.
-		elif cmd == ewcfg.cmd_revive:
-			return await ewspooky.revive(cmd_obj)
-
-		# Ghosts can haunt enlisted players to reduce their slime score.
-		elif cmd == ewcfg.cmd_haunt:
-			return await ewspooky.haunt(cmd_obj)
-
-
-		# Play slime pachinko!
-		elif cmd == ewcfg.cmd_slimepachinko:
-			return await ewcasino.pachinko(cmd_obj)
-
-		# Toss the dice at slime craps!
-		elif cmd == ewcfg.cmd_slimecraps:
-			return await ewcasino.craps(cmd_obj)
-
-		# Pull the lever on a slot machine!
-		elif cmd == ewcfg.cmd_slimeslots:
-			return await ewcasino.slots(cmd_obj)
-
-
-		# See what's for sale in the Food Court.
-		elif cmd == ewcfg.cmd_menu:
-			return await ewfood.menu(cmd_obj)
-
-		# Order refreshing food and drinks!
-		elif cmd == ewcfg.cmd_order:
-			return await ewfood.order(cmd_obj)
-
-
-		# Transfer slime between players. Shares a cooldown with investments.
-		elif cmd == ewcfg.cmd_transfer or cmd == ewcfg.cmd_transfer_alt1:
-			return await ewmarket.xfer(cmd_obj)
-
-		# Invest in the slime market!
-		elif cmd == ewcfg.cmd_invest:
-			return await ewmarket.invest(cmd_obj)
-
-		# Withdraw your investments!
-		elif cmd == ewcfg.cmd_withdraw:
-			return await ewmarket.withdraw(cmd_obj)
-
-		# Show the current slime market exchange rate (slime per credit).
-		elif cmd == ewcfg.cmd_exchangerate or cmd == ewcfg.cmd_exchangerate_alt1:
-			return await ewmarket.rate(cmd_obj)
-
-		# Show the player's slime credit.
-		elif cmd == ewcfg.cmd_slimecredit or cmd == ewcfg.cmd_slimecredit_alt1:
-			return await ewmarket.slimecoin(cmd_obj)
-
-
-		# faction leader consumes the mentioned players of their own faction to absorb their slime count
-		# kills the mentioned players
-		elif cmd == ewcfg.cmd_devour:
-			return await ewkingpin.devour(cmd_obj)
-
-		# rowdy fucker and cop killer (leaders) can give slimes to anybody
-		elif cmd == ewcfg.cmd_giveslime or cmd == ewcfg.cmd_giveslime_alt1:
-			return await ewkingpin.giveslime(cmd_obj)
-
-		# Remove a megaslime (1 mil slime) from a general.
-		elif cmd == ewcfg.cmd_deadmega:
-			return await ewkingpin.deadmega(cmd_obj)
-
+		if cmd_fn != None:
+			# Execute found command
+			return await cmd_fn(cmd_obj)
 
 		# FIXME debug
 		# Test item creation
@@ -488,25 +497,9 @@ async def on_message(message):
 
 			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'ok'))
 
-		# Direct message the player their inventory.
-		elif ewitem.cmd_is_inventory(cmd):
-			return await ewitem.inventory_print(cmd_obj)
-
-		# !harvest is not a command
-		elif cmd == ewcfg.cmd_harvest:
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
-
 		# AWOOOOO
-		elif cmd == ewcfg.cmd_howl or cmd == ewcfg.cmd_howl_alt1 or re_awoo.match(cmd):
+		elif re_awoo.match(cmd):
 			return await ewcmd.cmd_howl(cmd_obj)
-
-		# advertise patch notes
-		elif cmd == ewcfg.cmd_patchnotes:
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
-
-		# advertise help services
-		elif cmd == ewcfg.cmd_help or cmd == ewcfg.cmd_help_alt1 or cmd == ewcfg.cmd_help_alt2:
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):

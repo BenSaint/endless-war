@@ -260,3 +260,23 @@ async def weather(cmd):
 	
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
+
+"""
+	Harvest is not and has never been a command.
+"""
+async def harvest(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+
+"""
+	advertise patch notes
+"""
+async def patchnotes(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
+
+"""
+	advertise help services
+"""
+async def help(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
+
