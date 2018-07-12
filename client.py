@@ -49,9 +49,6 @@ cmd_map = {
 	ewcfg.cmd_kill: ewwep.attack,
 	ewcfg.cmd_shoot: ewwep.attack,
 
-	# Choose your weapon
-	ewcfg.cmd_equip: ewwep.equip,
-
 	# Kill yourself
 	ewcfg.cmd_suicide: ewwep.suicide,
 
@@ -107,39 +104,14 @@ cmd_map = {
 	# Order refreshing food and drinks!
 	ewcfg.cmd_order: ewfood.order,
 
+
 	# Transfer slime between players. Shares a cooldown with investments.
 	ewcfg.cmd_transfer: ewmarket.xfer,
 	ewcfg.cmd_transfer_alt1: ewmarket.xfer,
 
-	# Invest in the slime market!
-	ewcfg.cmd_invest: ewmarket.invest,
-
-	# Withdraw your investments!
-	ewcfg.cmd_withdraw: ewmarket.withdraw,
-
-	# Show the current slime market exchange rate (slime per credit).
-	ewcfg.cmd_exchangerate: ewmarket.rate,
-	ewcfg.cmd_exchangerate_alt1: ewmarket.rate,
-
 	# Show the player's slime credit.
 	ewcfg.cmd_slimecredit: ewmarket.slimecoin,
 	ewcfg.cmd_slimecredit_alt1: ewmarket.slimecoin,
-
-	# faction leader consumes the mentioned players of their own faction to absorb their slime count
-	# kills the mentioned players
-	ewcfg.cmd_devour: ewkingpin.devour,
-
-	# rowdy fucker and cop killer (leaders) can give slimes to anybody
-	ewcfg.cmd_giveslime: ewkingpin.giveslime,
-	ewcfg.cmd_giveslime_alt1: ewkingpin.giveslime,
-
-	# Remove a megaslime (1 mil slime) from a general.
-	ewcfg.cmd_deadmega: ewkingpin.deadmega,
-
-
-	# awoooooo
-	ewcfg.cmd_howl: ewcmd.cmd_howl,
-	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 
 
 	# show player inventory
@@ -149,7 +121,13 @@ cmd_map = {
 	ewcfg.cmd_inventory_alt3: ewitem.inventory_print,
 
 
+	# Remove a megaslime (1 mil slime) from a general.
+	ewcfg.cmd_deadmega: ewkingpin.deadmega,
+
+
 	# Misc bullshit
+	ewcfg.cmd_howl: ewcmd.cmd_howl,
+	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_help: ewcmd.help,
@@ -462,7 +440,7 @@ async def on_message(message):
 
 		# FIXME debug
 		# Test item creation
-		elif cmd == '!create':
+		elif debug == True and cmd == '!create':
 			item_id = ewitem.item_create(
 				item_type = 'medal',
 				id_user = message.author.id,
@@ -484,7 +462,7 @@ async def on_message(message):
 
 		# FIXME debug
 		# Test item deletion
-		elif cmd == '!delete':
+		elif debug == True and cmd == '!delete':
 			items = ewitem.inventory(
 				id_user = message.author.id,
 				id_server = message.server.id

@@ -559,49 +559,6 @@ async def attack(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
-""" equip a weapon """
-async def equip(cmd):
-	resp = await ewcmd.start(cmd)
-	response = ""
-
-	if cmd.message.channel.name != ewcfg.channel_dojo:
-		response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
-	else:
-		value = None
-		if cmd.tokens_count > 1:
-			value = cmd.tokens[1]
-
-		weapon = ewcfg.weapon_map.get(value)
-		if weapon != None:
-			response = weapon.str_equip
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
-
-				user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
-				user_skills = ewutils.weaponskills_get(member = cmd.message.author, conn = conn, cursor = cursor)
-
-				user_data.weapon = weapon.id_weapon
-				weaponskillinfo = user_skills.get(weapon.id_weapon)
-				if weaponskillinfo == None:
-					user_data.weaponskill = 0
-					user_data.weaponname = ""
-				else:
-					user_data.weaponskill = weaponskillinfo.get('skill')
-					user_data.weaponname = weaponskillinfo.get('name')
-
-				user_data.persist(conn = conn, cursor = cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
-		else:
-			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
-
-	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 """ player kills themself """
 async def suicide(cmd):
