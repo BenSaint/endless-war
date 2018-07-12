@@ -3,6 +3,7 @@ import asyncio
 
 import ewcfg
 import ewutils
+import ewitem
 from ew import EwUser, EwMarket
 
 """ class to send general data about an interaction to a command """
@@ -63,26 +64,28 @@ def is_casino_open(time):
 
 """ show player's slime score """
 async def score(cmd):
-	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
+
+	poudrins = ewitem.inventory(
+		id_user = cmd.message.author.id,
+		id_server = cmd.message.server.id,
+		item_type_filter = ewcfg.it_slimepoudrin
+	)
+	poudrins_count = len(poudrins)
 
 	if cmd.mentions_count == 0:
 		user_data = EwUser(member = cmd.message.author)
 
 		# return my score
-		response = "You currently have {:,} slime.".format(user_data.slimes)
-		if user_data.slimepoudrins > 0:
-			response = "You currently have {:,} slime and {} slime poudrins.".format(user_data.slimes, user_data.slimepoudrins)
+		response = "You currently have {:,} slime{}.".format(user_data.slimes, (" and {} slime poudrin{}".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
 
 	else:
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)
 
 		# return somebody's score
-		response = "{} currently has {:,} slime.".format(member.display_name, user_data.slimes)
-		if user_data.slimepoudrins > 0:
-			response = "{} currently has {:,} slime and {} slime poudrins.".format(member.display_name, user_data.slimes, user_data.slimepoudrins)
+		response = "{} currently has {:,} slime{}.".format(member.display_name, user_data.slimes, (" and {} slime poudrin{}.".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
 
 	# Update the user's slime level.
 	if user_data != None:
@@ -98,7 +101,7 @@ async def score(cmd):
 		user_data.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ show player information and description """
 async def data(cmd):

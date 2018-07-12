@@ -340,10 +340,14 @@ def cmd_is_inventory(cmd):
 
 """
 	Get a list of items for the specified player.
+
+	Specify an item_type_filter to get only those items. Be careful: This is
+	inserted into SQL without validation/sanitation.
 """
 def inventory(
 	id_user = "",
 	id_server = None,
+	item_type_filter = None,
 	conn = None,
 	cursor = None
 ):
@@ -369,8 +373,12 @@ def inventory(
 			cursor = cursor
 		)
 
+		sql = "SELECT {}, {}, {}, {}, {} FROM items WHERE {} = %s AND {} = %s"
+		if item_type_filter != None:
+			sql += " AND {} = '{}'".format(ewcfg.col_item_type, item_type_filter)
+
 		if player.id_server != None:
-			cursor.execute("SELECT {}, {}, {}, {}, {} FROM items WHERE {} = %s AND {} = %s".format(
+			cursor.execute(sql.format(
 				ewcfg.col_id_item,
 				ewcfg.col_item_type,
 				ewcfg.col_soulbound,

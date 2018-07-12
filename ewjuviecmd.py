@@ -7,6 +7,7 @@ import random
 import ewcfg
 import ewutils
 import ewcmd
+import ewitem
 from ew import EwUser, EwMarket
 
 # Map of user ID to a map of recent miss-mining time to count. If the count
@@ -75,9 +76,9 @@ async def mine(cmd):
 
 	if ewcfg.role_corpse in roles_map_user:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
-	if ewcfg.role_rowdyfuckers and (market_data.clock < 8 or market_data.clock > 17):
+	if ewcfg.role_rowdyfuckers in roles_map_user and (market_data.clock < 8 or market_data.clock > 17):
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Rowdies only mine in the daytime. Wait for full daylight at 8am.".format(ewcfg.cmd_revive)))
-	if ewcfg.role_copkillers and (market_data.clock < 20 and market_data.clock > 5):
+	if ewcfg.role_copkillers in roles_map_user and (market_data.clock < 20 and market_data.clock > 5):
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Killers only mine under cover of darkness. Wait for nightfall at 8pm.".format(ewcfg.cmd_revive)))
 
 	else:
@@ -117,14 +118,25 @@ async def mine(cmd):
 				# Determine if a poudrin is found.
 				poudrin = False
 				poudrinamount = 0
-				poudrinchance = (random.randrange(3600) + 1)
-				if poudrinchance == 3600:
+				poudrinchance = random.randrange(3600)
+				if poudrinchance == 0:
 					poudrin = True
 					poudrinamount = (random.randrange(2) + 1)
 					
 				# Add mined slime to the user.
 				user_data.slimes += (10 * (2 ** user_data.slimelevel))
-				user_data.slimepoudrins += poudrinamount
+
+				# Create and give slime poudrins
+				for pdx in range(poudrinamount):
+					item_id = ewitem.item_create(
+						item_type = ewcfg.it_slimepoudrin,
+						id_user = cmd.message.author.id,
+						id_server = cmd.message.server.id,
+					)
+					ewutils.logMsg('Created poudrin (item {}) for user (id {})'.format(
+						item_id,
+						cmd.message.author.id
+					))
 
 				# Adjust slime level.
 				was_levelup = False

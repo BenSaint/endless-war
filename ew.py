@@ -131,7 +131,6 @@ class EwUser:
 
 	slimes = 0
 	slimecredit = 0
-	slimepoudrins = 0
 	slimelevel = 1
 	stamina = 0
 	totaldamage = 0
@@ -188,7 +187,7 @@ class EwUser:
 					our_cursor = True
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_stamina,
@@ -205,7 +204,6 @@ class EwUser:
 					ewcfg.col_time_expirpvp,
 					ewcfg.col_time_lasthaunt,
 					ewcfg.col_time_lastinvest,
-					ewcfg.col_slimepoudrins,
 					ewcfg.col_weaponname,
 					ewcfg.col_ghostbust,
 					ewcfg.col_inebriation,
@@ -234,11 +232,10 @@ class EwUser:
 					self.time_expirpvp = result[13]
 					self.time_lasthaunt = result[14]
 					self.time_lastinvest = result[15]
-					self.slimepoudrins = result[16]
-					self.weaponname = result[17]
-					self.ghostbust = (result[18] == 1)
-					self.inebriation = result[19]
-					self.faction = result[20]
+					self.weaponname = result[16]
+					self.ghostbust = (result[17] == 1)
+					self.inebriation = result[18]
+					self.faction = result[19]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -295,7 +292,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -315,7 +312,6 @@ class EwUser:
 				ewcfg.col_time_expirpvp,
 				ewcfg.col_time_lasthaunt,
 				ewcfg.col_time_lastinvest,
-				ewcfg.col_slimepoudrins,
 				ewcfg.col_weaponname,
 				ewcfg.col_ghostbust,
 				ewcfg.col_inebriation,
@@ -340,7 +336,6 @@ class EwUser:
 				self.time_expirpvp,
 				self.time_lasthaunt,
 				self.time_lastinvest,
-				self.slimepoudrins,
 				self.weaponname,
 				(1 if self.ghostbust == True else 0),
 				self.inebriation,

@@ -4,6 +4,7 @@ import random
 import ewcmd
 import ewcfg
 import ewutils
+import ewitem
 from ew import EwUser, EwMarket
 
 """ A weapon object which adds flavor text to kill/shoot. """
@@ -291,7 +292,6 @@ async def attack(cmd):
 
 				# Player was busted.
 				shootee_data.slimes = 0
-				shootee_data.slimepoudrins = 0
 				shootee_data.bounty = 0
 
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
@@ -429,20 +429,17 @@ async def attack(cmd):
 					if shootee_data.slimes > 0:
 						if was_juvenile:
 							user_data.slimes += (slimes_dropped + shootee_data.slimes)
-							user_data.slimepoudrins += shootee_data.slimepoudrins
 						else:
 							market_data = EwMarket(id_server = cmd.message.server.id)
 							coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
 							user_data.slimecredit += coinbounty
 							user_data.slimes += int(slimes_dropped / 2)
-							user_data.slimepoudrins += shootee_data.slimepoudrins
 							boss_slimes += int(slimes_dropped / 2)
 
 					# Player was killed.
 					shootee_data.totaldamage += shootee_data.slimes
 					shootee_data.slimes = -int(shootee_data.totaldamage / 10)
 					shootee_data.slimelevel = len(str(int(user_data.slimes))) - 1
-					shootee_data.slimepoudrins = 0
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.bounty = 0
 
@@ -598,7 +595,6 @@ async def suicide(cmd):
 			shootee_data.totaldamage += shootee_data.slimes
 			shootee_data.slimes = -int(shootee_data.totaldamage / 10)
 			user_data.slimes = 0
-			user_data.slimepoudrins = 0
 			user_data.persist()
 
 			response = '{} has willingly returned to the slime. {}'.format(cmd.message.author.display_name, ewcfg.emote_slimeskull)
@@ -795,7 +791,14 @@ async def annoint(cmd):
 		else:
 			user_data = EwUser(member = cmd.message.author)
 
-			if user_data.slimepoudrins < 1:
+			poudrins = ewitem.inventory(
+				id_user = cmd.message.author.id,
+				id_server = cmd.message.server.id,
+				item_type_filter = ewcfg.it_slimepoudrin
+			)
+			poudrins_count = len(poudrins)
+
+			if poudrins_count < 1:
 				response = "You need a slime poudrin."
 			elif user_data.slimes < 100:
 				response = "You need more slime."
@@ -804,11 +807,13 @@ async def annoint(cmd):
 			else:
 				# Perform the ceremony.
 				user_data.slimes -= 100
-				user_data.slimepoudrins -= 1
 				user_data.weaponname = annoint_name
 
 				if user_data.weaponskill < 10:
 					user_data.weaponskill += 1
+
+				# delete a slime poudrin from the player's inventory
+				ewitem.item_delete(id_item = poudrins[0].get('id_item'))
 
 				user_data.persist()
 
