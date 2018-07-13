@@ -25,7 +25,6 @@ CREATE TABLE users (
 	kills int NOT NULL DEFAULT '0',
 	weaponskill int NOT NULL DEFAULT '0',
 	bounty bigint NOT NULL DEFAULT '0',
-	slimepoudrins bigint NOT NULL DEFAULT '0',
 	weaponname varchar(32) NOT NULL DEFAULT '',
 	ghostbust int NOT NULL DEFAULT '0',
 	inebriation int NOT NULL DEFAULT '0',

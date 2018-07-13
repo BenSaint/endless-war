@@ -6,7 +6,7 @@ from ewfood import EwFood
 from ewitem import EwItemDef
 
 # Global configuration options.
-version = "v1.27"
+version = "v1.99"
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -205,7 +205,6 @@ col_time_expirpvp = 'time_expirpvp'
 col_time_lasthaunt = 'time_lasthaunt'
 col_time_lastinvest = 'time_lastinvest'
 col_bounty = 'bounty'
-col_slimepoudrins = 'slimepoudrins'
 col_weaponname = 'weaponname'
 col_name = 'name'
 col_inebriation = 'inebriation'
