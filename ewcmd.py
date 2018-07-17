@@ -113,28 +113,19 @@ async def data(cmd):
 	if cmd.mentions_count == 0:
 		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
-		try:
-			conn_info = ewutils.databaseConnect()
-			conn = conn_info.get('conn')
-			cursor = conn.cursor()
+		user_data = EwUser(member = cmd.message.author)
+		market_data = EwMarket(id_server = cmd.message.server.id)
 
-			user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
-			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
+		new_level = 0
 
-			new_level = 0
+		# Ghosts don't have a slime level.
+		if ewcfg.role_corpse not in roles_map_user:
+			new_level = len(str(int(user_data.slimes)))
 
-			# Ghosts don't have a slime level.
-			if ewcfg.role_corpse not in roles_map_user:
-				new_level = len(str(int(user_data.slimes)))
-
-			# Update the user's slime level.
-			if new_level > user_data.slimelevel:
-				user_data.slimelevel = new_level
-				user_data.persist(conn = conn, cursor = cursor)
-				conn.commit()
-		finally:
-			cursor.close()
-			ewutils.databaseClose(conn_info)
+		# Update the user's slime level.
+		if new_level > user_data.slimelevel:
+			user_data.slimelevel = new_level
+			user_data.persist()
 
 		# return my data
 		if ewcfg.role_corpse in roles_map_user:
@@ -160,31 +151,22 @@ async def data(cmd):
 		if coinbounty != 0:
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
-		if user_data.stamina > 0:
-			response += " You are {}% hungry.".format(user_data.stamina * 100.0 / ewcfg.stamina_max)
+		if user_data.hunger > 0:
+			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewcfg.hunger_max)
 	else:
 		member = cmd.mentions[0]
 		roles_map_user = ewutils.getRoleMap(member.roles)
 
-		try:
-			conn_info = ewutils.databaseConnect()
-			conn = conn_info.get('conn')
-			cursor = conn.cursor()
+		user_data = EwUser(member = member)
+		market_data = EwMarket(id_server = cmd.message.server.id)
 
-			user_data = EwUser(member = member, conn = conn, cursor = cursor)
-			market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
+		new_level = 0
+		if ewcfg.role_corpse not in roles_map_target:
+			new_level = len(str(int(user_data.slimes)))
 
-			new_level = 0
-			if ewcfg.role_corpse not in roles_map_target:
-				new_level = len(str(int(user_data.slimes)))
-
-			if new_level > user_data.slimelevel:
-				user_data.slimelevel = new_level
-				user_data.persist(conn = conn, cursor = cursor)
-				conn.commit()
-		finally:
-			cursor.close()
-			ewutils.databaseClose(conn_info)
+		if new_level > user_data.slimelevel:
+			user_data.slimelevel = new_level
+			user_data.persist()
 
 		# return somebody's score
 		if ewcfg.role_corpse in roles_map_target:

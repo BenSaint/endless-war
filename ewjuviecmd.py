@@ -28,7 +28,7 @@ async def enlist(cmd):
 
 		user_data = EwUser(member = cmd.message.author)
 		user_slimes = user_data.slimes
-		user_is_pvp = (user_data.time_expirpvp > time_now)
+		user_is_pvp = ewutils.poi_is_pvp(user_data.poi)
 
 		if user_slimes < ewcfg.slimes_toenlist:
 			response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)
@@ -85,7 +85,7 @@ async def mine(cmd):
 		if(cmd.message.channel.name == ewcfg.channel_mines):
 			user_data = EwUser(member = cmd.message.author)
 
-			if user_data.stamina >= ewcfg.stamina_max:
+			if user_data.hunger >= ewcfg.hunger_max:
 				global last_mismined_times
 				mismined = last_mismined_times.get(cmd.message.author.id)
 
@@ -146,16 +146,11 @@ async def mine(cmd):
 					user_data.slimelevel = new_level
 
 				# Fatigue the miner.
-				user_data.stamina += ewcfg.stamina_permine
+				user_data.hunger += ewcfg.hunger_permine
 				if random.randrange(10) > 6:
-					user_data.stamina += ewcfg.stamina_permine
+					user_data.hunger += ewcfg.hunger_permine
 
-				# Flag the user for PvP
-				user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (int(time.time()) + ewcfg.time_pvp_mine))
 				user_data.persist()
-
-				# Add the PvP flag role.
-				await ewutils.add_pvp_role(cmd = cmd)
 
 				# Tell the player their slime level increased and/or a poudrin was found.
 				if was_levelup or poudrin:
@@ -197,20 +192,9 @@ async def mine(cmd):
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
 
-				try:
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					cursor = conn.cursor()
-
-					user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
-					user_data.slimes = 0
-					user_data.persist(conn = conn, cursor = cursor)
-
-					conn.commit()
-				finally:
-					cursor.close()
-					ewutils.databaseClose(conn_info)
-
+				user_data = EwUser(member = cmd.message.author)
+				user_data.slimes = 0
+				user_data.persist()
 
 				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 				await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_corpse])

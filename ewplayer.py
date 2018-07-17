@@ -19,27 +19,16 @@ class EwPlayer:
 	def __init__(
 		self,
 		id_user = None,
-		id_server = None,
-		conn = None,
-		cursor = None
+		id_server = None
 	):
 		if(id_user != None):
 			self.id_user = id_user
 			self.id_server = id_server
 
-			our_cursor = False
-			our_conn = False
-
 			try:
-				# Get database handles if they weren't passed.
-				if(cursor == None):
-					if(conn == None):
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						our_conn = True
-
-					cursor = conn.cursor()
-					our_cursor = True
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {}, {} FROM players WHERE id_user = %s".format(
@@ -67,26 +56,15 @@ class EwPlayer:
 					conn.commit()
 			finally:
 				# Clean up the database handles.
-				if(our_cursor):
-					cursor.close()
-				if(our_conn):
-					ewutils.databaseClose(conn_info)
+				cursor.close()
+				ewutils.databaseClose(conn_info)
 
 	""" Save user data object to the database. """
-	def persist(self, conn=None, cursor=None):
-		our_cursor = False
-		our_conn = False
-
+	def persist(self):
 		try:
-			# Get database handles if they weren't passed.
-			if(cursor == None):
-				if(conn == None):
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					our_conn = True
-
-				cursor = conn.cursor()
-				our_cursor = True
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor()
 
 			# Save the object.
 			cursor.execute("REPLACE INTO players({}, {}, {}, {}) VALUES(%s, %s, %s, %s)".format(
@@ -101,18 +79,15 @@ class EwPlayer:
 				self.display_name
 			))
 
-			if our_cursor:
-				conn.commit()
+			conn.commit()
 		finally:
 			# Clean up the database handles.
-			if(our_cursor):
-				cursor.close()
-			if(our_conn):
-				ewutils.databaseClose(conn_info)
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 
 """ update the player record with the current data. """
-def player_update(member=None, server=None):
+def player_update(member = None, server = None):
 	id_server_old = ""
 
 	try:
@@ -123,9 +98,7 @@ def player_update(member=None, server=None):
 		# Get existing player info (or create a record if it's a new player)
 		player = EwPlayer(
 			id_user = member.id,
-			id_server = server.id,
-			conn = conn,
-			cursor = cursor
+			id_server = server.id
 		)
 
 		# Update values with Member data.
@@ -135,10 +108,7 @@ def player_update(member=None, server=None):
 		player.display_name = member.display_name
 
 		# Save the updated data.
-		player.persist(
-			conn = conn,
-			cursor = cursor
-		)
+		player.persist()
 
 		conn.commit()
 	finally:

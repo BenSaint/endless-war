@@ -12,7 +12,7 @@ async def xfer(cmd):
 
 	if cmd.message.channel.name != ewcfg.channel_stockexchange:
 		# Only allowed in the stock exchange.
-		response = ewcfg.str_exchange_channelreq.format(currency="SlimeCoin", action="transfer")
+		response = ewcfg.str_exchange_channelreq.format(currency = "SlimeCoin", action = "transfer")
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 		return
 
@@ -32,17 +32,9 @@ async def xfer(cmd):
 		return
 
 
-	try:
-		conn_info = ewutils.databaseConnect()
-		conn = conn_info.get('conn')
-		cursor = conn.cursor()
-
-		target_data = EwUser(member=member, conn=conn, cursor=cursor)
-		user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
-		market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
-	finally:
-		cursor.close()
-		ewutils.databaseClose(conn_info)
+	target_data = EwUser(member = member)
+	user_data = EwUser(member = cmd.message.author)
+	market_data = EwMarket(id_server = cmd.message.author.server.id)
 
 	if market_data.clock > 19 or market_data.clock < 6:
 		response = ewcfg.str_exchange_closed
@@ -50,7 +42,7 @@ async def xfer(cmd):
 		# Parse the slime value to send.
 		value = None
 		if cmd.tokens_count > 1:
-			value = ewutils.getIntToken(tokens=cmd.tokens, allow_all=True)
+			value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
 
 		if value != None:
 			if value < 0:
@@ -66,7 +58,7 @@ async def xfer(cmd):
 				response = "You don't have enough SlimeCoin. ({:,}/{:,})".format(user_data.slimecredit, cost_total)
 			elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
 				# Limit frequency of investments.
-				response = ewcfg.str_exchange_busy.format(action="transfer")
+				response = ewcfg.str_exchange_busy.format(action = "transfer")
 			else:
 				# Do the transfer if the player can afford it.
 				target_data.slimecredit += value
@@ -74,22 +66,12 @@ async def xfer(cmd):
 				user_data.time_lastinvest = time_now
 
 				# Persist changes
-				response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime=value, target_name=member.display_name, fee=(cost_total - value))
+				response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime = value, target_name = member.display_name, fee = (cost_total - value))
 
-				try:
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					cursor = conn.cursor()
-
-					user_data.persist(conn=conn, cursor=cursor)
-					target_data.persist(conn=conn, cursor=cursor)
-
-					conn.commit()
-				finally:
-					cursor.close()
-					ewutils.databaseClose(conn_info)
+				user_data.persist()
+				target_data.persist()
 		else:
-			response = ewcfg.str_exchange_specify.format(currency="SlimeCoin", action="transfer")
+			response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
@@ -100,16 +82,8 @@ async def slimecoin(cmd):
 	resp = await ewcmd.start(cmd = cmd)
 	response = ""
 
-	try:
-		conn_info = ewutils.databaseConnect()
-		conn = conn_info.get('conn')
-		cursor = conn.cursor()
-
-		market_data = EwMarket(id_server=cmd.message.server.id, conn=conn, cursor=cursor)
-		user_slimecredit = EwUser(member=cmd.message.author, conn=conn, cursor=cursor).slimecredit
-	finally:
-		cursor.close()
-		ewutils.databaseClose(conn_info)
+	market_data = EwMarket(id_server = cmd.message.server.id)
+	user_slimecredit = EwUser(member = cmd.message.author).slimecredit
 
 	net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000000.0))
 	response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit, net_worth)

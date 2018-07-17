@@ -18,23 +18,14 @@ class EwMarket:
 	negaslime = 0
 
 	""" Load the market data for this server from the database. """
-	def __init__(self, id_server=None, conn=None, cursor=None):
+	def __init__(self, id_server = None):
 		if(id_server != None):
 			self.id_server = id_server
 
-			our_cursor = False
-			our_conn = False
-
 			try:
-				# Get database handles if they weren't passed.
-				if(cursor == None):
-					if(conn == None):
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						our_conn = True
-
-					cursor = conn.cursor();
-					our_cursor = True
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor();
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
@@ -68,26 +59,15 @@ class EwMarket:
 					conn.commit()
 			finally:
 				# Clean up the database handles.
-				if(our_cursor):
-					cursor.close()
-				if(our_conn):
-					ewutils.databaseClose(conn_info)
+				cursor.close()
+				ewutils.databaseClose(conn_info)
 
 	""" Save market data object to the database. """
-	def persist(self, conn=None, cursor=None):
-		our_cursor = False
-		our_conn = False
-
+	def persist(self):
 		try:
-			# Get database handles if they weren't passed.
-			if(cursor == None):
-				if(conn == None):
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					our_conn = True
-
-				cursor = conn.cursor();
-				our_cursor = True
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor();
 
 			# Save the object.
 			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
@@ -114,14 +94,11 @@ class EwMarket:
 				self.weather
 			))
 
-			if our_cursor:
-				conn.commit()
+			conn.commit()
 		finally:
 			# Clean up the database handles.
-			if(our_cursor):
-				cursor.close()
-			if(our_conn):
-				ewutils.databaseClose(conn_info)
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 """ User model for database persistence """
 class EwUser:
@@ -132,7 +109,7 @@ class EwUser:
 	slimes = 0
 	slimecredit = 0
 	slimelevel = 1
-	stamina = 0
+	hunger = 0
 	totaldamage = 0
 	bounty = 0
 	kills = 0
@@ -143,25 +120,25 @@ class EwUser:
 	ghostbust = False
 	inebriation = 0
 	faction = ""
+	poi = ""
 
 	time_lastkill = 0
 	time_lastrevive = 0
 	time_lastspar = 0
-	time_expirpvp = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
-		if self.stamina > ewcfg.stamina_max:
-			self.stamina = ewcfg.stamina_max
+		if self.hunger > ewcfg.hunger_max:
+			self.hunger = ewcfg.hunger_max
 
 		if self.inebriation < 0:
 			self.inebriation = 0
 
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
-	def __init__(self, member=None, conn=None, cursor=None, id_user=None, id_server=None):
+	def __init__(self, member = None, id_user = None, id_server = None):
 		if(id_user == None) and (id_server == None):
 			if(member != None):
 				id_server = member.server.id
@@ -172,25 +149,16 @@ class EwUser:
 			self.id_server = id_server
 			self.id_user = id_user
 
-			our_cursor = False
-			our_conn = False
-
 			try:
-				# Get database handles if they weren't passed.
-				if(cursor == None):
-					if(conn == None):
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						our_conn = True
-
-					cursor = conn.cursor();
-					our_cursor = True
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor();
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
-					ewcfg.col_stamina,
+					ewcfg.col_hunger,
 					ewcfg.col_totaldamage,
 					ewcfg.col_bounty,
 					ewcfg.col_kills,
@@ -201,13 +169,13 @@ class EwUser:
 					ewcfg.col_time_lastrevive,
 					ewcfg.col_id_killer,
 					ewcfg.col_time_lastspar,
-					ewcfg.col_time_expirpvp,
 					ewcfg.col_time_lasthaunt,
 					ewcfg.col_time_lastinvest,
 					ewcfg.col_weaponname,
 					ewcfg.col_ghostbust,
 					ewcfg.col_inebriation,
-					ewcfg.col_faction
+					ewcfg.col_faction,
+					ewcfg.col_poi
 				), (
 					id_user,
 					id_server
@@ -218,7 +186,7 @@ class EwUser:
 					# Record found: apply the data to this object.
 					self.slimes = result[0]
 					self.slimelevel = result[1]
-					self.stamina = result[2]
+					self.hunger = result[2]
 					self.totaldamage = result[3]
 					self.bounty = result[4]
 					self.kills = result[5]
@@ -229,13 +197,13 @@ class EwUser:
 					self.time_lastrevive = result[10]
 					self.id_killer = result[11]
 					self.time_lastspar = result[12]
-					self.time_expirpvp = result[13]
-					self.time_lasthaunt = result[14]
-					self.time_lastinvest = result[15]
-					self.weaponname = result[16]
-					self.ghostbust = (result[17] == 1)
-					self.inebriation = result[18]
-					self.faction = result[19]
+					self.time_lasthaunt = result[13]
+					self.time_lastinvest = result[14]
+					self.weaponname = result[15]
+					self.ghostbust = (result[16] == 1)
+					self.inebriation = result[17]
+					self.faction = result[18]
+					self.poi = result[19]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
@@ -245,10 +213,8 @@ class EwUser:
 				# Get the skill for the user's current weapon.
 				if self.weapon != None and self.weapon != "":
 					skills = ewutils.weaponskills_get(
-						id_server=id_server,
-						id_user=id_user,
-						conn=conn,
-						cursor=cursor
+						id_server = id_server,
+						id_user = id_user
 					)
 					skill_data = skills.get(self.weapon)
 					if skill_data != None:
@@ -268,26 +234,16 @@ class EwUser:
 				self.limit_fix();
 			finally:
 				# Clean up the database handles.
-				if(our_cursor):
-					cursor.close()
-				if(our_conn):
-					ewutils.databaseClose(conn_info)
+				cursor.close()
+				ewutils.databaseClose(conn_info)
 
 	""" Save this user object to the database. """
-	def persist(self, conn=None, cursor=None):
-		our_cursor = False
-		our_conn = False
-
+	def persist(self):
 		try:
 			# Get database handles if they weren't passed.
-			if(cursor == None):
-				if(conn == None):
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					our_conn = True
-
-				cursor = conn.cursor();
-				our_cursor = True
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor();
 
 			self.limit_fix();
 
@@ -297,7 +253,7 @@ class EwUser:
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
 				ewcfg.col_slimelevel,
-				ewcfg.col_stamina,
+				ewcfg.col_hunger,
 				ewcfg.col_totaldamage,
 				ewcfg.col_bounty,
 				ewcfg.col_kills,
@@ -309,19 +265,19 @@ class EwUser:
 				ewcfg.col_time_lastrevive,
 				ewcfg.col_id_killer,
 				ewcfg.col_time_lastspar,
-				ewcfg.col_time_expirpvp,
 				ewcfg.col_time_lasthaunt,
 				ewcfg.col_time_lastinvest,
 				ewcfg.col_weaponname,
 				ewcfg.col_ghostbust,
 				ewcfg.col_inebriation,
-				ewcfg.col_faction
+				ewcfg.col_faction,
+				ewcfg.col_poi
 			), (
 				self.id_user,
 				self.id_server,
 				self.slimes,
 				self.slimelevel,
-				self.stamina,
+				self.hunger,
 				self.totaldamage,
 				self.bounty,
 				self.kills,
@@ -333,13 +289,13 @@ class EwUser:
 				self.time_lastrevive,
 				self.id_killer,
 				self.time_lastspar,
-				self.time_expirpvp,
 				self.time_lasthaunt,
 				self.time_lastinvest,
 				self.weaponname,
 				(1 if self.ghostbust == True else 0),
 				self.inebriation,
-				self.faction
+				self.faction,
+				self.poi
 			))
 
 			# Save the current weapon's skill
@@ -349,20 +305,15 @@ class EwUser:
 					self.weaponname = ""
 
 				ewutils.weaponskills_set(
-					id_server=self.id_server,
-					id_user=self.id_user,
-					weapon=self.weapon,
-					weaponskill=self.weaponskill,
-					weaponname=self.weaponname,
-					conn=conn,
-					cursor=cursor
+					id_server = self.id_server,
+					id_user = self.id_user,
+					weapon = self.weapon,
+					weaponskill = self.weaponskill,
+					weaponname = self.weaponname
 				)
 
-			if our_cursor:
-				conn.commit()
+			conn.commit()
 		finally:
 			# Clean up the database handles.
-			if(our_cursor):
-				cursor.close()
-			if(our_conn):
-				ewutils.databaseClose(conn_info)
+			cursor.close()
+			ewutils.databaseClose(conn_info)

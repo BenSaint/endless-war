@@ -140,33 +140,21 @@ async def attack(cmd):
 		response = "One shot at a time!"
 	elif cmd.mentions_count <= 0:
 		response = "Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name."
-	elif user_data.stamina >= ewcfg.stamina_max:
+	elif user_data.hunger >= ewcfg.hunger_max:
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
 		# The roles assigned to the author of this message.
 		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
 		# Get shooting player's info
-		try:
-			conn_info = ewutils.databaseConnect()
-			conn = conn_info.get('conn')
-			cursor = conn.cursor()
+		if user_data.slimelevel <= 0:
+			user_data.slimelevel = 1
 
-			if user_data.slimelevel <= 0:
-				user_data.slimelevel = 1
+		user_data.persist()
 
-			# Flag the shooter for PvP no matter what happens next.
-			user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
-			user_data.persist(conn = conn, cursor = cursor)
-
-			# Get target's info.
-			member = cmd.mentions[0]
-			shootee_data = EwUser(member = member, conn = conn, cursor = cursor)
-
-			conn.commit()
-		finally:
-			cursor.close()
-			ewutils.databaseClose(conn_info)
+		# Get target's info.
+		member = cmd.mentions[0]
+		shootee_data = EwUser(member = member)
 
 		miss = False
 		crit = False
@@ -188,9 +176,6 @@ async def attack(cmd):
 		user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
 		user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 
-		# Add the PvP flag role.
-		await ewutils.add_pvp_role(cmd = cmd)
-
 		if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
 			# Disallow killing generals.
 			response = "He is hiding in his ivory tower and playing video games like a retard."
@@ -207,7 +192,7 @@ async def attack(cmd):
 			# Don't allow the shootee to be shot by the same player twice.
 			response = "You have already proven your superiority over {}.".format(member.display_name)
 
-		elif time_now > shootee_data.time_expirpvp:
+		elif ewutils.poi_is_pvp(shootee_data.poi) == False:
 			# Target is not flagged for PvP.
 			response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 
@@ -236,8 +221,8 @@ async def attack(cmd):
 
 			was_busted = False
 
-			#stamina drain
-			user_data.stamina += ewcfg.stamina_pershot
+			#hunger drain
+			user_data.hunger += ewcfg.hunger_pershot
 			
 			# Weaponized flavor text.
 			weapon = ewcfg.weapon_map.get(user_data.weapon)
@@ -339,23 +324,13 @@ async def attack(cmd):
 						)
 
 			# Persist every users' data.
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
+			user_data.persist()
+			shootee_data.persist()
 
-				user_data.persist(conn = conn, cursor = cursor)
-				shootee_data.persist(conn = conn, cursor = cursor)
-
-				if boss_member != None:
-					boss_data = EwUser(member = boss_member, conn = conn, cursor = cursor)
-					boss_data.slimes += boss_slimes
-					boss_data.persist(conn = conn, cursor = cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			if boss_member != None:
+				boss_data = EwUser(member = boss_member)
+				boss_data.slimes += boss_slimes
+				boss_data.persist()
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
@@ -376,8 +351,8 @@ async def attack(cmd):
 				was_shot = True
 
 			if was_shot:
-				#stamina drain
-				user_data.stamina += ewcfg.stamina_pershot
+				#hunger drain
+				user_data.hunger += ewcfg.hunger_pershot
 				
 				# Weaponized flavor text.
 				weapon = ewcfg.weapon_map.get(user_data.weapon)
@@ -531,23 +506,13 @@ async def attack(cmd):
 						break
 
 			# Persist every users' data.
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
+			user_data.persist()
+			shootee_data.persist()
 
-				user_data.persist(conn = conn, cursor = cursor)
-				shootee_data.persist(conn = conn, cursor = cursor)
-
-				if boss_member != None:
-					boss_data = EwUser(member = boss_member, conn = conn, cursor = cursor)
-					boss_data.slimes += boss_slimes
-					boss_data.persist(conn = conn, cursor = cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			if boss_member != None:
+				boss_data = EwUser(member = boss_member)
+				boss_data.slimes += boss_slimes
+				boss_data.persist()
 
 			# Assign the corpse role to the newly dead player.
 			if was_killed:
@@ -626,29 +591,19 @@ async def spar(cmd):
 			# The roles assigned to the author of this message.
 			roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
+			# Get killing player's info.
+			user_data = EwUser(member = cmd.message.author)
 
-				# Get killing player's info.
-				user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
-
-				# Get target's info.
-				sparred_data = EwUser(member = member, conn = conn, cursor = cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			# Get target's info.
+			sparred_data = EwUser(member = member)
 
 			user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
 			user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
 			user_isdead = ewcfg.role_corpse in roles_map_user
 
-			if user_data.stamina >= ewcfg.stamina_max:
+			if user_data.hunger >= ewcfg.hunger_max:
 				response = "You are too exhausted to train right now. Go get some grub!"
-			elif sparred_data.stamina >= ewcfg.stamina_max:
+			elif sparred_data.hunger >= ewcfg.hunger_max:
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
 				response = "The dead think they're too cool for conventional combat. Pricks."
@@ -698,17 +653,14 @@ async def spar(cmd):
 					weaker_player = sparred_data if sparred_data.slimes < user_data.slimes else user_data
 					stronger_player = sparred_data if user_data is weaker_player else user_data
 
-					# Flag the player for PvP
-					user_data.time_expirpvp = ewutils.calculatePvpTimer(user_data.time_expirpvp, (time_now + ewcfg.time_pvp_kill))
-
 					# Weaker player gains slime based on the slime of the stronger player.
 					possiblegain = (ewcfg.slimes_perspar_base * (2 ** weaker_player.slimelevel))
 					slimegain = possiblegain if (stronger_player.slimes / 10) > possiblegain else (stronger_player.slimes / 10)
 					weaker_player.slimes += slimegain
 					
-					#stamina drain for both players
-					user_data.stamina += ewcfg.stamina_perspar
-					sparred_data.stamina += ewcfg.stamina_perspar
+					#hunger drain for both players
+					user_data.hunger += ewcfg.hunger_perspar
+					sparred_data.hunger += ewcfg.hunger_perspar
 
 					# Bonus 50% slime to both players in a duel.
 					if duel:
@@ -725,21 +677,8 @@ async def spar(cmd):
 
 					weaker_player.time_lastspar = time_now
 
-					try:
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						cursor = conn.cursor()
-
-						user_data.persist(conn = conn, cursor = cursor)
-						sparred_data.persist(conn = conn, cursor = cursor)
-
-						conn.commit()
-					finally:
-						cursor.close()
-						ewutils.databaseClose(conn_info)
-
-					# Add the PvP flag role.
-					await ewutils.add_pvp_role(cmd = cmd)
+					user_data.persist()
+					sparred_data.persist()
 
 					# player was sparred with
 					if duel and weapon != None:

@@ -41,16 +41,8 @@ async def pachinko(cmd):
 		last_pachinkoed_times[cmd.message.author.id] = time_now
 		value = ewcfg.slimes_perpachinko
 
-		try:
-			conn_info = ewutils.databaseConnect()
-			conn = conn_info.get('conn')
-			cursor = conn.cursor()
-
-			market_data = EwMarket(id_server=cmd.message.server.id, conn=conn, cursor=cursor)
-			user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
-		finally:
-			cursor.close()
-			ewutils.databaseClose(conn_info)
+		market_data = EwMarket(id_server = cmd.message.server.id)
+		user_data = EwUser(member = cmd.message.author)
 
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
@@ -91,23 +83,13 @@ async def pachinko(cmd):
 				await asyncio.sleep(1)
 
 			winnings = winballs * 250
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
 
-				# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
-				user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
+			# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
+			user_data = EwUser(member = cmd.message.author)
 
-				# add winnings
-				user_data.slimecredit += winnings
-
-				user_data.persist(conn=conn, cursor=cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			# add winnings
+			user_data.slimecredit += winnings
+			user_data.persist()
 
 			if winnings > 0:
 				response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
@@ -141,20 +123,11 @@ async def craps(cmd):
 		value = None
 
 		if cmd.tokens_count > 1:
-			value = ewutils.getIntToken(tokens=cmd.tokens, allow_all=True)
+			value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
 
 		if value != None:
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
-
-				user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
-				market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
-
+			user_data = EwUser(member = cmd.message.author)
+			market_data = EwMarket(id_server = cmd.message.author.server.id)
 
 			if ewcmd.is_casino_open(market_data.clock) == False:
 				response = ewcfg.str_casino_closed
@@ -184,18 +157,8 @@ async def craps(cmd):
 				else:
 					response += "\n\nYou didn't roll 7. You lost your SlimeCoins."
 
-				try:
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					cursor = conn.cursor()
-
-					user_data.persist(conn=conn, cursor=cursor)
-					market_data.persist(conn=conn, cursor=cursor)
-
-					conn.commit()
-				finally:
-					cursor.close()
-					ewutils.databaseClose(conn_info)
+				user_data.persist()
+				market_data.persist()
 		else:
 			response = "Specify how much SlimeCoin you will wager."
 
@@ -222,17 +185,8 @@ async def slots(cmd):
 		value = ewcfg.slimes_perslot
 		last_slotsed_times[cmd.message.author.id] = time_now
 
-		try:
-			conn_info = ewutils.databaseConnect()
-			conn = conn_info.get('conn')
-			cursor = conn.cursor()
-
-			user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
-			market_data = EwMarket(id_server=cmd.message.author.server.id, conn=conn, cursor=cursor)
-
-		finally:
-			cursor.close()
-			ewutils.databaseClose(conn_info)
+		user_data = EwUser(member = cmd.message.author)
+		market_data = EwMarket(id_server = cmd.message.author.server.id)
 
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
@@ -318,24 +272,12 @@ async def slots(cmd):
 			else:
 				response += "\n\n*Nothing happens...*"
 
-			# Add winnings (if there were any) and save the user data.
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
+			# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
+			user_data = EwUser(member = cmd.message.author)
 
-				# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
-				user_data = EwUser(member=cmd.message.author, conn=conn, cursor=cursor)
-
-				# add winnings
-				user_data.slimecredit += winnings
-
-				user_data.persist(conn=conn, cursor=cursor)
-
-				conn.commit()
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			# add winnings
+			user_data.slimecredit += winnings
+			user_data.persist()
 
 		last_slotsed_times[cmd.message.author.id] = 0
 

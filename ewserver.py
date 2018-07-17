@@ -13,26 +13,15 @@ class EwServer:
 
 	def __init__(
 		self,
-		id_server = None,
-		conn = None,
-		cursor = None
+		id_server = None
 	):
 		if(id_server != None):
 			self.id_server = id_server
 
-			our_cursor = False
-			our_conn = False
-
 			try:
-				# Get database handles if they weren't passed.
-				if(cursor == None):
-					if(conn == None):
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						our_conn = True
-
-					cursor = conn.cursor()
-					our_cursor = True
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {} FROM servers WHERE id_server = %s".format(
@@ -55,26 +44,15 @@ class EwServer:
 					conn.commit()
 			finally:
 				# Clean up the database handles.
-				if(our_cursor):
-					cursor.close()
-				if(our_conn):
-					ewutils.databaseClose(conn_info)
+				cursor.close()
+				ewutils.databaseClose(conn_info)
 
 	""" Save server data object to the database. """
-	def persist(self, conn=None, cursor=None):
-		our_cursor = False
-		our_conn = False
-
+	def persist(self):
 		try:
-			# Get database handles if they weren't passed.
-			if(cursor == None):
-				if(conn == None):
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					our_conn = True
-
-				cursor = conn.cursor()
-				our_cursor = True
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor()
 
 			# Save the object.
 			cursor.execute("REPLACE INTO servers({}, {}, {}) VALUES(%s, %s, %s)".format(
@@ -87,14 +65,11 @@ class EwServer:
 				self.icon
 			))
 
-			if our_cursor:
-				conn.commit()
+			conn.commit()
 		finally:
 			# Clean up the database handles.
-			if(our_cursor):
-				cursor.close()
-			if(our_conn):
-				ewutils.databaseClose(conn_info)
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 
 """ update the player record with the current data. """
@@ -105,19 +80,14 @@ def server_update(server = None):
 		cursor = conn.cursor()
 
 		dbserver = EwServer(
-			id_server = server.id,
-			conn = conn,
-			cursor = cursor
+			id_server = server.id
 		)
 
 		# Update values with Member data.
 		dbserver.name = server.name
 		dbserver.icon = server.icon_url
 
-		dbserver.persist(
-			conn = conn,
-			cursor = cursor
-		)
+		dbserver.persist()
 
 		conn.commit()
 	finally:

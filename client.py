@@ -28,8 +28,9 @@ import ewkingpin
 import ewplayer
 import ewserver
 import ewitem
-from ewitem import EwItem
+import ewmap
 
+from ewitem import EwItem
 from ew import EwUser, EwMarket
 
 ewutils.logMsg('Starting up...')
@@ -125,6 +126,12 @@ cmd_map = {
 	ewcfg.cmd_deadmega: ewkingpin.deadmega,
 
 
+	# Navigate the world map.
+	ewcfg.cmd_move: ewmap.move,
+	ewcfg.cmd_move_alt1: ewmap.move,
+	ewcfg.cmd_move_alt2: ewmap.move,
+
+
 	# Misc bullshit
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
@@ -151,13 +158,17 @@ async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	ewutils.logMsg('Ready.')
 
-	await client.change_presence(game=discord.Game(name=("dev. by @krak " + ewcfg.version)))
+	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
 
 	# Look for a Twitch client_id on disk.
 	twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
-	if twitch_client_id == None or len(twitch_client_id) == 0:
+	# FIXME debug - temporarily disable Twitch integration.
+	if True:
+		twich_client_id = None
+		ewutils.logMsg('Twitch integration disabled.')
+	elif twitch_client_id == None or len(twitch_client_id) == 0:
 		ewutils.logMsg('No twitch_client_id file found. Twitch integration disabled.')
 	else:
 		ewutils.logMsg("Enabled Twitch integration.")
@@ -212,7 +223,7 @@ async def on_ready():
 				# Twitch API call to see if there are any active streams.
 				json_string = ""
 				p = subprocess.Popen(
-					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login=rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), 
+					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login = rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), 
 					shell = True,
 					stdout = subprocess.PIPE
 				)
@@ -244,7 +255,7 @@ async def on_ready():
 								)
 							)
 			except:
-				ewutils.logMsg('Twitch handler hit an exception (continuing):')
+				ewutils.logMsg('Twitch handler hit an exception (continuing): {}'.format(json_string))
 				traceback.print_exc(file = sys.stdout)
 
 		# Clear PvP roles from players who are no longer flagged.
@@ -274,9 +285,8 @@ async def on_ready():
 							# Retrieve user data from the database.
 							user_data = EwUser(member = member)
 
-							# If the user's PvP expire time is historical, remove the PvP role.
-							if user_data.time_expirpvp < int(time.time()):
-								await client.remove_roles(member, pvp_role)
+							# Remove the PvP role. They're not needed anymore.
+							await client.remove_roles(member, pvp_role)
 
 			except:
 				ewutils.logMsg('An error occurred in the scheduled role update task:')
@@ -287,7 +297,6 @@ async def on_ready():
 			for server in client.servers:
 				# Load market data from the database.
 				market_data = EwMarket(id_server = server.id)
-				credit_totals = ewutils.getRecentTotalSlimeCoins(id_server = server.id)
 
 				if market_data.time_lasttick + ewcfg.update_market < time_now:
 					market_data.time_lasttick = time_now
@@ -315,15 +324,15 @@ async def on_ready():
 					# Persist new data.
 					market_data.persist()
 
-					# Increase stamina for all players below the max.
-					ewutils.pushupServerStamina(id_server = server.id)
+					# Increase hunger for all players below the max.
+					ewutils.pushupServerHunger(id_server = server.id)
 
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
-			traceback.print_exc(file=sys.stdout)
+			traceback.print_exc(file = sys.stdout)
 
 		# Wait a while before running periodic tasks.
 		await asyncio.sleep(15)

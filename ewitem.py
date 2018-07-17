@@ -65,26 +65,15 @@ class EwItem:
 
 	def __init__(
 		self,
-		id_item = None,
-		conn = None,
-		cursor = None
+		id_item = None
 	):
 		if(id_item != None):
 			self.id_item = id_item
 
-			our_cursor = False
-			our_conn = False
-
 			try:
-				# Get database handles if they weren't passed.
-				if(cursor == None):
-					if(conn == None):
-						conn_info = ewutils.databaseConnect()
-						conn = conn_info.get('conn')
-						our_conn = True
-
-					cursor = conn.cursor()
-					our_cursor = True
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
 
 				# Retrieve object
 				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {} FROM items WHERE id_item = %s".format(
@@ -127,26 +116,15 @@ class EwItem:
 
 			finally:
 				# Clean up the database handles.
-				if(our_cursor):
-					cursor.close()
-				if(our_conn):
-					ewutils.databaseClose(conn_info)
+				cursor.close()
+				ewutils.databaseClose(conn_info)
 
 	""" Save user data object to the database. """
-	def persist(self, conn=None, cursor=None):
-		our_cursor = False
-		our_conn = False
-
+	def persist(self):
 		try:
-			# Get database handles if they weren't passed.
-			if(cursor == None):
-				if(conn == None):
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					our_conn = True
-
-				cursor = conn.cursor()
-				our_cursor = True
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor()
 
 			# Save the object.
 			cursor.execute("REPLACE INTO items({}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s)".format(
@@ -188,14 +166,11 @@ class EwItem:
 					self.item_props[name]
 				))
 
-			if our_cursor:
-				conn.commit()
+			conn.commit()
 		finally:
 			# Clean up the database handles.
-			if(our_cursor):
-				cursor.close()
-			if(our_conn):
-				ewutils.databaseClose(conn_info)
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 """
 	Return the visible description of an item.
@@ -222,23 +197,12 @@ def item_look(item):
 	Delete the specified item by ID. Also deletes all items_prop values.
 """
 def item_delete(
-	id_item = None,
-	conn = None,
-	cursor = None
+	id_item = None
 ):
-	our_cursor = False
-	our_conn = False
-
 	try:
-		# Get database handles if they weren't passed.
-		if(cursor == None):
-			if(conn == None):
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				our_conn = True
-
-			cursor = conn.cursor()
-			our_cursor = True
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
 
 		# Create the item in the database.
 		cursor.execute("DELETE FROM items WHERE {} = %s".format(
@@ -250,10 +214,8 @@ def item_delete(
 		conn.commit()
 	finally:
 		# Clean up the database handles.
-		if(our_cursor):
-			cursor.close()
-		if(our_conn):
-			ewutils.databaseClose(conn_info)
+		cursor.close()
+		ewutils.databaseClose(conn_info)
 
 """
 	Create a new item and give it to a player.
@@ -264,13 +226,8 @@ def item_create(
 	item_type = None,
 	id_user = None,
 	id_server = None,
-	item_props = None,
-	conn = None,
-	cursor = None
+	item_props = None
 ):
-	our_cursor = False
-	our_conn = False
-
 	item_def = ewcfg.item_def_map.get(item_type)
 
 	if item_def == None:
@@ -279,14 +236,9 @@ def item_create(
 
 	try:
 		# Get database handles if they weren't passed.
-		if(cursor == None):
-			if(conn == None):
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				our_conn = True
-
-			cursor = conn.cursor()
-			our_cursor = True
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
 
 		# Create the item in the database.
 		cursor.execute("INSERT INTO items({}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s)".format(
@@ -319,15 +271,13 @@ def item_create(
 				if item_props != None:
 					item_inst.item_props.update(item_props)
 
-				item_inst.persist(conn = conn, cursor = cursor)
+				item_inst.persist()
 
 			conn.commit()
 	finally:
 		# Clean up the database handles.
-		if(our_cursor):
-			cursor.close()
-		if(our_conn):
-			ewutils.databaseClose(conn_info)
+		cursor.close()
+		ewutils.databaseClose(conn_info)
 
 
 	return item_id
@@ -347,31 +297,19 @@ def cmd_is_inventory(cmd):
 def inventory(
 	id_user = "",
 	id_server = None,
-	item_type_filter = None,
-	conn = None,
-	cursor = None
+	item_type_filter = None
 ):
-	our_cursor = False
-	our_conn = False
 	items = []
 
 	try:
-		# Get database handles if they weren't passed.
-		if(cursor == None):
-			if(conn == None):
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				our_conn = True
-
-			cursor = conn.cursor()
-			our_cursor = True
-
 		player = EwPlayer(
 			id_user = id_user,
-			id_server = id_server,
-			conn = conn,
-			cursor = cursor
+			id_server = id_server
 		)
+
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
 
 		sql = "SELECT {}, {}, {}, {}, {} FROM items WHERE {} = %s AND {} = %s"
 		if item_type_filter != None:
@@ -425,11 +363,7 @@ def inventory(
 
 				# Name requires variable substitution. Look up the item properties.
 				if name.find('{') >= 0:
-					item_inst = EwItem(
-						id_item = id_item,
-						conn = conn,
-						cursor = cursor
-					)
+					item_inst = EwItem(id_item = id_item)
 
 					if item_inst != None and item_inst.id_item >= 0:
 						name = name.format_map(item_inst.item_props)
@@ -440,10 +374,8 @@ def inventory(
 				item['name'] = name
 	finally:
 		# Clean up the database handles.
-		if(our_cursor):
-			cursor.close()
-		if(our_conn):
-			ewutils.databaseClose(conn_info)
+		cursor.close()
+		ewutils.databaseClose(conn_info)
 
 	return items
 

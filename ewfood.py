@@ -11,8 +11,8 @@ class EwFood:
 	# A list of alternative names.
 	alias = []
 
-	# Stamina recovered by eating this food.
-	recover_stamina = 0
+	# Hunger reduced by eating this food.
+	recover_hunger = 0
 
 	# Cost in slime to eat this food.
 	price = 0
@@ -33,7 +33,7 @@ class EwFood:
 		self,
 		id_food = "",
 		alias = [],
-		recover_stamina = 0,
+		recover_hunger = 0,
 		price = 0,
 		str_name = "",
 		vendor = "",
@@ -42,7 +42,7 @@ class EwFood:
 	):
 		self.id_food = id_food
 		self.alias = alias
-		self.recover_stamina = recover_stamina
+		self.recover_hunger = recover_hunger
 		self.price = price
 		self.str_name = str_name
 		self.vendor = vendor
@@ -90,20 +90,12 @@ async def order(cmd):
 		if food == None:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
 		else:
-			try:
-				conn_info = ewutils.databaseConnect()
-				conn = conn_info.get('conn')
-				cursor = conn.cursor()
+			user_data = EwUser(member = cmd.message.author)
+			market_data = EwMarket(id_server = cmd.message.server.id)
 
-				user_data = EwUser(member = cmd.message.author, conn = conn, cursor = cursor)
-				market_data = EwMarket(id_server = cmd.message.server.id, conn = conn, cursor = cursor)
-
-				target_data = None
-				if member != None:
-					target_data = EwUser(member = member, conn = conn, cursor = cursor)
-			finally:
-				cursor.close()
-				ewutils.databaseClose(conn_info)
+			target_data = None
+			if member != None:
+				target_data = EwUser(member = member)
 
 			value = int(food.price / (market_data.rate_exchange / 1000000.0))
 			if value <= 0:
@@ -125,17 +117,17 @@ async def order(cmd):
 				user_data.slimecredit -= value
 
 				if target_data != None:
-					target_data.stamina -= food.recover_stamina
-					if target_data.stamina < 0:
-						target_data.stamina = 0
+					target_data.hunger -= food.recover_hunger
+					if target_data.hunger < 0:
+						target_data.hunger = 0
 					target_data.inebriation += food.inebriation
 					if target_data.inebriation > 20:
 						target_data.inebriation = 20
 					
 				else:
-					user_data.stamina -= food.recover_stamina
-					if user_data.stamina < 0:
-						user_data.stamina = 0
+					user_data.hunger -= food.recover_hunger
+					if user_data.hunger < 0:
+						user_data.hunger = 0
 					user_data.inebriation += food.inebriation
 					if user_data.inebriation > 20:
 						user_data.inebriation = 20
@@ -149,24 +141,14 @@ async def order(cmd):
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
 					flavor = food.str_eat
 				)
-				if member == None and user_data.stamina <= 0:
+				if member == None and user_data.hunger <= 0:
 					response += "\n\nYou're stuffed!"
 
-				try:
-					conn_info = ewutils.databaseConnect()
-					conn = conn_info.get('conn')
-					cursor = conn.cursor()
+				user_data.persist()
+				market_data.persist()
 
-					user_data.persist(conn = conn, cursor = cursor)
-					market_data.persist(conn = conn, cursor = cursor)
-
-					if target_data != None:
-						target_data.persist(conn = conn, cursor = cursor)
-
-					conn.commit()
-				finally:
-					cursor.close()
-					ewutils.databaseClose(conn_info)
+				if target_data != None:
+					target_data.persist()
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
