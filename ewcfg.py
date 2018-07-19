@@ -389,6 +389,11 @@ def wef_scythe(ctn = None):
 	elif aim >= 9:
 		ctn.crit = True
 		ctn.slimes_damage *= 2
+		
+# weapon effect function for "limomancy"
+def wef_limomancy(ctn = None):
+	ctn.miss = False
+	ctn.slimes_damage = int(0.75 * ctn.slimes_damage)
 
 # All weapons in the game.
 weapon_list = [
@@ -592,6 +597,24 @@ weapon_list = [
 		str_damage = "{name_target} is cleaved through the {hitzone}!!",
 		str_duel = "**WHOOSH, WHOOSH** {name_player} and {name_target} swing their blades in wide arcs, dodging one another's deadly slashes.",
 		fn_effect = wef_scythe
+	),
+	EwWeapon( # X
+		id_weapon = "limomancy",
+		alias = [
+			"magic",
+		],
+		str_crit = "",
+		str_miss = "Your spell fizzled out with no effect!",
+		str_equip = "You empty your mind of everything but slime.",
+		str_weapon = "limomancy",
+		str_weaponmaster_self = "You are a rank {rank} master of limomancy.",
+		str_weaponmaster = "They are a rank {rank} master of limomancy.",
+		str_trauma_self = "You occasionally spark with residual magical energies.",
+		str_trauma = "They occasionally spark with residual magical energies.",
+		str_kill = "{name_player}'s eyes glow green as magical energy surges from their hands, frying {name_target}'s body and mind!!. {emote_skull}",
+		str_damage = "{name_target} is zapped in the {hitzone} with a bolt of green light!!",
+		str_duel = "",
+		fn_effect = wef_limomancy
 	)
 ]
 
