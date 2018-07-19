@@ -121,6 +121,9 @@ cmd_map = {
 	ewcfg.cmd_inventory_alt2: ewitem.inventory_print,
 	ewcfg.cmd_inventory_alt3: ewitem.inventory_print,
 
+	# get an item's description
+	ewcfg.cmd_inspect: ewitem.item_look,
+
 
 	# Remove a megaslime (1 mil slime) from a general.
 	ewcfg.cmd_deadmega: ewkingpin.deadmega,
@@ -216,7 +219,9 @@ async def on_ready():
 			ewutils.logMsg("Periodic hook still active.")
 
 		# Check to see if a stream is live via the Twitch API.
-		if twitch_client_id != None and (time_now - time_last_twitch) >= ewcfg.update_twitch:
+		# FIXME disabled
+		if False:
+		#if twitch_client_id != None and (time_now - time_last_twitch) >= ewcfg.update_twitch:
 			time_last_twitch = time_now
 
 			try:
@@ -407,6 +412,8 @@ async def on_message(message):
 			# Direct message the player their inventory.
 			if ewitem.cmd_is_inventory(cmd):
 				return await ewitem.inventory_print(cmd_obj)
+			elif cmd == ewcfg.cmd_inspect:
+				return await ewitem.item_look(cmd_obj)
 			else:
 				time_last = last_helped_times.get(message.author.id, 0)
 

@@ -172,26 +172,6 @@ class EwItem:
 			cursor.close()
 			ewutils.databaseClose(conn_info)
 
-"""
-	Return the visible description of an item.
-"""
-def item_look(item):
-	item_def = ewcfg.item_def_map.get(item.item_type)
-
-	if item_def == None:
-		return "You aren't sure what it is."
-
-	response = item_def.str_desc
-
-	# Replace up to two levels of variable substitutions.
-	if response.find('{') >= 0:
-		response = response.format_map(item.item_props)
-
-		if response.find('{') >= 0:
-			response = response.format_map(item.item_props)
-
-	return response
-
 
 """
 	Delete the specified item by ID. Also deletes all items_prop values.
@@ -403,3 +383,50 @@ async def inventory_print(cmd):
 		)
 
 	await cmd.client.edit_message(resp, response)
+
+
+"""
+	Dump out the visual description of an item.
+"""
+async def item_look(cmd):
+	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
+
+	try:
+		item_id_int = int(item_id)
+	except:
+		item_id_int = None
+
+	if item_id != None and len(item_id) > 0:
+		resp = await cmd.client.send_message(cmd.message.channel, '...')
+		response = "You don't have one."
+
+		items = inventory(
+			id_user = cmd.message.author.id,
+			id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
+		)
+
+		item_sought = None
+		for item in items:
+			if item.get('id_item') == item_id_int or ewutils.flattenTokenListToString(item.get('name')) == item_id:
+				item_sought = item
+				break
+
+		if item_sought != None:
+			item_def = item.get('item_def')
+			id_item = item.get('id_item')
+			name = item.get('name')
+			response = item_def.str_desc
+
+			# Replace up to two levels of variable substitutions.
+			if response.find('{') >= 0:
+				item_inst = EwItem(id_item = id_item)
+				response = response.format_map(item_inst.item_props)
+
+				if response.find('{') >= 0:
+					response = response.format_map(item_inst.item_props)
+
+			response = name + "\n\n" + response
+
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	else:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))

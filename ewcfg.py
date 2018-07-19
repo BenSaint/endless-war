@@ -95,9 +95,10 @@ cmd_inventory = cmd_prefix + 'inventory'
 cmd_inventory_alt1 = cmd_prefix + 'inv'
 cmd_inventory_alt2 = cmd_prefix + 'stuff'
 cmd_inventory_alt3 = cmd_prefix + 'bag'
-cmd_move = cmd_prefix + "move"
-cmd_move_alt1 = cmd_prefix + "goto"
-cmd_move_alt2 = cmd_prefix + "walk"
+cmd_move = cmd_prefix + 'move'
+cmd_move_alt1 = cmd_prefix + 'goto'
+cmd_move_alt2 = cmd_prefix + 'walk'
+cmd_inspect = cmd_prefix + 'inspect'
 
 
 # Slime costs/values

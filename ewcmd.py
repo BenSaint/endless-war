@@ -4,6 +4,7 @@ import asyncio
 import ewcfg
 import ewutils
 import ewitem
+import ewmap
 from ew import EwUser, EwMarket
 
 """ class to send general data about an interaction to a command """
@@ -127,11 +128,15 @@ async def data(cmd):
 			user_data.slimelevel = new_level
 			user_data.persist()
 
+		poi = ewmap.id_to_poi.get(user_data.poi)
+		if poi != None:
+			response = "You find yourself in {}. ".format(poi.str_name)
+
 		# return my data
 		if ewcfg.role_corpse in roles_map_user:
-			response = "You are a level {} deadboi.".format(user_data.slimelevel)
+			response += "You are a level {} deadboi.".format(user_data.slimelevel)
 		else:
-			response = "You are a level {} slimeboi.".format(user_data.slimelevel)
+			response += "You are a level {} slimeboi.".format(user_data.slimelevel)
 		
 		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 

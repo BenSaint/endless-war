@@ -1,4 +1,3 @@
-import re 
 import asyncio
 
 from copy import deepcopy
@@ -638,20 +637,13 @@ def map_draw(path = None, coord = None):
 		print(outstr)
 		y += 1
 
-re_flattener = re.compile("['\"!@#$%^&*().,/?{}\[\];:]")
-
 """
 	Player command to move themselves from one place to another.
 """
 async def move(cmd):
 	resp = await ewcmd.start(cmd = cmd)
-	target_name = ""
 
-	global re_flattener
-	for token in cmd.tokens[1:]:
-		if token.startswith('<@') == False:
-			target_name += re_flattener.sub("", token.lower())
-
+	target_name = ewutils.flattenTokenListToString(cmd.tokens[1:])
 	user_data = EwUser(member = cmd.message.author)
 
 	poi = id_to_poi.get(target_name)

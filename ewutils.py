@@ -1,6 +1,7 @@
 import MySQLdb
 import datetime
 import time
+import re
 
 import ewcfg
 import ewmap
@@ -301,3 +302,21 @@ def poi_is_pvp(poi_name = None):
 		return poi.pvp
 	
 	return False
+
+re_flattener = re.compile("[ '\"!@#$%^&*().,/?{}\[\];:]")
+
+"""
+	Turn an array of tokens into a single word (no spaces or punctuation) with all lowercase letters.
+"""
+def flattenTokenListToString(tokens):
+	global re_flattener
+	target_name = ""
+
+	if type(tokens) == list:
+		for token in tokens:
+			if token.startswith('<@') == False:
+				target_name += re_flattener.sub("", token.lower())
+	elif tokens.startswith('<@') == False:
+		target_name = re_flattener.sub("", tokens.lower())
+
+	return target_name
