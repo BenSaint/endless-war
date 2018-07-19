@@ -12,6 +12,17 @@ moves_active = {}
 move_counter = 0
 
 """
+	Returns true if the specified point of interest is a PvP zone.
+"""
+def poi_is_pvp(poi_name = None):
+	poi = id_to_poi.get(poi_name)
+
+	if poi != None:
+		return poi.pvp
+	
+	return False
+
+"""
 	Point of Interest (POI) data model
 """
 class EwPoi:
@@ -33,6 +44,9 @@ class EwPoi:
 	# Channel name associated with this POI
 	channel = ""
 
+	# Discord role associated with this zone (control channel visibility).
+	role = ""
+
 	# Zone allows PvP combat and interactions.
 	pvp = True
 
@@ -44,6 +58,7 @@ class EwPoi:
 		str_desc = "...",
 		coord = (0, 0),
 		channel = "",
+		role = "",
 		pvp = True
 	):
 		self.id_poi = id_poi
@@ -52,6 +67,7 @@ class EwPoi:
 		self.str_desc = str_desc
 		self.coord = coord
 		self.channel = channel
+		self.role = role
 		self.pvp = pvp
 
 poi_list = [
@@ -69,7 +85,8 @@ poi_list = [
 		str_name = "Downtown NLACakaNM",
 		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.",
 		coord = (23, 16),
-		channel = "1-downtown-nlacakanm"
+		channel = "1-downtown-nlacakanm",
+		role = "1 - Downtown NLACakaNM"
 	),
 	EwPoi( # 2
 		id_poi = "smogsburg",
@@ -82,7 +99,8 @@ poi_list = [
 		str_name = "Smogsburg",
 		str_desc = "The pavement rumbles as subway trains grind along their tracks far beneath your feet. In every direction, smokestacks belch sickly clouds into the sky.",
 		coord = (23, 11),
-		channel = "2-smogsburg"
+		channel = "2-smogsburg",
+		role = "2 - Smogsburg"
 	),
 	EwPoi( # 3
 		id_poi = "copkilltown",
@@ -98,6 +116,7 @@ poi_list = [
 		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.",
 		coord = (17, 13),
 		channel = "3-cop-killtown",
+		role = "3 - Cop Killtown",
 		pvp = False
 	),
 	EwPoi( # 4
@@ -111,7 +130,8 @@ poi_list = [
 		str_name = "Krak Bay",
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.",
 		coord = (16, 19),
-		channel = "4-krak-bay"
+		channel = "4-krak-bay",
+		role = "4 - Krak Bay"
 	),
 	EwPoi( # 5
 		id_poi = "poudrinalley",
@@ -123,7 +143,8 @@ poi_list = [
 		str_name = "Poudrin Alley",
 		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.",
 		coord = (19, 23),
-		channel = "5-poudrin-alley"
+		channel = "5-poudrin-alley",
+		role = "5 - Poudrin Alley"
 	),
 	EwPoi( # 6
 		id_poi = "rowdyroughhouse",
@@ -138,6 +159,7 @@ poi_list = [
 		str_desc = "", # TODO
 		coord = (25, 21),
 		channel = "6-rowdy-roughhouse",
+		role = "6 - Rowdy Roughhouse",
 		pvp = False
 	),
 	EwPoi( # 7
@@ -149,14 +171,16 @@ poi_list = [
 		str_name = "Green Light District",
 		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.",
 		coord = (29, 14),
-		channel = "7-green-light-district"
+		channel = "7-green-light-district",
+		role = "7 - Green Light District"
 	),
 	EwPoi( # 8
 		id_poi = "oldnewyonkers",
 		str_name = "Old New Yonkers",
 		str_desc = "Rows of three-story brick and stone condominiums with white marble moulding wind along lanes of chipped cobblestone. Wrought-iron spikes jut from windows and balconies.",
 		coord = (32, 9),
-		channel = "8-old-new-yonkers"
+		channel = "8-old-new-yonkers",
+		role = "8 - Old New Yonkers"
 	),
 	EwPoi( # 9
 		id_poi = "littlechernobyl",
@@ -166,7 +190,8 @@ poi_list = [
 		str_name = "Little Chernobyl",
 		str_desc = "Pathetic little gardens front the uneven parking lots of corporate complexes housing dentists, fortune-tellers, real estate agencies, and other equally dull and pointless ventures.",
 		coord = (25, 7),
-		channel = "9-little-chernobyl"
+		channel = "9-little-chernobyl",
+		role = "9 - Little Chernobyl"
 	),
 	EwPoi( # 10
 		id_poi = "arsonbrook",
@@ -176,7 +201,8 @@ poi_list = [
 		str_name = "Arsonbrook",
 		str_desc = "North of the bridge, you see large swathes of what were once suburbs blackened and flat, occasionally still smoking. Legends say a Starbucks tried to open here once.",
 		coord = (21, 3),
-		channel = "10-arsonbrook"
+		channel = "10-arsonbrook",
+		role = "10 - Arsonbrook"
 	),
 	EwPoi( # 11
 		id_poi = "astatineheights",
@@ -186,7 +212,8 @@ poi_list = [
 		str_name = "Astatine Heights",
 		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards.",
 		coord = (17, 6),
-		channel = "11-astatine-heights"
+		channel = "11-astatine-heights",
+		role = "11 - Astatine Heights"
 	),
 	EwPoi( # 12
 		id_poi = "gatlingsdale",
@@ -196,7 +223,8 @@ poi_list = [
 		str_name = "Gatlingsdale",
 		str_desc = "The brightest young minds of NLACakaNM fritter away their time here, amid hallowed halls of learning ringed endlessly by foreign book stores and cinemas showing midnight screenings of silent films.",
 		coord = (13, 9),
-		channel = "12-gatlingsdale"
+		channel = "12-gatlingsdale",
+		role = "12 - Gatlingsdale"
 	),
 	EwPoi( # 13
 		id_poi = "vandalpark",
@@ -208,7 +236,8 @@ poi_list = [
 		str_name = "Vandal Park",
 		str_desc = "The more-or-less clean air carries the roar of the crowd across the grassy fields surrounding the arena.",
 		coord = (10, 12),
-		channel = "13-vandal-park"
+		channel = "13-vandal-park",
+		role = "13 - Vandal Park"
 	),
 	EwPoi( # 14
 		id_poi = "glocksbury",
@@ -218,7 +247,8 @@ poi_list = [
 		str_name = "Glocksbury",
 		str_desc = "You smell bacon. *Figurative* bacon. The streets are too orderly here... the cops must be about. Absolutely vile.",
 		coord = (9, 16),
-		channel = "14-glocksbury"
+		channel = "14-glocksbury",
+		role = "14 - Glocksbury"
 	),
 	EwPoi( # 15
 		id_poi = "northsleezeborough",
@@ -230,7 +260,8 @@ poi_list = [
 		str_name = "North Sleezeborough",
 		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.",
 		coord = (11, 19),
-		channel = "15-north-sleezeborough"
+		channel = "15-north-sleezeborough",
+		role = "15 - North Sleezeborough"
 	),
 	EwPoi( # 16
 		id_poi = "southsleezeborough",
@@ -244,7 +275,8 @@ poi_list = [
 		str_name = "South Sleezeborough",
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.",
 		coord = (12, 22),
-		channel = "16-south-sleezeborough"
+		channel = "16-south-sleezeborough",
+		role = "16 - South Sleezeborough"
 	),
 	EwPoi( # 17
 		id_poi = "oozegardens",
@@ -254,7 +286,8 @@ poi_list = [
 		str_name = "Ooze Gardens",
 		str_desc = "A bird chirps its last before falling dead from a withered tree. A trickle of slime runs down its bark. The resident's attempts to beautify the neighborhood with foliage have really backfired, aesthetically speaking.",
 		coord = (14, 25),
-		channel = "17-ooze-gardens"
+		channel = "17-ooze-gardens",
+		role = "17 - Ooze Gardens"
 	),
 	EwPoi( # 18
 		id_poi = "cratersville",
@@ -264,7 +297,8 @@ poi_list = [
 		str_name = "Cratersville",
 		str_desc = "The people here hurry to their destinations, avoiding eye contact. They must be wary after seeing gang members level the next town over not too long ago.",
 		coord = (19, 28),
-		channel = "18-cratersville"
+		channel = "18-cratersville",
+		role = "18 - Cratersville"
 	),
 	EwPoi( # 19
 		id_poi = "wreckington",
@@ -274,7 +308,8 @@ poi_list = [
 		str_name = "Wreckington",
 		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.",
 		coord = (27, 24),
-		channel = "19-wreckington"
+		channel = "19-wreckington",
+		role = "19 - Wreckington"
 	),
 	EwPoi( # 20
 		id_poi = "juviesrow",
@@ -287,7 +322,8 @@ poi_list = [
 		str_name = "Juvie's Row",
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.",
 		coord = (32, 18),
-		channel = "20-juvies-row"
+		channel = "20-juvies-row",
+		role = "20 - Juvie's Row"
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",
@@ -297,7 +333,8 @@ poi_list = [
 		str_name = "Slime's End",
 		str_desc = "The narrow peninsula is bordered on both sides by the Slime Sea. The phosphorescence of the Sea illuminates the land and sky with an eerily even green glow.",
 		coord = (40, 16),
-		channel = "21-slimes-end"
+		channel = "21-slimes-end",
+		role = "21 - Slime's End"
 	),
 	EwPoi( # 22
 		id_poi = "vagrantscorner",
@@ -307,7 +344,8 @@ poi_list = [
 		str_name = "Vagrant's Corner",
 		str_desc = "The glow of the Slime Sea illumunates the undersides of the docks and the heavy industrial machinery designed to pump slime into the cargo holds of outbound barges.",
 		coord = (37, 11),
-		channel = "22-vagrants-corner"
+		channel = "22-vagrants-corner",
+		role = "22 - Vagrant's Corner"
 	),
 	EwPoi( # 23
 		id_poi = "assaultflatsbeachresort",
@@ -322,14 +360,16 @@ poi_list = [
 		str_name = "Assault Flats Beach Resort",
 		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront.",
 		coord = (40, 6),
-		channel = "23-assault-flats-beach-resort"
+		channel = "23-assault-flats-beach-resort",
+		role = "23 - Assault Flats Beach Resort"
 	),
 	EwPoi( # 24
 		id_poi = "newnewyonkers",
 		str_name = "New New Yonkers",
 		str_desc = "Trendy restaurants and clubs sit empty in this sparsely-populated failed gentrification experiment.",
 		coord = (36, 4),
-		channel = "24-new-new-yonkers"
+		channel = "24-new-new-yonkers",
+		role = "24 - New New Yonkers"
 	),
 	EwPoi( # 25
 		id_poi = "brawlden",
@@ -345,14 +385,16 @@ poi_list = [
 		str_name = "Brawlden",
 		str_desc = "Rough-looking bewifebeatered citizens are everywhere, doing unspecified maintenence on strange machines propped up on cinderblocks. A SlimeCorp Laboratory hums and whirrs in the distance, day and night.",
 		coord = (28, 3),
-		channel = "25-brawlden"
+		channel = "25-brawlden",
+		role = "25 - Brawlden"
 	),
 	EwPoi( # 26
 		id_poi = "toxington",
 		str_name = "Toxington",
 		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.",
 		coord = (9, 4),
-		channel = "26-toxington"
+		channel = "26-toxington",
+		role = "26 - Toxington"
 	),
 	EwPoi( # 27
 		id_poi = "charcoalpark",
@@ -362,7 +404,8 @@ poi_list = [
 		str_name = "Charcoal Park",
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.",
 		coord = (3, 3),
-		channel = "27-charcoal-park"
+		channel = "27-charcoal-park",
+		role = "27 - Charcoal Park"
 	),
 	EwPoi( # 28
 		id_poi = "poloniumhill",
@@ -372,7 +415,8 @@ poi_list = [
 		str_name = "Polonium Hill",
 		str_desc = "The gently rolling terrain is speckled with hideous minimansions that obviously cost a fortune and look like complete shit.",
 		coord = (5, 9),
-		channel = "28-polonium-hill"
+		channel = "28-polonium-hill",
+		role = "28 - Polonium Hill"
 	),
 	EwPoi( # 29
 		id_poi = "westglocksbury",
@@ -383,7 +427,8 @@ poi_list = [
 		str_name = "West Glocksbury",
 		str_desc = "Gunshots ring out periodically from somewhere in the distance, hidden by laundromats and barber shops. Even the most jaded NLACakaNMite may get a bit nervous 'round these parts.",
 		coord = (4, 14),
-		channel = "29-west-glocksbury"
+		channel = "29-west-glocksbury",
+		role = "29 - West Glocksbury"
 	)
 ]
 

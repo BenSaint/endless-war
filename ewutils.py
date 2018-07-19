@@ -4,7 +4,6 @@ import time
 import re
 
 import ewcfg
-import ewmap
 
 db_pool = {}
 db_pool_id = 0
@@ -69,9 +68,13 @@ def getRoleMap(roles):
 	roles_map = {}
 
 	for role in roles:
-		roles_map[role.name.replace(" ", "").lower()] = role
+		roles_map[mapRoleName(role.name)] = role
 
 	return roles_map
+
+""" canonical lowercase no space name for a role """
+def mapRoleName(roleName):
+	return roleName.replace(" ", "").lower()
 
 """ connect to the database """
 def databaseConnect():
@@ -291,17 +294,6 @@ def weaponskills_clear(id_server = None, id_user = None, member = None):
 			# Clean up the database handles.
 			cursor.close()
 			databaseClose(conn_info)
-
-"""
-	Returns true if the specified point of interest is a PvP zone.
-"""
-def poi_is_pvp(poi_name = None):
-	poi = ewmap.id_to_poi.get(poi_name)
-
-	if poi != None:
-		return poi.pvp
-	
-	return False
 
 re_flattener = re.compile("[ '\"!@#$%^&*().,/?{}\[\];:]")
 

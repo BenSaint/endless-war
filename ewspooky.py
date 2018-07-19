@@ -6,6 +6,7 @@ import time
 import ewcmd
 import ewcfg
 import ewutils
+import ewmap
 from ew import EwUser, EwMarket
 
 """ revive yourself from the dead. """
@@ -108,7 +109,7 @@ async def haunt(cmd):
 		elif (time_now - user_data.time_lasthaunt) < ewcfg.cd_haunt:
 			# Disallow haunting if the user has haunted too recently.
 			response = "You're being a little TOO spooky lately, don't you think?"
-		elif ewutils.poi_is_pvp(haunted_data.poi) == False:
+		elif ewmap.poi_is_pvp(haunted_data.poi) == False:
 			# Require the target to be flagged for PvP
 			response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 		elif ewcfg.role_corpse in roles_map_target:

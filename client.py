@@ -161,6 +161,10 @@ async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	ewutils.logMsg('Ready.')
 
+	# Flatten role names to all lowercase, no spaces.
+	for poi in ewmap.poi_list:
+		poi.role = ewutils.mapRoleName(poi.role)
+
 	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
 
 	# Look for a Twitch client_id on disk.

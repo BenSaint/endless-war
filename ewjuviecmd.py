@@ -8,6 +8,7 @@ import ewcfg
 import ewutils
 import ewcmd
 import ewitem
+import ewmap
 from ew import EwUser, EwMarket
 
 # Map of user ID to a map of recent miss-mining time to count. If the count
@@ -28,7 +29,7 @@ async def enlist(cmd):
 
 		user_data = EwUser(member = cmd.message.author)
 		user_slimes = user_data.slimes
-		user_is_pvp = ewutils.poi_is_pvp(user_data.poi)
+		user_is_pvp = ewmap.poi_is_pvp(user_data.poi)
 
 		if user_slimes < ewcfg.slimes_toenlist:
 			response = "You need to mine more slime to rise above your lowly station. ({}/{})".format(user_slimes, ewcfg.slimes_toenlist)

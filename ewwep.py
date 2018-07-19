@@ -5,6 +5,7 @@ import ewcmd
 import ewcfg
 import ewutils
 import ewitem
+import ewmap
 from ew import EwUser, EwMarket
 
 """ A weapon object which adds flavor text to kill/shoot. """
@@ -192,7 +193,7 @@ async def attack(cmd):
 			# Don't allow the shootee to be shot by the same player twice.
 			response = "You have already proven your superiority over {}.".format(member.display_name)
 
-		elif ewutils.poi_is_pvp(shootee_data.poi) == False:
+		elif ewmap.poi_is_pvp(shootee_data.poi) == False:
 			# Target is not flagged for PvP.
 			response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 
