@@ -81,23 +81,23 @@ cmd_map = {
 
 
 	# Show the total of negative slime in the world.
-	ewcfg.cmd_negaslime: ewspooky.negaslime,
+	#ewcfg.cmd_negaslime: ewspooky.negaslime,
 
 	# revive yourself as a juvenile after having been killed.
-	ewcfg.cmd_revive: ewspooky.revive,
+	#ewcfg.cmd_revive: ewspooky.revive,
 
 	# Ghosts can haunt enlisted players to reduce their slime score.
 	ewcfg.cmd_haunt: ewspooky.haunt,
 
 
 	# Play slime pachinko!
-	ewcfg.cmd_slimepachinko: ewcasino.pachinko,
+	#ewcfg.cmd_slimepachinko: ewcasino.pachinko,
 
 	# Toss the dice at slime craps!
-	ewcfg.cmd_slimecraps: ewcasino.craps,
+	#ewcfg.cmd_slimecraps: ewcasino.craps,
 
 	# Pull the lever on a slot machine!
-	ewcfg.cmd_slimeslots: ewcasino.slots,
+	#ewcfg.cmd_slimeslots: ewcasino.slots,
 
 
 	# See what's for sale in the Food Court.
