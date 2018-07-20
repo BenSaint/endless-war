@@ -67,7 +67,7 @@ async def updateRoles(
 
 	poi_roles_remove = []
 	for poi in ewcfg.poi_list:
-		if poi.role != poi_role:
+		if poi.role != None and poi.role != poi_role:
 			poi_roles_remove.append(poi.role)
 
 	role_names = []
@@ -77,7 +77,7 @@ async def updateRoles(
 
 	if faction_role not in role_names:
 		role_names.append(faction_role)
-	if poi_role not in role_names:
+	if poi_role != None and poi_role not in role_names:
 		role_names.append(poi_role)
 
 	replacement_roles = []

@@ -58,13 +58,16 @@ class EwPoi:
 	channel = ""
 
 	# Discord role associated with this zone (control channel visibility).
-	role = ""
+	role = None
 
 	# Zone allows PvP combat and interactions.
 	pvp = True
 
-	# Factions allowed in this zone
+	# Factions allowed in this zone.
 	factions = []
+
+	# Life states allowed in this zone.
+	life_states = []
 
 	def __init__(
 		self,
@@ -72,11 +75,12 @@ class EwPoi:
 		alias = [],
 		str_name = "Unknown",
 		str_desc = "...",
-		coord = (0, 0),
+		coord = None,
 		channel = "",
-		role = "",
+		role = None,
 		pvp = True,
-		factions = []
+		factions = [],
+		life_states = []
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -87,6 +91,7 @@ class EwPoi:
 		self.role = role
 		self.pvp = pvp
 		self.factions = factions
+		self.life_states = life_states
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -157,7 +162,13 @@ class EwPath:
 	cost = 0
 	iters = 0
 
-	def __init__(self, path_from = None, steps = [], cost = 0, visited = {}):
+	def __init__(
+		self,
+		path_from = None,
+		steps = [],
+		cost = 0,
+		visited = {}
+	):
 		if path_from != None:
 			self.steps = deepcopy(path_from.steps)
 			self.cost = path_from.cost
@@ -340,6 +351,7 @@ async def move(cmd):
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "Where to?"))
 
 	user_data = EwUser(member = cmd.message.author)
+	poi_current = ewcfg.id_to_poi.get(user_data.poi)
 	poi = ewcfg.id_to_poi.get(target_name)
 
 	if poi == None:
@@ -348,20 +360,27 @@ async def move(cmd):
 	if poi.id_poi == user_data.poi:
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
 
-	if (len(poi.factions) > 0 and
+	if(
+		len(poi.factions) > 0 and
 		user_data.life_state != ewcfg.life_state_corpse and
 		len(user_data.faction) > 0 and
 		user_data.faction not in poi.factions
+	) or (
+		len(poi.life_states) > 0 and
+		user_data.life_state not in poi.life_states
 	):
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
-	path = path_to(
-		poi_start = user_data.poi,
-		poi_end = target_name
-	)
+	if poi.coord == None or poi_current == None or poi_current.coord == None:
+		path = EwPath(cost = 60)
+	else:
+		path = path_to(
+			poi_start = user_data.poi,
+			poi_end = target_name
+		)
 
-	if path == None:
-		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
+		if path == None:
+			return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
 
 	global moves_active
 	global move_counter
@@ -373,51 +392,91 @@ async def move(cmd):
 	# Take control of the move for this player.
 	move_current = moves_active[cmd.message.author.id] = move_counter
 
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.".format(poi.str_name)))
+	minutes = int(path.cost / 60)
+
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
+		poi.str_name,
+		(" It's {} minute{} away.".format(
+			minutes,
+			("s" if minutes != 1 else "")
+		) if minutes > 0 else "")
+	)))
 
 	life_state = user_data.life_state
+	faction = user_data.faction
 
-	# Perform move.
-	for step in path.steps[1:]:
-		# Check to see if we have been interrupted and need to not move any farther.
-		if moves_active[cmd.message.author.id] != move_current:
-			break
+	if poi.coord == None or poi_current == None or poi_current.coord == None:
+		if path.cost > 0:
+			await asyncio.sleep(path.cost)
 
-		val = map_world[step[1]][step[0]]
+		user_data = EwUser(member = cmd.message.author)
 
-		if val == sem_city:
-			poi_current = ewcfg.coord_to_poi.get(step)
+		# If the player dies or enlists or whatever while moving, cancel the move.
+		if user_data.life_state != life_state or faction != user_data.faction:
+			return
 
-			if poi_current != None:
-				user_data = EwUser(member = cmd.message.author)
+		user_data.poi = poi.id_poi
+		user_data.persist()
 
-				# If the player dies or enlists or whatever while moving, cancel the move.
-				if user_data.life_state != life_state:
-					break
+		await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
-				user_data.poi = poi_current.id_poi
-				user_data.persist()
+		channel = cmd.message.channel
 
-				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+		# Send the message in the channel for this POI if possible, else in the origin channel for the move.
+		for ch in cmd.message.server.channels:
+			if ch.name == poi.channel:
+				channel = ch
+				break
 
-				channel = cmd.message.channel
+		await cmd.client.send_message(
+			channel,
+			ewutils.formatMessage(
+				cmd.message.author,
+				"You enter {}.".format(poi.str_name)
+			)
+		)
+	else:
+		# Perform move.
+		for step in path.steps[1:]:
+			# Check to see if we have been interrupted and need to not move any farther.
+			if moves_active[cmd.message.author.id] != move_current:
+				break
 
-				# Send the message in the channel for this POI if possible, else in the origin channel for the move.
-				for ch in cmd.message.server.channels:
-					if ch.name == poi_current.channel:
-						channel = ch
-						break
+			val = map_world[step[1]][step[0]]
 
-				await cmd.client.send_message(
-					channel,
-					ewutils.formatMessage(
-						cmd.message.author,
-						"You enter {}.".format(poi_current.str_name)
+			if val == sem_city:
+				poi_current = ewcfg.coord_to_poi.get(step)
+
+				if poi_current != None:
+					user_data = EwUser(member = cmd.message.author)
+
+					# If the player dies or enlists or whatever while moving, cancel the move.
+					if user_data.life_state != life_state or faction != user_data.faction:
+						return
+
+					user_data.poi = poi_current.id_poi
+					user_data.persist()
+
+					await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+
+					channel = cmd.message.channel
+
+					# Send the message in the channel for this POI if possible, else in the origin channel for the move.
+					for ch in cmd.message.server.channels:
+						if ch.name == poi_current.channel:
+							channel = ch
+							break
+
+					await cmd.client.send_message(
+						channel,
+						ewutils.formatMessage(
+							cmd.message.author,
+							"You enter {}.".format(poi_current.str_name)
+						)
 					)
-				)
-		else:
-			if val > 0:
-				await asyncio.sleep(val)
+			else:
+				if val > 0:
+					await asyncio.sleep(val)
 
 """
 	Dump out the visual description of the area you're in.
@@ -429,8 +488,11 @@ async def look(cmd):
 	if poi != None:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
 			cmd.message.author,
-			"**{}**\n\n{}".format(
+			"**{}**\n\n{}{}".format(
 				poi.str_name,
-				poi.str_desc
+				poi.str_desc,
+				("\n\n{}".format(
+					ewcmd.weather_txt(cmd.message.server.id)
+				) if cmd.message.server != None else "")
 			)
 		))

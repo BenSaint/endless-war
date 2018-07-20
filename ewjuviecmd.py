@@ -107,6 +107,7 @@ async def mine(cmd):
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
 				user_data.life_state = ewcfg.life_state_corpse
+				user_data.poi = poi_id_thesewers
 				user_data.slimes = 0
 				user_data.persist()
 

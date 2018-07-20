@@ -211,11 +211,9 @@ async def data(cmd):
 	if member != None:
 		await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
-""" time and weather information """
-async def weather(cmd):
-	resp = await start(cmd = cmd)
+def weather_txt(id_server):
 	response = ""
-	market_data = EwMarket(id_server = cmd.message.author.server.id)
+	market_data = EwMarket(id_server = id_server)
 	time_current = market_data.clock
 	displaytime = str(time_current)
 	ampm = ''
@@ -246,6 +244,13 @@ async def weather(cmd):
 			flair = weather_data.str_night
 			
 	response += "It is currently {}{} in NLACakaNM.{}".format(displaytime, ampm, (' ' + flair))
+	return response
+
+""" time and weather information """
+async def weather(cmd):
+	resp = await start(cmd = cmd)
+
+	response = weather_txt(cmd.message.server.id)
 	
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

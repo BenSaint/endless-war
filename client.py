@@ -167,7 +167,8 @@ async def on_ready():
 
 	# Flatten role names to all lowercase, no spaces.
 	for poi in ewcfg.poi_list:
-		poi.role = ewutils.mapRoleName(poi.role)
+		if poi.role != None:
+			poi.role = ewutils.mapRoleName(poi.role)
 
 	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
 
@@ -430,7 +431,7 @@ async def on_message(message):
 			return
 
 		# assign the appropriate roles to a user with less than @everyone, faction, location
-		if len(message.author.roles) < 3:
+		if len(message.author.roles) < 2:
 			return await ewrolemgr.updateRoles(client = client, member = message.author)
 
 		# Scold/ignore offline players.

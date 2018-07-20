@@ -411,6 +411,7 @@ async def attack(cmd):
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.bounty = 0
 					shootee_data.life_state = ewcfg.life_state_corpse
+					shootee_data.poi = ewcfg.poi_id_thesewers
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -543,6 +544,7 @@ async def suicide(cmd):
 		elif user_iskillers or user_isrowdys:
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
 			user_data.life_state = ewcfg.life_state_corpse
+			user_data.poi = poi_id_thesewers
 			user_data.id_killer = cmd.message.author.id
 			user_data.slimes = 0
 			user_data.persist()

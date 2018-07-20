@@ -24,6 +24,10 @@ life_state_juvenile = 1
 life_state_enlisted = 2
 life_state_kingpin = 10
 
+# ID tags for points of interest that are needed in code.
+poi_id_thesewers = "thesewers"
+poi_id_downtown = "downtown"
+
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
 role_juvenile_pvp = "juvenilepvp"
@@ -1154,7 +1158,7 @@ for item_def in item_def_list:
 
 poi_list = [
 	EwPoi( # 1
-		id_poi = "downtown",
+		id_poi = poi_id_downtown,
 		alias = [
 			"central",
 			"dt",
@@ -1215,7 +1219,7 @@ poi_list = [
 		str_name = "Krak Bay",
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.",
 		coord = (16, 19),
-		channel = "4-krak-bay",
+		channel = channel_foodcourt,
 		role = "4 - Krak Bay"
 	),
 	EwPoi( # 5
@@ -1410,7 +1414,7 @@ poi_list = [
 		str_name = "Juvie's Row",
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.",
 		coord = (32, 18),
-		channel = "20-juvies-row",
+		channel = channel_mines,
 		role = "20 - Juvie's Row"
 	),
 	EwPoi( # 21
@@ -1517,6 +1521,19 @@ poi_list = [
 		coord = (4, 14),
 		channel = "29-west-glocksbury",
 		role = "29 - West Glocksbury"
+	),
+	EwPoi( # the-sewers
+		id_poi = poi_id_thesewers,
+		alias = [
+			"sewers",
+			"sewer"
+		],
+		str_name = "The Sewers",
+		str_desc = "", # TODO
+		channel = channel_sewers,
+		life_states = [
+			life_state_corpse
+		]
 	)
 ]
 
