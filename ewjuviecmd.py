@@ -37,9 +37,15 @@ async def enlist(cmd):
 				faction = user_data.faction
 
 			if faction == ewcfg.faction_rowdys or faction == ewcfg.faction_killers:
-				user_data.life_state = ewcfg.life_state_enlisted
-				user_data.faction = faction
-				user_data.persist()
+				if len(user_data.faction) > 0 and user_data.faction != faction:
+					# Disallow joining a new faction. Player must be pardoned first.
+					response = "Disgusting traitor. You can only join the {}.".format(user_data.faction)
+				else:
+					response = "Enlisting in the {}.".format(faction)
+
+					user_data.life_state = ewcfg.life_state_enlisted
+					user_data.faction = faction
+					user_data.persist()
 
 				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 			else:

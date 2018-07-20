@@ -2,7 +2,6 @@ import asyncio
 
 import ewcfg
 import ewutils
-import ewmap
 
 from ew import EwUser
 
@@ -62,12 +61,12 @@ async def updateRoles(
 	# Manage location roles.
 	poi_role = None
 
-	poi = ewmap.id_to_poi.get(user_data.poi)
+	poi = ewcfg.id_to_poi.get(user_data.poi)
 	if poi != None:
 		poi_role = poi.role
 
 	poi_roles_remove = []
-	for poi in ewmap.poi_list:
+	for poi in ewcfg.poi_list:
 		if poi.role != poi_role:
 			poi_roles_remove.append(poi.role)
 

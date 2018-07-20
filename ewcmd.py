@@ -4,7 +4,6 @@ import asyncio
 import ewcfg
 import ewutils
 import ewitem
-import ewmap
 import ewrolemgr
 from ew import EwUser, EwMarket
 
@@ -126,7 +125,7 @@ async def data(cmd):
 			user_data.slimelevel = new_level
 			user_data.persist()
 
-		poi = ewmap.id_to_poi.get(user_data.poi)
+		poi = ewcfg.id_to_poi.get(user_data.poi)
 		if poi != None:
 			response = "You find yourself in {}. ".format(poi.str_name)
 

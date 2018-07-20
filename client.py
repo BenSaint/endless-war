@@ -166,7 +166,7 @@ async def on_ready():
 	ewutils.logMsg('Ready.')
 
 	# Flatten role names to all lowercase, no spaces.
-	for poi in ewmap.poi_list:
+	for poi in ewcfg.poi_list:
 		poi.role = ewutils.mapRoleName(poi.role)
 
 	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
