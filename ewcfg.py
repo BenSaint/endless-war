@@ -1529,7 +1529,7 @@ poi_list = [
 			"sewer"
 		],
 		str_name = "The Sewers",
-		str_desc = "", # TODO
+		str_desc = "A vast subterranean maze of concrete tunnels, eternally echoing with the dripping of water and decayed slime runoff. All the waste of NLACakaNM eventually winds up here, citizens included.",
 		channel = channel_sewers,
 		life_states = [
 			life_state_corpse
