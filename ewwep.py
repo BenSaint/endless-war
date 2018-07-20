@@ -6,6 +6,7 @@ import ewcfg
 import ewutils
 import ewitem
 import ewmap
+import ewrolemgr
 from ew import EwUser, EwMarket
 
 """ A weapon object which adds flavor text to kill/shoot. """
@@ -144,9 +145,6 @@ async def attack(cmd):
 	elif user_data.hunger >= ewcfg.hunger_max:
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
-		# The roles assigned to the author of this message.
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-
 		# Get shooting player's info
 		if user_data.slimelevel <= 0:
 			user_data.slimelevel = 1
@@ -161,9 +159,6 @@ async def attack(cmd):
 		crit = False
 		strikes = 0
 
-		# Shot player's assigned Discord roles.
-		roles_map_target = ewutils.getRoleMap(member.roles)
-
 		# Slime level data. Levels are in powers of 10.
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 		slimes_spent = int(slimes_bylevel / 10)
@@ -174,10 +169,10 @@ async def attack(cmd):
 		if fumble_chance > user_data.weaponskill:
 			miss = True
 
-		user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkillers in roles_map_user
-		user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
+		user_iskillers = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers
+		user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
 
-		if ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+		if shootee_data.life_state == ewcfg.life_state_kingpin:
 			# Disallow killing generals.
 			response = "He is hiding in his ivory tower and playing video games like a retard."
 
@@ -193,13 +188,15 @@ async def attack(cmd):
 			# Don't allow the shootee to be shot by the same player twice.
 			response = "You have already proven your superiority over {}.".format(member.display_name)
 
+		elif shootee_data.poi != user_data.poi:
+			response = "You can't reach them from where you are."
+
 		elif ewmap.poi_is_pvp(shootee_data.poi) == False:
-			# Target is not flagged for PvP.
 			response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
 
 		elif user_iskillers == False and user_isrowdys == False:
 			# Only killers, rowdys, the cop killer, and rowdy fucker can shoot people.
-			if ewcfg.role_juvenile in roles_map_user:
+			if user_data.life_state == ewcfg.life_state_juvenile:
 				response = "Juveniles lack the moral fiber necessary for violence."
 			else:
 				response = "You lack the moral fiber necessary for violence."
@@ -208,18 +205,8 @@ async def attack(cmd):
 			# User is currently invulnerable.
 			response = "{} has died too recently and is immune.".format(member.display_name)
 
-		elif ewcfg.role_corpse in roles_map_target and ewcfg.role_corpse_pvp not in roles_map_target:
-			# Target is already dead and not a ghost.
-			response = "{} is already dead.".format(member.display_name)
-
-		elif ewcfg.role_corpse_pvp in roles_map_target and user_data.ghostbust == False:
-			# Target is a ghost, user can't attack ghosts:
-			response = "{} is already dead.".format(member.display_name)
-
-		elif ewcfg.role_corpse_pvp in roles_map_target and user_data.ghostbust == True:
+		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == True:
 			# Attack a ghostly target
-			role_corpse = cmd.roles_map[ewcfg.role_corpse]
-
 			was_busted = False
 
 			#hunger drain
@@ -333,20 +320,25 @@ async def attack(cmd):
 				boss_data.slimes += boss_slimes
 				boss_data.persist()
 
+		elif shootee_data.life_state == ewcfg.life_state_corpse:
+			# Target is already dead and not a ghost.
+			response = "{} is already dead.".format(member.display_name)
+
 		else:
 			# Slimes from this shot might be awarded to the boss.
 			role_boss = (ewcfg.role_copkiller if user_iskillers else ewcfg.role_rowdyfucker)
 			boss_slimes = 0
 
-			role_corpse = cmd.roles_map[ewcfg.role_corpse]
-
 			was_juvenile = False
 			was_killed = False
 			was_shot = False
 
-			if (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)) or (ewcfg.role_juvenile in roles_map_target):
+			if ((user_iskillers and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_rowdys)) or
+				(user_isrowdys and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_killers)) or
+				(shootee_data.life_state == ewcfg.life_state_juvenile)
+			):
 				# User can be shot.
-				if ewcfg.role_juvenile in roles_map_target:
+				if shootee_data.life_state == ewcfg.life_state_juvenile:
 					was_juvenile = True
 
 				was_shot = True
@@ -418,6 +410,7 @@ async def attack(cmd):
 					shootee_data.slimelevel = len(str(int(user_data.slimes))) - 1
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.bounty = 0
+					shootee_data.life_state = ewcfg.life_state_corpse
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -517,7 +510,7 @@ async def attack(cmd):
 
 			# Assign the corpse role to the newly dead player.
 			if was_killed:
-				await cmd.client.replace_roles(member, role_corpse)
+				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
@@ -535,14 +528,11 @@ async def suicide(cmd):
 		# Get the user data.
 		user_data = EwUser(member = cmd.message.author)
 
-		# The roles assigned to the author of this message.
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-
-		user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
-		user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-		user_isgeneral = ewcfg.role_copkiller in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-		user_isjuvenile = ewcfg.role_juvenile in roles_map_user
-		user_isdead = ewcfg.role_corpse in roles_map_user
+		user_iskillers = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers
+		user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
+		user_isgeneral = user_data.life_state == ewcfg.life_state_kingpin
+		user_isjuvenile = user_data.life_state == ewcfg.life_state_juvenile
+		user_isdead = user_data.life_state == ewcfg.life_state_corpse
 
 		if user_isdead:
 			response = "Too late for that."
@@ -551,17 +541,14 @@ async def suicide(cmd):
 		elif user_isgeneral:
 			response = "\*click* Alas, your gun has jammed."
 		elif user_iskillers or user_isrowdys:
-			role_corpse = cmd.roles_map[ewcfg.role_corpse]
-
-			# Assign the corpse role to the player. He dead.
-			await cmd.client.replace_roles(cmd.message.author, role_corpse)
-
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
+			user_data.life_state = ewcfg.life_state_corpse
 			user_data.id_killer = cmd.message.author.id
-			shootee_data.totaldamage += shootee_data.slimes
-			shootee_data.slimes = -int(shootee_data.totaldamage / 10)
 			user_data.slimes = 0
 			user_data.persist()
+
+			# Assign the corpse role to the player. He dead.
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
 			response = '{} has willingly returned to the slime. {}'.format(cmd.message.author.display_name, ewcfg.emote_slimeskull)
 		else:
@@ -589,18 +576,15 @@ async def spar(cmd):
 		if(member.id == cmd.message.author.id):
 			response = "How do you expect to spar with yourself?"
 		else:
-			# The roles assigned to the author of this message.
-			roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-
 			# Get killing player's info.
 			user_data = EwUser(member = cmd.message.author)
 
 			# Get target's info.
 			sparred_data = EwUser(member = member)
 
-			user_iskillers = ewcfg.role_copkillers in roles_map_user or ewcfg.role_copkiller in roles_map_user
-			user_isrowdys = ewcfg.role_rowdyfuckers in roles_map_user or ewcfg.role_rowdyfucker in roles_map_user
-			user_isdead = ewcfg.role_corpse in roles_map_user
+			user_iskillers = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers
+			user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
+			user_isdead = user_data.life_state == ewcfg.life_state_corpse
 
 			if user_data.hunger >= ewcfg.hunger_max:
 				response = "You are too exhausted to train right now. Go get some grub!"
@@ -620,15 +604,13 @@ async def spar(cmd):
 				was_enemy = False
 				duel = False
 
-				roles_map_target = ewutils.getRoleMap(member.roles)
-
 				#Determine if the !spar is a duel:
 				weapon = None
 				if user_data.weapon != None and user_data.weapon != "" and user_data.weapon == sparred_data.weapon:
 					weapon = ewcfg.weapon_map.get(user_data.weapon)
 					duel = True
 
-				if ewcfg.role_corpse in roles_map_target:
+				if sparred_data.life_state == ewcfg.life_state_corpse:
 					# Target is already dead.
 					was_dead = True
 				elif (user_data.time_lastspar + ewcfg.cd_spar) > time_now:
@@ -637,14 +619,14 @@ async def spar(cmd):
 				elif (sparred_data.time_lastspar + ewcfg.cd_spar) > time_now:
 					# taret sparred too recently
 					was_target_tired = True
-				elif ewcfg.role_juvenile in roles_map_target:
+				elif sparred_data.life_state == ewcfg.life_state_juvenile:
 					# Target is a juvenile.
 					was_juvenile = True
 
-				elif (user_iskillers and (ewcfg.role_copkillers in roles_map_target)) or (user_isrowdys and (ewcfg.role_rowdyfuckers in roles_map_target)):
+				elif (user_iskillers and (sparred_data.life_state == ewcfg.life_state_enlisted and sparred_data.faction == ewcfg.faction_killers)) or (user_isrowdys and (sparred_data.life_state == ewcfg.life_state_enlisted and sparred_data.faction == ewcfg.faction_rowdys)):
 					# User can be sparred.
 					was_sparred = True
-				elif (user_iskillers and (ewcfg.role_rowdyfuckers in roles_map_target)) or (user_isrowdys and (ewcfg.role_copkillers in roles_map_target)):
+				elif (user_iskillers and (sparred_data.life_state == ewcfg.life_state_enlisted and sparred_data.faction == ewcfg.faction_rowdys)) or (user_isrowdys and (sparred_data.life_state == ewcfg.life_state_enlisted and sparred_data.faction == ewcfg.faction_killers)):
 					# Target is a member of the opposing faction.
 					was_enemy = True
 

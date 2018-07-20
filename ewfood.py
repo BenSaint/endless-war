@@ -102,8 +102,7 @@ async def order(cmd):
 				value = 1
 
 			# Kingpins eat free.
-			roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-			if ewcfg.role_rowdyfucker in roles_map_user or ewcfg.role_copkiller in roles_map_user:
+			if user_date.life_state == ewcfg.life_state_kingpin:
 				value = 0
 
 			if value > user_data.slimecredit:

@@ -17,6 +17,12 @@ update_market = 900
 # Market delta
 max_iw_swing = 30
 
+# Life states. How the player is living (or deading) in the database
+life_state_corpse = 0
+life_state_juvenile = 1
+life_state_enlisted = 2
+life_state_kingpin = 10
+
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
 role_juvenile_pvp = "juvenilepvp"
@@ -35,7 +41,7 @@ faction_killers = "killers"
 faction_rowdys = "rowdys"
 
 # Channel names
-channel_mines = "the-mines"
+channel_mines = "20-juvies-row"
 channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
@@ -43,7 +49,7 @@ channel_dojo = "the-dojo"
 channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
 channel_stockexchange = "slime-stock-exchange"
-channel_foodcourt = "food-court"
+channel_foodcourt = "4-krak-bay"
 
 # Commands
 cmd_prefix = '!'
@@ -99,6 +105,7 @@ cmd_move = cmd_prefix + 'move'
 cmd_move_alt1 = cmd_prefix + 'goto'
 cmd_move_alt2 = cmd_prefix + 'walk'
 cmd_inspect = cmd_prefix + 'inspect'
+cmd_look = cmd_prefix + 'look'
 
 
 # Slime costs/values
@@ -167,7 +174,7 @@ str_exchange_closed = "The Exchange has closed for the night."
 str_exchange_specify = "Specify how much {currency} you will {action}."
 str_exchange_channelreq = "You must go to the #" + channel_stockexchange + " to {action} your {currency}."
 str_exchange_busy = "You can't {action} right now. Your slimebroker is busy."
-str_food_channelreq = "You must go to the #" + channel_foodcourt + " to {action}."
+str_food_channelreq = "There's no food here. Go to Krak Bay to {action}."
 str_weapon_wielding_self = "You are wielding"
 str_weapon_wielding = "They are wielding"
 
@@ -214,6 +221,7 @@ col_inebriation = 'inebriation'
 col_ghostbust = 'ghostbust'
 col_faction = 'faction'
 col_poi = 'poi'
+col_life_state = 'life_state'
 
 # Database columns for markets
 col_rate_market = 'rate_market'

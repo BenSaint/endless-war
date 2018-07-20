@@ -4,6 +4,7 @@ from copy import deepcopy
 
 import ewutils
 import ewcmd
+import ewrolemgr
 
 from ew import EwUser
 
@@ -20,6 +21,17 @@ def poi_is_pvp(poi_name = None):
 	if poi != None:
 		return poi.pvp
 	
+	return False
+
+"""
+	Returns true if the specified name is used by any POI.
+"""
+def channel_name_is_poi(channel_name):
+	if channel_name != None:
+		for poi in poi_list:
+			if poi.channel == channel_name:
+				return True
+
 	return False
 
 """
@@ -686,12 +698,18 @@ def map_draw(path = None, coord = None):
 	Player command to move themselves from one place to another.
 """
 async def move(cmd):
+	if channel_name_is_poi(cmd.message.channel.name) == False:
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You must {} in a zone's channel.".format(cmd.tokens[0])))
+
 	resp = await ewcmd.start(cmd = cmd)
 
 	target_name = ewutils.flattenTokenListToString(cmd.tokens[1:])
-	user_data = EwUser(member = cmd.message.author)
+	if target_name == None or len(target_name) == 0:
+		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "Where to?"))
 
+	user_data = EwUser(member = cmd.message.author)
 	poi = id_to_poi.get(target_name)
+
 	if poi == None:
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "Never heard of it."))
 	elif poi.id_poi == user_data.poi:
@@ -712,41 +730,46 @@ async def move(cmd):
 	move_current = moves_active.get(cmd.message.author.id)
 	move_counter += 1
 
-	if move_current == None:
-		# No active course.
-		# FIXME debug
-		ewutils.logMsg("No current course id.")
-	else:
-		# Interrupt course.
-		# FIXME debug
-		ewutils.logMsg("Interrupted course id: {}".format(move_current))
-
+	# Take control of the move for this player.
 	move_current = moves_active[cmd.message.author.id] = move_counter
 
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.".format(poi.str_name)))
+
+	life_state = user_data.life_state
 
 	# Perform move.
 	for step in path.steps[1:]:
 		# Check to see if we have been interrupted and need to not move any farther.
 		if moves_active[cmd.message.author.id] != move_current:
-			# FIXME debug
-			ewutils.logMsg('Move id {} interrupted.'.format(move_current))
 			break
 
 		val = map_world[step[1]][step[0]]
-
-		ewutils.logMsg("step cost {}".format(val))
 
 		if val == sem_city:
 			poi_current = coord_to_poi.get(step)
 
 			if poi_current != None:
 				user_data = EwUser(member = cmd.message.author)
+
+				# If the player dies or enlists or whatever while moving, cancel the move.
+				if user_data.life_state != life_state:
+					break
+
 				user_data.poi = poi_current.id_poi
 				user_data.persist()
 
+				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+
+				channel = cmd.message.channel
+
+				# Send the message in the channel for this POI if possible, else in the origin channel for the move.
+				for ch in cmd.message.server.channels:
+					if ch.name == poi_current.channel:
+						channel = ch
+						break
+
 				await cmd.client.send_message(
-					cmd.message.channel,
+					channel,
 					ewutils.formatMessage(
 						cmd.message.author,
 						"You enter {}.".format(poi_current.str_name)
@@ -755,3 +778,19 @@ async def move(cmd):
 		else:
 			if val > 0:
 				await asyncio.sleep(val)
+
+"""
+	Dump out the visual description of the area you're in.
+"""
+async def look(cmd):
+	user_data = EwUser(member = cmd.message.author)
+	poi = id_to_poi.get(user_data.poi)
+
+	if poi != None:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+			cmd.message.author,
+			"**{}**\n\n{}".format(
+				poi.str_name,
+				poi.str_desc
+			)
+		))

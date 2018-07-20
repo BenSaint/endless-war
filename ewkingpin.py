@@ -10,14 +10,13 @@ from ew import EwUser
 async def deadmega(cmd):
 	resp = await ewcmd.start(cmd = cmd)
 	response = ""
-	roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+	user_data = EwUser(member = cmd.message.author)
 
-	if (ewcfg.role_copkiller not in roles_map_user) and (ewcfg.role_rowdyfucker not in roles_map_user):
+	if user_data.life_state != ewcfg.life_state_kingpin:
 		response = "Only the Rowdy Fucker {} and the Cop Killer {} can do that.".format(ewcfg.emote_rowdyfucker, ewcfg.emote_copkiller)
 	else:
 		value = 1000000
 		user_slimes = 0
-		user_data = EwUser(member=cmd.message.author)
 
 		if value > user_data.slimes:
 			response = "You don't have that much slime to lose ({:,}/{:,}).".format(user_data.slimes, value)

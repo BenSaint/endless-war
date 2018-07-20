@@ -23,16 +23,14 @@ async def xfer(cmd):
 		return
 
 	member = cmd.mentions[0]
-	roles_map_target = ewutils.getRoleMap(member.roles)
+	target_data = EwUser(member = member)
 
-	if ewcfg.role_rowdyfucker in roles_map_target or ewcfg.role_copkiller in roles_map_target:
+	if target_data.life_state == ewcfg.life_state_kingpin:
 		# Disallow transfers to RF and CK kingpins.
 		response = "You can't transfer SlimeCoin to a known criminal warlord."
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 		return
 
-
-	target_data = EwUser(member = member)
 	user_data = EwUser(member = cmd.message.author)
 	market_data = EwMarket(id_server = cmd.message.author.server.id)
 

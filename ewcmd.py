@@ -5,6 +5,7 @@ import ewcfg
 import ewutils
 import ewitem
 import ewmap
+import ewrolemgr
 from ew import EwUser, EwMarket
 
 """ class to send general data about an interaction to a command """
@@ -16,7 +17,6 @@ class EwCmd:
 	client = None
 	mentions = []
 	mentions_count = 0
-	roles_map = {}
 
 	def __init__(
 		self,
@@ -37,9 +37,6 @@ class EwCmd:
 		if len(tokens) >= 1:
 			self.tokens_count = len(tokens)
 			self.cmd = tokens[0]
-
-		if message.server != None:
-			self.roles_map = ewutils.getRoleMap(message.server.roles)
 
 """ Send an initial message you intend to edit later while processing the command. Returns handle to the message. """
 async def start(cmd = None, message = '...', channel = None, client = None):
@@ -67,6 +64,7 @@ def is_casino_open(time):
 async def score(cmd):
 	response = ""
 	user_data = None
+	member = None
 
 	poudrins = ewitem.inventory(
 		id_user = cmd.message.author.id,
@@ -90,10 +88,9 @@ async def score(cmd):
 
 	# Update the user's slime level.
 	if user_data != None:
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
 		new_level = 0
 
-		if ewcfg.role_corpse not in roles_map_user:
+		if user_data.life_state != ewcfg.life_state_corpse:
 			new_level = len(str(int(user_data.slimes)))
 
 		if new_level > user_data.slimelevel:
@@ -103,24 +100,25 @@ async def score(cmd):
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+	if member != None:
+		await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 """ show player information and description """
 async def data(cmd):
 	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
-	roles_map_user = {}
+	member = None
 
 	if cmd.mentions_count == 0:
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-
 		user_data = EwUser(member = cmd.message.author)
 		market_data = EwMarket(id_server = cmd.message.server.id)
 
 		new_level = 0
 
 		# Ghosts don't have a slime level.
-		if ewcfg.role_corpse not in roles_map_user:
+		if user_data.life_state != ewcfg.life_state_corpse:
 			new_level = len(str(int(user_data.slimes)))
 
 		# Update the user's slime level.
@@ -133,7 +131,7 @@ async def data(cmd):
 			response = "You find yourself in {}. ".format(poi.str_name)
 
 		# return my data
-		if ewcfg.role_corpse in roles_map_user:
+		if user_data.life_state == ewcfg.life_state_corpse:
 			response += "You are a level {} deadboi.".format(user_data.slimelevel)
 		else:
 			response += "You are a level {} slimeboi.".format(user_data.slimelevel)
@@ -160,13 +158,11 @@ async def data(cmd):
 			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewcfg.hunger_max)
 	else:
 		member = cmd.mentions[0]
-		roles_map_user = ewutils.getRoleMap(member.roles)
-
 		user_data = EwUser(member = member)
 		market_data = EwMarket(id_server = cmd.message.server.id)
 
 		new_level = 0
-		if ewcfg.role_corpse not in roles_map_target:
+		if user_data.life_state != ewcfg.life_state_corpse:
 			new_level = len(str(int(user_data.slimes)))
 
 		if new_level > user_data.slimelevel:
@@ -174,7 +170,7 @@ async def data(cmd):
 			user_data.persist()
 
 		# return somebody's score
-		if ewcfg.role_corpse in roles_map_target:
+		if user_data.life_state == ewcfg.life_state_corpse:
 			response = "{} is a level {} deadboi.".format(member.display_name, user_data.slimelevel)
 		else:
 			response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
@@ -201,7 +197,7 @@ async def data(cmd):
 	if user_data != None:
 		new_level = 0
 
-		if ewcfg.role_corpse not in roles_map_user:
+		if user_data.life_state != ewcfg.life_state_corpse:
 			new_level = len(str(int(user_data.slimes)))
 
 		if new_level > user_data.slimelevel:
@@ -211,6 +207,10 @@ async def data(cmd):
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
+	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+	if member != None:
+		await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 """ time and weather information """
 async def weather(cmd):

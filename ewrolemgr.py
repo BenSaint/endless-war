@@ -1,0 +1,93 @@
+import asyncio
+
+import ewcfg
+import ewutils
+import ewmap
+
+from ew import EwUser
+
+
+"""
+	Fix the Discord roles assigned to this member.
+"""
+async def updateRoles(
+	client = None,
+	member = None
+):
+	user_data = EwUser(member = member)
+
+	roles_map = ewutils.getRoleMap(member.server.roles)
+	roles_map_user = ewutils.getRoleMap(member.roles)
+
+	# Fix the life_state of kingpins, if somehow it wasn't set.
+	if user_data.life_state != ewcfg.life_state_kingpin and ewcfg.role_kingpin in roles_map_user:
+		user_data.life_state = ewcfg.life_state_kingpin
+		user_data.persist()
+
+	faction_roles_remove = [
+		ewcfg.role_juvenile,
+		ewcfg.role_juvenile_pvp,
+		ewcfg.role_rowdyfucker,
+		ewcfg.role_rowdyfuckers,
+		ewcfg.role_rowdyfuckers_pvp,
+		ewcfg.role_copkiller,
+		ewcfg.role_copkillers,
+		ewcfg.role_copkillers_pvp,
+		ewcfg.role_corpse,
+		ewcfg.role_corpse_pvp,
+		ewcfg.role_kingpin
+	]
+
+	# Manage faction roles.
+	faction_role = ewcfg.role_corpse
+
+	if user_data.life_state == ewcfg.life_state_juvenile:
+		faction_role = ewcfg.role_juvenile
+
+	elif user_data.life_state == ewcfg.life_state_enlisted:
+		if user_data.faction == ewcfg.faction_killers:
+			faction_role = ewcfg.role_copkillers
+
+		elif user_data.faction == ewcfg.faction_rowdys:
+			faction_role = ewcfg.role_rowdyfuckers
+
+		else:
+			faction_role = ewcfg.role_juvenile
+
+	elif user_data.life_state == ewcfg.life_state_kingpin:
+		faction_role = ewcfg.role_kingpin
+
+	faction_roles_remove.remove(faction_role)
+
+	# Manage location roles.
+	poi_role = None
+
+	poi = ewmap.id_to_poi.get(user_data.poi)
+	if poi != None:
+		poi_role = poi.role
+
+	poi_roles_remove = []
+	for poi in ewmap.poi_list:
+		if poi.role != poi_role:
+			poi_roles_remove.append(poi.role)
+
+	role_names = []
+	for roleName in roles_map_user:
+		if roleName not in faction_roles_remove and roleName not in poi_roles_remove:
+			role_names.append(roleName)
+
+	if faction_role not in role_names:
+		role_names.append(faction_role)
+	if poi_role not in role_names:
+		role_names.append(poi_role)
+
+	replacement_roles = []
+	for name in role_names:
+		role = roles_map.get(name)
+
+		if role != None:
+			replacement_roles.append(role)
+		else:
+			ewutils.logMsg("error: role missing \"{}\"".format(name))
+
+	await client.replace_roles(member, *replacement_roles)

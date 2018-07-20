@@ -7,6 +7,7 @@ import ewcmd
 import ewcfg
 import ewutils
 import ewmap
+import ewrolemgr
 from ew import EwUser, EwMarket
 
 """ revive yourself from the dead. """
@@ -18,12 +19,9 @@ async def revive(cmd):
 	if cmd.message.channel.name != ewcfg.channel_endlesswar and cmd.message.channel.name != ewcfg.channel_sewers:
 		response = "Come to me. I hunger. #{}.".format(ewcfg.channel_sewers)
 	else:
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
+		player_data = EwUser(member = cmd.message.author)
 
-		if ewcfg.role_corpse in roles_map_user:
-			player_is_pvp = False
-
-			player_data = EwUser(member = cmd.message.author)
+		if player_data.life_state == ewcfg.life_state_corpse:
 			market_data = EwMarket(id_server = cmd.message.server.id)
 
 			# Endless War collects his fee.
@@ -55,18 +53,22 @@ async def revive(cmd):
 			# Set initial slime level. It's probably 2.
 			player_data.slimelevel = len(str(player_data.slimes))
 
+			# Set life state. This is what determines whether the player is actually alive.
+			player_data.life_state = ewcfg.life_state_juvenile
+
 			player_data.persist()
 			market_data.persist()
 
 			# Give some slimes to every living player (currently online)
 			for member in cmd.message.server.members:
 				if member.id != cmd.message.author.id and member.id != cmd.client.user.id:
-					if ewcfg.role_corpse not in ewutils.getRoleMap(member.roles):
-						member_data = EwUser(member = member)
+					member_data = EwUser(member = member)
+
+					if member_data.life_state != ewcfg.life_state_corpse:
 						member_data.slimes += ewcfg.slimes_onrevive_everyone
 						member_data.persist()
 
-			await cmd.client.replace_roles(cmd.message.author, cmd.roles_map[ewcfg.role_juvenile])
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
 			response = '{slime4} A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. {slime4} {name} has been reborn in slime. {slime4}'.format(slime4 = ewcfg.emote_slime4, name = cmd.message.author.display_name)
 		else:
@@ -85,25 +87,19 @@ async def haunt(cmd):
 	if cmd.mentions_count > 1:
 		response = "You can only spook one person at a time. Who do you think you are, the Lord of Ghosts?"
 	elif cmd.mentions_count == 1:
-		# A map of role names to Roles assigned to the current user.
-		roles_map_user = ewutils.getRoleMap(cmd.message.author.roles)
-
 		# Get the user and target data from the database.
 		user_data = EwUser(member = cmd.message.author)
 
 		member = cmd.mentions[0]
 		haunted_data = EwUser(member = member)
 
-		# A map of role names to Roles assigned to the targeted user.
-		roles_map_target = ewutils.getRoleMap(member.roles)
-
-		if ewcfg.role_corpse not in roles_map_user:
+		if user_data.life_state != ewcfg.life_state_corpse:
 			# Only dead players can haunt.
 			response = "You can't haunt now. Try {}.".format(ewcfg.cmd_suicide)
 		elif cmd.message.channel.name != ewcfg.channel_sewers:
 			# Allowed only from the-sewers.
 			response = "You must haunt from #{}.".format(ewcfg.channel_sewers)
-		elif ewcfg.role_copkiller in roles_map_target or ewcfg.role_rowdyfucker in roles_map_target:
+		elif haunted_data.life_state == ewcfg.life_state_kingpin:
 			# Disallow haunting of generals.
 			response = "He is too far from the sewers in his ivory tower, and thus cannot be haunted."
 		elif (time_now - user_data.time_lasthaunt) < ewcfg.cd_haunt:
@@ -112,10 +108,10 @@ async def haunt(cmd):
 		elif ewmap.poi_is_pvp(haunted_data.poi) == False:
 			# Require the target to be flagged for PvP
 			response = "{} is not mired in the ENDLESS WAR right now.".format(member.display_name)
-		elif ewcfg.role_corpse in roles_map_target:
+		elif haunted_data.life_state == ewcfg.life_state_corpse:
 			# Dead players can't be haunted.
 			response = "{} is already dead.".format(member.display_name)
-		elif ewcfg.role_rowdyfuckers in roles_map_target or ewcfg.role_copkillers in roles_map_target or ewcfg.role_juvenile in roles_map_target:
+		elif haunted_data.life_state == ewcfg.life_state_enlisted or haunted_data.life_state == ewcfg.life_state_juvenile:
 			# Target can be haunted by the player.
 			haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
 			if haunted_slimes > ewcfg.slimes_hauntmax:

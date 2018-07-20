@@ -29,6 +29,7 @@ import ewplayer
 import ewserver
 import ewitem
 import ewmap
+import ewrolemgr
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -133,6 +134,9 @@ cmd_map = {
 	ewcfg.cmd_move: ewmap.move,
 	ewcfg.cmd_move_alt1: ewmap.move,
 	ewcfg.cmd_move_alt2: ewmap.move,
+
+	# Look around the POI you find yourself in.
+	ewcfg.cmd_look: ewmap.look,
 
 
 	# Misc bullshit
@@ -348,12 +352,8 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-	roles_map = ewutils.getRoleMap(member.server.roles)
-	role_juvenile = roles_map[ewcfg.role_juvenile]
-
-	ewutils.logMsg("New member \"{}\" joined. Assigned Juveniles role.".format(member.display_name))
-
-	await client.replace_roles(member, role_juvenile)
+	ewutils.logMsg("New member \"{}\" joined. Configuring default roles now.".format(member.display_name))
+	await ewrolemgr.updateRoles(client = client, member = member)
 
 @client.event
 async def on_message_delete(message):
@@ -429,14 +429,9 @@ async def on_message(message):
 			# Nothing else to do in a DM.
 			return
 
-		# common data we'll need
-		roles_map = cmd_obj.roles_map
-
-		# assign the juveniles role to a user with only 1 or 0 roles.
-		if len(message.author.roles) < 2:
-			role_juvenile = roles_map[ewcfg.role_juvenile]
-			await client.replace_roles(message.author, role_juvenile)
-			return
+		# assign the appropriate roles to a user with less than @everyone, faction, location
+		if len(message.author.roles) < 3:
+			return await ewrolemgr.updateRoles(client = client, member = message.author)
 
 		# Scold/ignore offline players.
 		if message.author.status == discord.Status.offline:
@@ -507,6 +502,7 @@ async def on_message(message):
 			if mentions_count == 0:
 				response = 'Set who\'s role?'
 			else:
+				roles_map = ewutils.getRoleMap(message.server.roles)
 				role_target = tokens[1]
 				role = roles_map.get(role_target)
 
