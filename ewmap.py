@@ -69,6 +69,12 @@ class EwPoi:
 	# Life states allowed in this zone.
 	life_states = []
 
+	# If true, the zone is inaccessible.
+	closed = False
+
+	# Message shown before entering the zone fails when it's closed.
+	str_closed = None
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
@@ -80,7 +86,9 @@ class EwPoi:
 		role = None,
 		pvp = True,
 		factions = [],
-		life_states = []
+		life_states = [],
+		closed = False,
+		str_closed = None
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -92,6 +100,8 @@ class EwPoi:
 		self.pvp = pvp
 		self.factions = factions
 		self.life_states = life_states
+		self.closed = closed
+		self.str_closed = str_closed
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -454,11 +464,6 @@ async def move(cmd):
 					if user_data.life_state != life_state or faction != user_data.faction:
 						return
 
-					user_data.poi = poi_current.id_poi
-					user_data.persist()
-
-					await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
-
 					channel = cmd.message.channel
 
 					# Send the message in the channel for this POI if possible, else in the origin channel for the move.
@@ -466,6 +471,26 @@ async def move(cmd):
 						if ch.name == poi_current.channel:
 							channel = ch
 							break
+
+					# Prevent access to the zone if it's closed.
+					if poi_current.closed == True:
+						if poi_current.str_closed != None:
+							message_closed = poi_current.str_closed
+						else:
+							message_closed = "The way into {} is blocked.".format(poi_current.str_name)
+
+						return await cmd.client.send_message(
+							channel,
+							ewutils.formatMessage(
+								cmd.message.author,
+								message_closed
+							)
+						)
+
+					user_data.poi = poi_current.id_poi
+					user_data.persist()
+
+					await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
 					await cmd.client.send_message(
 						channel,

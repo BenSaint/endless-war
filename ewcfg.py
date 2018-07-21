@@ -50,10 +50,10 @@ channel_mines = "20-juvies-row"
 channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
-channel_dojo = "the-dojo"
+channel_dojo = "16-south-sleezeborough"
 channel_twitch_announcement = "rfck-chat"
 channel_casino = "slime-casino"
-channel_stockexchange = "slime-stock-exchange"
+channel_stockexchange = "1-downtown-nlacakanm"
 channel_foodcourt = "4-krak-bay"
 
 # Commands
@@ -1171,7 +1171,7 @@ poi_list = [
 		str_name = "Downtown NLACakaNM",
 		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.",
 		coord = (23, 16),
-		channel = "1-downtown-nlacakanm",
+		channel = channel_stockexchange,
 		role = "1 - Downtown NLACakaNM"
 	),
 	EwPoi( # 2
@@ -1367,7 +1367,7 @@ poi_list = [
 		str_name = "South Sleezeborough",
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.",
 		coord = (12, 22),
-		channel = "16-south-sleezeborough",
+		channel = channel_dojo,
 		role = "16 - South Sleezeborough"
 	),
 	EwPoi( # 17
@@ -1415,7 +1415,9 @@ poi_list = [
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.",
 		coord = (32, 18),
 		channel = channel_mines,
-		role = "20 - Juvie's Row"
+		role = "20 - Juvie's Row",
+		str_closed = "A powerful barrier prevents anybody, living or dead, from entering the mines.",
+		closed = True
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",

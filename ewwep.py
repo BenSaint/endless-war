@@ -136,12 +136,12 @@ async def attack(cmd):
 
 	user_data = EwUser(member = cmd.message.author)
 
-	if cmd.message.channel.name != ewcfg.channel_combatzone:
-		response = "You must go to the #{} to commit gang violence.".format(ewcfg.channel_combatzone)
+	if ewmap.poi_is_pvp(user_data.poi) == False:
+		response = "You must go elsewhere to commit gang violence."
 	elif cmd.mentions_count > 1:
 		response = "One shot at a time!"
 	elif cmd.mentions_count <= 0:
-		response = "Your bloodlust is appreciated, but ENDLESS WAR didn\'t understand that name."
+		response = "Your bloodlust is appreciated, but ENDLESS WAR didn't understand that name."
 	elif user_data.hunger >= ewcfg.hunger_max:
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
@@ -523,8 +523,8 @@ async def suicide(cmd):
 	response = ""
 
 	# Only allowed in the combat zone.
-	if cmd.message.channel.name != ewcfg.channel_combatzone:
-		response = "You must go to the #{} to commit suicide.".format(ewcfg.channel_combatzone)
+	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
+		response = "You must go into the city to commit suicide."
 	else:
 		# Get the user data.
 		user_data = EwUser(member = cmd.message.author)
@@ -567,7 +567,7 @@ async def spar(cmd):
 	response = ""
 
 	if cmd.message.channel.name != ewcfg.channel_dojo:
-		response = "You must go to the #{} to spar.".format(ewcfg.channel_dojo)
+		response = "You must go to the dojo to spar."
 
 	elif cmd.mentions_count > 1:
 		response = "One sparring partner at a time!"

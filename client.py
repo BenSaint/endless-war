@@ -144,9 +144,9 @@ cmd_map = {
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
-	ewcfg.cmd_help: ewcmd.help,
-	ewcfg.cmd_help_alt1: ewcmd.help,
-	ewcfg.cmd_help_alt2: ewcmd.help
+	#ewcfg.cmd_help: ewcmd.help,
+	#ewcfg.cmd_help_alt1: ewcmd.help,
+	#ewcfg.cmd_help_alt2: ewcmd.help
 }
 
 debug = False
@@ -412,13 +412,18 @@ async def on_message(message):
 			mentions = mentions
 		)
 
-		""" reply to DMs with help document """
+		"""
+			Handle direct messages.
+		"""
 		if message.server == None:
 			# Direct message the player their inventory.
 			if ewitem.cmd_is_inventory(cmd):
 				return await ewitem.inventory_print(cmd_obj)
 			elif cmd == ewcfg.cmd_inspect:
 				return await ewitem.item_look(cmd_obj)
+
+			# FIXME add this back when the help doc is updated.
+			"""
 			else:
 				time_last = last_helped_times.get(message.author.id, 0)
 
@@ -426,6 +431,7 @@ async def on_message(message):
 				if (time_now - time_last) > 30:
 					last_helped_times[message.author.id] = time_now
 					await client.send_message(message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
+			"""
 
 			# Nothing else to do in a DM.
 			return
