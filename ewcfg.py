@@ -672,6 +672,13 @@ weather_list = [
 		day = "You can barely see to the next block in the sickly greenish NLAC smog.",
 		sunset = "Visibility only grows worse in the fog as the sun sets and the daylight fades.",
 		night = "Everything is obscured by the darkness of night and the thick city smog."
+	),
+		EwWeather(
+		name = "gray",
+		sunrise = "Everything is still and gray.",
+		day = "Everything is still and gray.",
+		sunset = "Everything is still and gray.",
+		night = "Everything is still and gray."
 	)
 ]
 
@@ -1162,31 +1169,24 @@ poi_list = [
 		alias = [
 			"central",
 			"dt",
-			"stockmarket",
-			"stockexchange",
-			"slimemarket",
-			"slimeexchange",
-			"exchange"
 		],
 		str_name = "Downtown NLACakaNM",
-		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.",
+		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground./n/nThis area contains the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
 		coord = (23, 16),
-		channel = channel_stockexchange,
-		role = "1 - Downtown NLACakaNM"
+		channel = "downtown",
+		role = "Downtown"
 	),
 	EwPoi( # 2
 		id_poi = "smogsburg",
 		alias = [
 			"smog",
 			"smogs",
-			"bazaar",
-			"market"
 		],
 		str_name = "Smogsburg",
-		str_desc = "The pavement rumbles as subway trains grind along their tracks far beneath your feet. In every direction, smokestacks belch sickly clouds into the sky.",
+		str_desc = "The pavement rumbles as subway trains grind along their tracks far beneath your feet. In every direction, smokestacks belch sickly clouds into the sky./n/nThis area contains the Bazaar. To the North is Arsonbrook. To the Northeast is Little Chernobyl. To the East is Old New Yonkers. To the South is Downtown NLACakaNM. To the West is Cop Killtown. To the Northwest is Astatine Heights.",
 		coord = (23, 11),
-		channel = "2-smogsburg",
-		role = "2 - Smogsburg"
+		channel = "smogsburg",
+		role = "Smogsburg"
 	),
 	EwPoi( # 3
 		id_poi = "copkilltown",
@@ -1199,10 +1199,10 @@ poi_list = [
 			"copkt"
 		],
 		str_name = "Cop Killtown",
-		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.",
+		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon./n/nTo the North is Astatine Heights. To the Northeast is Little Chernobyl. To the East is Smogsburg. To the Southeast is Downtown NLACakaNM. To the West is Vandal Park. To the Northwest is Gatlingsdale.",
 		coord = (17, 13),
-		channel = "3-cop-killtown",
-		role = "3 - Cop Killtown",
+		channel = "cop-killtown",
+		role = "Cop Killtown",
 		pvp = False,
 		factions = [
 			faction_killers
@@ -1217,23 +1217,21 @@ poi_list = [
 			"food"
 		],
 		str_name = "Krak Bay",
-		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.",
+		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence./n/nThis area contains the Food Court. To the East is Downtown NLACakaNM. To the Southeast is Poudrin Alley. To the South is Ooze Gardens. To the Southwest is South Sleezeborough. To the West is North Sleezeborough. To the Northwest is Glocksbury.",
 		coord = (16, 19),
-		channel = channel_foodcourt,
-		role = "4 - Krak Bay"
+		channel = "krak-bay",
+		role = "Krak Bay"
 	),
 	EwPoi( # 5
 		id_poi = "poudrinalley",
 		alias = [
-			"poudrin",
-			"711",
-			"outside711"
+			"poudrin"
 		],
 		str_name = "Poudrin Alley",
-		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.",
+		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty./n/nThis area contains the 7-11. To the Northeast is Downtown NLACakaNM. To the East is the Rowdy Roughhouse. To the Southeast is Wreckington. To the South is Cratersville. To the Southwest is Ooze Gardens. To the Northwest is Krak Bay.",
 		coord = (19, 23),
-		channel = "5-poudrin-alley",
-		role = "5 - Poudrin Alley"
+		channel = "poudrin-alley",
+		role = "Poudrin Alley"
 	),
 	EwPoi( # 6
 		id_poi = "rowdyroughhouse",
@@ -1245,10 +1243,10 @@ poi_list = [
 			"rowdyrh"
 		],
 		str_name = "Rowdy Roughhouse",
-		str_desc = "Rusted pink metal shanties are hastily constructed as far as the eye can see, sometimes stacked on top of one another, forming high towers and densely populated mazes.",
+		str_desc = "Rusted pink metal shanties are hastily constructed as far as the eye can see, sometimes stacked on top of one another, forming high towers and densely populated mazes./n/nTo the North is Downtown NLACakaNM. To the South is Wreckington. To the Southwest is Cratersville. To the West is Poudrin Alley.",
 		coord = (25, 21),
-		channel = "6-rowdy-roughhouse",
-		role = "6 - Rowdy Roughhouse",
+		channel = "rowdy-roughhouse",
+		role = "Rowdy Roughhouse",
 		pvp = False,
 		factions = [
 			faction_rowdys
@@ -1257,22 +1255,21 @@ poi_list = [
 	EwPoi( # 7
 		id_poi = "greenlightdistrict",
 		alias = [
-			"greenlight",
-			"casino"
+			"greenlight"
 		],
 		str_name = "Green Light District",
-		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.",
+		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime./n/nThis area contains the Slime Casino. To the East is Juvie's Row. To the West is Downtown NLACakaNM.",
 		coord = (29, 14),
-		channel = "7-green-light-district",
-		role = "7 - Green Light District"
+		channel = "green-light-district",
+		role = "Green Light District"
 	),
 	EwPoi( # 8
 		id_poi = "oldnewyonkers",
 		str_name = "Old New Yonkers",
-		str_desc = "Rows of three-story brick and stone condominiums with white marble moulding wind along lanes of chipped cobblestone. Wrought-iron spikes jut from windows and balconies.",
+		str_desc = "Rows of three-story brick and stone condominiums with white marble moulding wind along lanes of chipped cobblestone. Wrought-iron spikes jut from windows and balconies./n/nTo the Northeast is New New Yonkers. To the Southeeast is Vagrant's Corner. To the Southwest is Smogsburg. To the East is Little Chernobyl. To the Northwest is Brawlden.",
 		coord = (32, 9),
-		channel = "8-old-new-yonkers",
-		role = "8 - Old New Yonkers"
+		channel = "old-new-yonkers",
+		role = "Old New Yonkers"
 	),
 	EwPoi( # 9
 		id_poi = "littlechernobyl",
@@ -1280,10 +1277,10 @@ poi_list = [
 			"chernobyl"
 		],
 		str_name = "Little Chernobyl",
-		str_desc = "Pathetic little gardens front the uneven parking lots of corporate complexes housing dentists, fortune-tellers, real estate agencies, and other equally dull and pointless ventures.",
+		str_desc = "Pathetic little gardens front the uneven parking lots of corporate complexes housing dentists, fortune-tellers, real estate agencies, and other equally dull and pointless ventures./n/nTo the North is Brawlden. To the East is Old New Yonkers. To the West is Arsonbrook.",
 		coord = (25, 7),
-		channel = "9-little-chernobyl",
-		role = "9 - Little Chernobyl"
+		channel = "little-chernobyl",
+		role = "Little Chernobyl"
 	),
 	EwPoi( # 10
 		id_poi = "arsonbrook",
@@ -1291,10 +1288,10 @@ poi_list = [
 			"arson"
 		],
 		str_name = "Arsonbrook",
-		str_desc = "North of the bridge, you see large swathes of what were once suburbs blackened and flat, occasionally still smoking. Legends say a Starbucks tried to open here once.",
+		str_desc = "North of the bridge, you see large swathes of what were once suburbs blackened and flat, occasionally still smoking. Legends say a Starbucks tried to open here once./n/nTo the East is Brawlden. To the Southeast is Little Chernobyl. To the South is Smogsburg. To the West is Astatine Heights.",
 		coord = (21, 3),
-		channel = "10-arsonbrook",
-		role = "10 - Arsonbrook"
+		channel = "arsonbrook",
+		role = "Arsonbrook"
 	),
 	EwPoi( # 11
 		id_poi = "astatineheights",
@@ -1302,10 +1299,10 @@ poi_list = [
 			"astatine"
 		],
 		str_name = "Astatine Heights",
-		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards.",
+		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards./n/nThis area contains NLACakaNM Cinemas. To the East is Arsonbrook. To the Southeast is Smogsburg. To the South is Cop Killtown. To the Southwest is Gatlingsdale. To the West is Toxington.",
 		coord = (17, 6),
-		channel = "11-astatine-heights",
-		role = "11 - Astatine Heights"
+		channel = "astatine-heights",
+		role = "Astatine Heights"
 	),
 	EwPoi( # 12
 		id_poi = "gatlingsdale",
@@ -1313,23 +1310,21 @@ poi_list = [
 			"gatlings",
 		],
 		str_name = "Gatlingsdale",
-		str_desc = "The brightest young minds of NLACakaNM fritter away their time here, amid hallowed halls of learning ringed endlessly by foreign book stores and cinemas showing midnight screenings of silent films.",
+		str_desc = "The brightest young minds of NLACakaNM fritter away their time here, amid hallowed halls of learning ringed endlessly by foreign book stores and vintage clothing shops./n/nTo the Northeast is Astatine Heights. To the Southeast is Cop Killtown. To the Southwest is Vandal Park. To the West is Polonium Hill. To the Northwest is Toxington.",
 		coord = (13, 9),
-		channel = "12-gatlingsdale",
-		role = "12 - Gatlingsdale"
+		channel = "gatlingsdale",
+		role = "Gatlingsdale"
 	),
 	EwPoi( # 13
 		id_poi = "vandalpark",
 		alias = [
 			"vandal",
-			"arena",
-			"slimeoidarena"
 		],
 		str_name = "Vandal Park",
-		str_desc = "The more-or-less clean air carries the roar of the crowd across the grassy fields surrounding the arena.",
+		str_desc = "The more-or-less clean air carries the roar of the crowd across the grassy fields surrounding the Battle Arena./n/nThis area contains the Battle Arena. To the Northeast is Gatlingsdale. To the East is Cop Killtown. To the South is Glocksbury. To the Southwest is West Glocksbury. To the Northwest is Polonium Hill.",
 		coord = (10, 12),
-		channel = "13-vandal-park",
-		role = "13 - Vandal Park"
+		channel = "vandal-park",
+		role = "Vandal Park"
 	),
 	EwPoi( # 14
 		id_poi = "glocksbury",
@@ -1337,10 +1332,10 @@ poi_list = [
 			"glocks"
 		],
 		str_name = "Glocksbury",
-		str_desc = "You smell bacon. *Figurative* bacon. The streets are too orderly here... the cops must be about. Absolutely vile.",
+		str_desc = "You smell bacon. *Figurative* bacon. The streets are too orderly here... the cops must be about. Absolutely vile./n/nTo the North is Vandal Park. To the Southeast is Krak Bay. To the South is North Sleezeborough. To the West is West Glocksbury.",
 		coord = (9, 16),
-		channel = "14-glocksbury",
-		role = "14 - Glocksbury"
+		channel = "glocksbury",
+		role = "Glocksbury"
 	),
 	EwPoi( # 15
 		id_poi = "northsleezeborough",
@@ -1350,25 +1345,23 @@ poi_list = [
 			"nsleezeboro"
 		],
 		str_name = "North Sleezeborough",
-		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.",
+		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack./n/nTo the North is Glocksbury. To the East is Krak Bay. To the South is South Sleezeborough.",
 		coord = (11, 19),
-		channel = "15-north-sleezeborough",
-		role = "15 - North Sleezeborough"
+		channel = "north-sleezeborough",
+		role = "North Sleezeborough"
 	),
 	EwPoi( # 16
 		id_poi = "southsleezeborough",
 		alias = [
 			"southsleezeboro",
 			"ssleezeborough",
-			"ssleezeboro",
-			"the-dojo",
-			"dojo"
+			"ssleezeboro"
 		],
 		str_name = "South Sleezeborough",
-		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.",
+		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence./n/nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Garden.",
 		coord = (12, 22),
-		channel = channel_dojo,
-		role = "16 - South Sleezeborough"
+		channel = "south-sleezeborough",
+		role = "South Sleezeborough"
 	),
 	EwPoi( # 17
 		id_poi = "oozegardens",
@@ -1376,10 +1369,10 @@ poi_list = [
 			"ooze"
 		],
 		str_name = "Ooze Gardens",
-		str_desc = "A bird chirps its last before falling dead from a withered tree. A trickle of slime runs down its bark. The resident's attempts to beautify the neighborhood with foliage have really backfired, aesthetically speaking.",
+		str_desc = "A bird chirps its last before falling dead from a withered tree. A trickle of slime runs down its bark. The resident's attempts to beautify the neighborhood with foliage have really backfired, aesthetically speaking./n/nTo the North is Krak Bay. To the Northeast is Poudrin Alley. To the East is Cratersville. To the West is South Sleezeborough.",
 		coord = (14, 25),
-		channel = "17-ooze-gardens",
-		role = "17 - Ooze Gardens"
+		channel = "ooze-gardens",
+		role = "Ooze Gardens"
 	),
 	EwPoi( # 18
 		id_poi = "cratersville",
@@ -1387,10 +1380,10 @@ poi_list = [
 			"craters"
 		],
 		str_name = "Cratersville",
-		str_desc = "The people here hurry to their destinations, avoiding eye contact. They must be wary after seeing gang members level the next town over not too long ago.",
+		str_desc = "The people here hurry to their destinations, avoiding eye contact. They must be wary after seeing gang members level the next town over not too long ago./n/nTo the North is Poudrin Alley. To the Northeast is the Rowdy Roughhouse. To the East is Wreckington. To the West is Ooze Gardens.",
 		coord = (19, 28),
-		channel = "18-cratersville",
-		role = "18 - Cratersville"
+		channel = "cratersville",
+		role = "Cratersville"
 	),
 	EwPoi( # 19
 		id_poi = "wreckington",
@@ -1398,24 +1391,21 @@ poi_list = [
 			"wrecking"
 		],
 		str_name = "Wreckington",
-		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.",
+		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare./n/nTo the North is the Rowdy Roughhouse. To the West is Cratersville. To the Northwest is Poudrin Alley.",
 		coord = (27, 24),
-		channel = "19-wreckington",
-		role = "19 - Wreckington"
+		channel = "wreckington",
+		role = "Wreckington"
 	),
 	EwPoi( # 20
 		id_poi = "juviesrow",
 		alias = [
 			"juvies",
-			"the-mines",
-			"mines",
-			"mine"
 		],
 		str_name = "Juvie's Row",
-		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.",
+		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust./n/nTo the Northeast is Vagrant's Corner. To the Northwest is the Green Light District.",
 		coord = (32, 18),
-		channel = channel_mines,
-		role = "20 - Juvie's Row",
+		channel = "juvies-row",
+		role = "Juvie's Row",
 		str_closed = "The negaslime's tendrils clog the entrance to the mines. It is currently inaccessable.",
 		closed = True
 	),
@@ -1425,10 +1415,10 @@ poi_list = [
 			"slimes"
 		],
 		str_name = "Slime's End",
-		str_desc = "The narrow peninsula is bordered on both sides by the Slime Sea. The phosphorescence of the Sea illuminates the land and sky with an eerily even green glow.",
+		str_desc = "The narrow peninsula is bordered on both sides by the Slime Sea. The phosphorescence of the Sea illuminates the land and sky with an eerily even green glow./n/n To the North is Vagrant's Corner.",
 		coord = (40, 16),
-		channel = "21-slimes-end",
-		role = "21 - Slime's End"
+		channel = "slimes-end",
+		role = "Slime's End"
 	),
 	EwPoi( # 22
 		id_poi = "vagrantscorner",
@@ -1436,10 +1426,10 @@ poi_list = [
 			"vagrants"
 		],
 		str_name = "Vagrant's Corner",
-		str_desc = "The glow of the Slime Sea illumunates the undersides of the docks and the heavy industrial machinery designed to pump slime into the cargo holds of outbound barges.",
+		str_desc = "The glow of the Slime Sea illumunates the undersides of the docks and the heavy industrial machinery designed to pump slime into the cargo holds of outbound barges./n/nThis area contains The King's Wife's Son Speakeasy. To the North is New New Yonkers. To the Northeast is Assault Flats Beach Resort. To the South is Slime's End. To the Southwest is Juvie's Row. To the West is the Green Light District. To the Northwest is Old New Yonkers.",
 		coord = (37, 11),
-		channel = "22-vagrants-corner",
-		role = "22 - Vagrant's Corner"
+		channel = "vagrants-corner",
+		role = "Vagrant's Corner"
 	),
 	EwPoi( # 23
 		id_poi = "assaultflatsbeachresort",
@@ -1452,43 +1442,36 @@ poi_list = [
 			"flats"
 		],
 		str_name = "Assault Flats Beach Resort",
-		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront.",
+		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront./n/nTo the South is Vagrant's Corner. To the West is New New Yonkers.",
 		coord = (40, 6),
-		channel = "23-assault-flats-beach-resort",
-		role = "23 - Assault Flats Beach Resort"
+		channel = "assault-flats-beach-resort",
+		role = "Assault Flats Beach Resort"
 	),
 	EwPoi( # 24
 		id_poi = "newnewyonkers",
 		str_name = "New New Yonkers",
-		str_desc = "Trendy restaurants and clubs sit empty in this sparsely-populated failed gentrification experiment.",
+		str_desc = "Trendy restaurants and clubs sit empty in this sparsely-populated failed gentrification experiment./n/nTo the East is Assault Flats Beach Resort. To the South is Vagrant's Corner. To the Southwest is Old New Yonkers. To the West is Brawlden.",
 		coord = (36, 4),
-		channel = "24-new-new-yonkers",
-		role = "24 - New New Yonkers"
+		channel = "new-new-yonkers",
+		role = "New New Yonkers"
 	),
 	EwPoi( # 25
 		id_poi = "brawlden",
 		alias = [
-			"slimecorplabs",
-			"slimecorplab",
-			"slimecorplaboratory",
-			"slimecorp",
-			"laboratory",
-			"labs",
-			"lab"
 		],
 		str_name = "Brawlden",
-		str_desc = "Rough-looking bewifebeatered citizens are everywhere, doing unspecified maintenence on strange machines propped up on cinderblocks. A SlimeCorp Laboratory hums and whirrs in the distance, day and night.",
+		str_desc = "Rough-looking bewifebeatered citizens are everywhere, doing unspecified maintenence on strange machines propped up on cinderblocks. A SlimeCorp Laboratory hums and whirrs in the distance, day and night./n/nThis area contains the Slimeoid Laboratory. To the East is New New Yonkers. To the Southeast is Old New Yonkers. To the South is Little Chernobyl. To the West is Arsonbrook.",
 		coord = (28, 3),
-		channel = "25-brawlden",
-		role = "25 - Brawlden"
+		channel = "brawlden",
+		role = "Brawlden"
 	),
 	EwPoi( # 26
 		id_poi = "toxington",
 		str_name = "Toxington",
-		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.",
+		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake./n/nTo the East is Astatine Heights. To the Southeast is Gatlingsdale. To the South is Polonium Hill. To the East is Charcoal Park.",
 		coord = (9, 4),
-		channel = "26-toxington",
-		role = "26 - Toxington"
+		channel = "toxington",
+		role = "Toxington"
 	),
 	EwPoi( # 27
 		id_poi = "charcoalpark",
@@ -1496,10 +1479,10 @@ poi_list = [
 			"charcoal"
 		],
 		str_name = "Charcoal Park",
-		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.",
+		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes./n/nTo the East is Toxington. To the South is Polonium Hill.",
 		coord = (3, 3),
-		channel = "27-charcoal-park",
-		role = "27 - Charcoal Park"
+		channel = "charcoal-park",
+		role = "Charcoal Park"
 	),
 	EwPoi( # 28
 		id_poi = "poloniumhill",
@@ -1507,10 +1490,10 @@ poi_list = [
 			"polonium"
 		],
 		str_name = "Polonium Hill",
-		str_desc = "The gently rolling terrain is speckled with hideous minimansions that obviously cost a fortune and look like complete shit.",
+		str_desc = "The gently rolling terrain is speckled with hideous minimansions that obviously cost a fortune and look like complete shit./n/nTo the North is Charcoal Park. To the Northeast is Toxington. To the East is Gatlingsdale. To the Southeast is Vandal park. To the South is West Glocksbury.",
 		coord = (5, 9),
-		channel = "28-polonium-hill",
-		role = "28 - Polonium Hill"
+		channel = "polonium-hill",
+		role = "Polonium Hill"
 	),
 	EwPoi( # 29
 		id_poi = "westglocksbury",
@@ -1519,10 +1502,10 @@ poi_list = [
 			"wglocks"
 		],
 		str_name = "West Glocksbury",
-		str_desc = "Gunshots ring out periodically from somewhere in the distance, hidden by laundromats and barber shops. Even the most jaded NLACakaNMite may get a bit nervous 'round these parts.",
+		str_desc = "Gunshots ring out periodically from somewhere in the distance, hidden by laundromats and barber shops. Even the most jaded NLACakaNMite may get a bit nervous 'round these parts./n/n To the North is Polonium Hill. To the Northeast is Vandal Park. To the East is Glocksbury",
 		coord = (4, 14),
-		channel = "29-west-glocksbury",
-		role = "29 - West Glocksbury"
+		channel = "west-glocksbury",
+		role = "West Glocksbury"
 	),
 	EwPoi( # the-sewers
 		id_poi = poi_id_thesewers,
@@ -1535,6 +1518,147 @@ poi_list = [
 		channel = channel_sewers,
 		life_states = [
 			life_state_corpse
+		]
+	),
+	EwPoi( # stock-exchange
+		id_poi = poi_id_stockexchange,
+		alias = [
+			"stocks",
+			"exchange",
+			"stockexchange",
+			"slimestockexchange"
+		],
+		str_name = "The Slime Stock Exchange",
+		str_desc = "A large interior space filled with vacant teller booths and data screens designed to dissplay market data, all powered off. Punch cards and ticker tape are strewn about the silent, empty floor./n/nExits into Downtown NLACakaNM.",
+		channel = channel_stockexchange,
+		role = "Stock Exchange"
+		]
+	),
+	EwPoi( # the-bazaar
+		id_poi = poi_id_bazaar,
+		alias = [
+			"bazaar",
+			"market"
+		],
+		str_name = "The Bazaar",
+		str_desc = "An open-air marketplace where professional merchants and regular citizens alike can hock their wares. It's currently completely barren./n/nExits into Brawlden.",
+		channel = channel_Bazaar,
+		role = "Bazaar"
+		]
+	),
+	EwPoi( # the-cinema
+		id_poi = poi_id_cinema,
+		alias = [
+			"cinema",
+			"cinemas",
+			"nlacakanmcinema",
+			"nlacakanmcinemas",
+			"theater",
+			"movie",
+			"movies"
+		],
+		str_name = "NLACakaNM Cinemas",
+		str_desc = "A delightfully run-down movie theater, with warm carpeted walls fraying ever so slightly. Films hand picked by the Rowdy Fucker and/or Cop Killer are regularly screened./n/nExits into Astatine Heights.",
+		channel = channel_cinema,
+		role = "Cinema"
+		]
+	),
+	EwPoi( # food-court
+		id_poi = poi_id_foodcourt,
+		alias = [
+			"food",
+			"foodcourt",
+			"pizzahut",
+			"tacobell",
+			"kfc"
+		],
+		str_name = "The NLACakaNM Food Court",
+		str_desc = "A large, brightly-lit area with tiled walls and floors, lined on all sides with Yum! Brand food vendors, surrounding the city's prized MTN DEW Fountain. The place is completely dead./n/nExits into Krak Bay.",
+		channel = channel_foodcourt,
+		role = "Food Court"
+		]
+	),
+	EwPoi( # nlac-u
+		id_poi = poi_id_nlacu,
+		alias = [
+			"nlacu",
+			"university",
+			"nlacuniversity",
+			"college",
+			"uni"
+		],
+		str_name = "New Los Angeles City University",
+		str_desc = "An expansive campus housing massive numbers of students and administrators, all here in pursuit of knowledge. The campus is open to visitors, but there's nobody here./n/nExits into Gatlingsdale.",
+		channel = channel_nlacu,
+		role = "NLAC U"
+		]
+	),
+	EwPoi( # battle-arena
+		id_poi = poi_id_arena,
+		alias = [
+			"arena",
+			"battlearena"
+		],
+		str_name = "The Battle Arena",
+		str_desc = "A huge arena stadium capable of housing tens of thousands of battle enthusiasts, ringing a large field where Slimeoid Battles are held. All the seats are empty./n/nExits into Vandal Park.",
+		channel = channel_arena,
+		role = "Arena"
+		]
+	),
+	EwPoi( # the-dojo
+		id_poi = poi_id_dojo,
+		alias = [
+			"dojo",
+			"training",
+			"sparring",
+			"thedojo"
+		],
+		str_name = "The Dojo",
+		str_desc = "A modest, easily overlooked building, but containing all the facilities necessary for becoming a killing machine. Bamboo and parchment walls separate the dojo floor into large tatami-matted sections./n/nExits into South Sleezeborough.",
+		channel = channel_dojo,
+		role = "Dojo"
+		]
+	),
+	EwPoi( # speakeasy
+		id_poi = poi_id_speakeasy,
+		alias = [
+			"speakeasy",
+			"bar"
+		],
+		str_name = "The King's Wife's Son Speakeasy",
+		str_desc = "A rustic tavern with dark wooden walls and floor, bearing innumerable knickknacks on the walls and high wooden stools arranged in front of a bar made of patina'd copper. There's nobody here./n/nExits into Vagrant's Corner.",
+		channel = channel_speakeasy,
+		role = "Speakeasy"
+		]
+	),
+	EwPoi( # 7-11
+		id_poi = poi_id_711,
+		alias = [
+			"7-11",
+			"711",
+			"seveneleven"
+		],
+		str_name = "Outside the 7-11",
+		str_desc = "The darkened derelict 7-11 stands as it always has, a steadfast pillar of NLACakaNM culture. On its dirty exterior walls are spraypainted messages about \"patch notes\", \"github\", and other unparseable nonsense./n/nExits into Poudrin Alley.",
+		channel = channel_711,
+		role = "7-11"
+		]
+	),
+	EwPoi( # the-labs
+		id_poi = poi_id_slimeoidlab,
+		alias = [
+			"lab",
+			"labs",
+			"laboratory",
+			"slimecorplab",
+			"slimecorplabs",
+			"slimeoidlab",
+			"slimeoidlabs",
+		],
+		str_name = "SlimeCorp Slimeoid Laboratory",
+		str_desc = "A nondescript building containing mysterious SlimeCorp industrial equipment. Large glass tubes and metallic vats seem to be designed to serve as incubators. The lab is empty and the equipment is not being powered./n/nExits into Brawlden.",
+		channel = channel_slimeoidlab,
+		role = "Slimeoid Lab"
 		]
 	)
 ]
