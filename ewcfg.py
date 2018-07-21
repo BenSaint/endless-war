@@ -1416,7 +1416,7 @@ poi_list = [
 		coord = (32, 18),
 		channel = channel_mines,
 		role = "20 - Juvie's Row",
-		str_closed = "A powerful barrier prevents anybody, living or dead, from entering the mines.",
+		str_closed = "The negaslime's tendrils clog the entrance to the mines. It is currently inaccessable.",
 		closed = True
 	),
 	EwPoi( # 21
