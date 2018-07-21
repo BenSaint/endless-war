@@ -1716,7 +1716,8 @@ poi_list = [
 		id_poi = poi_id_thecasino,
 		alias = [
 			"casino",
-			"slimecasino"
+			"slimecasino",
+			"theslimecasino"
 		],
 		str_name = "The Casino",
 		str_desc = "", # TODO

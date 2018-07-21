@@ -51,7 +51,7 @@ class EwMarket:
 					self.slimes_revivefee = result[5]
 					self.negaslime = result[6]
 					self.clock = result[7]
-					self.weather = result [8]
+					self.weather = result[8]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -61,6 +61,9 @@ class EwMarket:
 				# Clean up the database handles.
 				cursor.close()
 				ewutils.databaseClose(conn_info)
+
+			# FIXME weather is temporarily always gray
+			self.weather = 'gray'
 
 	""" Save market data object to the database. """
 	def persist(self):
