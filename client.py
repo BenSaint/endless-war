@@ -91,13 +91,13 @@ cmd_map = {
 
 
 	# Play slime pachinko!
-	#ewcfg.cmd_slimepachinko: ewcasino.pachinko,
+	ewcfg.cmd_slimepachinko: ewcasino.pachinko,
 
 	# Toss the dice at slime craps!
-	#ewcfg.cmd_slimecraps: ewcasino.craps,
+	ewcfg.cmd_slimecraps: ewcasino.craps,
 
 	# Pull the lever on a slot machine!
-	#ewcfg.cmd_slimeslots: ewcasino.slots,
+	ewcfg.cmd_slimeslots: ewcasino.slots,
 
 
 	# See what's for sale in the Food Court.

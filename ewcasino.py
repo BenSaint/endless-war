@@ -36,7 +36,7 @@ async def pachinko(cmd):
 		response = "**ENOUGH**"
 	elif cmd.message.channel.name != ewcfg.channel_casino:
 		# Only allowed in the slime casino.
-		response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+		response = "You must go to the Casino to gamble your SlimeCoin."
 	else:
 		last_pachinkoed_times[cmd.message.author.id] = time_now
 		value = ewcfg.slimes_perpachinko
@@ -117,7 +117,7 @@ async def craps(cmd):
 		response = "**ENOUGH**"
 	elif cmd.message.channel.name != ewcfg.channel_casino:
 		# Only allowed in the slime casino.
-		response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+		response = "You must go to the Casino to gamble your SlimeCoin."
 	else:
 		last_crapsed_times[cmd.message.author.id] = time_now
 		value = None
@@ -180,7 +180,7 @@ async def slots(cmd):
 		response = "**ENOUGH**"
 	elif cmd.message.channel.name != ewcfg.channel_casino:
 		# Only allowed in the slime casino.
-		response = "You must go to the #{} to gamble your SlimeCoin.".format(ewcfg.channel_casino)
+		response = "You must go to the Casino to gamble your SlimeCoin."
 	else:
 		value = ewcfg.slimes_perslot
 		last_slotsed_times[cmd.message.author.id] = time_now
