@@ -1725,8 +1725,7 @@ poi_list = [
 		coord = (29, 16),
 		channel = channel_casino,
 		role = "The Casino",
-		pvp = False,
-		closed = True
+		pvp = False
 	)
 ]
 
