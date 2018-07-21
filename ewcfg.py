@@ -1537,6 +1537,7 @@ poi_list = [
 		life_states = [
 			life_state_corpse
 		],
+		role = "Sewers",
 		pvp = False
 	),
 	EwPoi( # stock-exchange
