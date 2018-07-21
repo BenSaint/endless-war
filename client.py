@@ -165,6 +165,9 @@ async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	ewutils.logMsg('Ready.')
 
+	# FIXME debug
+	ewmap.map_draw()
+
 	# Flatten role names to all lowercase, no spaces.
 	for poi in ewcfg.poi_list:
 		if poi.role != None:
