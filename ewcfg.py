@@ -1247,7 +1247,7 @@ poi_list = [
 			"poudrin"
 		],
 		str_name = "Poudrin Alley",
-		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.\n\nThis area contains the 7-11. To the Northeast is Downtown NLACakaNM. To the East is the Rowdy Roughhouse. To the Southeast is Wreckington. To the South is Cratersville. To the Southwest is Ooze Gardens. To the Northwest is Krak Bay.",
+		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.\n\nThis area contains the 7-11. To the Northeast is Downtown NLACakaNM. To the East is the Rowdy Roughhouse. To the South is Cratersville. To the Southwest is Ooze Gardens. To the Northwest is Krak Bay.",
 		coord = (19, 23),
 		channel = "poudrin-alley",
 		role = "Poudrin Alley"
@@ -1410,7 +1410,7 @@ poi_list = [
 			"wrecking"
 		],
 		str_name = "Wreckington",
-		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.\n\nTo the North is the Rowdy Roughhouse. To the West is Cratersville. To the Northwest is Poudrin Alley.",
+		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.\n\nTo the North is the Rowdy Roughhouse. To the West is Cratersville.",
 		coord = (27, 24),
 		channel = "wreckington",
 		role = "Wreckington"
