@@ -102,7 +102,7 @@ async def order(cmd):
 				value = 1
 
 			# Kingpins eat free.
-			if user_date.life_state == ewcfg.life_state_kingpin:
+			if user_data.life_state == ewcfg.life_state_kingpin:
 				value = 0
 
 			if value > user_data.slimecredit:
