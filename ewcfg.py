@@ -1458,7 +1458,8 @@ poi_list = [
 			"beach",
 			"resort",
 			"assault",
-			"flats"
+			"flats",
+			"assflats"
 		],
 		str_name = "Assault Flats Beach Resort",
 		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront.\n\nTo the South is Vagrant's Corner. To the West is New New Yonkers.",
