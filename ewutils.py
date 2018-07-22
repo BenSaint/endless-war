@@ -139,7 +139,7 @@ def pushupServerHunger(id_server = None):
 			cursor = conn.cursor();
 
 			# Save data
-			cursor.execute("UPDATE users SET {hunger} = {hunger} + {tick} WHERE id_server = %s AND hunger < {limit}".format(
+			cursor.execute("UPDATE users SET {hunger} = {hunger} + {tick} WHERE life_state > 0 AND id_server = %s AND hunger < {limit}".format(
 				hunger = ewcfg.col_hunger,
 				tick = ewcfg.hunger_pertick,
 				limit = ewcfg.hunger_max
