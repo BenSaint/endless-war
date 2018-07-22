@@ -303,7 +303,11 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 				paths_dead.append(path)
 
 		for path in paths_dead:
-			paths_walking.remove(path)
+			try:
+				paths_walking.remove(path)
+			except:
+				pass
+
 		if len(paths_walking_new) > 0:
 			paths_walking += paths_walking_new
 
