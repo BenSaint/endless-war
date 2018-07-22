@@ -1725,7 +1725,7 @@ poi_list = [
 		str_desc = "The casino is filled with tables and machines for playing games of chance, and garishly decorated wall-to-wall. Lights which normally flash constantly cover everything, but now they all sit unlit.",
 		coord = (29, 16),
 		channel = channel_casino,
-		role = "The Casino",
+		role = "Casino",
 		pvp = False
 	)
 ]
