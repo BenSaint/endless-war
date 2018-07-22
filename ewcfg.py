@@ -1377,7 +1377,7 @@ poi_list = [
 			"ssleezeboro"
 		],
 		str_name = "South Sleezeborough",
-		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Garden.",
+		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Gardens.",
 		coord = (12, 22),
 		channel = "south-sleezeborough",
 		role = "South Sleezeborough"
@@ -1644,7 +1644,7 @@ poi_list = [
 		str_desc = "A modest, easily overlooked building, but containing all the facilities necessary for becoming a killing machine. Bamboo and parchment walls separate the dojo floor into large tatami-matted sections.\n\nExits into South Sleezeborough.",
 		channel = channel_dojo,
 		role = "Dojo",
-		coord = (15, 20),
+		coord = (11, 23),
 		pvp = False
 	),
 	EwPoi( # speakeasy
@@ -1708,7 +1708,7 @@ poi_list = [
 		str_desc = "", # TODO
 		coord = (34, 18),
 		channel = channel_mines,
-		role = "The Mines",
+		role = "Mines",
 		str_closed = "The negaslime's tendrils clog the entrance to the mines. It is currently inaccessable.",
 		pvp = False,
 		closed = True

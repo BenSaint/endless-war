@@ -272,40 +272,6 @@ async def on_ready():
 				ewutils.logMsg('Twitch handler hit an exception (continuing): {}'.format(json_string))
 				traceback.print_exc(file = sys.stdout)
 
-		# Clear PvP roles from players who are no longer flagged.
-		if (time_now - time_last_pvp) >= ewcfg.update_pvp:
-			time_last_pvp = time_now
-
-			try:
-				for server in client.servers:
-					roles_map = ewutils.getRoleMap(server.roles)
-
-					role_juvenile_pvp = roles_map[ewcfg.role_juvenile_pvp]
-					role_rowdyfuckers_pvp = roles_map[ewcfg.role_rowdyfuckers_pvp]
-					role_copkillers_pvp = roles_map[ewcfg.role_copkillers_pvp]
-
-					# Monitor all user roles and update if a user is no longer flagged for PvP.
-					for member in server.members:
-						pvp_role = None
-
-						if role_juvenile_pvp in member.roles:
-							pvp_role = role_juvenile_pvp
-						elif role_copkillers_pvp in member.roles:
-							pvp_role = role_copkillers_pvp
-						elif role_rowdyfuckers_pvp in member.roles:
-							pvp_role = role_rowdyfuckers_pvp
-
-						if pvp_role != None:
-							# Retrieve user data from the database.
-							user_data = EwUser(member = member)
-
-							# Remove the PvP role. They're not needed anymore.
-							await client.remove_roles(member, pvp_role)
-
-			except:
-				ewutils.logMsg('An error occurred in the scheduled role update task:')
-				traceback.print_exc(file = sys.stdout)
-
 		# Adjust the exchange rate of slime for the market.
 		try:
 			for server in client.servers:
@@ -437,7 +403,7 @@ async def on_message(message):
 			return
 
 		# assign the appropriate roles to a user with less than @everyone, faction, location
-		if len(message.author.roles) < 2:
+		if len(message.author.roles) < 3:
 			return await ewrolemgr.updateRoles(client = client, member = message.author)
 
 		# Scold/ignore offline players.
