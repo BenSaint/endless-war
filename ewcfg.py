@@ -1667,7 +1667,10 @@ poi_list = [
 	EwPoi( # 7-11
 		id_poi = poi_id_711,
 		alias = [
+			"outsidethe7-11",
+			"outside7-11",
 			"outside711",
+			"7-11",
 			"711",
 			"seveneleven",
 			"outsideseveneleven"
