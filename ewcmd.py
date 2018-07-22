@@ -274,3 +274,8 @@ async def patchnotes(cmd):
 async def help(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
 
+"""
+	Link to the world map.
+"""
+async def map(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Online world map: https://ew.krakissi.net/map/'))

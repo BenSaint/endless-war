@@ -130,6 +130,7 @@ cmd_move_alt1 = cmd_prefix + 'goto'
 cmd_move_alt2 = cmd_prefix + 'walk'
 cmd_inspect = cmd_prefix + 'inspect'
 cmd_look = cmd_prefix + 'look'
+cmd_map = cmd_prefix + 'map'
 
 
 # Slime costs/values

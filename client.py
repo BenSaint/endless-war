@@ -138,6 +138,9 @@ cmd_map = {
 	# Look around the POI you find yourself in.
 	ewcfg.cmd_look: ewmap.look,
 
+	# link to the world map
+	ewcfg.cmd_map: ewcmd.map,
+
 
 	# Misc bullshit
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
