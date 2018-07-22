@@ -140,6 +140,9 @@ class EwUser:
 		if self.inebriation < 0:
 			self.inebriation = 0
 
+		if self.poi == '':
+			self.poi = ewcfg.poi_id_downtown
+
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -212,7 +215,11 @@ class EwUser:
 					self.life_state = result[20]
 				else:
 					# Create a new database entry if the object is missing.
-					cursor.execute("REPLACE INTO users(id_user, id_server) VALUES(%s, %s)", (id_user, id_server))
+					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
+						id_user,
+						id_server,
+						ewcfg.poi_id_downtown
+					))
 					
 					conn.commit()
 
