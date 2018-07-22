@@ -168,14 +168,6 @@ async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 	ewutils.logMsg('Ready.')
 
-	# FIXME debug
-	for poi_name in ewcfg.id_to_poi:
-		poi = ewcfg.id_to_poi[poi_name]
-		if poi.coord == None:
-			print('No at {}'.format(poi.str_name))
-		else:
-			print('{} at {}'.format(ewmap.map_world[poi.coord[1]][poi.coord[0]], poi.str_name))
-
 	# Flatten role names to all lowercase, no spaces.
 	for poi in ewcfg.poi_list:
 		if poi.role != None:
