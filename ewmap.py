@@ -306,7 +306,7 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 			try:
 				paths_walking.remove(path)
 			except:
-				pass
+				return None
 
 		if len(paths_walking_new) > 0:
 			paths_walking += paths_walking_new
