@@ -99,6 +99,9 @@ cmd_map = {
 	# Pull the lever on a slot machine!
 	ewcfg.cmd_slimeslots: ewcasino.slots,
 
+	# Play slime roulette!
+	ewcfg.cmd_slimeroulette: ewcasino.roulette,
+
 
 	# See what's for sale in the Food Court.
 	ewcfg.cmd_menu: ewfood.menu,
@@ -176,7 +179,7 @@ async def on_ready():
 	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
 
 	# Look for a Twitch client_id on disk.
-	twitch_client_id = ewutils.getTwitchClientId()
+	#twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
 	# FIXME debug - temporarily disable Twitch integration.
