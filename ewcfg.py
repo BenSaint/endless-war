@@ -1193,6 +1193,10 @@ poi_list = [
 		str_name = "Downtown NLACakaNM",
 		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
 		coord = (23, 16),
+		coord_alias = [
+			(24, 16),
+			(25, 16)
+		],
 		channel = "downtown",
 		role = "Downtown"
 	),
@@ -1617,7 +1621,7 @@ poi_list = [
 		str_desc = "An expansive campus housing massive numbers of students and administrators, all here in pursuit of knowledge. The campus is open to visitors, but there's nobody here.\n\nExits into Gatlingsdale.",
 		channel = channel_nlacu,
 		role = "NLAC U",
-		coord = (14, 10),
+		coord = (15, 9),
 		pvp = False
 	),
 	EwPoi( # battle-arena
@@ -1679,7 +1683,7 @@ poi_list = [
 		str_desc = "The darkened derelict 7-11 stands as it always has, a steadfast pillar of NLACakaNM culture. On its dirty exterior walls are spraypainted messages about \"patch notes\", \"github\", and other unparseable nonsense.\n\nExits into Poudrin Alley.",
 		channel = channel_711,
 		role = "7-11",
-		coord = (20, 24),
+		coord = (19, 25),
 		pvp = False
 	),
 	EwPoi( # the-labs
@@ -1736,10 +1740,16 @@ poi_list = [
 
 id_to_poi = {}
 coord_to_poi = {}
+alias_to_coord = {}
 
 for poi in poi_list:
-	# Populate the map of coordinates to their point of interest, for looking up from the map.
-	coord_to_poi[poi.coord] = poi
+	if poi.coord != None:
+		# Populate the map of coordinates to their point of interest, for looking up from the map.
+		coord_to_poi[poi.coord] = poi
+
+		# Populate the map of coordinate aliases to the main coordinate.
+		for coord_alias in poi.coord_alias:
+			alias_to_coord[coord_alias] = poi.coord
 
 	# Populate the map of point of interest names/aliases to the POI.
 	id_to_poi[poi.id_poi] = poi

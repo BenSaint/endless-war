@@ -166,7 +166,9 @@ if debug == True:
 @client.event
 async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
-	ewutils.logMsg('Ready.')
+
+	ewutils.logMsg("Loaded NLACakaNM world map. ({}x{})".format(ewmap.map_width, ewmap.map_height))
+	ewmap.map_draw()
 
 	# Flatten role names to all lowercase, no spaces.
 	for poi in ewcfg.poi_list:
@@ -199,28 +201,34 @@ async def on_ready():
 		ewserver.server_update(server = server)
 
 		# Grep around for channels
-		ewutils.logMsg("connected to: {}".format(server.name))
+		ewutils.logMsg("connected to server: {}".format(server.name))
 		for channel in server.channels:
 			if(channel.type == discord.ChannelType.text):
 				if(channel.name == ewcfg.channel_twitch_announcement):
 					channels_announcement.append(channel)
-					ewutils.logMsg("• found for announcements: {}".format(channel.name))
+					ewutils.logMsg("• found channel for announcements: {}".format(channel.name))
 
 				elif(channel.name == ewcfg.channel_stockexchange):
 					channels_stockmarket[server.id] = channel
-					ewutils.logMsg("• found for stock exchange: {}".format(channel.name))
+					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
 
+	ewutils.logMsg('Ready.')
+
+
+	"""
+		Set up for infinite loop to perform periodic tasks.
+	"""
 	time_now = int(time.time())
+
 	time_last_twitch = time_now
 	time_twitch_downed = 0
-	time_last_pvp = time_now
-	time_last_market = time_now
-
 
 	# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
 	time_last_logged = time_now - ewcfg.update_hookstillactive + 60
 
 	stream_live = None
+
+	ewutils.logMsg('Beginning periodic hook loop.')
 	while True:
 		time_now = int(time.time())
 

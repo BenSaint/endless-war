@@ -46,6 +46,8 @@ async def pachinko(cmd):
 
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
+		elif user_data.life_state == ewcfg.life_state_corpse:
+			response = "{}our incorporeal existence leaves you unable to load the balls into the slime pachinko machine.".format(("Try as you may, y" if random.randrange(2) == 0 else "Y"))
 		elif value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin to play."
 		else:
@@ -131,6 +133,11 @@ async def craps(cmd):
 
 			if ewcmd.is_casino_open(market_data.clock) == False:
 				response = ewcfg.str_casino_closed
+			elif user_data.life_state == ewcfg.life_state_corpse:
+				response = "You paw at the dice to no avail."
+				if random.randrange(2) == 0:
+					response += " Your transparent mitts cast your influence as strongly as your shadow."
+
 			elif value > user_data.slimecredit:
 				response = "You don't have that much SlimeCoin to bet with."
 			else:
@@ -190,6 +197,8 @@ async def slots(cmd):
 
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
+		elif user_data.life_state == ewcfg.life_state_corpse:
+			response = "Your ghostly appendage falls through the lever, failing to start the slot machine."
 		elif value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin."
 		else:
