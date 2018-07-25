@@ -141,12 +141,12 @@ cmd_map = {
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
 
-
-	# Misc bullshit
+	# Misc
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
+	ewcfg.cmd_wiki: ewcmd.wiki,
 	#ewcfg.cmd_help: ewcmd.help,
 	#ewcfg.cmd_help_alt1: ewcmd.help,
 	#ewcfg.cmd_help_alt2: ewcmd.help
