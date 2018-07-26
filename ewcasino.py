@@ -50,7 +50,7 @@ async def pachinko(cmd):
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
 		elif user_data.life_state == ewcfg.life_state_corpse:
-			response = "{}our incorporeal existence leaves you unable to load the balls into the slime pachinko machine.".format(("Try as you may, y" if random.randrange(2) == 0 else "Y"))
+			response = "{}our incorporeal existence leaves you unable to load the balls into the slime pachinko machine.".format(("try as you may, y" if random.randrange(2) == 0 else "y"))
 		elif value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin to play."
 		else:
@@ -324,8 +324,8 @@ async def roulette(cmd):
 		value = None
 
 		if cmd.tokens_count > 1:
-			bet = ("{}".format(cmd.tokens[1])).lower()
-			value = ewutils.getIntToken(tokens = cmd.tokens[1:], allow_all = True)
+			value = ewutils.getIntToken(tokens = cmd.tokens[:2], allow_all = True)
+			bet = ewutils.flattenTokenListToString(tokens = cmd.tokens[2:])
 
 		if value != None:
 			user_data = EwUser(member = cmd.message.author)
@@ -336,14 +336,18 @@ async def roulette(cmd):
 
 			if ewcmd.is_casino_open(market_data.clock) == False:
 				response = ewcfg.str_casino_closed
+			elif user_data.life_state == ewcfg.life_state_corpse:
+				response = "Your silent, ghastly wails fail to attract the attention of the croupier."
 			elif value > user_data.slimecredit or value == 0:
 				response = "You don't have enough SlimeCoin."
+			elif len(bet) == 0:
+				response = "You need to say what you're betting on. Options are: {}".format(ewutils.formatNiceList(names = all_bets))
 			elif bet not in all_bets:
 				response = "The dealer didn't understand your wager. Use !help to see a guide to the casino."
 			else:
 				await cmd.client.edit_message(resp, ewutils.formatMessage(
 					cmd.message.author,
-					"https://i.imgur.com/zHBjvDy.gif"
+					"https://ew.krakissi.net/img/sr.gif"
 				))
 
 				user_data.slimecredit -= value
