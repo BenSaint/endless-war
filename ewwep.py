@@ -333,8 +333,7 @@ async def attack(cmd):
 			was_killed = False
 			was_shot = False
 
-			if ((user_iskillers and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_rowdys)) or
-				(user_isrowdys and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_killers)) or
+			if ((user_iskillers or user_isrowdys) and (shootee_data.life_state == ewcfg.life_state_enlisted) or
 				(shootee_data.life_state == ewcfg.life_state_juvenile)
 			):
 				# User can be shot.
