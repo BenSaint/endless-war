@@ -285,3 +285,9 @@ async def map(cmd):
 """
 async def wiki(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Wiki: https://rfck.miraheze.org/wiki/Main_Page'))
+
+"""
+	Link to the fan art booru.
+"""
+async def booru(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Booru: http://rfck.booru.org/'))

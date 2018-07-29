@@ -133,6 +133,7 @@ cmd_inspect = cmd_prefix + 'inspect'
 cmd_look = cmd_prefix + 'look'
 cmd_map = cmd_prefix + 'map'
 cmd_wiki = cmd_prefix + 'wiki'
+cmd_booru = cmd_prefix + 'booru'
 
 
 # Slime costs/values

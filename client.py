@@ -150,6 +150,7 @@ cmd_map = {
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
+	ewcfg.cmd_booru: ewcmd.booru,
 	#ewcfg.cmd_help: ewcmd.help,
 	#ewcfg.cmd_help_alt1: ewcmd.help,
 	#ewcfg.cmd_help_alt2: ewcmd.help

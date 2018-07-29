@@ -371,16 +371,19 @@ async def inventory_print(cmd):
 		id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
 	)
 
-	for item in items:
-		id_item = item.get('id_item')
-		quantity = item.get('quantity')
+	if len(items) == 0:
+		response = "You don't have anything."
+	else:
+		for item in items:
+			id_item = item.get('id_item')
+			quantity = item.get('quantity')
 
-		response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
-			id_item = item.get('id_item'),
-			name = item.get('name'),
-			soulbound_style = ("**" if item.get('soulbound') else ""),
-			quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
-		)
+			response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
+				id_item = item.get('id_item'),
+				name = item.get('name'),
+				soulbound_style = ("**" if item.get('soulbound') else ""),
+				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
+			)
 
 	await cmd.client.edit_message(resp, response)
 
