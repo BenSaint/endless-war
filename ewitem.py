@@ -262,6 +262,71 @@ def item_create(
 
 	return item_id
 
+
+"""
+	Destroy all of a player's non-soulbound items.
+"""
+def item_destroyall(member = None):
+	if member == None:
+		return
+
+	try:
+		# Get database handles if they weren't passed.
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
+
+		# Create the item in the database.
+		cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
+			id_user = ewcfg.col_id_user,
+			id_server = ewcfg.col_id_server,
+			soulbound = ewcfg.col_soulbound,
+		), (
+			member.server.id,
+			member.id
+		))
+
+		conn.commit()
+	finally:
+		# Clean up the database handles.
+		cursor.close()
+		ewutils.databaseClose(conn_info)
+
+
+"""
+	Loot all non-soulbound items from a player upon killing them, reassinging to id_user_target.
+"""
+def item_loot(
+	member = None,
+	id_user_target = ""
+):
+	if member == None or len(id_user_target) == 0:
+		return
+
+	try:
+		# Get database handles if they weren't passed.
+		conn_info = ewutils.databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
+
+		# Create the item in the database.
+		cursor.execute("UPDATE items SET {id_user} = %s WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
+			id_user = ewcfg.col_id_user,
+			id_server = ewcfg.col_id_server,
+			soulbound = ewcfg.col_soulbound,
+		), (
+			id_user_target,
+			member.server.id,
+			member.id
+		))
+
+		conn.commit()
+	finally:
+		# Clean up the database handles.
+		cursor.close()
+		ewutils.databaseClose(conn_info)
+
+
 """
 	Returns true if the command string is !inv or equivalent.
 """

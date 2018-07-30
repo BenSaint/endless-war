@@ -76,6 +76,9 @@ class EwPoi:
 	# Message shown before entering the zone fails when it's closed.
 	str_closed = None
 
+	# Vendor names available at this POI.
+	vendors = []
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
@@ -90,7 +93,8 @@ class EwPoi:
 		factions = [],
 		life_states = [],
 		closed = False,
-		str_closed = None
+		str_closed = None,
+		vendors = []
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -105,6 +109,7 @@ class EwPoi:
 		self.life_states = life_states
 		self.closed = closed
 		self.str_closed = str_closed
+		self.vendors = vendors
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],

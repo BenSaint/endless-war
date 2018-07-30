@@ -6,6 +6,43 @@ import ewutils
 import ewcfg
 from ew import EwUser
 
+"""
+	Release the specified player from their commitment to their faction.
+	Returns enlisted players to juvenile.
+"""
+async def pardon(cmd):
+	resp = await ewcmd.start(cmd = cmd)
+	response = ""
+	user_data = EwUser(member = cmd.message.author)
+
+	if user_data.life_state != ewcfg.life_state_kingpin:
+		response = "Only the Rowdy Fucker {} and the Cop Killer {} can do that.".format(ewcfg.emote_rowdyfucker, ewcfg.emote_copkiller)
+	else:
+		member = None
+		if cmd.mentions_count == 1:
+			member = cmd.mentions[0]
+			if member.id == cmd.message.author.id:
+				member = None
+
+		if member == None:
+			response = "Who?"
+		else:
+			member_data = EwUser(member = member)
+
+			if member_data.faction == "":
+				response = "{} isn't enlisted.".format(member.display_name)
+			else:
+				faction_old = member_data.faction
+				member_data.faction = ""
+
+				if member_data.life_state == ewcfg.life_state_enlisted:
+					member_data.life_state = ewcfg.life_state_juvenile
+
+				member_data.persist()
+				response = "{} has been released from his association with the {}.".format(member.display_name, faction_old)
+
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
 """ Destroy a megaslime of your own for lore reasons. """
 async def deadmega(cmd):
 	resp = await ewcmd.start(cmd = cmd)

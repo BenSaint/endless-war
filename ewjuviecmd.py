@@ -111,6 +111,9 @@ async def mine(cmd):
 				user_data.slimes = 0
 				user_data.persist()
 
+				# Destroy all common items.
+				ewitem.item_destroyall(member = cmd.message.author)
+
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 			else:

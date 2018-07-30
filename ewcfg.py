@@ -134,6 +134,7 @@ cmd_look = cmd_prefix + 'look'
 cmd_map = cmd_prefix + 'map'
 cmd_wiki = cmd_prefix + 'wiki'
 cmd_booru = cmd_prefix + 'booru'
+cmd_pardon = cmd_prefix + 'pardon'
 
 
 # Slime costs/values
@@ -706,7 +707,7 @@ weather_list = [
 ]
 
 # Food vendor names
-vendor_slipperymolotov = 'The Slippery Molotov Bar & Lounge'
+vendor_bar = 'bar'
 vendor_pizzahut = 'Pizza Hut'
 vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
@@ -728,7 +729,7 @@ food_list = [
 		price = 160,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You stir your slime n' tonic with a thin straw before chugging it lustily."
 	),
 	EwFood(
@@ -740,7 +741,7 @@ food_list = [
 		price = 200,
 		inebriation = 2,
 		str_name = 'slima colada',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain."
 	),
 	EwFood(
@@ -753,7 +754,7 @@ food_list = [
 		price = 90,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor."
 	),
 	EwFood(
@@ -768,7 +769,7 @@ food_list = [
 		price = 3000,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
 	),
 	EwFood(
@@ -780,7 +781,7 @@ food_list = [
 		price = 180,
 		inebriation = 2,
 		str_name = 'slimy nipple',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You drink the small glass of creamy, greenish layered fluids in one gulp."
 	),
 	EwFood(
@@ -792,7 +793,7 @@ food_list = [
 		price = 240,
 		inebriation = 2,
 		str_name = 'slime on the beach',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!"
 	),
 		EwFood(
@@ -804,7 +805,7 @@ food_list = [
 		price = 160,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The drink oozes tartly down your throat. It's pretty nasty, but you still like it."
 	),
 		EwFood(
@@ -816,7 +817,7 @@ food_list = [
 		price = 200,
 		inebriation = 3,
 		str_name = 'slime on the beach',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
 	EwFood(
@@ -828,7 +829,7 @@ food_list = [
 		price = 140,
 		inebriation = 2,
 		str_name = 'slimy mary',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?"
 	),
 	EwFood(
@@ -841,7 +842,7 @@ food_list = [
 		price = 150,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it."
 	),
 	EwFood(
@@ -853,7 +854,7 @@ food_list = [
 		price = 0,
 		inebriation = 0,
 		str_name = 'glass of water',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though."
 	),
 	EwFood(
@@ -1238,10 +1239,7 @@ poi_list = [
 	EwPoi( # 4
 		id_poi = "krakbay",
 		alias = [
-			"krak",
-			"food-court",
-			"foodcourt",
-			"food"
+			"krak"
 		],
 		str_name = "Krak Bay",
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.\n\nThis area contains the Food Court. To the East is Downtown NLACakaNM. To the Southeast is Poudrin Alley. To the South is Ooze Gardens. To the Southwest is South Sleezeborough. To the West is North Sleezeborough. To the Northwest is Glocksbury.",
@@ -1600,6 +1598,7 @@ poi_list = [
 			"thenlacakanmfoodcourt",
 			"food",
 			"foodcourt",
+			"food-court",
 			"pizzahut",
 			"tacobell",
 			"kfc"
@@ -1609,7 +1608,13 @@ poi_list = [
 		channel = channel_foodcourt,
 		role = "Food Court",
 		coord = (16, 17),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_pizzahut,
+			vendor_tacobell,
+			vendor_kfc,
+			vendor_mtndew
+		]
 	),
 	EwPoi( # nlac-u
 		id_poi = poi_id_nlacu,
@@ -1669,7 +1674,10 @@ poi_list = [
 		channel = channel_speakeasy,
 		role = "Speakeasy",
 		coord = (39, 11),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_bar
+		]
 	),
 	EwPoi( # 7-11
 		id_poi = poi_id_711,

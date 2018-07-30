@@ -132,6 +132,9 @@ cmd_map = {
 	# Remove a megaslime (1 mil slime) from a general.
 	ewcfg.cmd_deadmega: ewkingpin.deadmega,
 
+	# Release a player from their faction.
+	ewcfg.cmd_pardon: ewkingpin.pardon,
+
 
 	# Navigate the world map.
 	ewcfg.cmd_move: ewmap.move,
