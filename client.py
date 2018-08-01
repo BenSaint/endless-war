@@ -14,6 +14,8 @@ import json
 import subprocess
 import traceback
 import re
+import os
+
 
 import ewutils
 import ewcfg
@@ -219,6 +221,12 @@ async def on_ready():
 					channels_stockmarket[server.id] = channel
 					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
 
+	try:
+		ewutils.logMsg('Creating message queue directory.')
+		os.mkdir(ewcfg.dir_msgqueue)
+	except FileExistsError:
+		ewutils.logMsg('Message queue directory already exists.')
+
 	ewutils.logMsg('Ready.')
 
 
@@ -330,6 +338,47 @@ async def on_ready():
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
+			traceback.print_exc(file = sys.stdout)
+
+		# Parse files dumped into the msgqueue directory and send messages as needed.
+		try:
+			for msg_file in os.listdir(ewcfg.dir_msgqueue):
+				fname = "{}/{}".format(ewcfg.dir_msgqueue, msg_file)
+
+				msg = ewutils.readMessage(fname)
+				os.remove(fname)
+
+				msg_channel_names = []
+				msg_channel_names_reverb = []
+
+				if msg.channel != None:
+					msg_channel_names.append(msg.channel)
+
+				if msg.poi != None:
+					poi = ewcfg.id_to_poi.get(msg.poi)
+					if poi != None:
+						if poi.channel != None and len(poi.channel) > 0:
+							msg_channel_names.append(poi.channel)
+
+						if msg.reverb == True:
+							pois_adjacent = ewmap.path_to(poi_start = msg.poi)
+
+							for poi_adjacent in pois_adjacent:
+								if poi_adjacent.channel != None and len(poi_adjacent.channel) > 0:
+									msg_channel_names_reverb.append(poi_adjacent.channel)
+
+				if len(msg_channel_names) == 0:
+					ewutils.logMsg('in file {} message for channel {} (reverb {})\n{}'.format(msg_file, msg.channel, msg.reverb, msg.message))
+				else:
+					# Send messages to every connected server.
+					for server in client.servers:
+						for channel in server.channels:
+							if channel.name in msg_channel_names:
+								await client.send_message(channel, "**{}**".format(msg.message))
+							elif channel.name in msg_channel_names_reverb:
+								await client.send_message(channel, "**Something is happening nearby...\n\n{}**".format(msg.message))
+		except:
+			ewutils.logMsg('An error occurred while trying to process the message queue:')
 			traceback.print_exc(file = sys.stdout)
 
 		# Wait a while before running periodic tasks.

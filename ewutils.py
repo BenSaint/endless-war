@@ -8,6 +8,68 @@ import ewcfg
 db_pool = {}
 db_pool_id = 0
 
+class Message:
+	# Send the message to this exact channel by name.
+	channel = None
+
+	# Send the message to the channel associated with this point of interest.
+	id_poi = None
+
+	# Should this message echo to adjacent points of interest?
+	reverb = None
+	message = ""
+
+	def __init__(
+		self,
+		channel = None,
+		reverb = False,
+		message = "",
+		id_poi = None
+	):
+		self.channel = channel
+		self.reverb = reverb
+		self.message = message
+		self.id_poi = id_poi
+
+def readMessage(fname):
+	msg = Message()
+
+	try:
+		f = open(fname, "r")
+		f_lines = f.readlines()
+
+		count = 0
+		for line in f_lines:
+			line = line.rstrip()
+			count += 1
+			if len(line) == 0:
+				break
+
+			args = line.split('=')
+			if len(args) == 2:
+				field = args[0].strip().lower()
+				value = args[1].strip()
+
+				if field == "channel":
+					msg.channel = value.lower()
+				elif field == "poi":
+					msg.poi = value.lower()
+				elif field == "reverb":
+					msg.reverb = True if (value.lower() == "true") else False
+			else:
+				count -= 1
+				break
+
+		for line in f_lines[count:]:
+			msg.message += (line.rstrip() + "\n")
+	except:
+		logMsg('failed to parse message.')
+		traceback.print_exc(file = sys.stdout)
+	finally:
+		f.close()
+
+	return msg
+
 """ Write the string to stdout with a timestamp. """
 def logMsg(string):
 	print("[{}] {}".format(datetime.datetime.now(), string))

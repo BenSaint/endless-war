@@ -8,6 +8,7 @@ from ewmap import EwPoi
 
 # Global configuration options.
 version = "v1.99"
+dir_msgqueue = 'msgqueue'
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -1725,7 +1726,7 @@ poi_list = [
 			"mine"
 		],
 		str_name = "The Mines",
-		str_desc = "", # TODO
+		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the Negaslime. Prolonged contact with the Negaslime has temporarily suffused the walls with profane energy, making them solid to ghosts.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",

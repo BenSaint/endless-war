@@ -232,10 +232,17 @@ def path_branch(path_base, coord_next):
 	
 	return path_next
 
-def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = None):
+def path_to(
+	coord_start = None,
+	coord_end = None,
+	poi_start = None,
+	poi_end = None
+):
 	score_golf = 65535
 	paths_finished = []
 	paths_walking = []
+
+	pois_adjacent = []
 
 	if poi_start != None:
 		poi = ewcfg.id_to_poi.get(poi_start)
@@ -296,17 +303,37 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 				if could_move:
 					path_branches += 1
 
-					# Arrived at the actual destination?
-					if neigh == coord_end:
-						path_final = branch if branch != None else path
-						if path_final.cost < score_golf:
-							score_golf = path_final.cost
-							paths_finished = []
+					if coord_end != None:
+						# Arrived at the actual destination?
+						if neigh == coord_end:
+							path_final = branch if branch != None else path
+							if path_final.cost < score_golf:
+								score_golf = path_final.cost
+								paths_finished = []
 
-						if path.cost <= score_golf:
-							paths_finished.append(path_final)
+							if path.cost <= score_golf:
+								paths_finished.append(path_final)
 
-						paths_dead.append(path_final)
+							paths_dead.append(path_final)
+					else:
+						# Looking for adjacent points of interest.
+						sem_current = map_world[neigh[1]][neigh[0]]
+						poi_adjacent_coord = neigh
+
+						if sem_current == sem_city_alias:
+							poi_adjacent_coord = ewcfg.alias_to_coord.get(neigh)
+
+							if poi_adjacent_coord != None:
+								sem_current = sem_city
+
+						if sem_current == sem_city and poi_adjacent_coord != coord_start:
+							poi_adjacent = ewcfg.coord_to_poi.get(poi_adjacent_coord)
+
+							if poi_adjacent != None:
+								pois_adjacent.append(poi_adjacent)
+
+							path_final = branch if branch != None else path
+							paths_dead.append(path_final)
 
 			if path_branches == 0:
 				paths_dead.append(path)
@@ -320,12 +347,16 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 		if len(paths_walking_new) > 0:
 			paths_walking += paths_walking_new
 
-	path_true = None
-	if len(paths_finished) > 0:
-		path_true = paths_finished[0]
-		path_true.iters = count_iter
+	if coord_end != None:
+		path_true = None
+		if len(paths_finished) > 0:
+			path_true = paths_finished[0]
+			path_true.iters = count_iter
 
-	return path_true
+		return path_true
+	else:
+		return pois_adjacent
+
 
 """
 	Debug method to draw the map, optionally with a path/route on it.
