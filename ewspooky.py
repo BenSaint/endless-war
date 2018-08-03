@@ -111,6 +111,9 @@ async def haunt(cmd):
 		elif haunted_data.life_state == ewcfg.life_state_corpse:
 			# Dead players can't be haunted.
 			response = "{} is already dead.".format(member.display_name)
+		elif haunted_data.life_state == ewcfg.life_state_grandfoe:
+			# Grand foes can't be haunted.
+			response = "{} is invulnerable to ghosts.".format(member.display_name)
 		elif haunted_data.life_state == ewcfg.life_state_enlisted or haunted_data.life_state == ewcfg.life_state_juvenile:
 			# Target can be haunted by the player.
 			haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)

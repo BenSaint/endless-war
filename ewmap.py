@@ -48,6 +48,12 @@ class EwPoi:
 	# The nice name for this place.
 	str_name = ""
 
+	# You find yourself $str_in $str_name
+	str_in = "in"
+
+	# You $str_enter $str_name
+	str_enter = "enter"
+
 	# A description provided when !look-ing here.
 	str_desc = ""
 
@@ -85,6 +91,8 @@ class EwPoi:
 		alias = [],
 		str_name = "Unknown",
 		str_desc = "...",
+		str_in = "in",
+		str_enter = "enter",
 		coord = None,
 		coord_alias = [],
 		channel = "",
@@ -94,12 +102,14 @@ class EwPoi:
 		life_states = [],
 		closed = False,
 		str_closed = None,
-		vendors = []
+		vendors = [],
 	):
 		self.id_poi = id_poi
 		self.alias = alias
 		self.str_name = str_name
 		self.str_desc = str_desc
+		self.str_in = str_in
+		self.str_enter = str_enter
 		self.coord = coord
 		self.coord_alias = coord_alias
 		self.channel = channel
@@ -128,7 +138,7 @@ map_world = [
 	[ -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, 30, -1, -1,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -2, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, 30, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, 30, -1, -1, -1,  5, -1,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1,  0,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -2,  5, -2, -3, -3, -1, -1, -1, -2, -1,  0, -1, -1, -1, -1, -1,  0,  0, 30, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1,  0,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -2,  5, -2, -3, -3,  5, -2, -1, -2, -1,  0, -1, -1, -1, -1, -1,  0,  0, 30, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -2, -1, -1, -1, -1, -1, -1, 30, -1, 30, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1,  0, -1,  5, -1, -1,  0,  0,  0,  0,  0, -1,  0, -1, -1, -1, -1, -1, 30, -2,  5, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -1, -1,  0, 30, -2, 30,  0,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -490,7 +500,7 @@ async def move(cmd):
 			channel,
 			ewutils.formatMessage(
 				cmd.message.author,
-				"You enter {}.".format(poi.str_name)
+				"You {} {}.".format(poi.str_enter, poi.str_name)
 			)
 		)
 	else:
@@ -559,7 +569,7 @@ async def move(cmd):
 						channel,
 						ewutils.formatMessage(
 							cmd.message.author,
-							"You enter {}.".format(poi_current.str_name)
+							"You {} {}.".format(poi_current.str_enter, poi_current.str_name)
 						)
 					)
 			else:

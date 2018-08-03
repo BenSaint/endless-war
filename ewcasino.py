@@ -50,7 +50,7 @@ async def pachinko(cmd):
 		if ewcmd.is_casino_open(market_data.clock) == False:
 			response = ewcfg.str_casino_closed
 		elif user_data.life_state == ewcfg.life_state_corpse:
-			response = "{}our incorporeal existence leaves you unable to load the balls into the slime pachinko machine.".format(("try as you may, y" if random.randrange(2) == 0 else "y"))
+			response = "{}our incorporeal existence leaves you unable to load the balls into the slime pachinko machine.".format(("Try as you may, y" if random.randrange(2) == 0 else "Y"))
 		elif value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin to play."
 		else:

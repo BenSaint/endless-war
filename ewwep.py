@@ -484,7 +484,7 @@ async def attack(cmd):
 								damage = damage
 							)
 			else:
-				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+				response = 'You are unable to attack {}.'.format(member.display_name)
 
 			# Level up the player if appropriate.
 			new_level = len(str(int(user_data.slimes)))

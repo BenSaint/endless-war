@@ -23,6 +23,7 @@ max_iw_swing = 30
 life_state_corpse = 0
 life_state_juvenile = 1
 life_state_enlisted = 2
+life_state_grandfoe = 8
 life_state_kingpin = 10
 
 # ID tags for points of interest that are needed in code.
@@ -40,6 +41,7 @@ poi_id_foodcourt = "thefoodcourt"
 poi_id_cinema = "nlacakanmcinemas"
 poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
+poi_id_endlesswar = "endlesswar"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -53,6 +55,7 @@ role_copkillers_pvp = "killerpvp"
 role_corpse = "corpse"
 role_corpse_pvp = "corpsepvp"
 role_kingpin = "kingpin"
+role_grandfoe = "grandfoe"
 
 # Faction names
 faction_killers = "killers"
@@ -1189,6 +1192,21 @@ for item_def in item_def_list:
 	item_def_map[item_def.item_type] = item_def
 
 poi_list = [
+	EwPoi( # ENDLESS WAR
+		id_poi = poi_id_endlesswar,
+		alias = [
+			"obelisk",
+			"war",
+			"ew"
+		],
+		str_in = "at the base of",
+		str_enter = "arrive at",
+		str_name = "ENDLESS WAR",
+		str_desc = "ENDLESS WAR towers above you, its gray color almost making it seem to disappear against the gray of the sky. Its eye is closed, motionless.",
+		coord = (27, 16),
+		channel = channel_endlesswar,
+		role = "Endless War"
+	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
 		alias = [
