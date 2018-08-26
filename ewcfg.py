@@ -277,6 +277,7 @@ col_timestamp = 'timestamp'
 # Item type names
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
+it_questitem = "questitem"
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
@@ -1182,6 +1183,17 @@ item_def_list = [
 		str_name = "Slime Poudrin",
 		str_desc = "A dense, crystalized chunk of precious slime."
 	),
+
+	EwItemDef(
+		item_type = it_questitem,
+		str_name = "{qitem_name}",
+		str_desc = "{qitem_desc}",
+		soulbound = True,
+		item_props = {
+			'qitem_name': 'Quest Item',
+			'qitem_desc': 'Something important to somebody.'
+		}
+	)
 ]
 
 # A map of item_type to EwItemDef objects.
