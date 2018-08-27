@@ -28,10 +28,7 @@ class EwCmd:
 		self.message = message
 		self.client = client
 		self.mentions = mentions
-
-		mentions_count = len(mentions)
-		if mentions_count > 0:
-			self.mentions_count = mentions_count
+		self.mentions_count = len(mentions)
 
 		if len(tokens) >= 1:
 			self.tokens_count = len(tokens)
