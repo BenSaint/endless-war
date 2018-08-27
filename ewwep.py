@@ -333,10 +333,7 @@ async def attack(cmd):
 			was_killed = False
 			was_shot = False
 
-			if ((user_iskillers and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_rowdys)) or
-				(user_isrowdys and (shootee_data.life_state == ewcfg.life_state_enlisted and shootee_data.faction == ewcfg.faction_killers)) or
-				(shootee_data.life_state == ewcfg.life_state_juvenile)
-			):
+			if (shootee_data.life_state == ewcfg.life_state_enlisted) or (shootee_data.life_state == ewcfg.life_state_juvenile):
 				# User can be shot.
 				if shootee_data.life_state == ewcfg.life_state_juvenile:
 					was_juvenile = True
@@ -413,6 +410,9 @@ async def attack(cmd):
 					shootee_data.life_state = ewcfg.life_state_corpse
 					shootee_data.poi = ewcfg.poi_id_thesewers
 
+					# Steal items
+					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
+
 					if weapon != None:
 						response = weapon.str_damage.format(
 							name_player = cmd.message.author.display_name,
@@ -484,7 +484,7 @@ async def attack(cmd):
 								damage = damage
 							)
 			else:
-				response = 'ENDLESS WAR finds this betrayal stinky. He will not allow you to slaughter {}.'.format(member.display_name)
+				response = 'You are unable to attack {}.'.format(member.display_name)
 
 			# Level up the player if appropriate.
 			new_level = len(str(int(user_data.slimes)))
@@ -548,6 +548,9 @@ async def suicide(cmd):
 			user_data.id_killer = cmd.message.author.id
 			user_data.slimes = 0
 			user_data.persist()
+
+			# Destroy all common items.
+			ewitem.item_destroyall(member = cmd.message.author)
 
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)

@@ -49,6 +49,9 @@ class EwServer:
 
 	""" Save server data object to the database. """
 	def persist(self):
+		if self.icon == None:
+			self.icon = ""
+
 		try:
 			conn_info = ewutils.databaseConnect()
 			conn = conn_info.get('conn')

@@ -18,9 +18,13 @@ async def updateRoles(
 	roles_map = ewutils.getRoleMap(member.server.roles)
 	roles_map_user = ewutils.getRoleMap(member.roles)
 
-	# Fix the life_state of kingpins, if somehow it wasn't set.
 	if user_data.life_state != ewcfg.life_state_kingpin and ewcfg.role_kingpin in roles_map_user:
+		# Fix the life_state of kingpins, if somehow it wasn't set.
 		user_data.life_state = ewcfg.life_state_kingpin
+		user_data.persist()
+	elif user_data.life_state != ewcfg.life_state_grandfoe and ewcfg.role_grandfoe in roles_map_user:
+		# Fix the life_state of a grand foe.
+		user_data.life_state = ewcfg.life_state_grandfoe
 		user_data.persist()
 
 	faction_roles_remove = [
@@ -34,7 +38,8 @@ async def updateRoles(
 		ewcfg.role_copkillers_pvp,
 		ewcfg.role_corpse,
 		ewcfg.role_corpse_pvp,
-		ewcfg.role_kingpin
+		ewcfg.role_kingpin,
+		ewcfg.role_grandfoe
 	]
 
 	# Manage faction roles.
@@ -55,6 +60,9 @@ async def updateRoles(
 
 	elif user_data.life_state == ewcfg.life_state_kingpin:
 		faction_role = ewcfg.role_kingpin
+
+	elif user_data.life_state == ewcfg.life_state_grandfoe:
+		faction_role = ewcfg.role_grandfoe
 
 	faction_roles_remove.remove(faction_role)
 

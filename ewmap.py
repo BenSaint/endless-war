@@ -48,11 +48,18 @@ class EwPoi:
 	# The nice name for this place.
 	str_name = ""
 
+	# You find yourself $str_in $str_name
+	str_in = "in"
+
+	# You $str_enter $str_name
+	str_enter = "enter"
+
 	# A description provided when !look-ing here.
 	str_desc = ""
 
 	# (X, Y) location on the map (left, top) zero-based origin.
 	coord = None
+	coord_alias = []
 
 	# Channel name associated with this POI
 	channel = ""
@@ -75,26 +82,36 @@ class EwPoi:
 	# Message shown before entering the zone fails when it's closed.
 	str_closed = None
 
+	# Vendor names available at this POI.
+	vendors = []
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
 		alias = [],
 		str_name = "Unknown",
 		str_desc = "...",
+		str_in = "in",
+		str_enter = "enter",
 		coord = None,
+		coord_alias = [],
 		channel = "",
 		role = None,
 		pvp = True,
 		factions = [],
 		life_states = [],
 		closed = False,
-		str_closed = None
+		str_closed = None,
+		vendors = [],
 	):
 		self.id_poi = id_poi
 		self.alias = alias
 		self.str_name = str_name
 		self.str_desc = str_desc
+		self.str_in = str_in
+		self.str_enter = str_enter
 		self.coord = coord
+		self.coord_alias = coord_alias
 		self.channel = channel
 		self.role = role
 		self.pvp = pvp
@@ -102,6 +119,7 @@ class EwPoi:
 		self.life_states = life_states
 		self.closed = closed
 		self.str_closed = str_closed
+		self.vendors = vendors
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -112,24 +130,24 @@ map_world = [
 	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1,  5, -1,  0,  0,  0,  0, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, 30, -2, 30,  0, -1, -1,  0, -1, -1, 30, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0, 30, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0, -1, 30, -1, -1, -1, -1,  0, -1, -1, -2, 30,  0,  0,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, 30,  0,  0,  0,  0,  0,  0,  0, 30, -1, -1, -1,  0, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -2, -1, -1, -1, -1, -1, -1, 30, -2,  5, -1, -1,  0, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1,  0,  0, 30, -2, 30,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -2, -1,  0, -1, -2, -1, -1,  0, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1,  5, -1,  0, -1, -1, -1, -1,  0, -1, -1, -1, -2,  5, -2, 30,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0, 30, -2,  5, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1,  0,  0,  0,  0, 30, -2, -1,  0, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, 30,  0,  0,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -2, 30,  0, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1,  0, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30,  0,  0,  0,  0, -1,  5, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -2,  5, -2, -1, -1, -1, -1, -1, -2, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -2, -1, -1, -1, -1, -1, -1, 30,  0,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, 30,  0,  0,  0,  0,  0,  0, -1, 30, -1, -1, -1,  0, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -2, -1, -1, -1, -1, -1,  0, 30, -2,  5, -2, -1,  0, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -2, -1, -1, 30, -1, -1, -1,  0, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1,  0, -1, -1, -1, -1,  5, -1, -1,  0, -1, -1, -1,  0, -1, -1, -1, -2,  5, -2, 30,  0,  0,  0,  0,  0,  0,  0,  0, -1,  0,  0, 30, -2,  5, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1,  0,  0,  0,  0,  0, 30, -2, 30,  0,  0, -1, -1, -1, 30, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, 30, -1, -1,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -2, -1, -1, -1, -1,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, 30, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, 30, -1, -1, -1,  5, -1,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1,  0,  0,  0,  0, 30, -2, 30,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -2,  5, -2, -3, -3,  5, -2, -1, -2, -1,  0, -1, -1, -1, -1, -1,  0,  0, 30, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1,  0, -1, -2, -1, -1, -1, -1, -1, -1, 30, -1, 30, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1,  0, -1,  5, -1, -1,  0,  0,  0,  0,  0, -1,  0, -1, -1, -1, -1, -1, 30, -2,  5, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, -1, -1,  0, 30, -2, 30,  0,  0, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, 30, -1, -1,  0, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, 30, -1, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, 30,  0,  0,  0, -1, -1, 30,  0,  0,  0,  0,  0, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2,  5, -1,  0, -1, -1,  0, 30, -2, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1,  0, -1,  5, -2, -1, -1, -1, -1,  0, 30, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
-	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, 30,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, 30, -1, -1, -1,  0, -1, -1,  0, -1, -1, -1, -1, -1, -2, 30,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, 30,  0,  0,  0, -1, -1, 30, -1,  0,  0,  0,  0, 30, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2,  5, -1,  0, -1, -1,  0, 30, -2, 30,  0, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1,  0, -1,  5, -1, -1, -1, -1, -1, -1, -1, -2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -2, 30,  0,  0, -1, -2, -1, -1, -1, -1, -1, -1, -1, 30, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0, 30, -2, 30,  0,  0,  0,  0,  0,  0,  0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -140,6 +158,7 @@ map_height = len(map_world)
 
 sem_wall = -1
 sem_city = -2
+sem_city_alias = -3
 
 def pairToString(pair):
 	return "({},{})".format("{}".format(pair[0]).rjust(2), "{}".format(pair[1]).ljust(2))
@@ -204,7 +223,7 @@ def path_step(path, coord_next):
 
 	cost_next = map_world[coord_next[1]][coord_next[0]]
 
-	if cost_next == sem_city:
+	if cost_next == sem_city or cost_next == sem_city_alias:
 		cost_next = 0
 
 	path.steps.append(coord_next)
@@ -223,10 +242,17 @@ def path_branch(path_base, coord_next):
 	
 	return path_next
 
-def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = None):
+def path_to(
+	coord_start = None,
+	coord_end = None,
+	poi_start = None,
+	poi_end = None
+):
 	score_golf = 65535
 	paths_finished = []
 	paths_walking = []
+
+	pois_adjacent = []
 
 	if poi_start != None:
 		poi = ewcfg.id_to_poi.get(poi_start)
@@ -287,17 +313,37 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 				if could_move:
 					path_branches += 1
 
-					# Arrived at the actual destination?
-					if neigh == coord_end:
-						path_final = branch if branch != None else path
-						if path_final.cost < score_golf:
-							score_golf = path_final.cost
-							paths_finished = []
+					if coord_end != None:
+						# Arrived at the actual destination?
+						if neigh == coord_end:
+							path_final = branch if branch != None else path
+							if path_final.cost < score_golf:
+								score_golf = path_final.cost
+								paths_finished = []
 
-						if path.cost <= score_golf:
-							paths_finished.append(path_final)
+							if path.cost <= score_golf:
+								paths_finished.append(path_final)
 
-						paths_dead.append(path_final)
+							paths_dead.append(path_final)
+					else:
+						# Looking for adjacent points of interest.
+						sem_current = map_world[neigh[1]][neigh[0]]
+						poi_adjacent_coord = neigh
+
+						if sem_current == sem_city_alias:
+							poi_adjacent_coord = ewcfg.alias_to_coord.get(neigh)
+
+							if poi_adjacent_coord != None:
+								sem_current = sem_city
+
+						if sem_current == sem_city and poi_adjacent_coord != coord_start:
+							poi_adjacent = ewcfg.coord_to_poi.get(poi_adjacent_coord)
+
+							if poi_adjacent != None:
+								pois_adjacent.append(poi_adjacent)
+
+							path_final = branch if branch != None else path
+							paths_dead.append(path_final)
 
 			if path_branches == 0:
 				paths_dead.append(path)
@@ -311,12 +357,16 @@ def path_to(coord_start = None, coord_end = None, poi_start = None, poi_end = No
 		if len(paths_walking_new) > 0:
 			paths_walking += paths_walking_new
 
-	path_true = None
-	if len(paths_finished) > 0:
-		path_true = paths_finished[0]
-		path_true.iters = count_iter
+	if coord_end != None:
+		path_true = None
+		if len(paths_finished) > 0:
+			path_true = paths_finished[0]
+			path_true.iters = count_iter
 
-	return path_true
+		return path_true
+	else:
+		return pois_adjacent
+
 
 """
 	Debug method to draw the map, optionally with a path/route on it.
@@ -332,6 +382,8 @@ def map_draw(path = None, coord = None):
 				col = "  "
 			elif col == sem_city:
 				col = "CT"
+			elif col == sem_city_alias:
+				col = "ct"
 			elif col == 0:
 				col = "██"
 			elif col == 30:
@@ -448,7 +500,7 @@ async def move(cmd):
 			channel,
 			ewutils.formatMessage(
 				cmd.message.author,
-				"You enter {}.".format(poi.str_name)
+				"You {} {}.".format(poi.str_enter, poi.str_name)
 			)
 		)
 	else:
@@ -459,21 +511,28 @@ async def move(cmd):
 				break
 
 			val = map_world[step[1]][step[0]]
+			poi_current = None
 
+			# Standing on the actual city node.
 			if val == sem_city:
 				poi_current = ewcfg.coord_to_poi.get(step)
 
-				if poi_current != None:
-					user_data = EwUser(member = cmd.message.author)
+			# Standing on a node which is aliased (a part of the city).
+			elif val == sem_city_alias:
+				poi_current = ewcfg.coord_to_poi.get(ewcfg.alias_to_coord.get(step))
 
-					# If the player dies or enlists or whatever while moving, cancel the move.
-					if user_data.life_state != life_state or faction != user_data.faction:
-						return
+			if poi_current != None:
+				user_data = EwUser(member = cmd.message.author)
 
-					channel = cmd.message.channel
+				# If the player dies or enlists or whatever while moving, cancel the move.
+				if user_data.life_state != life_state or faction != user_data.faction:
+					return
 
-					# Prevent access to the zone if it's closed.
-					if poi_current.closed == True:
+				channel = cmd.message.channel
+
+				# Prevent access to the zone if it's closed.
+				if poi_current.closed == True:
+					try:
 						if poi_current.str_closed != None:
 							message_closed = poi_current.str_closed
 						else:
@@ -485,7 +544,7 @@ async def move(cmd):
 							if ch.name == poi_current.channel:
 								channel = ch
 								break
-
+					finally:
 						return await cmd.client.send_message(
 							channel,
 							ewutils.formatMessage(
@@ -494,12 +553,13 @@ async def move(cmd):
 							)
 						)
 
-					# Send the message in the channel for this POI if possible, else in the origin channel for the move.
-					for ch in cmd.message.server.channels:
-						if ch.name == poi_current.channel:
-							channel = ch
-							break
+				# Send the message in the channel for this POI if possible, else in the origin channel for the move.
+				for ch in cmd.message.server.channels:
+					if ch.name == poi_current.channel:
+						channel = ch
+						break
 
+				if user_data.poi != poi_current.id_poi:
 					user_data.poi = poi_current.id_poi
 					user_data.persist()
 
@@ -509,7 +569,7 @@ async def move(cmd):
 						channel,
 						ewutils.formatMessage(
 							cmd.message.author,
-							"You enter {}.".format(poi_current.str_name)
+							"You {} {}.".format(poi_current.str_enter, poi_current.str_name)
 						)
 					)
 			else:

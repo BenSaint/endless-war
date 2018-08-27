@@ -8,6 +8,7 @@ from ewmap import EwPoi
 
 # Global configuration options.
 version = "v1.99"
+dir_msgqueue = 'msgqueue'
 
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
@@ -22,6 +23,7 @@ max_iw_swing = 30
 life_state_corpse = 0
 life_state_juvenile = 1
 life_state_enlisted = 2
+life_state_grandfoe = 8
 life_state_kingpin = 10
 
 # ID tags for points of interest that are needed in code.
@@ -39,6 +41,7 @@ poi_id_foodcourt = "thefoodcourt"
 poi_id_cinema = "nlacakanmcinemas"
 poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
+poi_id_endlesswar = "endlesswar"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -52,6 +55,7 @@ role_copkillers_pvp = "killerpvp"
 role_corpse = "corpse"
 role_corpse_pvp = "corpsepvp"
 role_kingpin = "kingpin"
+role_grandfoe = "grandfoe"
 
 # Faction names
 faction_killers = "killers"
@@ -132,6 +136,9 @@ cmd_move_alt2 = cmd_prefix + 'walk'
 cmd_inspect = cmd_prefix + 'inspect'
 cmd_look = cmd_prefix + 'look'
 cmd_map = cmd_prefix + 'map'
+cmd_wiki = cmd_prefix + 'wiki'
+cmd_booru = cmd_prefix + 'booru'
+cmd_pardon = cmd_prefix + 'pardon'
 
 
 # Slime costs/values
@@ -270,6 +277,7 @@ col_timestamp = 'timestamp'
 # Item type names
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
+it_questitem = "questitem"
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
@@ -704,7 +712,7 @@ weather_list = [
 ]
 
 # Food vendor names
-vendor_slipperymolotov = 'The Slippery Molotov Bar & Lounge'
+vendor_bar = 'bar'
 vendor_pizzahut = 'Pizza Hut'
 vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
@@ -726,7 +734,7 @@ food_list = [
 		price = 160,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You stir your slime n' tonic with a thin straw before chugging it lustily."
 	),
 	EwFood(
@@ -738,7 +746,7 @@ food_list = [
 		price = 200,
 		inebriation = 2,
 		str_name = 'slima colada',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain."
 	),
 	EwFood(
@@ -751,7 +759,7 @@ food_list = [
 		price = 90,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor."
 	),
 	EwFood(
@@ -766,7 +774,7 @@ food_list = [
 		price = 3000,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
 	),
 	EwFood(
@@ -778,7 +786,7 @@ food_list = [
 		price = 180,
 		inebriation = 2,
 		str_name = 'slimy nipple',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You drink the small glass of creamy, greenish layered fluids in one gulp."
 	),
 	EwFood(
@@ -790,7 +798,7 @@ food_list = [
 		price = 240,
 		inebriation = 2,
 		str_name = 'slime on the beach',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!"
 	),
 		EwFood(
@@ -802,7 +810,7 @@ food_list = [
 		price = 160,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The drink oozes tartly down your throat. It's pretty nasty, but you still like it."
 	),
 		EwFood(
@@ -814,7 +822,7 @@ food_list = [
 		price = 200,
 		inebriation = 3,
 		str_name = 'slime on the beach',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
 	EwFood(
@@ -826,7 +834,7 @@ food_list = [
 		price = 140,
 		inebriation = 2,
 		str_name = 'slimy mary',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?"
 	),
 	EwFood(
@@ -839,7 +847,7 @@ food_list = [
 		price = 150,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it."
 	),
 	EwFood(
@@ -851,7 +859,7 @@ food_list = [
 		price = 0,
 		inebriation = 0,
 		str_name = 'glass of water',
-		vendor = vendor_slipperymolotov,
+		vendor = vendor_bar,
 		str_eat = "The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though."
 	),
 	EwFood(
@@ -1175,6 +1183,17 @@ item_def_list = [
 		str_name = "Slime Poudrin",
 		str_desc = "A dense, crystalized chunk of precious slime."
 	),
+
+	EwItemDef(
+		item_type = it_questitem,
+		str_name = "{qitem_name}",
+		str_desc = "{qitem_desc}",
+		soulbound = True,
+		item_props = {
+			'qitem_name': 'Quest Item',
+			'qitem_desc': 'Something important to somebody.'
+		}
+	)
 ]
 
 # A map of item_type to EwItemDef objects.
@@ -1185,6 +1204,21 @@ for item_def in item_def_list:
 	item_def_map[item_def.item_type] = item_def
 
 poi_list = [
+	EwPoi( # ENDLESS WAR
+		id_poi = poi_id_endlesswar,
+		alias = [
+			"obelisk",
+			"war",
+			"ew"
+		],
+		str_in = "at the base of",
+		str_enter = "arrive at",
+		str_name = "ENDLESS WAR",
+		str_desc = "ENDLESS WAR towers above you, its gray color almost making it seem to disappear against the gray of the sky. Its eye is closed, motionless.",
+		coord = (27, 16),
+		channel = channel_endlesswar,
+		role = "Endless War"
+	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
 		alias = [
@@ -1194,6 +1228,10 @@ poi_list = [
 		str_name = "Downtown NLACakaNM",
 		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
 		coord = (23, 16),
+		coord_alias = [
+			(24, 16),
+			(25, 16)
+		],
 		channel = "downtown",
 		role = "Downtown"
 	),
@@ -1232,10 +1270,7 @@ poi_list = [
 	EwPoi( # 4
 		id_poi = "krakbay",
 		alias = [
-			"krak",
-			"food-court",
-			"foodcourt",
-			"food"
+			"krak"
 		],
 		str_name = "Krak Bay",
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.\n\nThis area contains the Food Court. To the East is Downtown NLACakaNM. To the Southeast is Poudrin Alley. To the South is Ooze Gardens. To the Southwest is South Sleezeborough. To the West is North Sleezeborough. To the Northwest is Glocksbury.",
@@ -1594,6 +1629,7 @@ poi_list = [
 			"thenlacakanmfoodcourt",
 			"food",
 			"foodcourt",
+			"food-court",
 			"pizzahut",
 			"tacobell",
 			"kfc"
@@ -1603,7 +1639,13 @@ poi_list = [
 		channel = channel_foodcourt,
 		role = "Food Court",
 		coord = (16, 17),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_pizzahut,
+			vendor_tacobell,
+			vendor_kfc,
+			vendor_mtndew
+		]
 	),
 	EwPoi( # nlac-u
 		id_poi = poi_id_nlacu,
@@ -1618,7 +1660,7 @@ poi_list = [
 		str_desc = "An expansive campus housing massive numbers of students and administrators, all here in pursuit of knowledge. The campus is open to visitors, but there's nobody here.\n\nExits into Gatlingsdale.",
 		channel = channel_nlacu,
 		role = "NLAC U",
-		coord = (14, 10),
+		coord = (15, 9),
 		pvp = False
 	),
 	EwPoi( # battle-arena
@@ -1663,7 +1705,10 @@ poi_list = [
 		channel = channel_speakeasy,
 		role = "Speakeasy",
 		coord = (39, 11),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_bar
+		]
 	),
 	EwPoi( # 7-11
 		id_poi = poi_id_711,
@@ -1680,7 +1725,7 @@ poi_list = [
 		str_desc = "The darkened derelict 7-11 stands as it always has, a steadfast pillar of NLACakaNM culture. On its dirty exterior walls are spraypainted messages about \"patch notes\", \"github\", and other unparseable nonsense.\n\nExits into Poudrin Alley.",
 		channel = channel_711,
 		role = "7-11",
-		coord = (20, 24),
+		coord = (19, 25),
 		pvp = False
 	),
 	EwPoi( # the-labs
@@ -1711,7 +1756,7 @@ poi_list = [
 			"mine"
 		],
 		str_name = "The Mines",
-		str_desc = "", # TODO
+		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the Negaslime. Prolonged contact with the Negaslime has temporarily suffused the walls with profane energy, making them solid to ghosts.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
@@ -1737,10 +1782,16 @@ poi_list = [
 
 id_to_poi = {}
 coord_to_poi = {}
+alias_to_coord = {}
 
 for poi in poi_list:
-	# Populate the map of coordinates to their point of interest, for looking up from the map.
-	coord_to_poi[poi.coord] = poi
+	if poi.coord != None:
+		# Populate the map of coordinates to their point of interest, for looking up from the map.
+		coord_to_poi[poi.coord] = poi
+
+		# Populate the map of coordinate aliases to the main coordinate.
+		for coord_alias in poi.coord_alias:
+			alias_to_coord[coord_alias] = poi.coord
 
 	# Populate the map of point of interest names/aliases to the POI.
 	id_to_poi[poi.id_poi] = poi

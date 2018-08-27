@@ -28,10 +28,7 @@ class EwCmd:
 		self.message = message
 		self.client = client
 		self.mentions = mentions
-
-		mentions_count = len(mentions)
-		if mentions_count > 0:
-			self.mentions_count = mentions_count
+		self.mentions_count = len(mentions)
 
 		if len(tokens) >= 1:
 			self.tokens_count = len(tokens)
@@ -82,8 +79,12 @@ async def score(cmd):
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)
 
-		# return somebody's score
-		response = "{} currently has {:,} slime{}.".format(member.display_name, user_data.slimes, (" and {} slime poudrin{}.".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
+		if user_data.life_state == ewcfg.life_state_grandfoe:
+			# Can't see a raid boss's slime score.
+			response = "{}'s power is beyond your understanding.".format(member.display_name)
+		else:
+			# return somebody's score
+			response = "{} currently has {:,} slime{}.".format(member.display_name, user_data.slimes, (" and {} slime poudrin{}.".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
 
 	# Update the user's slime level.
 	if user_data != None:
@@ -127,7 +128,7 @@ async def data(cmd):
 
 		poi = ewcfg.id_to_poi.get(user_data.poi)
 		if poi != None:
-			response = "You find yourself in {}. ".format(poi.str_name)
+			response = "You find yourself {} {}. ".format(poi.str_in, poi.str_name)
 
 		# return my data
 		if user_data.life_state == ewcfg.life_state_corpse:
@@ -164,33 +165,40 @@ async def data(cmd):
 		if user_data.life_state != ewcfg.life_state_corpse:
 			new_level = len(str(int(user_data.slimes)))
 
-		if new_level > user_data.slimelevel:
-			user_data.slimelevel = new_level
-			user_data.persist()
-
-		# return somebody's score
-		if user_data.life_state == ewcfg.life_state_corpse:
-			response = "{} is a level {} deadboi.".format(member.display_name, user_data.slimelevel)
+		if user_data.life_state == ewcfg.life_state_grandfoe:
+			poi = ewcfg.id_to_poi.get(user_data.poi)
+			if poi != None:
+				response = "{} is {} {}.".format(member.display_name, poi.str_in, poi.str_name)
+			else:
+				response = "You can't discern anything useful about {}.".format(member.display_name)
 		else:
-			response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
-		
-		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+			if new_level > user_data.slimelevel:
+				user_data.slimelevel = new_level
+				user_data.persist()
 
-		weapon = ewcfg.weapon_map.get(user_data.weapon)
-		if weapon != None:
-			response += " {} {}{}.".format(ewcfg.str_weapon_wielding, ("" if len(user_data.weaponname) == 0 else "{}, ".format(user_data.weaponname)), weapon.str_weapon)
-			if user_data.weaponskill >= 5:
-				response += " {}".format(weapon.str_weaponmaster.format(rank = (user_data.weaponskill - 4)))
+			# return somebody's score
+			if user_data.life_state == ewcfg.life_state_corpse:
+				response = "{} is a level {} deadboi.".format(member.display_name, user_data.slimelevel)
+			else:
+				response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 			
-		trauma = ewcfg.weapon_map.get(user_data.trauma)
-		if trauma != None:
-			response += " {}".format(trauma.str_trauma)
+			coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
 
-		if user_data.kills > 0:
-			response += " They have {:,} confirmed kills.".format(user_data.kills)
+			weapon = ewcfg.weapon_map.get(user_data.weapon)
+			if weapon != None:
+				response += " {} {}{}.".format(ewcfg.str_weapon_wielding, ("" if len(user_data.weaponname) == 0 else "{}, ".format(user_data.weaponname)), weapon.str_weapon)
+				if user_data.weaponskill >= 5:
+					response += " {}".format(weapon.str_weaponmaster.format(rank = (user_data.weaponskill - 4)))
+				
+			trauma = ewcfg.weapon_map.get(user_data.trauma)
+			if trauma != None:
+				response += " {}".format(trauma.str_trauma)
 
-		if coinbounty != 0:
-			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
+			if user_data.kills > 0:
+				response += " They have {:,} confirmed kills.".format(user_data.kills)
+
+			if coinbounty != 0:
+				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 	# Update the user's slime level if they're alive.
 	if user_data != None:
@@ -279,3 +287,15 @@ async def help(cmd):
 """
 async def map(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Online world map: https://ew.krakissi.net/map/'))
+
+"""
+	Link to the RFCK wiki.
+"""
+async def wiki(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Wiki: https://rfck.miraheze.org/wiki/Main_Page'))
+
+"""
+	Link to the fan art booru.
+"""
+async def booru(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Booru: http://rfck.booru.org/'))

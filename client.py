@@ -14,6 +14,8 @@ import json
 import subprocess
 import traceback
 import re
+import os
+
 
 import ewutils
 import ewcfg
@@ -132,6 +134,9 @@ cmd_map = {
 	# Remove a megaslime (1 mil slime) from a general.
 	ewcfg.cmd_deadmega: ewkingpin.deadmega,
 
+	# Release a player from their faction.
+	ewcfg.cmd_pardon: ewkingpin.pardon,
+
 
 	# Navigate the world map.
 	ewcfg.cmd_move: ewmap.move,
@@ -144,12 +149,13 @@ cmd_map = {
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
 
-
-	# Misc bullshit
+	# Misc
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
+	ewcfg.cmd_wiki: ewcmd.wiki,
+	ewcfg.cmd_booru: ewcmd.booru,
 	#ewcfg.cmd_help: ewcmd.help,
 	#ewcfg.cmd_help_alt1: ewcmd.help,
 	#ewcfg.cmd_help_alt2: ewcmd.help
@@ -169,7 +175,9 @@ if debug == True:
 @client.event
 async def on_ready():
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
-	ewutils.logMsg('Ready.')
+
+	ewutils.logMsg("Loaded NLACakaNM world map. ({}x{})".format(ewmap.map_width, ewmap.map_height))
+	ewmap.map_draw()
 
 	# Flatten role names to all lowercase, no spaces.
 	for poi in ewcfg.poi_list:
@@ -202,28 +210,40 @@ async def on_ready():
 		ewserver.server_update(server = server)
 
 		# Grep around for channels
-		ewutils.logMsg("connected to: {}".format(server.name))
+		ewutils.logMsg("connected to server: {}".format(server.name))
 		for channel in server.channels:
 			if(channel.type == discord.ChannelType.text):
 				if(channel.name == ewcfg.channel_twitch_announcement):
 					channels_announcement.append(channel)
-					ewutils.logMsg("• found for announcements: {}".format(channel.name))
+					ewutils.logMsg("• found channel for announcements: {}".format(channel.name))
 
 				elif(channel.name == ewcfg.channel_stockexchange):
 					channels_stockmarket[server.id] = channel
-					ewutils.logMsg("• found for stock exchange: {}".format(channel.name))
+					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
 
+	try:
+		ewutils.logMsg('Creating message queue directory.')
+		os.mkdir(ewcfg.dir_msgqueue)
+	except FileExistsError:
+		ewutils.logMsg('Message queue directory already exists.')
+
+	ewutils.logMsg('Ready.')
+
+
+	"""
+		Set up for infinite loop to perform periodic tasks.
+	"""
 	time_now = int(time.time())
+
 	time_last_twitch = time_now
 	time_twitch_downed = 0
-	time_last_pvp = time_now
-	time_last_market = time_now
-
 
 	# Every three hours we log a message saying the periodic task hook is still active. On startup, we want this to happen within about 60 seconds, and then on the normal 3 hour interval.
 	time_last_logged = time_now - ewcfg.update_hookstillactive + 60
 
 	stream_live = None
+
+	ewutils.logMsg('Beginning periodic hook loop.')
 	while True:
 		time_now = int(time.time())
 
@@ -318,6 +338,47 @@ async def on_ready():
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
+			traceback.print_exc(file = sys.stdout)
+
+		# Parse files dumped into the msgqueue directory and send messages as needed.
+		try:
+			for msg_file in os.listdir(ewcfg.dir_msgqueue):
+				fname = "{}/{}".format(ewcfg.dir_msgqueue, msg_file)
+
+				msg = ewutils.readMessage(fname)
+				os.remove(fname)
+
+				msg_channel_names = []
+				msg_channel_names_reverb = []
+
+				if msg.channel != None:
+					msg_channel_names.append(msg.channel)
+
+				if msg.poi != None:
+					poi = ewcfg.id_to_poi.get(msg.poi)
+					if poi != None:
+						if poi.channel != None and len(poi.channel) > 0:
+							msg_channel_names.append(poi.channel)
+
+						if msg.reverb == True:
+							pois_adjacent = ewmap.path_to(poi_start = msg.poi)
+
+							for poi_adjacent in pois_adjacent:
+								if poi_adjacent.channel != None and len(poi_adjacent.channel) > 0:
+									msg_channel_names_reverb.append(poi_adjacent.channel)
+
+				if len(msg_channel_names) == 0:
+					ewutils.logMsg('in file {} message for channel {} (reverb {})\n{}'.format(msg_file, msg.channel, msg.reverb, msg.message))
+				else:
+					# Send messages to every connected server.
+					for server in client.servers:
+						for channel in server.channels:
+							if channel.name in msg_channel_names:
+								await client.send_message(channel, "**{}**".format(msg.message))
+							elif channel.name in msg_channel_names_reverb:
+								await client.send_message(channel, "**Something is happening nearby...\n\n{}**".format(msg.message))
+		except:
+			ewutils.logMsg('An error occurred while trying to process the message queue:')
 			traceback.print_exc(file = sys.stdout)
 
 		# Wait a while before running periodic tasks.

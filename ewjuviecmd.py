@@ -23,6 +23,9 @@ async def enlist(cmd):
 	response = ""
 	user_data = EwUser(member = cmd.message.author)
 
+	if user_data.life_state == ewcfg.life_state_grandfoe:
+		return
+
 	if user_data.life_state == ewcfg.life_state_juvenile:
 		faction = ""
 		if cmd.tokens_count > 1:
@@ -67,7 +70,7 @@ async def mine(cmd):
 	time_now = int(time.time())
 
 	# Kingpins can't mine.
-	if user_data.life_state == ewcfg.life_state_kingpin:
+	if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
 		return
 
 	# Dead players can't mine (or can they?).
@@ -110,6 +113,9 @@ async def mine(cmd):
 				user_data.poi = poi_id_thesewers
 				user_data.slimes = 0
 				user_data.persist()
+
+				# Destroy all common items.
+				ewitem.item_destroyall(member = cmd.message.author)
 
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)

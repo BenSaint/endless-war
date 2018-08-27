@@ -52,13 +52,16 @@ class EwFood:
 
 """ show all available food items """
 async def menu(cmd):
-	if cmd.message.channel.name != ewcfg.channel_foodcourt:
+	user_data = EwUser(member = cmd.message.author)
+	poi = ewcfg.id_to_poi.get(user_data.poi)
+
+	if poi == None or len(poi.vendors) == 0:
 		# Only allowed in the food court.
 		response = ewcfg.str_food_channelreq.format(action = "see the menu")
 	else:
-		response = "NLACakaNM Food Court Menu:\n\n"
+		response = "{} Menu:\n\n".format(poi.str_name)
 
-		for vendor in ewcfg.food_vendor_inv:
+		for vendor in poi.vendors:
 			response += "**{}**: *{}*\n".format(vendor, ewutils.formatNiceList(names = ewcfg.food_vendor_inv[vendor]))
 
 	# Send the response to the player.
@@ -68,7 +71,10 @@ async def menu(cmd):
 async def order(cmd):
 	resp = await ewcmd.start(cmd = cmd)
 
-	if cmd.message.channel.name != ewcfg.channel_foodcourt:
+	user_data = EwUser(member = cmd.message.author)
+	poi = ewcfg.id_to_poi.get(user_data.poi)
+
+	if (poi == None) or (len(poi.vendors) == 0):
 		# Only allowed in the food court.
 		response = ewcfg.str_food_channelreq.format(action = "order")
 	else:
@@ -87,22 +93,24 @@ async def order(cmd):
 			if member.id == cmd.message.author.id:
 				member = None
 
-		if food == None:
+		if food == None or food.vendor not in poi.vendors:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
 		else:
-			user_data = EwUser(member = cmd.message.author)
 			market_data = EwMarket(id_server = cmd.message.server.id)
 
 			target_data = None
 			if member != None:
 				target_data = EwUser(member = member)
 
-			value = int(food.price / (market_data.rate_exchange / 1000000.0))
-			if value <= 0:
-				value = 1
+			if food.price == 0:
+				value = 0
+			else:
+				value = int(food.price / (market_data.rate_exchange / 1000000.0))
+				if value <= 0:
+					value = 1
 
 			# Kingpins eat free.
-			if user_data.life_state == ewcfg.life_state_kingpin:
+			if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
 				value = 0
 
 			if value > user_data.slimecredit:
