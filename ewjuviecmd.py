@@ -109,9 +109,7 @@ async def mine(cmd):
 			if mismined['count'] >= 5:
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
-				user_data.life_state = ewcfg.life_state_corpse
-				user_data.poi = poi_id_thesewers
-				user_data.slimes = 0
+				user_data.die()
 				user_data.persist()
 
 				# Destroy all common items.
@@ -130,8 +128,12 @@ async def mine(cmd):
 				poudrin = True
 				poudrinamount = (random.randrange(2) + 1)
 
+			user_initial_level = user_data.slimelevel
+
 			# Add mined slime to the user.
-			user_data.slimes += (10 * (2 ** user_data.slimelevel))
+			user_data.change_slimes(n = 10 * (2 ** user_data.slimelevel), source = ewcfg.source_mining)
+
+			was_levelup = True if user_initial_level < user_data.slimelevel else False
 
 			# Create and give slime poudrins
 			for pdx in range(poudrinamount):
@@ -144,13 +146,6 @@ async def mine(cmd):
 					item_id,
 					cmd.message.author.id
 				))
-
-			# Adjust slime level.
-			was_levelup = False
-			new_level = len(str(int(user_data.slimes)))
-			if new_level > user_data.slimelevel:
-				was_levelup = True
-				user_data.slimelevel = new_level
 
 			# Fatigue the miner.
 			user_data.hunger += ewcfg.hunger_permine
@@ -172,7 +167,7 @@ async def mine(cmd):
 					ewutils.logMsg('{} has found {} poudrin(s)!'.format(cmd.message.author.display_name, poudrinamount))
 
 				if was_levelup:
-					response += "You have been empowered by slime and are now a level {} slimeboi!".format(new_level)
+					response += "You have been empowered by slime and are now a level {} slimeboi!".format(user_data.slimelevel)
 
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
@@ -199,8 +194,7 @@ async def mine(cmd):
 			# Death
 			last_mismined_times[cmd.message.author.id] = None
 
-			user_data.life_state = ewcfg.life_state_corpse
-			user_data.slimes = 0
+			user_data.die()
 			user_data.persist()
 
 			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))

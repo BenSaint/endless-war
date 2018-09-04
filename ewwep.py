@@ -133,6 +133,7 @@ async def attack(cmd):
 	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
+	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
 
@@ -146,10 +147,9 @@ async def attack(cmd):
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
 		# Get shooting player's info
-		if user_data.slimelevel <= 0:
+		if user_data.slimelevel <= 0: 
 			user_data.slimelevel = 1
-
-		user_data.persist()
+			user_data.persist()
 
 		# Get target's info.
 		member = cmd.mentions[0]
@@ -244,15 +244,13 @@ async def attack(cmd):
 
 			# Remove !revive invulnerability.
 			user_data.time_lastrevive = 0
-			user_data.slimes -= slimes_spent
+
+			# Spend slimes, to a minimum of zero
+			user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
 
 			# Remove repeat killing protection if.
 			if user_data.id_killer == shootee_data.id_user:
 				user_data.id_killer = ""
-
-			# Don't allow attacking to cause you to go negative.
-			if user_data.slimes < 0:
-				user_data.slimes = 0
 
 			if slimes_damage >= -shootee_data.slimes:
 				was_busted = True
@@ -264,20 +262,19 @@ async def attack(cmd):
 				user_data.slimecredit += coinbounty
 
 				# Player was busted.
-				shootee_data.slimes = 0
-				shootee_data.bounty = 0
+				shootee_data.die()
 
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 				
 				if coinbounty > 0:
-					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbonty), message.author.display_name)
+					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
 
 				#adjust busts
 				user_data.busts += 1
 
 			else:
 				# A non-lethal blow!
-				shootee_data.slimes += slimes_damage
+				shootee_data.change_slimes(n = slimes_damage)
 				damage = str(slimes_damage)
 
 				if weapon != None:
@@ -317,7 +314,7 @@ async def attack(cmd):
 
 			if boss_member != None:
 				boss_data = EwUser(member = boss_member)
-				boss_data.slimes += boss_slimes
+				boss_data.change_slimes(n = boss_slimes)
 				boss_data.persist()
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
@@ -328,6 +325,7 @@ async def attack(cmd):
 			# Slimes from this shot might be awarded to the boss.
 			role_boss = (ewcfg.role_copkiller if user_iskillers else ewcfg.role_rowdyfucker)
 			boss_slimes = 0
+			user_inital_level = user_data.slimelevel
 
 			was_juvenile = False
 			was_killed = False
@@ -376,15 +374,13 @@ async def attack(cmd):
 
 				# Remove !revive invulnerability.
 				user_data.time_lastrevive = 0
-				user_data.slimes -= slimes_spent
+
+				# Spend slimes, to a minimum of zero
+				user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
 
 				# Remove repeat killing protection if.
 				if user_data.id_killer == shootee_data.id_user:
 					user_data.id_killer = ""
-
-				# Don't allow attacking to cause you to go negative.
-				if user_data.slimes < 0:
-					user_data.slimes = 0
 
 				if slimes_damage >= shootee_data.slimes:
 					was_killed = True
@@ -393,22 +389,18 @@ async def attack(cmd):
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes > 0:
 						if was_juvenile:
-							user_data.slimes += (slimes_dropped + shootee_data.slimes)
+							user_data.change_slimes(n = slimes_dropped + shootee_data.slimes, source = ewcfg.source_killing)
 						else:
 							market_data = EwMarket(id_server = cmd.message.server.id)
 							coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
 							user_data.slimecredit += coinbounty
-							user_data.slimes += int(slimes_dropped / 2)
+							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
 
 					# Player was killed.
-					shootee_data.totaldamage += shootee_data.slimes
-					shootee_data.slimes = -int(shootee_data.totaldamage / 10)
-					shootee_data.slimelevel = len(str(int(user_data.slimes))) - 1
 					shootee_data.id_killer = user_data.id_user
-					shootee_data.bounty = 0
-					shootee_data.life_state = ewcfg.life_state_corpse
-					shootee_data.poi = ewcfg.poi_id_thesewers
+					shootee_data.die()
+					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
 
 					# Steal items
 					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
@@ -437,7 +429,7 @@ async def attack(cmd):
 						shootee_data.trauma = ""
 					
 					if coinbounty > 0:
-						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbonty), message.author.display_name)
+						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
 
 					#adjust kills bounty
 					user_data.kills += 1
@@ -449,8 +441,7 @@ async def attack(cmd):
 
 				else:
 					# A non-lethal blow!
-					shootee_data.slimes -= slimes_damage
-					shootee_data.totaldamage += slimes_damage
+					shootee_data.change_slimes(n = -slimes_damage, source = damage)
 					damage = str(slimes_damage)
 
 					if weapon != None:
@@ -486,11 +477,9 @@ async def attack(cmd):
 			else:
 				response = 'You are unable to attack {}.'.format(member.display_name)
 
-			# Level up the player if appropriate.
-			new_level = len(str(int(user_data.slimes)))
-			if new_level > user_data.slimelevel:
-				response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(cmd.message.author.display_name, new_level)
-				user_data.slimelevel = new_level
+			# Add level up text to response if appropriate
+			if user_inital_level < user_data.slimelevel: 
+				response += "\n\n{} has been empowered by slime and is now a level {} slimeboi!".format(cmd.message.author.display_name, user_data.slimelevel)
 
 			# Give slimes to the boss if possible.
 			boss_member = None
@@ -506,7 +495,7 @@ async def attack(cmd):
 
 			if boss_member != None:
 				boss_data = EwUser(member = boss_member)
-				boss_data.slimes += boss_slimes
+				boss_data.change_slimes(n = boss_slimes)
 				boss_data.persist()
 
 			# Assign the corpse role to the newly dead player.
@@ -543,10 +532,8 @@ async def suicide(cmd):
 			response = "\*click* Alas, your gun has jammed."
 		elif user_iskillers or user_isrowdys:
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
-			user_data.life_state = ewcfg.life_state_corpse
-			user_data.poi = poi_id_thesewers
 			user_data.id_killer = cmd.message.author.id
-			user_data.slimes = 0
+			user_data.die()
 			user_data.persist()
 
 			# Destroy all common items.
@@ -644,7 +631,7 @@ async def spar(cmd):
 					# Weaker player gains slime based on the slime of the stronger player.
 					possiblegain = (ewcfg.slimes_perspar_base * (2 ** weaker_player.slimelevel))
 					slimegain = possiblegain if (stronger_player.slimes / 10) > possiblegain else (stronger_player.slimes / 10)
-					weaker_player.slimes += slimegain
+					weaker_player.change_slimes(n = slimegain)
 					
 					#hunger drain for both players
 					user_data.hunger += ewcfg.hunger_perspar
@@ -652,8 +639,8 @@ async def spar(cmd):
 
 					# Bonus 50% slime to both players in a duel.
 					if duel:
-						weaker_player.slimes += int(slimegain / 2)
-						stronger_player.slimes += int(slimegain / 2)
+						weaker_player.change_slimes(n = slimegain / 2)
+						stronger_player.change_slimes(n = slimegain / 2)
 
 						if weaker_player.weaponskill < 5:
 							weaker_player.weaponskill += 1
@@ -733,7 +720,7 @@ async def annoint(cmd):
 				response = "Equip a weapon first."
 			else:
 				# Perform the ceremony.
-				user_data.slimes -= 100
+				user_data.change_slimes(n = -100)
 				user_data.weaponname = annoint_name
 
 				if user_data.weaponskill < 10:

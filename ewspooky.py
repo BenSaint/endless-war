@@ -32,15 +32,10 @@ async def revive(cmd):
 			# Preserve negaslime
 			if player_data.slimes < 0:
 				market_data.negaslime += player_data.slimes
+				player_data.change_slimes(n = -player_data.slimes) # set to 0
 
 			# Give player some initial slimes.
-			player_data.slimes = ewcfg.slimes_onrevive
-
-			# Clear fatigue, totaldamage, bounty, killcount.
-			player_data.hunger = 0
-			player_data.totaldamage = 0
-			player_data.bounty = 0
-			player_data.kills = 0
+			player_data.change_slimes(n = ewcfg.slimes_onrevive)
 
 			# Clear weapon and weaponskill.
 			player_data.weapon = ""
@@ -49,9 +44,6 @@ async def revive(cmd):
 
 			# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 			player_data.time_lastrevive = time_now
-
-			# Set initial slime level. It's probably 2.
-			player_data.slimelevel = len(str(player_data.slimes))
 
 			# Set life state. This is what determines whether the player is actually alive.
 			player_data.life_state = ewcfg.life_state_juvenile
@@ -65,7 +57,7 @@ async def revive(cmd):
 					member_data = EwUser(member = member)
 
 					if member_data.life_state != ewcfg.life_state_corpse:
-						member_data.slimes += ewcfg.slimes_onrevive_everyone
+						member_data.change_slimes(n = ewcfg.slimes_onrevive_everyone)
 						member_data.persist()
 
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
@@ -120,8 +112,8 @@ async def haunt(cmd):
 			if haunted_slimes > ewcfg.slimes_hauntmax:
 				haunted_slimes = ewcfg.slimes_hauntmax
 
-			haunted_data.slimes -= haunted_slimes
-			user_data.slimes -= haunted_slimes
+			haunted_data.change_slimes(n = -haunted_slimes)
+			user_data.change_slimes(n = -haunted_slimes)
 			user_data.time_lasthaunt = time_now
 
 			# Persist changes to the database.

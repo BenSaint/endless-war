@@ -131,6 +131,18 @@ class EwUser:
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
+	
+	max_kills = 0
+	max_slimesowned = 0
+	max_slimesmined = 0
+	max_slimesfromkilling = 0
+	max_bountyonhead = 0
+	max_slimecredit = 0
+	max_poudrins = 0
+	max_level = 0
+	max_ghostbusts = 0
+	total_damagedealt = 0
+	total_deaths = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -142,7 +154,43 @@ class EwUser:
 
 		if self.poi == '':
 			self.poi = ewcfg.poi_id_downtown
+			
+	""" gain or lose slime, recording statistics and potentially leveling up. """
+	def change_slimes(self, n = 0, source = None):
 
+		if source == ewcfg.source_damage:
+			if n > self.slimes: #lethal blow
+				totaldamage += self.slimes
+			else:
+				totaldamage += int(n)
+
+		self.slimes += int(n)
+		
+		if self.slimes > self.max_slimesowned:
+			self.max_slimesowned = self.slimes
+			#ewevent.notify_max_slimesowned(self)
+		
+		#level up
+		new_level = len(str(int(self.slimes)))
+		if new_level > self.slimelevel:
+			self.slimelevel = new_level
+			if self.slimelevel > self.max_level:
+				self.max_level = self.slimelevel
+				#ewevent.notify_max_level(self)
+		
+	def die(self):
+		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
+			self.life_state = ewcfg.life_state_corpse
+			self.total_deaths += 1
+		self.slimes = 0
+		self.poi = ewcfg.poi_id_thesewers
+		self.bounty = 0
+		self.totaldamage = 0
+		self.slimelevel = 1
+		self.kills = 0
+		self.hunger = 0
+		self.inebriation = 0
+		#ewevent.notify_total_deaths(self)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -162,7 +210,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -183,7 +231,16 @@ class EwUser:
 					ewcfg.col_inebriation,
 					ewcfg.col_faction,
 					ewcfg.col_poi,
-					ewcfg.col_life_state
+					ewcfg.col_life_state,
+					ewcfg.col_max_kills,
+					ewcfg.col_max_slimesowned,
+					ewcfg.col_max_bountyonhead,
+					ewcfg.col_max_slimecredit,
+					ewcfg.col_max_poudrins,
+					ewcfg.col_max_level,
+					ewcfg.col_max_ghostbusts,
+					ewcfg.col_total_damagedealt,
+					ewcfg.col_total_deaths
 				), (
 					id_user,
 					id_server
@@ -213,6 +270,15 @@ class EwUser:
 					self.faction = result[18]
 					self.poi = result[19]
 					self.life_state = result[20]
+					self.max_kills = result[21]
+					self.max_slimesowned = result[22]
+					self.max_bountyonhead = result[23]
+					self.max_slimecredit = result[24]
+					self.max_poudrins = result[25]
+					self.max_level = result[26]
+					self.max_ghostbusts = result[27]
+					self.total_damagedealt = result[28]
+					self.total_deaths = result[29]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -252,6 +318,7 @@ class EwUser:
 
 	""" Save this user object to the database. """
 	def persist(self):
+	
 		try:
 			# Get database handles if they weren't passed.
 			conn_info = ewutils.databaseConnect()
@@ -261,7 +328,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -285,7 +352,16 @@ class EwUser:
 				ewcfg.col_inebriation,
 				ewcfg.col_faction,
 				ewcfg.col_poi,
-				ewcfg.col_life_state
+				ewcfg.col_life_state,
+				ewcfg.col_max_kills,
+				ewcfg.col_max_slimesowned,
+				ewcfg.col_max_bountyonhead,
+				ewcfg.col_max_slimecredit,
+				ewcfg.col_max_poudrins,
+				ewcfg.col_max_level,
+				ewcfg.col_max_ghostbusts,
+				ewcfg.col_total_damagedealt,
+				ewcfg.col_total_deaths
 			), (
 				self.id_user,
 				self.id_server,
@@ -310,7 +386,16 @@ class EwUser:
 				self.inebriation,
 				self.faction,
 				self.poi,
-				self.life_state
+				self.life_state,
+				self.max_kills,
+				self.max_slimesowned,
+				self.max_bountyonhead,
+				self.max_slimecredit,
+				self.max_poudrins,
+				self.max_level,
+				self.max_ghostbusts,
+				self.total_damagedealt,
+				self.total_deaths
 			))
 
 			# Save the current weapon's skill

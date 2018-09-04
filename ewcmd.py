@@ -86,18 +86,6 @@ async def score(cmd):
 			# return somebody's score
 			response = "{} currently has {:,} slime{}.".format(member.display_name, user_data.slimes, (" and {} slime poudrin{}.".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
 
-	# Update the user's slime level.
-	if user_data != None:
-		new_level = 0
-
-		if user_data.life_state != ewcfg.life_state_corpse:
-			new_level = len(str(int(user_data.slimes)))
-
-		if new_level > user_data.slimelevel:
-			user_data.slimelevel = new_level
-
-		user_data.persist()
-
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
@@ -114,17 +102,6 @@ async def data(cmd):
 	if cmd.mentions_count == 0:
 		user_data = EwUser(member = cmd.message.author)
 		market_data = EwMarket(id_server = cmd.message.server.id)
-
-		new_level = 0
-
-		# Ghosts don't have a slime level.
-		if user_data.life_state != ewcfg.life_state_corpse:
-			new_level = len(str(int(user_data.slimes)))
-
-		# Update the user's slime level.
-		if new_level > user_data.slimelevel:
-			user_data.slimelevel = new_level
-			user_data.persist()
 
 		poi = ewcfg.id_to_poi.get(user_data.poi)
 		if poi != None:
@@ -161,10 +138,6 @@ async def data(cmd):
 		user_data = EwUser(member = member)
 		market_data = EwMarket(id_server = cmd.message.server.id)
 
-		new_level = 0
-		if user_data.life_state != ewcfg.life_state_corpse:
-			new_level = len(str(int(user_data.slimes)))
-
 		if user_data.life_state == ewcfg.life_state_grandfoe:
 			poi = ewcfg.id_to_poi.get(user_data.poi)
 			if poi != None:
@@ -172,9 +145,6 @@ async def data(cmd):
 			else:
 				response = "You can't discern anything useful about {}.".format(member.display_name)
 		else:
-			if new_level > user_data.slimelevel:
-				user_data.slimelevel = new_level
-				user_data.persist()
 
 			# return somebody's score
 			if user_data.life_state == ewcfg.life_state_corpse:
@@ -199,18 +169,6 @@ async def data(cmd):
 
 			if coinbounty != 0:
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
-
-	# Update the user's slime level if they're alive.
-	if user_data != None:
-		new_level = 0
-
-		if user_data.life_state != ewcfg.life_state_corpse:
-			new_level = len(str(int(user_data.slimes)))
-
-		if new_level > user_data.slimelevel:
-			user_data.slimelevel = new_level
-
-		user_data.persist()
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
