@@ -58,7 +58,7 @@ async def deadmega(cmd):
 		if value > user_data.slimes:
 			response = "You don't have that much slime to lose ({:,}/{:,}).".format(user_data.slimes, value)
 		else:
-			user_data.slimes -= value
+			user_data.change_slimes(n = -value)
 			user_data.persist()
 			response = "Alas, poor megaslime. You have {:,} slime remaining.".format(user_data.slimes)
 

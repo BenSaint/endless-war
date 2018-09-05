@@ -255,6 +255,15 @@ col_ghostbust = 'ghostbust'
 col_faction = 'faction'
 col_poi = 'poi'
 col_life_state = 'life_state'
+col_max_kills = 'max_kills'
+col_max_slimesowned = 'max_slimesowned'
+col_max_bountyonhead = 'max_bountyonhead'
+col_max_slimecredit = 'max_slimecredit'
+col_max_poudrins = 'max_poudrins'
+col_max_level = 'max_level'
+col_max_ghostbusts = 'max_ghostbusts'
+col_total_damagedealt = 'total_damagedealt'
+col_total_deaths = 'total_deaths'
 
 # Database columns for markets
 col_rate_market = 'rate_market'
@@ -278,6 +287,11 @@ col_timestamp = 'timestamp'
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
+
+# Categories of events that change your slime total, for statistics tracking
+source_mining = 0
+source_damage = 1
+source_killing = 2
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
