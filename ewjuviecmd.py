@@ -63,7 +63,7 @@ async def enlist(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
-""" mine for slime """
+""" mine for slime (or endless rocks) """
 async def mine(cmd):
 	market_data = EwMarket(id_server = cmd.message.author.server.id)
 	user_data = EwUser(member = cmd.message.author)
@@ -75,7 +75,18 @@ async def mine(cmd):
 
 	# Dead players can't mine (or can they?).
 	if user_data.life_state == ewcfg.life_state_corpse:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+		# ghost mining
+		response = ""
+		progress = 0  # database value
+		progress += 1
+		if progress >= ewcfg.req_maxrevive_progress:
+			response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
+
+		else:
+			response = "You mine in search of the Endless Rock but don't find anything."
+
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		# return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
 
 	# Enlisted players only mine at certain times.
 	if user_data.life_state == ewcfg.life_state_enlisted:

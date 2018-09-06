@@ -1,5 +1,6 @@
 import ewutils
 import ewcfg
+from ew import EwUser
 from ewplayer import EwPlayer
 
 """
@@ -498,3 +499,53 @@ async def item_look(cmd):
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
+
+
+async def use(cmd):
+	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
+
+	try:
+		item_id_int = int(item_id)
+	except:
+		item_id_int = None
+
+	if item_id != None and len(item_id) > 0:
+		resp = await cmd.client.send_message(cmd.message.channel, '...')
+		response = "You don't have one."
+
+		items = inventory(
+			id_user = cmd.message.author.id,
+			id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
+		)
+
+		item_sought = None
+		for item in items:
+			if item.get('id_item') == item_id_int or ewutils.flattenTokenListToString(item.get('name')) == item_id:
+				item_sought = item
+				break
+
+		if item_sought != None:
+			item_def = item.get('item_def')
+			id_item = item.get('id_item')
+			name = item.get('name')
+			response = item_def.str_use
+
+			user_data = EwUser(member = cmd.message.author)
+
+			channels = []
+
+			if name.lower() == "endless rock":
+				if user_data.poi != ewcfg.poi_id_endlesswar:
+					return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have to be in the Endless War Control Room to use this item."))
+				else:
+					# AWAKEN MY MASTERS
+					for channel in channels:
+						await cmd.client.send_message(cmd.message.channel, "@everyone I HAVE AWOKEN. [link to hippo's animation]")
+
+					# destroy the endless rock
+					item_delete(id_item)
+
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	else:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
+		                                                                         'Inspect which item? (check **!inventory**)'))
