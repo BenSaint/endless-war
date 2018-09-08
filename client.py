@@ -131,6 +131,9 @@ cmd_map = {
 	# get an item's description
 	ewcfg.cmd_inspect: ewitem.item_look,
 
+	# use an item
+	ewcfg.cmd_use: ewitem.item_use,
+
 
 	# Remove a megaslime (1 mil slime) from a general.
 	ewcfg.cmd_deadmega: ewkingpin.deadmega,

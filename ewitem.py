@@ -501,7 +501,7 @@ async def item_look(cmd):
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
 
 # this is basically just the item_look command with some other stuff at the bottom
-async def use(cmd):
+async def item_use(cmd):
 	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
 
 	try:
@@ -532,7 +532,7 @@ async def use(cmd):
 
 			user_data = EwUser(member = cmd.message.author)
 
-			channels = []
+			channels = cmd.message.server.channels
 
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
@@ -540,10 +540,11 @@ async def use(cmd):
 				else:
 					# AWAKEN MY MASTERS
 					for channel in channels:
-						await cmd.client.send_message(cmd.message.channel, "@everyone I HAVE AWOKEN. [link to hippo's animation]")
+						# @everyone is purposely misspelled so testing isnt annoying everyone
+						await cmd.client.send_message(cmd.message.channel, "@everyon I HAVE AWOKEN. [link to hippo's animation]")
 
-					# destroy the endless rock
-					item_delete(id_item)
+					# destroy the endless rock; disabled for testing purposes
+					#item_delete(id_item)
 
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 	else:

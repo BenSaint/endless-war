@@ -140,6 +140,7 @@ cmd_wiki = cmd_prefix + 'wiki'
 cmd_booru = cmd_prefix + 'booru'
 cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
+cmd_use = cmd_prefix + 'use'
 
 # Slime costs/values
 slimes_tokill = 20

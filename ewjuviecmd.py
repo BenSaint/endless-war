@@ -84,6 +84,8 @@ async def mine(cmd):
 
 		id_server = cmd.message.server.id
 		countdown_finished = False
+		rock_owner = ""
+		countdown = 1000000000  # ludicrously high number
 
 		if id_server != None:
 			try:
@@ -92,8 +94,9 @@ async def mine(cmd):
 				cursor = conn.cursor()
 
 				cursor.execute(
-					"SELECT {time_expir} FROM items WHERE {id_server} = %s AND {item_type} = %s".format(
+					"SELECT {time_expir}, {id_user} FROM items WHERE {id_server} = %s AND {item_type} = %s".format(
 						time_expir = ewcfg.col_time_expir,
+						id_user = ewcfg.col_id_user,
 						id_server = ewcfg.col_id_server,
 						item_type = ewcfg.col_item_type
 					), (
@@ -101,11 +104,15 @@ async def mine(cmd):
 						ewcfg.it_questitem,
 					))
 
-				countdown = cursor.fetchone()[0]
+				data = cursor.fetchone()
+
+				countdown = data[0]
 				if countdown > 0:
 					countdown -= 1
 				else:
 					countdown_finished = True
+
+				rock_owner = data[1]
 
 				# update database
 				cursor.execute(
@@ -125,12 +132,24 @@ async def mine(cmd):
 				cursor.close()
 				ewutils.databaseClose(conn_info)
 
-		if countdown_finished:
-			response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
-			id_endless_rock = 10104  # set it to whatever the id actually is
-			ewitem.give_item(cmd.message.author, id_endless_rock)
+		if rock_owner != '0':
+			response = "There is nothing left to mine."
 		else:
-			response = "You mine in search of the Endless Rock but don't find anything."
+			if countdown_finished:
+				response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
+				id_endless_rock = 10104  # set it to whatever the rock's id actually is, doing it automatically sounds unnecessarily tedious
+				ewitem.give_item(cmd.message.author, id_endless_rock)
+			else:
+				response = "You mine in search of the Endless Rock but don't find anything."
+				if random.randint(1, 4) == 1:
+					if countdown < 200000:  # 200,000
+						response = "A faint rumbling can be after a particularly powerful strike of your pickaxe. You're getting closer."
+					elif countdown < 100000:  # 100,000
+						response = "You can feel a powerful aura permeate your ghostly body. The endless rock is near."
+					elif countdown < 50000:  # 50,000
+						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. It is of a green, star-shaped object."
+					elif countdown < 10000:  # 10,000
+						response = "A few rays of lime green light penetrate small crevices between the rocks and bathe the mines in an ominous glow. This is the final stretch."
 
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		# return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
