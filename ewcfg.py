@@ -139,7 +139,7 @@ cmd_map = cmd_prefix + 'map'
 cmd_wiki = cmd_prefix + 'wiki'
 cmd_booru = cmd_prefix + 'booru'
 cmd_pardon = cmd_prefix + 'pardon'
-
+cmd_writhe = cmd_prefix + 'writhe'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -200,6 +200,18 @@ emote_dice3 = "<:dice3:436942524041527298>"
 emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
+
+# Emotes for the negaslime writhe animation
+emote_vt = "<:vt:473955145189949451>"
+emote_ve = "<:ve:473955145500065793>"
+emote_va = "<:va:473955145621700629>"
+emote_v_ = "<:v_:473955145953050645>"
+emote_s_ = "<:s_:473955145441607700>"
+emote_ht = "<:ht:473955145357590539>"
+emote_hs = "<:hs:473955145143549963>"
+emote_he = "<:he:473955145454190605>"
+emote_h_ = "<:h_:473955145491677187>"
+emote_blank = "<:blank:438387278361001985>"
 
 # Common strings.
 str_casino_closed = "The Slime Casino only operates at night."
