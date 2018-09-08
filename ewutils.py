@@ -374,3 +374,25 @@ def flattenTokenListToString(tokens):
 		target_name = re_flattener.sub("", tokens.lower())
 
 	return target_name
+
+
+'''
+	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable
+'''
+def execute_sql_query(sql_query = None):
+	data = []
+
+	try:
+		conn_info = databaseConnect()
+		conn = conn_info.get('conn')
+		cursor = conn.cursor()
+		cursor.execute(sql_query, None)
+		if sql_query.lower().startswith("select"):
+			data = cursor.fetchall()
+		conn.commit()
+	finally:
+		# Clean up the database handles.
+		cursor.close()
+		databaseClose(conn_info)
+
+	return data

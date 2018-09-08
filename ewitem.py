@@ -500,7 +500,7 @@ async def item_look(cmd):
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
 
-
+# this is basically just the item_look command with some other stuff at the bottom
 async def use(cmd):
 	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
 
@@ -549,3 +549,20 @@ async def use(cmd):
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
 		                                                                         'Inspect which item? (check **!inventory**)'))
+
+
+def give_item(member = None, id_item = None):
+
+	if member != None and id_item != None:
+		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id};".format(
+			id_user = ewcfg.col_id_user,
+			user_id = member.id,
+			id_server = ewcfg.col_id_server,
+			server_id = member.server.id,
+			id_item = ewcfg.col_id_item,
+			item_id = id_item
+		)
+
+		ewutils.execute_sql_query(sql_query)
+
+	return True

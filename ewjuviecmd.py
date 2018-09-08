@@ -71,17 +71,64 @@ async def mine(cmd):
 
 	# Kingpins can't mine.
 	if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
+		# test code, it shouldnt be here but it makes it easier to test
+		props = {
+			'qitem_name': 'Endless Rock',
+			'qitem_desc': 'Can be used to reawaken Endless War.'
+		}
+		ewitem.item_create(ewcfg.it_questitem, '0', user_data.id_server, props)
 		return
 
-	# Dead players can't mine (or can they?).
+	# ghost mining
 	if user_data.life_state == ewcfg.life_state_corpse:
-		# ghost mining
-		response = ""
-		progress = 0  # database value
-		progress += 1
-		if progress >= ewcfg.req_maxrevive_progress:
-			response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
 
+		id_server = cmd.message.server.id
+		countdown_finished = False
+
+		if id_server != None:
+			try:
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
+
+				cursor.execute(
+					"SELECT {time_expir} FROM items WHERE {id_server} = %s AND {item_type} = %s".format(
+						time_expir = ewcfg.col_time_expir,
+						id_server = ewcfg.col_id_server,
+						item_type = ewcfg.col_item_type
+					), (
+						id_server,
+						ewcfg.it_questitem,
+					))
+
+				countdown = cursor.fetchone()[0]
+				if countdown > 0:
+					countdown -= 1
+				else:
+					countdown_finished = True
+
+				# update database
+				cursor.execute(
+					"UPDATE items SET {time_expir} = {countdown} WHERE {id_server} = %s AND {item_type} = %s".format(
+						time_expir = ewcfg.col_time_expir,
+						id_server = ewcfg.col_id_server,
+						item_type = ewcfg.col_item_type,
+						countdown = countdown
+					), (
+						id_server,
+						ewcfg.it_questitem,
+					))
+
+				conn.commit()
+			finally:
+				# Clean up the database handles.
+				cursor.close()
+				ewutils.databaseClose(conn_info)
+
+		if countdown_finished:
+			response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
+			id_endless_rock = 10104  # set it to whatever the id actually is
+			ewitem.give_item(cmd.message.author, id_endless_rock)
 		else:
 			response = "You mine in search of the Endless Rock but don't find anything."
 
