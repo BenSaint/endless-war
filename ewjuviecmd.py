@@ -81,7 +81,6 @@ async def mine(cmd):
 
 	# ghost mining
 	if user_data.life_state == ewcfg.life_state_corpse:
-
 		id_server = cmd.message.server.id
 		countdown_finished = False
 		rock_owner = ""
@@ -140,16 +139,20 @@ async def mine(cmd):
 				id_endless_rock = 10104  # set it to whatever the rock's id actually is, doing it automatically sounds unnecessarily tedious
 				ewitem.give_item(cmd.message.author, id_endless_rock)
 			else:
-				response = "You mine in search of the Endless Rock but don't find anything."
-				if random.randint(1, 4) == 1:
-					if countdown < 200000:  # 200,000
-						response = "A faint rumbling can be after a particularly powerful strike of your pickaxe. You're getting closer."
-					elif countdown < 100000:  # 100,000
-						response = "You can feel a powerful aura permeate your ghostly body. The endless rock is near."
-					elif countdown < 50000:  # 50,000
-						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. It is of a green, star-shaped object."
-					elif countdown < 10000:  # 10,000
-						response = "A few rays of lime green light penetrate small crevices between the rocks and bathe the mines in an ominous glow. This is the final stretch."
+				countdown_steps = [200000, 100000, 50000, 10000]
+				if random.randint(1, 10) == 1:
+					if countdown_steps[0] > countdown >= countdown_steps[1]:
+						response = "A faint but distinct rumbling can be after a particularly powerful strike of your pickaxe."
+					elif countdown_steps[1] > countdown >= countdown_steps[2]:
+						response = "You can feel a powerful aura permeate your ghostly body."
+					elif countdown_steps[2] > countdown >= countdown_steps[3]:
+						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. You can't remember what it looked like."
+					elif countdown < countdown_steps[3]:
+						response = "A few rays of lime green light penetrate small crevices between the rocks and bathe the mines in an ominous glow."
+					else:  # if countdown > countdown_steps[0]
+						response = "You think you feel the ground move for a moment. But it was probably just your imagination."
+				else:
+					return  # return no message
 
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		# return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))

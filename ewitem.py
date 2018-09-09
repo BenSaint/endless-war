@@ -528,11 +528,11 @@ async def item_use(cmd):
 			item_def = item.get('item_def')
 			id_item = item.get('id_item')
 			name = item.get('name')
-			response = item_def.str_use
+			#response = item_def.str_use
 
 			user_data = EwUser(member = cmd.message.author)
 
-			channels = cmd.message.server.channels
+			channels = cmd.message.server.channels  #fixme: doesnt work, spams 1 channel
 
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
@@ -551,7 +551,9 @@ async def item_use(cmd):
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
 		                                                                         'Inspect which item? (check **!inventory**)'))
 
-
+'''
+	give an existing item to a player
+'''
 def give_item(member = None, id_item = None):
 
 	if member != None and id_item != None:
