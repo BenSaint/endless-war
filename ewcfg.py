@@ -13,7 +13,7 @@ dir_msgqueue = 'msgqueue'
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
 update_twitch = 60
-update_pvp = 600
+update_pvp = 60
 update_market = 900 #15 min
 
 # Market delta
