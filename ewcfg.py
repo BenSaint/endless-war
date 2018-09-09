@@ -13,8 +13,8 @@ dir_msgqueue = 'msgqueue'
 # Update intervals
 update_hookstillactive = 60 * 60 * 3
 update_twitch = 60
-update_pvp = 60
-update_market = 900
+update_pvp = 600
+update_market = 900 #15 min
 
 # Market delta
 max_iw_swing = 30
@@ -164,6 +164,9 @@ hunger_pertick = 3
 #inebriation
 inebriation_pertick = 2
 
+# Slime decay rate
+slime_half_life = 60 * 60 * 24 * 14 #two weeks
+
 # Lifetimes
 invuln_onrevive = 0
 
@@ -304,6 +307,7 @@ it_questitem = "questitem"
 source_mining = 0
 source_damage = 1
 source_killing = 2
+source_decay = 3
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3

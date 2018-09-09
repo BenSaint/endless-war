@@ -2,8 +2,10 @@ import MySQLdb
 import datetime
 import time
 import re
+import random
 
 import ewcfg
+from ew import EwUser
 
 db_pool = {}
 db_pool_id = 0
@@ -191,6 +193,42 @@ def databaseClose(conn_info):
 """ format responses with the username: """
 def formatMessage(user_target, message):
 	return "*{}*: {}".format(user_target.display_name, message)
+
+""" decay slime totals for all users """
+def decaySlimes(id_server = None):
+	if id_server != None:
+		try:
+			conn_info = databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor();
+
+			cursor.execute("SELECT id_user FROM users WHERE id_server = %s AND {slimes} > 1".format(
+				slimes = ewcfg.col_slimes
+			), (
+				id_server,
+			))
+
+			user_ids = cursor.fetchall()
+
+			for user_id in user_ids:
+				user_data = EwUser(id_user = user_id, id_server = id_server)
+				slimes_to_decay = user_data.slimes - (user_data.slimes * (.5 ** (ewcfg.update_market / ewcfg.slime_half_life)))
+
+				#round up or down, randomly weighted
+				remainder = slimes_to_decay - int(slimes_to_decay)
+				if random.random() < remainder: slimes_to_decay += 1 
+
+				if slimes_to_decay >= 1:
+					user_data.change_slimes(n = -slimes_to_decay, source = ewcfg.source_decay)
+					user_data.persist()
+
+				#logMsg("decayed {} slimes from user ID: {}".format(slimes_to_decay, user_data.id_user))
+
+			conn.commit()
+		finally:
+			# Clean up the database handles.
+			cursor.close()
+			databaseClose(conn_info)		
 
 """ Increase hunger for every player in the server. """
 def pushupServerHunger(id_server = None):

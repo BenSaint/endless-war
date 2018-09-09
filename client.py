@@ -191,7 +191,8 @@ async def on_ready():
 	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
 
 	# Look for a Twitch client_id on disk.
-	twitch_client_id = ewutils.getTwitchClientId()
+	# FIXME debug - temporarily disable Twitch integration
+	if False: twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
 	# FIXME debug - temporarily disable Twitch integration.
@@ -308,7 +309,7 @@ async def on_ready():
 				# Load market data from the database.
 				market_data = EwMarket(id_server = server.id)
 
-				if market_data.time_lasttick + ewcfg.update_market < time_now:
+				if market_data.time_lasttick + ewcfg.update_market <= time_now:
 					market_data.time_lasttick = time_now
 
 					# Advance the time and potentially change weather.
@@ -333,6 +334,9 @@ async def on_ready():
 
 					# Persist new data.
 					market_data.persist()
+
+					# Decay slime totals
+					ewutils.decaySlimes(id_server = server.id)
 
 					# Increase hunger for all players below the max.
 					ewutils.pushupServerHunger(id_server = server.id)
