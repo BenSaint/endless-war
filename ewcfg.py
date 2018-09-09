@@ -1789,8 +1789,7 @@ poi_list = [
 		channel = channel_mines,
 		role = "Mines",
 		str_closed = "The negaslime's tendrils clog the entrance to the mines. It is currently inaccessable.",
-		pvp = False,
-		closed = False
+		pvp = False
 	),
 	EwPoi( # the-casino
 		id_poi = poi_id_thecasino,

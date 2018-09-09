@@ -557,7 +557,7 @@ async def item_use(cmd):
 def give_item(member = None, id_item = None):
 
 	if member != None and id_item != None:
-		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id};".format(
+		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id}".format(
 			id_user = ewcfg.col_id_user,
 			user_id = member.id,
 			id_server = ewcfg.col_id_server,
