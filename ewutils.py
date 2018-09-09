@@ -377,7 +377,7 @@ def flattenTokenListToString(tokens):
 
 
 '''
-	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable
+	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable)
 '''
 def execute_sql_query(sql_query = None):
 	data = []
