@@ -307,7 +307,6 @@ it_questitem = "questitem"
 source_mining = 0
 source_damage = 1
 source_killing = 2
-source_decay = 3
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
