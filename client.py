@@ -192,7 +192,8 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
-	if False: twitch_client_id = ewutils.getTwitchClientId()
+	if False: 
+		twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
 	# FIXME debug - temporarily disable Twitch integration.
