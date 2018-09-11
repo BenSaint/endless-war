@@ -140,11 +140,11 @@ async def mine(cmd):
 				final_stretch = countdown_steps[-1]  # gets last element in list
 				rarity = 100 * ((initial_countdown_value / countdown) if countdown > final_stretch else (countdown / final_stretch))
 
-				if random.randint(1, rarity if rarity >= 10 else 10) == 1:  # never more than once every ten !mines on average
+				if random.randint(1, int(rarity) if rarity >= 10 else 10) == 1:  # never more than once every ten !mines on average
 					if countdown_steps[0] > countdown >= countdown_steps[1]:
-						response = "A faint but distinct rumbling can be after a particularly powerful strike of your pickaxe."
+						response = "A faint but distinct rumbling can be heard after a particularly powerful strike of your pickaxe."
 					elif countdown_steps[1] > countdown >= countdown_steps[2]:
-						response = "You can feel a powerful aura permeate your ghostly body."
+						response = "You can feel a powerful aura permeate your ghostly body for a second."
 					elif countdown_steps[2] > countdown >= countdown_steps[3]:
 						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. You can't remember what it looked like."
 					elif countdown < countdown_steps[3]:

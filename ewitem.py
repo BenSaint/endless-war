@@ -552,7 +552,7 @@ async def item_use(cmd):
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
-		                                                                         'Inspect which item? (check **!inventory**)'))
+		                                                                         'Use which item? (check **!inventory**)'))
 
 
 """
