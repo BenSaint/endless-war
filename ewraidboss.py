@@ -1,4 +1,6 @@
 import asyncio
+import time
+
 import ewrolemgr
 import ewutils
 import ewcfg
@@ -31,8 +33,8 @@ async def writhe(cmd):
 		hs = ewcfg.emote_hs
 		blank = ewcfg.emote_blank
 		
-		writhing1 = ewcfg.emote_he
-		writhing2 = ewcfg.emote_s_ + ewcfg.emote_he + "\n" + ewcfg.emote_ve
+		writhing1 = he
+		writhing2 = s_ + he + "\n" + ve
 		writhing3 = s_ + h_ + he + "\n" + vt + he
 		writhing4 = s_ + h_ + ht + "\n" + vt + he + ve
 		writhing5 = s_ + h_ + ht + "\n" + va + he + vt + he + "\n" + ve
@@ -45,8 +47,10 @@ async def writhe(cmd):
 		writhings = [writhing1,  writhing2, writhing3, writhing4, writhing5, writhing6, writhing7, writhing8, writhing9, writhing10]
 
 		for writhing in writhings:
+			cur_time = time.time()
 			await cmd.client.edit_message(resp, writhing)
-			await asyncio.sleep(1)
+			elapsed = time.time() - cur_time
+			await asyncio.sleep(1.2 - elapsed)
 
 		id_server = cmd.message.server.id
 		targets = []
