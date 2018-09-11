@@ -140,6 +140,7 @@ cmd_wiki = cmd_prefix + 'wiki'
 cmd_booru = cmd_prefix + 'booru'
 cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
+cmd_use = cmd_prefix + 'use'
 
 # Slime costs/values
 slimes_tokill = 20
@@ -203,6 +204,7 @@ emote_dice3 = "<:dice3:436942524041527298>"
 emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
+emote_negaslime = "<:negaslime:453826200616566786>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:473955145189949451>"
@@ -1793,9 +1795,7 @@ poi_list = [
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
-		str_closed = "The negaslime's tendrils clog the entrance to the mines. It is currently inaccessable.",
-		pvp = False,
-		closed = True
+		pvp = False
 	),
 	EwPoi( # the-casino
 		id_poi = poi_id_thecasino,

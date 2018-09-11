@@ -75,7 +75,7 @@ class EwServer:
 			ewutils.databaseClose(conn_info)
 
 
-""" update the player record with the current data. """
+""" update the server record with the current data. """
 def server_update(server = None):
 	try:
 		conn_info = ewutils.databaseConnect()
