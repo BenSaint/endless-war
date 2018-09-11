@@ -130,7 +130,7 @@ async def mine(cmd):
 		else:
 			if countdown_finished:
 				response = "You successfully excavate a massive, succulent Endless Rock. Rejoice! https://ew.krakissi.net/img/itm/uwkcwba.png"
-				id_endless_rock = 10104  # set it to whatever the rock's id actually is, doing it automatically sounds unnecessarily tedious
+				id_endless_rock = 32  # set it to whatever the rock's id actually is, doing it automatically sounds unnecessarily tedious
 				ewitem.give_item(cmd.message.author, id_endless_rock)
 			else:
 				countdown_steps = [400000, 200000, 100000, 20000]
