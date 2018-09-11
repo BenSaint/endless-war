@@ -47,6 +47,15 @@ CREATE TABLE users (
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
 
+CREATE TABLE stats (
+	id_user varchar(128) NOT NULL,
+	id_server varchar(128) NOT NULL,
+	stat_metric varchar(64) NOT NULL,
+	stat_value bigint,
+
+	PRIMARY KEY (id_user, id_server, stat_metric)
+);
+
 CREATE TABLE markets (
 	id_server varchar(128) NOT NULL,
 	slimes_casino bigint NOT NULL DEFAULT '0',

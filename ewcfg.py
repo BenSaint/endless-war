@@ -280,6 +280,10 @@ col_max_ghostbusts = 'max_ghostbusts'
 col_total_damagedealt = 'total_damagedealt'
 col_total_deaths = 'total_deaths'
 
+# Database columns for user statistics
+col_metric = 'stat_metric'
+col_value = 'stat_value'
+
 # Database columns for markets
 col_rate_market = 'rate_market'
 col_rate_exchange = 'rate_exchange'
