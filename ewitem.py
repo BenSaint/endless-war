@@ -555,18 +555,19 @@ async def item_use(cmd):
 		                                                                         'Inspect which item? (check **!inventory**)'))
 
 
-'''
+"""
 	give an existing item to a player
-'''
-def give_item(member = None,
-              id_item = None,
-              id_user = None,
-              id_server = None):
+"""
+def give_item(
+	member = None,
+	id_item = None,
+	id_user = None,
+	id_server = None
+):
 
-	if(id_user == None) and (id_server == None):
-			if(member != None):
-				id_server = member.server.id
-				id_user = member.id
+	if(id_user == None) and (id_server == None) and (member != None):
+		id_server = member.server.id
+		id_user = member.id
 
 	if id_server != None and id_user != None and id_item != None:
 		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id}".format(
