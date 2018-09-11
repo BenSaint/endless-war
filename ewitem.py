@@ -1,5 +1,6 @@
 import ewutils
 import ewcfg
+import discord
 from ew import EwUser
 from ewplayer import EwPlayer
 
@@ -528,40 +529,51 @@ async def item_use(cmd):
 			item_def = item.get('item_def')
 			id_item = item.get('id_item')
 			name = item.get('name')
-			#response = item_def.str_use
 
 			user_data = EwUser(member = cmd.message.author)
 
-			channels = cmd.message.server.channels  #fixme: doesnt work, spams 1 channel
+			channels = cmd.message.server.channels
 
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
-					return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have to be in the Endless War Control Room to use this item."))
+					response = "You have to be in the Endless War Control Room to use this item."
 				else:
-					# AWAKEN MY MASTERS
+					# EW: Wake
+					response = "You use the Endless Rock to awaken Endless War (me). Thank you."
 					for channel in channels:
-						# @everyone is purposely misspelled so testing isnt annoying everyone
-						await cmd.client.send_message(cmd.message.channel, "@everyon I HAVE AWOKEN. [link to hippo's animation]")
+						if channel.type == discord.ChannelType.text:
+							# @everyone is purposely misspelled so testing isnt annoying everyone
+							await cmd.client.send_message(channel, "@everyon I HAVE AWOKEN. https://ew.krakissi.net/img/revive.gif")
 
-					# destroy the endless rock; disabled for testing purposes
+					# destroy the endless rock (for testing purposes, just remove it from the player's inventory)
 					#item_delete(id_item)
+					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
 
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
 		                                                                         'Inspect which item? (check **!inventory**)'))
 
+
 '''
 	give an existing item to a player
 '''
-def give_item(member = None, id_item = None):
+def give_item(member = None,
+              id_item = None,
+              id_user = None,
+              id_server = None):
 
-	if member != None and id_item != None:
+	if(id_user == None) and (id_server == None):
+			if(member != None):
+				id_server = member.server.id
+				id_user = member.id
+
+	if id_server != None and id_user != None and id_item != None:
 		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id}".format(
 			id_user = ewcfg.col_id_user,
-			user_id = member.id,
+			user_id = id_user,
 			id_server = ewcfg.col_id_server,
-			server_id = member.server.id,
+			server_id = id_server,
 			id_item = ewcfg.col_id_item,
 			item_id = id_item
 		)

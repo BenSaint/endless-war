@@ -71,12 +71,6 @@ async def mine(cmd):
 
 	# Kingpins can't mine.
 	if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
-		# test code, it shouldnt be here but it makes it easier to test
-		props = {
-			'qitem_name': 'Endless Rock',
-			'qitem_desc': 'Can be used to reawaken Endless War.'
-		}
-		ewitem.item_create(ewcfg.it_questitem, '0', user_data.id_server, props)
 		return
 
 	# ghost mining
@@ -139,8 +133,14 @@ async def mine(cmd):
 				id_endless_rock = 10104  # set it to whatever the rock's id actually is, doing it automatically sounds unnecessarily tedious
 				ewitem.give_item(cmd.message.author, id_endless_rock)
 			else:
-				countdown_steps = [200000, 100000, 50000, 10000]
-				if random.randint(1, 10) == 1:
+				countdown_steps = [400000, 200000, 100000, 20000]
+
+				# make messages rarer until the final stretch, then faster again
+				initial_countdown_value = 1000000  # example value
+				final_stretch = countdown_steps[-1]  # gets last element in list
+				rarity = 100 * ((initial_countdown_value / countdown) if countdown > final_stretch else (countdown / final_stretch))
+
+				if random.randint(1, rarity if rarity >= 10 else 10) == 1:  # never more than once every ten !mines on average
 					if countdown_steps[0] > countdown >= countdown_steps[1]:
 						response = "A faint but distinct rumbling can be after a particularly powerful strike of your pickaxe."
 					elif countdown_steps[1] > countdown >= countdown_steps[2]:
@@ -148,7 +148,7 @@ async def mine(cmd):
 					elif countdown_steps[2] > countdown >= countdown_steps[3]:
 						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. You can't remember what it looked like."
 					elif countdown < countdown_steps[3]:
-						response = "A few rays of lime green light penetrate small crevices between the rocks and bathe the mines in an ominous glow."
+						response = "A few rays of yellow light penetrate small crevices between the rocks and bathe the mines in an ominous glow."
 					else:  # if countdown > countdown_steps[0]
 						response = "You think you feel the ground move for a moment. But it was probably just your imagination."
 				else:
