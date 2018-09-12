@@ -142,13 +142,13 @@ async def mine(cmd):
 
 				if random.randint(1, int(rarity) if rarity >= 10 else 10) == 1:  # never more than once every ten !mines on average
 					if countdown_steps[0] > countdown >= countdown_steps[1]:
-						response = "A faint but distinct rumbling can be heard after a particularly powerful strike of your pickaxe."
+						response = "A faint rumbling can be heard after a particularly powerful strike of your pickaxe. What could it be...?"
 					elif countdown_steps[1] > countdown >= countdown_steps[2]:
-						response = "You can feel a powerful aura permeate your ghostly body for a second."
+						response = "You can feel a powerful aura permeate your ghostly body. Something is down here..."
 					elif countdown_steps[2] > countdown >= countdown_steps[3]:
-						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. You can't remember what it looked like."
+						response = "You suddenly feel an image penetrate your mind, if only for a fraction of a second. Something... pointy?"
 					elif countdown < countdown_steps[3]:
-						response = "A few rays of yellow light penetrate small crevices between the rocks and bathe the mines in an ominous glow."
+						response = "A few rays of lime green light penetrate small crevices between the rocks and bathe the mines in an ominous glow. You're close to a breakthrough!!"
 					else:  # if countdown > countdown_steps[0]
 						response = "You think you feel the ground move for a moment. But it was probably just your imagination."
 				else:
