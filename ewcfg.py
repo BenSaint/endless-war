@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v1.99"
+version = "v2.00"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
