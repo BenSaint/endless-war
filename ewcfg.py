@@ -42,6 +42,7 @@ poi_id_cinema = "nlacakanmcinemas"
 poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
+poi_id_slimecorphq = "slimecorphq"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -78,6 +79,7 @@ channel_arena = "battle-arena"
 channel_nlacu = "nlac-university"
 channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
+channel_slimecorphq = "slimecorp-hq"
 
 # Commands
 cmd_prefix = '!'
@@ -1250,6 +1252,18 @@ poi_list = [
 		channel = channel_endlesswar,
 		role = "Endless War"
 	),
+	EwPoi( # slimecorp HQ
+		id_poi = poi_id_slimecorphq,
+		alias = [
+			"slimecorp",
+			"hq",
+		],
+		str_name = "SlimeCorp HQ",
+		str_desc = "Within the gleaming metal hull of the towering SlimeCorp HQ, brightly lit sterile white hallways wind like a maze, past countless receptionists' desks, waiting rooms, and high-tech stainless steel vault doors.",
+		coord = (27, 18),
+		channel = channel_slimecorphq,
+		role = "SlimeCorp HQ"
+	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
 		alias = [
@@ -1261,7 +1275,9 @@ poi_list = [
 		coord = (23, 16),
 		coord_alias = [
 			(24, 16),
-			(25, 16)
+			(25, 16),
+			(25, 17),
+			(25, 18)
 		],
 		channel = "downtown",
 		role = "Downtown"
