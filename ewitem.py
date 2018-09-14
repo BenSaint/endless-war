@@ -539,11 +539,11 @@ async def item_use(cmd):
 					response = "You have to be in the Endless War Control Room to use this item."
 				else:
 					# EW: Wake
-					response = "You use the Endless Rock to awaken Endless War (me). Thank you."
+					response = "You use the Endless Rock to awaken ENDLESS WAR."
 					for channel in channels:
 						if channel.type == discord.ChannelType.text:
 							# @everyone is purposely misspelled so testing isnt annoying everyone
-							await cmd.client.send_message(channel, "@everyon I HAVE AWOKEN. https://ew.krakissi.net/img/revive.gif")
+							await cmd.client.send_message(channel, "@everyon ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif")
 
 					# destroy the endless rock (for testing purposes, just remove it from the player's inventory)
 					#item_delete(id_item)

@@ -267,10 +267,10 @@ async def attack(cmd):
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 				
 				if coinbounty > 0:
-					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 				#adjust busts
-				user_data.busts += 1
+				#user_data.busts += 1
 
 			else:
 				# A non-lethal blow!
@@ -312,14 +312,28 @@ async def attack(cmd):
 			user_data.persist()
 			shootee_data.persist()
 
-			if boss_member != None:
-				boss_data = EwUser(member = boss_member)
-				boss_data.change_slimes(n = boss_slimes)
-				boss_data.persist()
+			# if boss_member != None:
+			# 	boss_data = EwUser(member = boss_member)
+			# 	boss_data.change_slimes(n = boss_slimes)
+			# 	boss_data.persist()
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
+
+		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
+			if user_data.ghostbust == False:
+				response = "You cannot attack the negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
+			else:
+				# hunger drain
+				user_data.hunger += ewcfg.hunger_pershot
+
+				# Remove !revive invulnerability.
+				user_data.time_lastrevive = 0
+
+				damage = user_data.slimes / 20  # maybe use the normal damage calculation thing based on the user's weapon
+
+				shootee_data.slimes -= damage  # not change_slimes cause it's the negaslime
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
@@ -429,7 +443,7 @@ async def attack(cmd):
 						shootee_data.trauma = ""
 					
 					if coinbounty > 0:
-						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 					#adjust kills bounty
 					user_data.kills += 1
@@ -441,7 +455,7 @@ async def attack(cmd):
 
 				else:
 					# A non-lethal blow!
-					shootee_data.change_slimes(n = -slimes_damage, source = damage)
+					shootee_data.change_slimes(n = -slimes_damage, source = ewcfg.source_damage)
 					damage = str(slimes_damage)
 
 					if weapon != None:

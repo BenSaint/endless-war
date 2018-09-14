@@ -87,7 +87,7 @@ cmd_map = {
 	#ewcfg.cmd_negaslime: ewspooky.negaslime,
 
 	# revive yourself as a juvenile after having been killed.
-	#ewcfg.cmd_revive: ewspooky.revive,
+	ewcfg.cmd_revive: ewspooky.revive,
 
 	# Ghosts can haunt enlisted players to reduce their slime score.
 	ewcfg.cmd_haunt: ewspooky.haunt,

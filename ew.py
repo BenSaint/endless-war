@@ -160,9 +160,9 @@ class EwUser:
 
 		if source == ewcfg.source_damage:
 			if n > self.slimes: #lethal blow
-				totaldamage += self.slimes
+				self.totaldamage += self.slimes
 			else:
-				totaldamage += int(n)
+				self.totaldamage += int(n)
 
 		self.slimes += int(n)
 		
@@ -190,6 +190,7 @@ class EwUser:
 		self.kills = 0
 		self.hunger = 0
 		self.inebriation = 0
+		self.ghostbust = False
 		#ewevent.notify_total_deaths(self)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
