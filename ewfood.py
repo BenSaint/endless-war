@@ -14,7 +14,7 @@ class EwFood:
 	# Hunger reduced by eating this food.
 	recover_hunger = 0
 
-	# Cost in slime to eat this food.
+	# Cost in SlimeCoin to eat this food.
 	price = 0
 
 	# A nice string name describing this food.
