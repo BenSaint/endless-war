@@ -23,7 +23,6 @@ CREATE TABLE users (
 	weapon varchar(64) NOT NULL DEFAULT '',
 	trauma varchar(64) NOT NULL DEFAULT '',
 	totaldamage bigint NOT NULL DEFAULT '0',
-	kills int NOT NULL DEFAULT '0',
 	weaponskill int NOT NULL DEFAULT '0',
 	bounty bigint NOT NULL DEFAULT '0',
 	weaponname varchar(32) NOT NULL DEFAULT '',
@@ -32,17 +31,6 @@ CREATE TABLE users (
 	faction varchar(32) NOT NULL default '',
 	poi varchar(64) NOT NULL default 'downtown',
 	life_state int NOT NULL DEFAULT '0',
-	max_kills int NOT NULL DEFAULT '0',
-	max_slimesowned bigint NOT NULL DEFAULT '0',
-	max_slimesmined bigint NOT NULL DEFAULT '0',
-	max_slimesfromkilling bigint NOT NULL DEFAULT '0',
-	max_bountyonhead bigint NOT NULL DEFAULT '0',
-	max_slimecredit bigint NOT NULL DEFAULT '0',
-	max_poudrins int NOT NULL DEFAULT '0',
-	max_level int NOT NULL DEFAULT '0',
-	max_ghostbusts int NOT NULL DEFAULT '0',
-	total_damagedealt bigint NOT NULL DEFAULT '0',
-	total_deaths int NOT NULL DEFAULT '0',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );

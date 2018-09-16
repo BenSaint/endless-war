@@ -1,5 +1,6 @@
 import ewutils
 import ewcfg
+import ewstats
 
 """
 	Database persistence object describing some discrete event. Player
@@ -31,3 +32,49 @@ class EwEvent:
 	def persist(self):
 		# TODO
 		pass
+
+stat_fn_map = {}
+fns_initialized = False
+
+def init_stat_function_map():
+	global stat_fn_map
+	stat_fn_map = {
+		ewcfg.stat_slimesmined: process_slimesmined,
+		ewcfg.stat_max_slimesmined: process_max_slimesmined,
+		ewcfg.stat_slimesfromkills: process_slimesfromkills,
+		ewcfg.stat_max_slimesfromkills: process_max_slimesfromkills,
+		ewcfg.stat_kills: process_kills,
+		ewcfg.stat_max_kills: process_max_kills,
+	}
+	global fns_initialized
+	fns_initialized = True
+
+def process_stat_change(id_server = None, id_user = None, metric = None, value = None):
+	if fns_initialized == False:
+		init_stat_function_map()
+
+	fn = stat_fn_map.get(metric)
+
+	if fn != None:
+		fn(id_server = id_server, id_user = id_user, value = value)
+
+def process_slimesmined(id_server = None, id_user = None, value = None):
+	ewstats.track_maximum(id_server = id_server, id_user = id_user, metric = ewcfg.stat_max_slimesmined, value = value)
+
+def process_max_slimesmined(id_server = None, id_user = None, value = None):
+	# TODO give apropriate medal
+	pass
+
+def process_slimesfromkills(id_server = None, id_user = None, value = None):
+	ewstats.track_maximum(id_server = id_server, id_user = id_user, metric = ewcfg.stat_max_slimesfromkills, value = value)
+
+def process_max_slimesfromkills(id_server = None, id_user = None, value = None):
+	# TODO give apropriate medal
+	pass
+
+def process_kills(id_server = None, id_user = None, value = None):
+	ewstats.track_maximum(id_server = id_server, id_user = id_user, metric = ewcfg.stat_max_kills, value = value)
+
+def process_max_kills(id_server = None, id_user = None, value = None):
+	# TODO give apropriate medal
+	pass

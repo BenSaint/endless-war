@@ -33,6 +33,7 @@ import ewitem
 import ewmap
 import ewrolemgr
 import ewraidboss
+import ewevent
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -195,6 +196,7 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
+	
 	if False: 
 		twitch_client_id = ewutils.getTwitchClientId()
 
