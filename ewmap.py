@@ -439,6 +439,9 @@ async def move(cmd):
 	):
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
+	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted == True:  # fixme: add busted attribute or change this
+		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
 		path = EwPath(cost = 60)
 	else:

@@ -125,6 +125,7 @@ class EwUser:
 	faction = ""
 	poi = ""
 	life_state = 0
+	busted = False
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -180,8 +181,11 @@ class EwUser:
 		
 	def die(self):
 		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
+			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
 			self.life_state = ewcfg.life_state_corpse
 			self.total_deaths += 1
+		else:
+			self.busted = True  # this method is called for busted ghosts too
 		self.slimes = 0
 		self.poi = ewcfg.poi_id_thesewers
 		self.bounty = 0
@@ -241,7 +245,8 @@ class EwUser:
 					ewcfg.col_max_level,
 					ewcfg.col_max_ghostbusts,
 					ewcfg.col_total_damagedealt,
-					ewcfg.col_total_deaths
+					ewcfg.col_total_deaths,
+					# add busted attribute
 				), (
 					id_user,
 					id_server
@@ -280,6 +285,7 @@ class EwUser:
 					self.max_ghostbusts = result[27]
 					self.total_damagedealt = result[28]
 					self.total_deaths = result[29]
+					# add busted attribute
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (

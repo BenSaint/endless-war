@@ -205,7 +205,7 @@ async def attack(cmd):
 			# User is currently invulnerable.
 			response = "{} has died too recently and is immune.".format(member.display_name)
 
-		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == True:
+		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == True:  # todo check code and make it work
 			# Attack a ghostly target
 			was_busted = False
 
@@ -321,19 +321,69 @@ async def attack(cmd):
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
 
-		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
+		# attack the negaslime
+		elif shootee_data.life_state == ewcfg.life_state_grandfoe:  # todo: complete this code
 			if user_data.ghostbust == False:
 				response = "You cannot attack the negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
 			else:
 				# hunger drain
 				user_data.hunger += ewcfg.hunger_pershot
 
+				weapon = ewcfg.weapon_map.get(user_data.weapon)
+
+				# Weapon-specific adjustments
+				if weapon != None and weapon.fn_effect != None:
+					# Build effect container
+					ctn = EwEffectContainer(
+						miss = miss,
+						crit = crit,
+						slimes_damage = slimes_damage,
+						slimes_spent = slimes_spent,
+						user_data = user_data,
+						shootee_data = shootee_data
+					)
+
+					# Make adjustments
+					weapon.fn_effect(ctn)
+
+					# Apply effects for non-reference values
+					miss = ctn.miss
+					crit = ctn.crit
+					slimes_damage = ctn.slimes_damage
+					slimes_spent = ctn.slimes_spent
+					strikes = ctn.strikes
+					# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
+
+					if miss:
+						slimes_damage = 0
+
 				# Remove !revive invulnerability.
 				user_data.time_lastrevive = 0
 
-				damage = user_data.slimes / 20  # maybe use the normal damage calculation thing based on the user's weapon
+				# Spend slimes, to a minimum of zero
+				user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
 
-				shootee_data.slimes -= damage  # not change_slimes cause it's the negaslime
+				was_busted = False
+
+				if slimes_damage >= -shootee_data.slimes:
+					was_busted = True
+
+				if was_busted:
+					response = "You have defeated the negaslime."
+					await ewutils.post_in_multiple_channels(
+						message = "@everyon Rejoice! The Negaslime has been defeated.",
+						channels = cmd.message.server.channels,
+						client = cmd.client
+					)
+				else:
+					# A non-lethal blow!
+					shootee_data.change_slimes(n = slimes_damage)
+
+					response = "You have successfully attack the negaslime for {} damage".format(slimes_damage)
+
+				# Persist every users' data.
+				user_data.persist()
+				shootee_data.persist()
 
 		else:
 			# Slimes from this shot might be awarded to the boss.

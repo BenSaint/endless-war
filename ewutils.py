@@ -4,6 +4,8 @@ import time
 import re
 import random
 
+import discord
+
 import ewcfg
 from ew import EwUser
 
@@ -403,6 +405,7 @@ def weaponskills_clear(id_server = None, id_user = None, member = None):
 			cursor.close()
 			databaseClose(conn_info)
 
+
 re_flattener = re.compile("[ '\"!@#$%^&*().,/?{}\[\];:]")
 
 """
@@ -422,9 +425,9 @@ def flattenTokenListToString(tokens):
 	return target_name
 
 
-'''
+"""
 	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable)
-'''
+"""
 def execute_sql_query(sql_query = None):
 	data = None
 
@@ -442,3 +445,13 @@ def execute_sql_query(sql_query = None):
 		databaseClose(conn_info)
 
 	return data
+
+
+"""
+	
+"""
+async def post_in_multiple_channels(message = None, channels = None, client = None):
+	for channel in channels:
+		if channel.type == discord.ChannelType.text:
+			await client.send_message(channel, message)
+	return

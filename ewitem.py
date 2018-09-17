@@ -1,6 +1,5 @@
 import ewutils
 import ewcfg
-import discord
 from ew import EwUser
 from ewplayer import EwPlayer
 
@@ -532,21 +531,20 @@ async def item_use(cmd):
 
 			user_data = EwUser(member = cmd.message.author)
 
-			channels = cmd.message.server.channels
-
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
 					response = "You have to be in the Endless War Control Room to use this item."
 				else:
 					# EW: Wake
 					response = "You use the Endless Rock to awaken ENDLESS WAR."
-					for channel in channels:
-						if channel.type == discord.ChannelType.text:
-							# @everyone is purposely misspelled so testing isnt annoying everyone
-							await cmd.client.send_message(channel, "@everyon ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif")
+					await ewutils.post_in_multiple_channels(
+						# @everyone is purposely misspelled so testing isnt annoying everyone
+						message = "@everyon ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
+						channels = cmd.message.server.channels,  # all channels
+						client = cmd.client
+					)
 
-					# destroy the endless rock (for testing purposes, just remove it from the player's inventory)
-					#item_delete(id_item)
+					# take the endless rock away from the player who !used it
 					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
 
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
