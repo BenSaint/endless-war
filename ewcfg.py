@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v1.99"
+version = "v2.00"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -42,6 +42,7 @@ poi_id_cinema = "nlacakanmcinemas"
 poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
+poi_id_slimecorphq = "slimecorphq"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -78,6 +79,7 @@ channel_arena = "battle-arena"
 channel_nlacu = "nlac-university"
 channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
+channel_slimecorphq = "slimecorp-hq"
 
 # Commands
 cmd_prefix = '!'
@@ -103,7 +105,7 @@ cmd_slimeslots = cmd_prefix + 'slimeslots'
 cmd_slimecraps = cmd_prefix + 'slimecraps'
 cmd_slimeroulette = cmd_prefix + 'slimeroulette'
 cmd_deadmega = cmd_prefix + 'deadmega'
-cmd_invest = cmd_prefix + 'invest'
+cmd_donate = cmd_prefix + 'donate'
 cmd_slimecredit = cmd_prefix + 'slimecoin'
 cmd_slimecredit_alt1 = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
@@ -792,7 +794,7 @@ food_list = [
 			"tonic",
 		],
 		recover_hunger = 20,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
 		vendor = vendor_bar,
@@ -804,7 +806,7 @@ food_list = [
 			"colada",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slima colada',
 		vendor = vendor_bar,
@@ -817,7 +819,7 @@ food_list = [
 			"slimeka",
 		],
 		recover_hunger = 5,
-		price = 90,
+		price = 1,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
 		vendor = vendor_bar,
@@ -832,7 +834,7 @@ food_list = [
 			"bottle",
 		],
 		recover_hunger = 40,
-		price = 3000,
+		price = 20,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
 		vendor = vendor_bar,
@@ -844,7 +846,7 @@ food_list = [
 			"",
 		],
 		recover_hunger = 10,
-		price = 180,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slimy nipple',
 		vendor = vendor_bar,
@@ -856,7 +858,7 @@ food_list = [
 			"beach",
 		],
 		recover_hunger = 30,
-		price = 240,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -868,7 +870,7 @@ food_list = [
 			"goo",
 		],
 		recover_hunger = 30,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
 		vendor = vendor_bar,
@@ -880,7 +882,7 @@ food_list = [
 			"manhattan",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 3,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -892,7 +894,7 @@ food_list = [
 			"mary",
 		],
 		recover_hunger = 35,
-		price = 140,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slimy mary',
 		vendor = vendor_bar,
@@ -905,7 +907,7 @@ food_list = [
 			"beer",
 		],
 		recover_hunger = 30,
-		price = 150,
+		price = 2,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
 		vendor = vendor_bar,
@@ -929,7 +931,7 @@ food_list = [
 			"pizzaslice",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pizza',
 		vendor = vendor_pizzahut,
@@ -940,8 +942,8 @@ food_list = [
 		alias = [
 			"peperoni",
 		],
-		recover_hunger = 60,
-		price = 110,
+		recover_hunger = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
 		vendor = vendor_pizzahut,
@@ -953,7 +955,7 @@ food_list = [
 			"meatpizza",
 		],
 		recover_hunger = 70,
-		price = 160,
+		price = 2,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
 		vendor = vendor_pizzahut,
@@ -964,8 +966,8 @@ food_list = [
 		alias = [
 			"buffalowings",
 		],
-		recover_hunger = 90,
-		price = 175,
+		recover_hunger = 80,
+		price = 2,
 		inebriation = 0,
 		str_name = 'buffalo wings',
 		vendor = vendor_pizzahut,
@@ -977,7 +979,7 @@ food_list = [
 			"softtaco",
 		],
 		recover_hunger = 30,
-		price = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'soft taco',
 		vendor = vendor_tacobell,
@@ -990,7 +992,7 @@ food_list = [
 			"nachotaco"
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
@@ -1002,7 +1004,7 @@ food_list = [
 			"ranchtaco",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
 		vendor = vendor_tacobell,
@@ -1014,7 +1016,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 60,
-		price = 100,
+		price = 2,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
 		vendor = vendor_tacobell,
@@ -1027,7 +1029,7 @@ food_list = [
 			"quesomachorito"
 		],
 		recover_hunger = 140,
-		price = 250,
+		price = 5,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
 		vendor = vendor_tacobell,
@@ -1039,7 +1041,7 @@ food_list = [
 			"slaw",
 		],
 		recover_hunger = 20,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
 		vendor = vendor_kfc,
@@ -1052,7 +1054,7 @@ food_list = [
 			"gravy"
 		],
 		recover_hunger = 30,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
 		vendor = vendor_kfc,
@@ -1065,7 +1067,7 @@ food_list = [
 			"chicken",
 		],
 		recover_hunger = 120,
-		price = 220,
+		price = 4,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
 		vendor = vendor_kfc,
@@ -1077,7 +1079,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 70,
-		price = 130,
+		price = 2,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
 		vendor = vendor_kfc,
@@ -1090,8 +1092,8 @@ food_list = [
 			"sauce",
 			"saucepacket",
 		],
-		recover_hunger = 5,
-		price = 10,
+		recover_hunger = 0,
+		price = 0,
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
@@ -1104,8 +1106,8 @@ food_list = [
 			"mountaindew",
 			"greendew"
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew',
 		vendor = vendor_mtndew,
@@ -1116,8 +1118,8 @@ food_list = [
 		alias = [
 			"bluedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Baja Blast',
 		vendor = vendor_mtndew,
@@ -1128,8 +1130,8 @@ food_list = [
 		alias = [
 			"reddew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Code Red',
 		vendor = vendor_mtndew,
@@ -1140,8 +1142,8 @@ food_list = [
 		alias = [
 			"blackdew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Pitch Black',
 		vendor = vendor_mtndew,
@@ -1152,8 +1154,8 @@ food_list = [
 		alias = [
 			"whitedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew White-Out',
 		vendor = vendor_mtndew,
@@ -1164,8 +1166,8 @@ food_list = [
 		alias = [
 			"orangedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Livewire',
 		vendor = vendor_mtndew,
@@ -1280,6 +1282,18 @@ poi_list = [
 		channel = channel_endlesswar,
 		role = "Endless War"
 	),
+	EwPoi( # slimecorp HQ
+		id_poi = poi_id_slimecorphq,
+		alias = [
+			"slimecorp",
+			"hq",
+		],
+		str_name = "SlimeCorp HQ",
+		str_desc = "Within the gleaming metal hull of the towering SlimeCorp HQ, brightly lit sterile white hallways wind like a maze, past countless receptionists' desks, waiting rooms, and high-tech stainless steel vault doors.",
+		coord = (27, 18),
+		channel = channel_slimecorphq,
+		role = "SlimeCorp HQ"
+	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
 		alias = [
@@ -1291,7 +1305,9 @@ poi_list = [
 		coord = (23, 16),
 		coord_alias = [
 			(24, 16),
-			(25, 16)
+			(25, 16),
+			(25, 17),
+			(25, 18)
 		],
 		channel = "downtown",
 		role = "Downtown"
@@ -1856,4 +1872,3 @@ for poi in poi_list:
 	id_to_poi[poi.id_poi] = poi
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
-

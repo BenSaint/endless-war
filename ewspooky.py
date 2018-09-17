@@ -120,7 +120,7 @@ async def haunt(cmd):
 			user_data.persist()
 			haunted_data.persist()
 
-			response = "{} has been haunted by a discontent corpse! Slime has been lost!".format(member.display_name)
+			response = "{} has been haunted by the ghost of {}! Slime has been lost!".format(member.display_name, cmd.message.author.display_name)
 		else:
 			# Some condition we didn't think of.
 			response = "You cannot haunt {}.".format(member.display_name)
