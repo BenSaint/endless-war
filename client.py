@@ -33,7 +33,6 @@ import ewitem
 import ewmap
 import ewrolemgr
 import ewraidboss
-import ewevent
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -88,7 +87,7 @@ cmd_map = {
 	#ewcfg.cmd_negaslime: ewspooky.negaslime,
 
 	# revive yourself as a juvenile after having been killed.
-	ewcfg.cmd_revive: ewspooky.revive,
+	#ewcfg.cmd_revive: ewspooky.revive,
 
 	# Ghosts can haunt enlisted players to reduce their slime score.
 	ewcfg.cmd_haunt: ewspooky.haunt,
@@ -121,6 +120,9 @@ cmd_map = {
 	# Show the player's slime credit.
 	ewcfg.cmd_slimecredit: ewmarket.slimecoin,
 	ewcfg.cmd_slimecredit_alt1: ewmarket.slimecoin,
+
+	# Donate your slime to SlimeCorp in exchange for SlimeCoin.
+	ewcfg.cmd_donate: ewmarket.donate,
 
 
 	# show player inventory
@@ -196,7 +198,6 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
-	
 	if False: 
 		twitch_client_id = ewutils.getTwitchClientId()
 
