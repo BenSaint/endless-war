@@ -206,7 +206,7 @@ async def attack(cmd):
 			# User is currently invulnerable.
 			response = "{} has died too recently and is immune.".format(member.display_name)
 
-		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == True:  # todo check code and make it work
+		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == True:
 			# Attack a ghostly target
 			was_busted = False
 
@@ -313,10 +313,7 @@ async def attack(cmd):
 			user_data.persist()
 			shootee_data.persist()
 
-			# if boss_member != None:
-			# 	boss_data = EwUser(member = boss_member)
-			# 	boss_data.change_slimes(n = boss_slimes)
-			# 	boss_data.persist()
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(user_data.id_user))
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
 			# Target is already dead and not a ghost.
@@ -369,8 +366,9 @@ async def attack(cmd):
 				if slimes_damage >= -shootee_data.slimes:
 					was_busted = True
 
+
 				if was_busted:
-					response = "You have defeated the negaslime."
+					response = "You have defeated the Negaslime."
 					await ewutils.post_in_multiple_channels(
 						message = "@everyon Rejoice! The Negaslime has been defeated.",
 						channels = cmd.message.server.channels,
@@ -380,7 +378,24 @@ async def attack(cmd):
 					# A non-lethal blow!
 					shootee_data.change_slimes(n = slimes_damage)
 
-					response = "You have successfully attack the negaslime for {} damage".format(slimes_damage)
+					if random.randint(1, 30) == 1:
+						r = random.randint(1, 5)
+
+						if r == 1:
+							response = "The Negaslime is growing frustrated."
+						elif r == 2:
+							response = "The Negaslime's tendrils are twitching sporadically."
+						elif r == 3:
+							response = "The Negaslime pretends to pay you no mind."
+						elif r == 4:
+							response = "The Negaslime lets out a droning, ear-numbing wail."
+						else:
+							response = "The Negaslime is writhing in pain."
+
+						response += "Remaining negaslime: {}".format(-shootee_data.slimes)
+
+					# for debugging purposes
+					#response = "You have successfully attack the negaslime for {} damage".format(slimes_damage)
 
 				# Persist every users' data.
 				user_data.persist()

@@ -173,7 +173,6 @@ class EwUser:
 			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
 			self.life_state = ewcfg.life_state_corpse
 			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
-			self.total_deaths += 1
 		else:
 			self.busted = True  # this method is called for busted ghosts too
 		self.slimes = 0
@@ -192,7 +191,7 @@ class EwUser:
 
 	def add_weaponskill(self, n = 0):
 		self.weaponskill += int(n)
-		ewstats.track_maximum(user = self, metric = ewcfg.max_wepskill, value = self.weaponskill)
+		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -212,7 +211,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -232,7 +231,8 @@ class EwUser:
 					ewcfg.col_inebriation,
 					ewcfg.col_faction,
 					ewcfg.col_poi,
-					ewcfg.col_life_state
+					ewcfg.col_life_state,
+					ewcfg.col_busted
 				), (
 					id_user,
 					id_server
@@ -261,6 +261,7 @@ class EwUser:
 					self.faction = result[17]
 					self.poi = result[18]
 					self.life_state = result[19]
+					self.busted = (result[20] == 1)
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -310,7 +311,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -333,7 +334,8 @@ class EwUser:
 				ewcfg.col_inebriation,
 				ewcfg.col_faction,
 				ewcfg.col_poi,
-				ewcfg.col_life_state
+				ewcfg.col_life_state,
+				ewcfg.col_busted
 			), (
 				self.id_user,
 				self.id_server,
@@ -353,11 +355,12 @@ class EwUser:
 				self.time_lasthaunt,
 				self.time_lastinvest,
 				self.weaponname,
-				(1 if self.ghostbust == True else 0),
+				(1 if self.ghostbust else 0),
 				self.inebriation,
 				self.faction,
 				self.poi,
-				self.life_state
+				self.life_state,
+				(1 if self.busted else 0)
 			))
 
 			# Save the current weapon's skill
