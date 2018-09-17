@@ -37,11 +37,6 @@ async def revive(cmd):
 			# Give player some initial slimes.
 			player_data.change_slimes(n = ewcfg.slimes_onrevive)
 
-			# Clear weapon and weaponskill.
-			player_data.weapon = ""
-			player_data.weaponskill = 0
-			ewutils.weaponskills_clear(member = cmd.message.author)
-
 			# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 			player_data.time_lastrevive = time_now
 

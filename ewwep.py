@@ -398,13 +398,13 @@ async def attack(cmd):
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
 
+					# Steal items
+					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
+
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
 					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
-
-					# Steal items
-					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -536,9 +536,6 @@ async def suicide(cmd):
 			user_data.id_killer = cmd.message.author.id
 			user_data.die()
 			user_data.persist()
-
-			# Destroy all common items.
-			ewitem.item_destroyall(member = cmd.message.author)
 
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)

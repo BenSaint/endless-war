@@ -1,6 +1,7 @@
 import ewutils
 import ewcfg
 import ewstats
+import ewitem
 
 """ Market data model for database persistence """
 class EwMarket:
@@ -178,7 +179,12 @@ class EwUser:
 		self.slimelevel = 1
 		self.hunger = 0
 		self.inebriation = 0
+		# Clear weapon and weaponskill.
+		self.weapon = ""
+		self.weaponskill = 0
+		ewutils.weaponskills_clear(id_server = self.id_server, id_user = self.id_user)
 		ewstats.clear_on_death(id_server = self.id_server, id_user = self.id_user)
+		ewitem.item_destroyall(id_server = self.id_server, id_user = self.id_user)
 
 	def add_bounty(self, n = 0):
 		self.bounty += int(n)
@@ -186,7 +192,7 @@ class EwUser:
 
 	def add_weaponskill(self, n = 0):
 		self.weaponskill += int(n)
-		ewstats.track_maximum(user = self, metric = ewcfg.max_wepskill, value = self.weaponskill)
+		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
