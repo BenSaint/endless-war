@@ -191,8 +191,22 @@ class EwUser:
 		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_bounty, value = self.bounty)
 
 	def add_weaponskill(self, n = 0):
-		self.weaponskill += int(n)
-		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
+		# Save the current weapon's skill
+		if self.weapon != None and self.weapon != "":
+			if self.weaponskill == None:
+				self.weaponskill = 0
+				self.weaponname = ""
+				
+			self.weaponskill += int(n)
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
+
+			ewutils.weaponskills_set(
+				id_server = self.id_server,
+				id_user = self.id_user,
+				weapon = self.weapon,
+				weaponskill = self.weaponskill,
+				weaponname = self.weaponname
+			)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -359,20 +373,6 @@ class EwUser:
 				self.poi,
 				self.life_state
 			))
-
-			# Save the current weapon's skill
-			if self.weapon != None and self.weapon != "":
-				if self.weaponskill == None:
-					self.weaponskill = 0
-					self.weaponname = ""
-
-				ewutils.weaponskills_set(
-					id_server = self.id_server,
-					id_user = self.id_user,
-					weapon = self.weapon,
-					weaponskill = self.weaponskill,
-					weaponname = self.weaponname
-				)
 
 			conn.commit()
 		finally:
