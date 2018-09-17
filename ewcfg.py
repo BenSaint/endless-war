@@ -285,6 +285,10 @@ col_total_damagedealt = 'total_damagedealt'
 col_total_deaths = 'total_deaths'
 col_busted = 'busted'
 
+# Database columns for user statistics
+col_stat_metric = 'stat_metric'
+col_stat_value = 'stat_value'
+
 # Database columns for markets
 col_rate_market = 'rate_market'
 col_rate_exchange = 'rate_exchange'
@@ -338,6 +342,32 @@ hitzone_list = [
 	"abdomen",
 	"lower back",
 	"calf"
+]
+
+# User statistics we track 
+stat_max_slimes = 'max_slimes'
+stat_slimesmined = 'slimes_mined'
+stat_slimesfromkills = 'slimes_from_kills'
+stat_max_slimesmined = 'max_slimes_mined'
+stat_max_slimesfromkills = 'max_slimes_from_kills'
+stat_max_level = 'max_level'
+stat_max_hitsurvived = 'max_hit_survived'
+stat_kills = 'kills'
+stat_max_kills = 'max_kills'
+stat_max_wepskill = 'max_wep_skill'
+stat_max_slimecredit = 'max_slime_coins'
+stat_max_bounty = 'max_bounty'
+stat_ghostbusts = 'ghostbusts'
+stat_max_ghostbusts = 'max_ghostbusts'
+stat_max_poudrins = 'max_poudrins'
+stat_total_damagedealt = 'total_damagedealt'
+stat_total_deaths = 'total_deaths'
+
+stats_clear_on_death = [
+	stat_slimesmined,
+	stat_slimesfromkills,
+	stat_kills,
+	stat_ghostbusts
 ]
 
 # A Weapon Effect Function for "gun". Takes an EwEffectContainer as ctn.
@@ -765,7 +795,7 @@ food_list = [
 			"tonic",
 		],
 		recover_hunger = 20,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
 		vendor = vendor_bar,
@@ -777,7 +807,7 @@ food_list = [
 			"colada",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slima colada',
 		vendor = vendor_bar,
@@ -790,7 +820,7 @@ food_list = [
 			"slimeka",
 		],
 		recover_hunger = 5,
-		price = 90,
+		price = 1,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
 		vendor = vendor_bar,
@@ -805,7 +835,7 @@ food_list = [
 			"bottle",
 		],
 		recover_hunger = 40,
-		price = 3000,
+		price = 20,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
 		vendor = vendor_bar,
@@ -817,7 +847,7 @@ food_list = [
 			"",
 		],
 		recover_hunger = 10,
-		price = 180,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slimy nipple',
 		vendor = vendor_bar,
@@ -829,7 +859,7 @@ food_list = [
 			"beach",
 		],
 		recover_hunger = 30,
-		price = 240,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -841,7 +871,7 @@ food_list = [
 			"goo",
 		],
 		recover_hunger = 30,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
 		vendor = vendor_bar,
@@ -853,7 +883,7 @@ food_list = [
 			"manhattan",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 3,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -865,7 +895,7 @@ food_list = [
 			"mary",
 		],
 		recover_hunger = 35,
-		price = 140,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slimy mary',
 		vendor = vendor_bar,
@@ -878,7 +908,7 @@ food_list = [
 			"beer",
 		],
 		recover_hunger = 30,
-		price = 150,
+		price = 2,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
 		vendor = vendor_bar,
@@ -902,7 +932,7 @@ food_list = [
 			"pizzaslice",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pizza',
 		vendor = vendor_pizzahut,
@@ -913,8 +943,8 @@ food_list = [
 		alias = [
 			"peperoni",
 		],
-		recover_hunger = 60,
-		price = 110,
+		recover_hunger = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
 		vendor = vendor_pizzahut,
@@ -926,7 +956,7 @@ food_list = [
 			"meatpizza",
 		],
 		recover_hunger = 70,
-		price = 160,
+		price = 2,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
 		vendor = vendor_pizzahut,
@@ -937,8 +967,8 @@ food_list = [
 		alias = [
 			"buffalowings",
 		],
-		recover_hunger = 90,
-		price = 175,
+		recover_hunger = 80,
+		price = 2,
 		inebriation = 0,
 		str_name = 'buffalo wings',
 		vendor = vendor_pizzahut,
@@ -950,7 +980,7 @@ food_list = [
 			"softtaco",
 		],
 		recover_hunger = 30,
-		price = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'soft taco',
 		vendor = vendor_tacobell,
@@ -963,7 +993,7 @@ food_list = [
 			"nachotaco"
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
@@ -975,7 +1005,7 @@ food_list = [
 			"ranchtaco",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
 		vendor = vendor_tacobell,
@@ -987,7 +1017,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 60,
-		price = 100,
+		price = 2,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
 		vendor = vendor_tacobell,
@@ -1000,7 +1030,7 @@ food_list = [
 			"quesomachorito"
 		],
 		recover_hunger = 140,
-		price = 250,
+		price = 5,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
 		vendor = vendor_tacobell,
@@ -1012,7 +1042,7 @@ food_list = [
 			"slaw",
 		],
 		recover_hunger = 20,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
 		vendor = vendor_kfc,
@@ -1025,7 +1055,7 @@ food_list = [
 			"gravy"
 		],
 		recover_hunger = 30,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
 		vendor = vendor_kfc,
@@ -1038,7 +1068,7 @@ food_list = [
 			"chicken",
 		],
 		recover_hunger = 120,
-		price = 220,
+		price = 4,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
 		vendor = vendor_kfc,
@@ -1050,7 +1080,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 70,
-		price = 130,
+		price = 2,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
 		vendor = vendor_kfc,
@@ -1063,8 +1093,8 @@ food_list = [
 			"sauce",
 			"saucepacket",
 		],
-		recover_hunger = 5,
-		price = 10,
+		recover_hunger = 0,
+		price = 0,
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
@@ -1077,8 +1107,8 @@ food_list = [
 			"mountaindew",
 			"greendew"
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew',
 		vendor = vendor_mtndew,
@@ -1089,8 +1119,8 @@ food_list = [
 		alias = [
 			"bluedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Baja Blast',
 		vendor = vendor_mtndew,
@@ -1101,8 +1131,8 @@ food_list = [
 		alias = [
 			"reddew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Code Red',
 		vendor = vendor_mtndew,
@@ -1113,8 +1143,8 @@ food_list = [
 		alias = [
 			"blackdew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Pitch Black',
 		vendor = vendor_mtndew,
@@ -1125,8 +1155,8 @@ food_list = [
 		alias = [
 			"whitedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew White-Out',
 		vendor = vendor_mtndew,
@@ -1137,8 +1167,8 @@ food_list = [
 		alias = [
 			"orangedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Livewire',
 		vendor = vendor_mtndew,

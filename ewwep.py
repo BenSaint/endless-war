@@ -7,6 +7,7 @@ import ewutils
 import ewitem
 import ewmap
 import ewrolemgr
+import ewstats
 from ew import EwUser, EwMarket
 
 """ A weapon object which adds flavor text to kill/shoot. """
@@ -495,13 +496,13 @@ async def attack(cmd):
 					if coinbounty > 0:
 						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
-					#adjust kills bounty
-					user_data.kills += 1
-					user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
+					#adjust kills and bounty
+					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
+					user_data.add_bounty(n = (shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
 
 					# Give a bonus to the player's weapon skill for killing a stronger player.
 					if shootee_data.slimelevel > user_data.slimelevel:
-						user_data.weaponskill += 1
+						user_data.add_weaponskill(n = 1)
 
 				else:
 					# A non-lethal blow!
@@ -707,12 +708,12 @@ async def spar(cmd):
 						stronger_player.change_slimes(n = slimegain / 2)
 
 						if weaker_player.weaponskill < 5:
-							weaker_player.weaponskill += 1
+							weaker_player.add_weaponskill(n = 1)
 						elif (weaker_player.weaponskill + 1) < stronger_player.weaponskill:
-							weaker_player.weaponskill += 1
+							weaker_player.add_weaponskill(n = 1)
 
 						if stronger_player.weaponskill < 5:
-							stronger_player.weaponskill += 1
+							stronger_player.add_weaponskill(n = 1)
 
 					weaker_player.time_lastspar = time_now
 
@@ -788,7 +789,7 @@ async def annoint(cmd):
 				user_data.weaponname = annoint_name
 
 				if user_data.weaponskill < 10:
-					user_data.weaponskill += 1
+					user_data.add_weaponskill(n = 1)
 
 				# delete a slime poudrin from the player's inventory
 				ewitem.item_delete(id_item = poudrins[0].get('id_item'))
