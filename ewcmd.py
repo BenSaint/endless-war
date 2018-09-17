@@ -5,6 +5,7 @@ import ewcfg
 import ewutils
 import ewitem
 import ewrolemgr
+import ewstats
 from ew import EwUser, EwMarket
 
 """ class to send general data about an interaction to a command """
@@ -125,8 +126,9 @@ async def data(cmd):
 		if trauma != None:
 			response += " {}".format(trauma.str_trauma_self)
 
-		if user_data.kills > 0:
-			response += " You have {:,} confirmed kills.".format(user_data.kills)
+		user_kills = ewstats.get_stat(user = user_data, metric = ewcfg.stat_kills)
+		if user_kills > 0:
+			response += " They have {:,} confirmed kills.".format(user_kills)
 		
 		if coinbounty != 0:
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
@@ -164,8 +166,9 @@ async def data(cmd):
 			if trauma != None:
 				response += " {}".format(trauma.str_trauma)
 
-			if user_data.kills > 0:
-				response += " They have {:,} confirmed kills.".format(user_data.kills)
+			user_kills = ewstats.get_stat(user = user_data, metric = ewcfg.stat_kills)
+			if user_kills > 0:
+				response += " They have {:,} confirmed kills.".format(user_kills)
 
 			if coinbounty != 0:
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
