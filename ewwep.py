@@ -475,13 +475,13 @@ async def attack(cmd):
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
 
+					# Steal items
+					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
+
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
 					shootee_data.change_slimes(n = -((shootee_data.totaldamage - shootee_data.slimes) / 10)) #ghost slime
-
-					# Steal items
-					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -613,9 +613,6 @@ async def suicide(cmd):
 			user_data.id_killer = cmd.message.author.id
 			user_data.die()
 			user_data.persist()
-
-			# Destroy all common items.
-			ewitem.item_destroyall(member = cmd.message.author)
 
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
@@ -764,6 +761,50 @@ async def spar(cmd):
 						response = '{} cannot spar now.'.format(member.display_name)
 	else:
 		response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
+
+	# Send the response to the player.
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
+""" equip a weapon """
+async def equip(cmd):
+	resp = await ewcmd.start(cmd)
+	response = ""
+
+	if cmd.message.channel.name != ewcfg.channel_dojo:
+		response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
+	else:
+		value = None
+		if cmd.tokens_count > 1:
+			value = cmd.tokens[1]
+
+		weapon = ewcfg.weapon_map.get(value)
+		if weapon != None:
+			response = weapon.str_equip
+			try:
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
+
+				user_data = EwUser(member = cmd.message.author)
+				user_skills = ewutils.weaponskills_get(member = cmd.message.author)
+
+				user_data.weapon = weapon.id_weapon
+				weaponskillinfo = user_skills.get(weapon.id_weapon)
+				if weaponskillinfo == None:
+					user_data.weaponskill = 0
+					user_data.weaponname = ""
+				else:
+					user_data.weaponskill = weaponskillinfo.get('skill')
+					user_data.weaponname = weaponskillinfo.get('name')
+
+				user_data.persist()
+
+				conn.commit()
+			finally:
+				cursor.close()
+				ewutils.databaseClose(conn_info)
+		else:
+			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

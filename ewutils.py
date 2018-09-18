@@ -375,7 +375,7 @@ def weaponskills_set(id_server = None, id_user = None, member = None, weapon = N
 			cursor.close()
 			databaseClose(conn_info)
 
-""" Clear all weapon skills for a player (probably called on !revive). """
+""" Clear all weapon skills for a player (probably called on death). """
 def weaponskills_clear(id_server = None, id_user = None, member = None):
 	if member != None:
 		id_server = member.server.id
