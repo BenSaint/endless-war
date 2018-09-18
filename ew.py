@@ -126,6 +126,7 @@ class EwUser:
 	faction = ""
 	poi = ""
 	life_state = 0
+	busted = False
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -170,8 +171,11 @@ class EwUser:
 		
 	def die(self):
 		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
+			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
 			self.life_state = ewcfg.life_state_corpse
 			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
+		else:
+			self.busted = True  # this method is called for busted ghosts too
 		self.slimes = 0
 		self.poi = ewcfg.poi_id_thesewers
 		self.bounty = 0
@@ -179,6 +183,7 @@ class EwUser:
 		self.slimelevel = 1
 		self.hunger = 0
 		self.inebriation = 0
+		self.ghostbust = False
 		# Clear weapon and weaponskill.
 		self.weapon = ""
 		self.weaponskill = 0
@@ -196,7 +201,7 @@ class EwUser:
 			if self.weaponskill == None:
 				self.weaponskill = 0
 				self.weaponname = ""
-				
+
 			self.weaponskill += int(n)
 			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
 
@@ -226,7 +231,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -246,7 +251,8 @@ class EwUser:
 					ewcfg.col_inebriation,
 					ewcfg.col_faction,
 					ewcfg.col_poi,
-					ewcfg.col_life_state
+					ewcfg.col_life_state,
+					ewcfg.col_busted
 				), (
 					id_user,
 					id_server
@@ -275,6 +281,7 @@ class EwUser:
 					self.faction = result[17]
 					self.poi = result[18]
 					self.life_state = result[19]
+					self.busted = (result[20] == 1)
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -324,7 +331,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -347,7 +354,8 @@ class EwUser:
 				ewcfg.col_inebriation,
 				ewcfg.col_faction,
 				ewcfg.col_poi,
-				ewcfg.col_life_state
+				ewcfg.col_life_state,
+				ewcfg.col_busted
 			), (
 				self.id_user,
 				self.id_server,
@@ -367,11 +375,12 @@ class EwUser:
 				self.time_lasthaunt,
 				self.time_lastinvest,
 				self.weaponname,
-				(1 if self.ghostbust == True else 0),
+				(1 if self.ghostbust else 0),
 				self.inebriation,
 				self.faction,
 				self.poi,
-				self.life_state
+				self.life_state,
+				(1 if self.busted else 0)
 			))
 
 			conn.commit()

@@ -150,7 +150,7 @@ slimes_permine = 20
 slimes_perdrink = 500
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
-slimes_toenlist = 420
+slimes_toenlist = 0
 slimes_perspar_base = 3000
 slimes_hauntratio = 40
 slimes_hauntmax = 5000
@@ -283,6 +283,7 @@ col_max_level = 'max_level'
 col_max_ghostbusts = 'max_ghostbusts'
 col_total_damagedealt = 'total_damagedealt'
 col_total_deaths = 'total_deaths'
+col_busted = 'busted'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'

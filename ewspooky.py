@@ -43,6 +43,9 @@ async def revive(cmd):
 			# Set life state. This is what determines whether the player is actually alive.
 			player_data.life_state = ewcfg.life_state_juvenile
 
+			# Get the player out of the sewers. Will be endless-war eventually.
+			player_data.poi = ewcfg.poi_id_downtown
+
 			player_data.persist()
 			market_data.persist()
 
@@ -51,7 +54,7 @@ async def revive(cmd):
 				if member.id != cmd.message.author.id and member.id != cmd.client.user.id:
 					member_data = EwUser(member = member)
 
-					if member_data.life_state != ewcfg.life_state_corpse:
+					if member_data.life_state != ewcfg.life_state_corpse and member_data.life_state != ewcfg.life_state_grandfoe:
 						member_data.change_slimes(n = ewcfg.slimes_onrevive_everyone)
 						member_data.persist()
 

@@ -439,6 +439,9 @@ async def move(cmd):
 	):
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
+	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted:
+		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
 		path = EwPath(cost = 60)
 	else:
@@ -574,7 +577,7 @@ async def move(cmd):
 					)
 			else:
 				if val > 0:
-					await asyncio.sleep(val)
+					await asyncio.sleep(val/30)  # todo: remove this later, just to make testing faster
 
 """
 	Dump out the visual description of the area you're in.

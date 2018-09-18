@@ -128,13 +128,20 @@ async def data(cmd):
 
 		user_kills = ewstats.get_stat(user = user_data, metric = ewcfg.stat_kills)
 		if user_kills > 0:
-			response += " They have {:,} confirmed kills.".format(user_kills)
+			response += " You have {:,} confirmed kills.".format(user_kills)
 		
 		if coinbounty != 0:
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if user_data.hunger > 0:
 			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewcfg.hunger_max)
+
+		if user_data.ghostbust:
+			response += " The coleslaw in your stomach enables you to bust ghosts."
+
+		if user_data.busted:
+			response += " You are busted and therefore cannot leave the sewers without reviving."
+
 	else:
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)

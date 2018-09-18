@@ -1,3 +1,4 @@
+import asyncio
 import time
 import random
 
@@ -137,6 +138,7 @@ async def attack(cmd):
 	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
+	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 	if ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
@@ -164,6 +166,8 @@ async def attack(cmd):
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 		slimes_spent = int(slimes_bylevel / 10)
 		slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		if weapon is None:
+			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
 
 		fumble_chance = (random.randrange(10) - 4)
@@ -214,7 +218,6 @@ async def attack(cmd):
 			user_data.hunger += ewcfg.hunger_pershot
 			
 			# Weaponized flavor text.
-			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 			# Weapon-specific adjustments
@@ -268,10 +271,10 @@ async def attack(cmd):
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 				
 				if coinbounty > 0:
-					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 				#adjust busts
-				user_data.busts += 1
+				#user_data.busts += 1
 
 			else:
 				# A non-lethal blow!
@@ -313,14 +316,101 @@ async def attack(cmd):
 			user_data.persist()
 			shootee_data.persist()
 
-			if boss_member != None:
-				boss_data = EwUser(member = boss_member)
-				boss_data.change_slimes(n = boss_slimes)
-				boss_data.persist()
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(shootee_data.id_user))
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
+
+		# attack the negaslime
+		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
+			if user_data.ghostbust == False:
+				response = "You cannot attack the Negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
+			else:
+				if shootee_data.busted:
+					response = "The Negaslime is already dead."
+					return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
+				# hunger drain
+				user_data.hunger += ewcfg.hunger_pershot
+
+				# Weapon-specific adjustments
+				if weapon != None and weapon.fn_effect != None:
+					# Build effect container
+					ctn = EwEffectContainer(
+						miss = miss,
+						crit = crit,
+						slimes_damage = slimes_damage,
+						slimes_spent = slimes_spent,
+						user_data = user_data,
+						shootee_data = shootee_data
+					)
+
+					# Make adjustments
+					weapon.fn_effect(ctn)
+
+					# Apply effects for non-reference values
+					miss = ctn.miss
+					slimes_damage = ctn.slimes_damage
+					slimes_spent = ctn.slimes_spent
+
+					if miss:
+						slimes_damage = 0
+
+				# Remove !revive invulnerability.
+				user_data.time_lastrevive = 0
+
+				# Spend slimes, to a minimum of zero
+				user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
+
+				was_busted = False
+
+				if slimes_damage >= -shootee_data.slimes:
+					was_busted = True
+
+				if was_busted:
+					shootee_data.change_slimes(n = -shootee_data.slimes)
+					shootee_data.busted = True
+					shootee_data.persist()  # to block people from triggering the PSA again before it finishes executing
+
+					response = "You have defeated the Negaslime."
+
+					await ewutils.post_in_multiple_channels(
+						message = "@everyon Rejoice! The Negaslime has been defeated.",
+						channels = cmd.message.server.channels,
+						client = cmd.client
+					)
+				else:
+					# A non-lethal blow!
+					shootee_data.change_slimes(n = slimes_damage)
+
+					if random.randint(1, 30) == 1:
+						r = random.randint(1, 5)
+
+						if r == 1:
+							response = "The Negaslime is growing frustrated."
+						elif r == 2:
+							response = "The Negaslime's tendrils are twitching sporadically."
+						elif r == 3:
+							response = "The Negaslime pretends to pay you no mind."
+						elif r == 4:
+							response = "The Negaslime lets out a droning, ear-numbing wail."
+						else:
+							response = "The Negaslime is writhing in pain."
+
+						response += " Remaining negaslime: {}".format(-shootee_data.slimes)
+					else:
+						# Persist every users' data.
+						user_data.persist()
+						shootee_data.persist()
+						response = "You dealt {} damage.".format(slimes_damage)
+						await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+						await asyncio.sleep(1)
+						return await cmd.client.delete_message(resp)
+
+				# Persist every users' data.
+				user_data.persist()
+				shootee_data.persist()
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
@@ -344,7 +434,6 @@ async def attack(cmd):
 				user_data.hunger += ewcfg.hunger_pershot
 				
 				# Weaponized flavor text.
-				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 				# Weapon-specific adjustments
@@ -404,7 +493,7 @@ async def attack(cmd):
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
-					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
+					shootee_data.change_slimes(n = -((shootee_data.totaldamage - shootee_data.slimes) / 10)) #ghost slime
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -430,7 +519,7 @@ async def attack(cmd):
 						shootee_data.trauma = ""
 					
 					if coinbounty > 0:
-						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 					#adjust kills and bounty
 					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
