@@ -7,6 +7,7 @@ import ewutils
 import ewitem
 import ewmap
 import ewrolemgr
+import ewstats
 from ew import EwUser, EwMarket
 
 """ A weapon object which adds flavor text to kill/shoot. """
@@ -397,13 +398,13 @@ async def attack(cmd):
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
 
+					# Steal items
+					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
+
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
 					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
-
-					# Steal items
-					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -431,17 +432,17 @@ async def attack(cmd):
 					if coinbounty > 0:
 						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
 
-					#adjust kills bounty
-					user_data.kills += 1
-					user_data.bounty += int((shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
+					#adjust kills and bounty
+					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
+					user_data.add_bounty(n = (shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
 
 					# Give a bonus to the player's weapon skill for killing a stronger player.
 					if shootee_data.slimelevel > user_data.slimelevel:
-						user_data.weaponskill += 1
+						user_data.add_weaponskill(n = 1)
 
 				else:
 					# A non-lethal blow!
-					shootee_data.change_slimes(n = -slimes_damage, source = damage)
+					shootee_data.change_slimes(n = -slimes_damage, source = ewcfg.source_damage)
 					damage = str(slimes_damage)
 
 					if weapon != None:
@@ -535,9 +536,6 @@ async def suicide(cmd):
 			user_data.id_killer = cmd.message.author.id
 			user_data.die()
 			user_data.persist()
-
-			# Destroy all common items.
-			ewitem.item_destroyall(member = cmd.message.author)
 
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
@@ -643,12 +641,12 @@ async def spar(cmd):
 						stronger_player.change_slimes(n = slimegain / 2)
 
 						if weaker_player.weaponskill < 5:
-							weaker_player.weaponskill += 1
+							weaker_player.add_weaponskill(n = 1)
 						elif (weaker_player.weaponskill + 1) < stronger_player.weaponskill:
-							weaker_player.weaponskill += 1
+							weaker_player.add_weaponskill(n = 1)
 
 						if stronger_player.weaponskill < 5:
-							stronger_player.weaponskill += 1
+							stronger_player.add_weaponskill(n = 1)
 
 					weaker_player.time_lastspar = time_now
 
@@ -690,6 +688,50 @@ async def spar(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
+""" equip a weapon """
+async def equip(cmd):
+	resp = await ewcmd.start(cmd)
+	response = ""
+
+	if cmd.message.channel.name != ewcfg.channel_dojo:
+		response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
+	else:
+		value = None
+		if cmd.tokens_count > 1:
+			value = cmd.tokens[1]
+
+		weapon = ewcfg.weapon_map.get(value)
+		if weapon != None:
+			response = weapon.str_equip
+			try:
+				conn_info = ewutils.databaseConnect()
+				conn = conn_info.get('conn')
+				cursor = conn.cursor()
+
+				user_data = EwUser(member = cmd.message.author)
+				user_skills = ewutils.weaponskills_get(member = cmd.message.author)
+
+				user_data.weapon = weapon.id_weapon
+				weaponskillinfo = user_skills.get(weapon.id_weapon)
+				if weaponskillinfo == None:
+					user_data.weaponskill = 0
+					user_data.weaponname = ""
+				else:
+					user_data.weaponskill = weaponskillinfo.get('skill')
+					user_data.weaponname = weaponskillinfo.get('name')
+
+				user_data.persist()
+
+				conn.commit()
+			finally:
+				cursor.close()
+				ewutils.databaseClose(conn_info)
+		else:
+			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
+
+	# Send the response to the player.
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
 """ name a weapon using a slime poudrin """
 async def annoint(cmd):
 	resp = await ewcmd.start(cmd)
@@ -724,7 +766,7 @@ async def annoint(cmd):
 				user_data.weaponname = annoint_name
 
 				if user_data.weaponskill < 10:
-					user_data.weaponskill += 1
+					user_data.add_weaponskill(n = 1)
 
 				# delete a slime poudrin from the player's inventory
 				ewitem.item_delete(id_item = poudrins[0].get('id_item'))

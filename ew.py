@@ -1,5 +1,7 @@
 import ewutils
 import ewcfg
+import ewstats
+import ewitem
 
 """ Market data model for database persistence """
 class EwMarket:
@@ -115,7 +117,6 @@ class EwUser:
 	hunger = 0
 	totaldamage = 0
 	bounty = 0
-	kills = 0
 	weapon = ""
 	weaponskill = 0
 	weaponname = ""
@@ -131,18 +132,6 @@ class EwUser:
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
-	
-	max_kills = 0
-	max_slimesowned = 0
-	max_slimesmined = 0
-	max_slimesfromkilling = 0
-	max_bountyonhead = 0
-	max_slimecredit = 0
-	max_poudrins = 0
-	max_level = 0
-	max_ghostbusts = 0
-	total_damagedealt = 0
-	total_deaths = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -157,40 +146,67 @@ class EwUser:
 			
 	""" gain or lose slime, recording statistics and potentially leveling up. """
 	def change_slimes(self, n = 0, source = None):
-
 		if source == ewcfg.source_damage:
 			if n > self.slimes: #lethal blow
-				totaldamage += self.slimes
+				self.totaldamage += self.slimes
 			else:
-				totaldamage += int(n)
+				self.totaldamage -= int(n) #minus a negative
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
+
+		if source == ewcfg.source_mining:
+			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesmined, n = int(n))
+
+		if source == ewcfg.source_killing:
+			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = int(n))
 
 		self.slimes += int(n)
-		
-		if self.slimes > self.max_slimesowned:
-			self.max_slimesowned = self.slimes
-			#ewevent.notify_max_slimesowned(self)
+		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_slimes, value = self.slimes)
 		
 		#level up
 		new_level = len(str(int(self.slimes)))
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
-			if self.slimelevel > self.max_level:
-				self.max_level = self.slimelevel
-				#ewevent.notify_max_level(self)
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
 		
 	def die(self):
 		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
 			self.life_state = ewcfg.life_state_corpse
-			self.total_deaths += 1
+			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
 		self.slimes = 0
 		self.poi = ewcfg.poi_id_thesewers
 		self.bounty = 0
 		self.totaldamage = 0
 		self.slimelevel = 1
-		self.kills = 0
 		self.hunger = 0
 		self.inebriation = 0
-		#ewevent.notify_total_deaths(self)
+		# Clear weapon and weaponskill.
+		self.weapon = ""
+		self.weaponskill = 0
+		ewutils.weaponskills_clear(id_server = self.id_server, id_user = self.id_user)
+		ewstats.clear_on_death(id_server = self.id_server, id_user = self.id_user)
+		ewitem.item_destroyall(id_server = self.id_server, id_user = self.id_user)
+
+	def add_bounty(self, n = 0):
+		self.bounty += int(n)
+		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_bounty, value = self.bounty)
+
+	def add_weaponskill(self, n = 0):
+		# Save the current weapon's skill
+		if self.weapon != None and self.weapon != "":
+			if self.weaponskill == None:
+				self.weaponskill = 0
+				self.weaponname = ""
+				
+			self.weaponskill += int(n)
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
+
+			ewutils.weaponskills_set(
+				id_server = self.id_server,
+				id_user = self.id_user,
+				weapon = self.weapon,
+				weaponskill = self.weaponskill,
+				weaponname = self.weaponname
+			)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -210,13 +226,12 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
 					ewcfg.col_totaldamage,
 					ewcfg.col_bounty,
-					ewcfg.col_kills,
 					ewcfg.col_weapon,
 					ewcfg.col_trauma,
 					ewcfg.col_slimecredit,
@@ -231,16 +246,7 @@ class EwUser:
 					ewcfg.col_inebriation,
 					ewcfg.col_faction,
 					ewcfg.col_poi,
-					ewcfg.col_life_state,
-					ewcfg.col_max_kills,
-					ewcfg.col_max_slimesowned,
-					ewcfg.col_max_bountyonhead,
-					ewcfg.col_max_slimecredit,
-					ewcfg.col_max_poudrins,
-					ewcfg.col_max_level,
-					ewcfg.col_max_ghostbusts,
-					ewcfg.col_total_damagedealt,
-					ewcfg.col_total_deaths
+					ewcfg.col_life_state
 				), (
 					id_user,
 					id_server
@@ -254,31 +260,21 @@ class EwUser:
 					self.hunger = result[2]
 					self.totaldamage = result[3]
 					self.bounty = result[4]
-					self.kills = result[5]
-					self.weapon = result[6]
-					self.trauma = result[7]
-					self.slimecredit = result[8]
-					self.time_lastkill = result[9]
-					self.time_lastrevive = result[10]
-					self.id_killer = result[11]
-					self.time_lastspar = result[12]
-					self.time_lasthaunt = result[13]
-					self.time_lastinvest = result[14]
-					self.weaponname = result[15]
-					self.ghostbust = (result[16] == 1)
-					self.inebriation = result[17]
-					self.faction = result[18]
-					self.poi = result[19]
-					self.life_state = result[20]
-					self.max_kills = result[21]
-					self.max_slimesowned = result[22]
-					self.max_bountyonhead = result[23]
-					self.max_slimecredit = result[24]
-					self.max_poudrins = result[25]
-					self.max_level = result[26]
-					self.max_ghostbusts = result[27]
-					self.total_damagedealt = result[28]
-					self.total_deaths = result[29]
+					self.weapon = result[5]
+					self.trauma = result[6]
+					self.slimecredit = result[7]
+					self.time_lastkill = result[8]
+					self.time_lastrevive = result[9]
+					self.id_killer = result[10]
+					self.time_lastspar = result[11]
+					self.time_lasthaunt = result[12]
+					self.time_lastinvest = result[13]
+					self.weaponname = result[14]
+					self.ghostbust = (result[15] == 1)
+					self.inebriation = result[16]
+					self.faction = result[17]
+					self.poi = result[18]
+					self.life_state = result[19]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -328,7 +324,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -336,7 +332,6 @@ class EwUser:
 				ewcfg.col_hunger,
 				ewcfg.col_totaldamage,
 				ewcfg.col_bounty,
-				ewcfg.col_kills,
 				ewcfg.col_weapon,
 				ewcfg.col_weaponskill,
 				ewcfg.col_trauma,
@@ -352,16 +347,7 @@ class EwUser:
 				ewcfg.col_inebriation,
 				ewcfg.col_faction,
 				ewcfg.col_poi,
-				ewcfg.col_life_state,
-				ewcfg.col_max_kills,
-				ewcfg.col_max_slimesowned,
-				ewcfg.col_max_bountyonhead,
-				ewcfg.col_max_slimecredit,
-				ewcfg.col_max_poudrins,
-				ewcfg.col_max_level,
-				ewcfg.col_max_ghostbusts,
-				ewcfg.col_total_damagedealt,
-				ewcfg.col_total_deaths
+				ewcfg.col_life_state
 			), (
 				self.id_user,
 				self.id_server,
@@ -370,7 +356,6 @@ class EwUser:
 				self.hunger,
 				self.totaldamage,
 				self.bounty,
-				self.kills,
 				self.weapon,
 				self.weaponskill,
 				self.trauma,
@@ -386,31 +371,8 @@ class EwUser:
 				self.inebriation,
 				self.faction,
 				self.poi,
-				self.life_state,
-				self.max_kills,
-				self.max_slimesowned,
-				self.max_bountyonhead,
-				self.max_slimecredit,
-				self.max_poudrins,
-				self.max_level,
-				self.max_ghostbusts,
-				self.total_damagedealt,
-				self.total_deaths
+				self.life_state
 			))
-
-			# Save the current weapon's skill
-			if self.weapon != None and self.weapon != "":
-				if self.weaponskill == None:
-					self.weaponskill = 0
-					self.weaponname = ""
-
-				ewutils.weaponskills_set(
-					id_server = self.id_server,
-					id_user = self.id_user,
-					weapon = self.weapon,
-					weaponskill = self.weaponskill,
-					weaponname = self.weaponname
-				)
 
 			conn.commit()
 		finally:

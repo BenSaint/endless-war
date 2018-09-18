@@ -284,6 +284,10 @@ col_max_ghostbusts = 'max_ghostbusts'
 col_total_damagedealt = 'total_damagedealt'
 col_total_deaths = 'total_deaths'
 
+# Database columns for user statistics
+col_stat_metric = 'stat_metric'
+col_stat_value = 'stat_value'
+
 # Database columns for markets
 col_rate_market = 'rate_market'
 col_rate_exchange = 'rate_exchange'
@@ -337,6 +341,32 @@ hitzone_list = [
 	"abdomen",
 	"lower back",
 	"calf"
+]
+
+# User statistics we track 
+stat_max_slimes = 'max_slimes'
+stat_slimesmined = 'slimes_mined'
+stat_slimesfromkills = 'slimes_from_kills'
+stat_max_slimesmined = 'max_slimes_mined'
+stat_max_slimesfromkills = 'max_slimes_from_kills'
+stat_max_level = 'max_level'
+stat_max_hitsurvived = 'max_hit_survived'
+stat_kills = 'kills'
+stat_max_kills = 'max_kills'
+stat_max_wepskill = 'max_wep_skill'
+stat_max_slimecredit = 'max_slime_coins'
+stat_max_bounty = 'max_bounty'
+stat_ghostbusts = 'ghostbusts'
+stat_max_ghostbusts = 'max_ghostbusts'
+stat_max_poudrins = 'max_poudrins'
+stat_total_damagedealt = 'total_damagedealt'
+stat_total_deaths = 'total_deaths'
+
+stats_clear_on_death = [
+	stat_slimesmined,
+	stat_slimesfromkills,
+	stat_kills,
+	stat_ghostbusts
 ]
 
 # A Weapon Effect Function for "gun". Takes an EwEffectContainer as ctn.

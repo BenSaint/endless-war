@@ -54,6 +54,9 @@ cmd_map = {
 	ewcfg.cmd_kill: ewwep.attack,
 	ewcfg.cmd_shoot: ewwep.attack,
 
+	# Choose your weapon
+	ewcfg.cmd_equip: ewwep.equip,
+
 	# Kill yourself
 	ewcfg.cmd_suicide: ewwep.suicide,
 

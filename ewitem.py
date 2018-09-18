@@ -268,31 +268,33 @@ def item_create(
 """
 	Destroy all of a player's non-soulbound items.
 """
-def item_destroyall(member = None):
-	if member == None:
-		return
+def item_destroyall(id_server = None, id_user = None, member = None):
+	if member != None:
+		id_server = member.server.id
+		id_user = member.id
 
-	try:
-		# Get database handles if they weren't passed.
-		conn_info = ewutils.databaseConnect()
-		conn = conn_info.get('conn')
-		cursor = conn.cursor()
+	if id_server != None and id_user != None:
+		try:
+			# Get database handles if they weren't passed.
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor()
 
-		# Create the item in the database.
-		cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
-			id_user = ewcfg.col_id_user,
-			id_server = ewcfg.col_id_server,
-			soulbound = ewcfg.col_soulbound,
-		), (
-			member.server.id,
-			member.id
-		))
+			# Create the item in the database.
+			cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
+				id_user = ewcfg.col_id_user,
+				id_server = ewcfg.col_id_server,
+				soulbound = ewcfg.col_soulbound,
+			), (
+				id_user,
+				id_server
+			))
 
-		conn.commit()
-	finally:
-		# Clean up the database handles.
-		cursor.close()
-		ewutils.databaseClose(conn_info)
+			conn.commit()
+		finally:
+			# Clean up the database handles.
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 
 """
