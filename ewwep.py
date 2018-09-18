@@ -313,16 +313,16 @@ async def attack(cmd):
 			user_data.persist()
 			shootee_data.persist()
 
-			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(user_data.id_user))
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(shootee_data.id_user))
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
 
 		# attack the negaslime
-		elif shootee_data.life_state == ewcfg.life_state_grandfoe:  # todo: complete this code
+		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
 			if user_data.ghostbust == False:
-				response = "You cannot attack the negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
+				response = "You cannot attack the Negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
 			else:
 				# hunger drain
 				user_data.hunger += ewcfg.hunger_pershot
@@ -346,11 +346,8 @@ async def attack(cmd):
 
 					# Apply effects for non-reference values
 					miss = ctn.miss
-					crit = ctn.crit
 					slimes_damage = ctn.slimes_damage
 					slimes_spent = ctn.slimes_spent
-					strikes = ctn.strikes
-					# user_data and shootee_data should be passed by reference, so there's no need to assign them back from the effect container.
 
 					if miss:
 						slimes_damage = 0
@@ -364,10 +361,14 @@ async def attack(cmd):
 				was_busted = False
 
 				if slimes_damage >= -shootee_data.slimes:
-					was_busted = True
-
+					if shootee_data.slimes < 0:  # i.e. it died with this attack and is not already dead
+						was_busted = True
+					else:
+						response = "The Negaslime is already dead."
+						return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 				if was_busted:
+					shootee_data.change_slimes(n = -shootee_data.slimes)
 					response = "You have defeated the Negaslime."
 					await ewutils.post_in_multiple_channels(
 						message = "@everyon Rejoice! The Negaslime has been defeated.",
@@ -392,10 +393,7 @@ async def attack(cmd):
 						else:
 							response = "The Negaslime is writhing in pain."
 
-						response += "Remaining negaslime: {}".format(-shootee_data.slimes)
-
-					# for debugging purposes
-					#response = "You have successfully attack the negaslime for {} damage".format(slimes_damage)
+						response += " Remaining negaslime: {}".format(-shootee_data.slimes)
 
 				# Persist every users' data.
 				user_data.persist()
@@ -480,7 +478,7 @@ async def attack(cmd):
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
-					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
+					shootee_data.change_slimes(n = -((shootee_data.totaldamage - shootee_data.slimes) / 10)) #ghost slime
 
 					# Steal items
 					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
