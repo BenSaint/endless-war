@@ -1,3 +1,4 @@
+import asyncio
 import time
 import random
 
@@ -137,6 +138,7 @@ async def attack(cmd):
 	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
+	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 	if ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
@@ -164,6 +166,8 @@ async def attack(cmd):
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 		slimes_spent = int(slimes_bylevel / 10)
 		slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		if weapon is None:
+			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
 
 		fumble_chance = (random.randrange(10) - 4)
@@ -214,7 +218,6 @@ async def attack(cmd):
 			user_data.hunger += ewcfg.hunger_pershot
 			
 			# Weaponized flavor text.
-			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 			# Weapon-specific adjustments
@@ -324,10 +327,12 @@ async def attack(cmd):
 			if user_data.ghostbust == False:
 				response = "You cannot attack the Negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
 			else:
+				if shootee_data.busted:
+					response = "The Negaslime is already dead."
+					return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
 				# hunger drain
 				user_data.hunger += ewcfg.hunger_pershot
-
-				weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 				# Weapon-specific adjustments
 				if weapon != None and weapon.fn_effect != None:
@@ -361,15 +366,15 @@ async def attack(cmd):
 				was_busted = False
 
 				if slimes_damage >= -shootee_data.slimes:
-					if shootee_data.slimes < 0:  # i.e. it died with this attack and is not already dead
-						was_busted = True
-					else:
-						response = "The Negaslime is already dead."
-						return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					was_busted = True
 
 				if was_busted:
 					shootee_data.change_slimes(n = -shootee_data.slimes)
+					shootee_data.busted = True
+					shootee_data.persist()  # to block people from triggering the PSA again before it finishes executing
+
 					response = "You have defeated the Negaslime."
+
 					await ewutils.post_in_multiple_channels(
 						message = "@everyon Rejoice! The Negaslime has been defeated.",
 						channels = cmd.message.server.channels,
@@ -394,6 +399,14 @@ async def attack(cmd):
 							response = "The Negaslime is writhing in pain."
 
 						response += " Remaining negaslime: {}".format(-shootee_data.slimes)
+					else:
+						# Persist every users' data.
+						user_data.persist()
+						shootee_data.persist()
+						response = "You dealt {} damage.".format(slimes_damage)
+						await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+						await asyncio.sleep(1)
+						return await cmd.client.delete_message(resp)
 
 				# Persist every users' data.
 				user_data.persist()
@@ -421,7 +434,6 @@ async def attack(cmd):
 				user_data.hunger += ewcfg.hunger_pershot
 				
 				# Weaponized flavor text.
-				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 				# Weapon-specific adjustments
