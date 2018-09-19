@@ -535,13 +535,13 @@ async def item_use(cmd):
 
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
-					response = "You have to be in the Endless War Control Room to use this item."
+					response = "You have to be near ENDLESS WAR to use this item."
 				else:
 					# EW: Wake
 					response = "You use the Endless Rock to awaken ENDLESS WAR."
 					await ewutils.post_in_multiple_channels(
 						# @everyone is purposely misspelled so testing isnt annoying everyone
-						message = "@everyon ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
+						message = "@everyone ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
 						channels = cmd.message.server.channels,  # all channels
 						client = cmd.client
 					)

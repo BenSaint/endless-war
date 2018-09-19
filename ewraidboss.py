@@ -18,7 +18,7 @@ async def writhe(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
 	if user_data.life_state != ewcfg.life_state_grandfoe:
-		response = "Only the Negaslime {} can do that.".format(ewcfg.emote_negaslime)
+		response = "Only the NEGASLIME {} can do that.".format(ewcfg.emote_negaslime)
 		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		# play animation
@@ -50,7 +50,7 @@ async def writhe(cmd):
 			cur_time = time.time()
 			await cmd.client.edit_message(resp, writhing)
 			elapsed = time.time() - cur_time
-			await asyncio.sleep(1.2 - elapsed)
+			await asyncio.sleep(2.0 - elapsed)
 
 		id_server = cmd.message.server.id
 		targets = []
