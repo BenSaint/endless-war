@@ -324,10 +324,10 @@ async def attack(cmd):
 		# attack the negaslime
 		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
 			if user_data.ghostbust == False:
-				response = "You cannot attack the Negaslime in your current state. Eat a coleslaw to attain the ability to ghostbust."
+				response = "You cannot harm the NEGASLIME in your current state. Perhaps a paticularly disgusting side from KFC may help you interact with the undead?"
 			else:
 				if shootee_data.busted:
-					response = "The Negaslime is already dead."
+					response = "The NEGASLIME is already slain."
 					return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 				# hunger drain
@@ -372,10 +372,10 @@ async def attack(cmd):
 					shootee_data.busted = True
 					shootee_data.persist()  # to block people from triggering the PSA again before it finishes executing
 
-					response = "You have defeated the Negaslime."
+					response = "You have slain the NEGASLIME."
 
 					await ewutils.post_in_multiple_channels(
-						message = "@everyon Rejoice! The Negaslime has been defeated.",
+						message = "@everyone Rejoice! The NEGASLIME has been slain. The gunshots, police sirens and sound of slime flowing all fade back into audibility. ENDLESS WAR Season 2 starts right now.",
 						channels = cmd.message.server.channels,
 						client = cmd.client
 					)
@@ -384,18 +384,16 @@ async def attack(cmd):
 					shootee_data.change_slimes(n = slimes_damage)
 
 					if random.randint(1, 30) == 1:
-						r = random.randint(1, 5)
+						r = random.randint(1, 4)
 
 						if r == 1:
-							response = "The Negaslime is growing frustrated."
+							response = "The NEGASLIME is growing infuriated."
 						elif r == 2:
-							response = "The Negaslime's tendrils are twitching sporadically."
+							response = "The NEGASLIME's tendrils are twitching sporadically."
 						elif r == 3:
-							response = "The Negaslime pretends to pay you no mind."
-						elif r == 4:
-							response = "The Negaslime lets out a droning, ear-numbing wail."
+							response = "The NEGASLIME lets out a droning, ear-numbing wail."
 						else:
-							response = "The Negaslime is writhing in pain."
+							response = "The NEGASLIME is writhing in pain."
 
 						response += " Remaining negaslime: {}".format(-shootee_data.slimes)
 					else:
