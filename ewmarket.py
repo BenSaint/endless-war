@@ -1,6 +1,8 @@
 import time
 
 import ewcmd
+import ewitem
+import ewrolemgr
 import ewutils
 import ewcfg
 from ew import EwUser, EwMarket
@@ -17,51 +19,46 @@ async def donate(cmd):
 		return
 
 	user_data = EwUser(member = cmd.message.author)
-	market_data = EwMarket(id_server = cmd.message.author.server.id)
 
-	if market_data.clock > 19 or market_data.clock < 6:
-		response = ewcfg.str_exchange_closed
-	else:
-		# Parse the slime value to send.
-		value = None
-		if cmd.tokens_count > 1:
-			value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
+	value = None
+	if cmd.tokens_count > 1:
+		value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
 
-		if value != None:
-			if value < 0:
-				value = user_data.slimes
-			if value <= 0:
-				value = None
+	if value != None:
+		if value < 0:
+			value = user_data.slimes
+		if value <= 0:
+			value = None
 
-		if value != None and value < 1000:
-			response = "You must volunteer to donate at least 1000 slime to receive compensation."
-				
-		elif value != None:
-			# Amount of slime invested.
-			cost_total = int(value)
-			coin_total = int(value / 1000)
+	if value != None and value < 1000:
+		response = "You must volunteer to donate at least 1000 slime to receive compensation."
 
-			if user_data.slime < cost_total:
-				response = "Acid-green flashes of light and bloodcurdling screams emanate from small window of SlimeCorp HQ. Unfortunately, you did not survive the procedure. Your body is dumped down a disposal chute to the sewers."
-				user_data.die()
-				user_data.persist()
-				# Assign the corpse role to the player. He dead.
-				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
-				# Destroy all common items.
-				ewitem.item_destroyall(member = cmd.message.author)
-			else:
-				# Do the transfer if the player can afford it.
-				user_data.slimes -= cost_total
-				user_data.slimecredit += coin_total
-				user_data.time_lastinvest = time_now
+	elif value != None:
+		# Amount of slime invested.
+		cost_total = int(value)
+		coin_total = int(value / 1000)
 
-				# Persist changes
-				user_data.persist()
-
-				response = "You stumble out of a Slimecorp HQ vault room in a stupor. You don't remember what happened in there, but your body hurts and you've got {slimecoin:,} shiny new SlimeCoin in your pocket.".format(slimecoin = coin_total)
-
+		if user_data.slimes < cost_total:
+			response = "Acid-green flashes of light and bloodcurdling screams emanate from small window of SlimeCorp HQ. Unfortunately, you did not survive the procedure. Your body is dumped down a disposal chute to the sewers."
+			user_data.die()
+			user_data.persist()
+			# Assign the corpse role to the player. He dead.
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+			# Destroy all common items.
+			ewitem.item_destroyall(member = cmd.message.author)
 		else:
-			response = ewcfg.str_exchange_specify.format(currency = "slime", action = "donate")
+			# Do the transfer if the player can afford it.
+			user_data.slimes -= cost_total
+			user_data.slimecredit += coin_total
+			user_data.time_lastinvest = time_now
+
+			# Persist changes
+			user_data.persist()
+
+			response = "You stumble out of a Slimecorp HQ vault room in a stupor. You don't remember what happened in there, but your body hurts and you've got {slimecoin:,} shiny new SlimeCoin in your pocket.".format(slimecoin = coin_total)
+
+	else:
+		response = ewcfg.str_exchange_specify.format(currency = "slime", action = "donate")
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

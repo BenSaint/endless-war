@@ -577,7 +577,10 @@ async def move(cmd):
 					)
 			else:
 				if val > 0:
-					await asyncio.sleep(val/30)  # todo: remove this later, just to make testing faster
+					if __debug__:
+						await asyncio.sleep(val/30)
+					else:
+						await asyncio.sleep(val)
 
 """
 	Dump out the visual description of the area you're in.

@@ -132,7 +132,6 @@ class EwEffectContainer:
 
 """ Player deals damage to another player. """
 async def attack(cmd):
-	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
 	coinbounty = 0
@@ -329,7 +328,7 @@ async def attack(cmd):
 			else:
 				if shootee_data.busted:
 					response = "The Negaslime is already dead."
-					return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 				# hunger drain
 				user_data.hunger += ewcfg.hunger_pershot
@@ -403,10 +402,7 @@ async def attack(cmd):
 						# Persist every users' data.
 						user_data.persist()
 						shootee_data.persist()
-						response = "You dealt {} damage.".format(slimes_damage)
-						await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
-						await asyncio.sleep(1)
-						return await cmd.client.delete_message(resp)
+						return
 
 				# Persist every users' data.
 				user_data.persist()
@@ -593,7 +589,7 @@ async def attack(cmd):
 				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ player kills themself """

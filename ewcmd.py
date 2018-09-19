@@ -139,7 +139,7 @@ async def data(cmd):
 		if user_data.ghostbust:
 			response += " The coleslaw in your stomach enables you to bust ghosts."
 
-		if user_data.busted:
+		if user_data.busted and user_data.life_state == ewcfg.life_state_corpse:
 			response += " You are busted and therefore cannot leave the sewers without reviving."
 
 	else:
