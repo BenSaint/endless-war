@@ -373,9 +373,11 @@ async def attack(cmd):
 					shootee_data.persist()  # to block people from triggering the PSA again before it finishes executing
 
 					response = "You have slain the NEGASLIME."
+					msg = "@everyone Rejoice! The NEGASLIME has been slain. The gunshots, police sirens and sound of slime flowing all fade back into audibility. ENDLESS WAR Season 2 starts right now. " \
+					      "https://ew.krakissi.net/img/negaslime_defeat.gif"
 
 					await ewutils.post_in_multiple_channels(
-						message = "@everyone Rejoice! The NEGASLIME has been slain. The gunshots, police sirens and sound of slime flowing all fade back into audibility. ENDLESS WAR Season 2 starts right now.",
+						message = msg,
 						channels = cmd.message.server.channels,
 						client = cmd.client
 					)
