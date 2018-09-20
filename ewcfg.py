@@ -1333,7 +1333,6 @@ poi_list = [
 		coord = (17, 13),
 		channel = "cop-killtown",
 		role = "Cop Killtown",
-		pvp = False,
 		factions = [
 			faction_killers
 		]
@@ -1374,7 +1373,6 @@ poi_list = [
 		coord = (25, 21),
 		channel = "rowdy-roughhouse",
 		role = "Rowdy Roughhouse",
-		pvp = False,
 		factions = [
 			faction_rowdys
 		]

@@ -321,93 +321,6 @@ async def attack(cmd):
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
 
-		# attack the negaslime
-		elif shootee_data.life_state == ewcfg.life_state_grandfoe:
-			if user_data.ghostbust == False:
-				response = "You cannot harm the NEGASLIME in your current state. Perhaps a paticularly disgusting side from KFC may help you interact with the undead?"
-			else:
-				if shootee_data.busted:
-					response = "The NEGASLIME is already slain."
-					return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-
-				# hunger drain
-				user_data.hunger += ewcfg.hunger_pershot
-
-				# Weapon-specific adjustments
-				if weapon != None and weapon.fn_effect != None:
-					# Build effect container
-					ctn = EwEffectContainer(
-						miss = miss,
-						crit = crit,
-						slimes_damage = slimes_damage,
-						slimes_spent = slimes_spent,
-						user_data = user_data,
-						shootee_data = shootee_data
-					)
-
-					# Make adjustments
-					weapon.fn_effect(ctn)
-
-					# Apply effects for non-reference values
-					miss = ctn.miss
-					slimes_damage = ctn.slimes_damage
-					slimes_spent = ctn.slimes_spent
-
-					if miss:
-						slimes_damage = 0
-
-				# Remove !revive invulnerability.
-				user_data.time_lastrevive = 0
-
-				# Spend slimes, to a minimum of zero
-				user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
-
-				was_busted = False
-
-				if slimes_damage >= -shootee_data.slimes:
-					was_busted = True
-
-				if was_busted:
-					shootee_data.change_slimes(n = -shootee_data.slimes)
-					shootee_data.busted = True
-					shootee_data.persist()  # to block people from triggering the PSA again before it finishes executing
-
-					response = "You have slain the NEGASLIME."
-					msg = "@everyone Rejoice! The NEGASLIME has been slain. The gunshots, police sirens and sound of slime flowing all fade back into audibility. ENDLESS WAR Season 2 starts right now. " \
-					      "https://ew.krakissi.net/img/negaslime_defeat.gif"
-
-					await ewutils.post_in_multiple_channels(
-						message = msg,
-						channels = cmd.message.server.channels,
-						client = cmd.client
-					)
-				else:
-					# A non-lethal blow!
-					shootee_data.change_slimes(n = slimes_damage)
-
-					if random.randint(1, 30) == 1:
-						r = random.randint(1, 4)
-
-						if r == 1:
-							response = "The NEGASLIME is growing infuriated."
-						elif r == 2:
-							response = "The NEGASLIME's tendrils are twitching sporadically."
-						elif r == 3:
-							response = "The NEGASLIME lets out a droning, ear-numbing wail."
-						else:
-							response = "The NEGASLIME is writhing in pain."
-
-						response += " Remaining negaslime: {}".format(-shootee_data.slimes)
-					else:
-						# Persist every users' data.
-						user_data.persist()
-						shootee_data.persist()
-						return
-
-				# Persist every users' data.
-				user_data.persist()
-				shootee_data.persist()
-
 		else:
 			# Slimes from this shot might be awarded to the boss.
 			role_boss = (ewcfg.role_copkiller if user_iskillers else ewcfg.role_rowdyfucker)
@@ -477,8 +390,7 @@ async def attack(cmd):
 						if was_juvenile:
 							user_data.change_slimes(n = slimes_dropped + shootee_data.slimes, source = ewcfg.source_killing)
 						else:
-							market_data = EwMarket(id_server = cmd.message.server.id)
-							coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
+							coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 							user_data.slimecredit += coinbounty
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)

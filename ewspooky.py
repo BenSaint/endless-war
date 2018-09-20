@@ -86,9 +86,8 @@ async def haunt(cmd):
 		if user_data.life_state != ewcfg.life_state_corpse:
 			# Only dead players can haunt.
 			response = "You can't haunt now. Try {}.".format(ewcfg.cmd_suicide)
-		elif cmd.message.channel.name != ewcfg.channel_sewers:
-			# Allowed only from the-sewers.
-			response = "You must haunt from #{}.".format(ewcfg.channel_sewers)
+		elif user_data.busted:
+			response = "You can't haunt while you're busted."
 		elif haunted_data.life_state == ewcfg.life_state_kingpin:
 			# Disallow haunting of generals.
 			response = "He is too far from the sewers in his ivory tower, and thus cannot be haunted."
