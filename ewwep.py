@@ -689,9 +689,14 @@ async def spar(cmd):
 async def equip(cmd):
 	resp = await ewcmd.start(cmd)
 	response = ""
+	user_data = EwUser(member = cmd.message.author)
 
 	if cmd.message.channel.name != ewcfg.channel_dojo:
 		response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
+	elif user_data.life_state == ewcfg.life_state_corpse:
+		response = "Ghosts can't equip weapons."
+	elif user_data.life_state == ewcfg.life_state_juvenile:
+		response = "Juvies can't equip weapons."
 	else:
 		value = None
 		if cmd.tokens_count > 1:
@@ -705,7 +710,6 @@ async def equip(cmd):
 				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
-				user_data = EwUser(member = cmd.message.author)
 				user_skills = ewutils.weaponskills_get(member = cmd.message.author)
 
 				user_data.weapon = weapon.id_weapon

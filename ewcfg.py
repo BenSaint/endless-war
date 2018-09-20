@@ -159,8 +159,8 @@ slimes_perpachinko = 500
 
 # hunger
 hunger_max = 250
-hunger_pershot = 1
-hunger_perspar = 1
+hunger_pershot = 10
+hunger_perspar = 30
 hunger_permine = 1
 hunger_pertick = 3
 
