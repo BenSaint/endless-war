@@ -64,9 +64,6 @@ class EwMarket:
 				cursor.close()
 				ewutils.databaseClose(conn_info)
 
-			# FIXME weather is temporarily always gray
-			self.weather = 'gray'
-
 	""" Save market data object to the database. """
 	def persist(self):
 		try:

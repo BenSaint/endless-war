@@ -138,11 +138,10 @@ async def slimecoin(cmd):
 	resp = await ewcmd.start(cmd = cmd)
 	response = ""
 
-	market_data = EwMarket(id_server = cmd.message.server.id)
 	user_slimecredit = EwUser(member = cmd.message.author).slimecredit
 
-	net_worth = int(user_slimecredit * (market_data.rate_exchange / 1000000.0))
-	response = "You have {:,} SlimeCoin, currently valued at {:,} slime.".format(user_slimecredit, net_worth)
+	net_worth = int(user_slimecredit * 1000)
+	response = "You have {:,} SlimeCoin.".format(user_slimecredit)
 
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

@@ -63,15 +63,14 @@ async def score(cmd):
 	user_data = None
 	member = None
 
-	poudrins = ewitem.inventory(
-		id_user = cmd.message.author.id,
-		id_server = cmd.message.server.id,
-		item_type_filter = ewcfg.it_slimepoudrin
-	)
-	poudrins_count = len(poudrins)
-
 	if cmd.mentions_count == 0:
 		user_data = EwUser(member = cmd.message.author)
+		poudrins = ewitem.inventory(
+			id_user = cmd.message.author.id,
+			id_server = cmd.message.server.id,
+			item_type_filter = ewcfg.it_slimepoudrin
+		)
+		poudrins_count = len(poudrins)
 
 		# return my score
 		response = "You currently have {:,} slime{}.".format(user_data.slimes, (" and {} slime poudrin{}".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
@@ -79,6 +78,12 @@ async def score(cmd):
 	else:
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)
+		poudrins = ewitem.inventory(
+			id_user = user_data.id_user,
+			id_server = cmd.message.server.id,
+			item_type_filter = ewcfg.it_slimepoudrin
+		)
+		poudrins_count = len(poudrins)
 
 		if user_data.life_state == ewcfg.life_state_grandfoe:
 			# Can't see a raid boss's slime score.

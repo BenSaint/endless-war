@@ -90,7 +90,7 @@ cmd_map = {
 	#ewcfg.cmd_negaslime: ewspooky.negaslime,
 
 	# revive yourself as a juvenile after having been killed.
-	#ewcfg.cmd_revive: ewspooky.revive,
+	ewcfg.cmd_revive: ewspooky.revive,
 
 	# Ghosts can haunt enlisted players to reduce their slime score.
 	ewcfg.cmd_haunt: ewspooky.haunt,
@@ -159,8 +159,8 @@ cmd_map = {
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
 
-	# as negaslime: kill all players in your district
-	ewcfg.cmd_writhe: ewraidboss.writhe,
+	# kill all players in your district; could be re-used for a future raid boss
+	#ewcfg.cmd_writhe: ewraidboss.writhe,
 
 	# Misc
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
