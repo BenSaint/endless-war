@@ -18,7 +18,6 @@ last_mismined_times = {}
 
 """ player enlists in a faction/gang """
 async def enlist(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
 	user_data = EwUser(member = cmd.message.author)
@@ -61,7 +60,7 @@ async def enlist(cmd):
 		response = "You can't do that right now, bitch."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ mine for slime (or endless rocks) """
 async def mine(cmd):
@@ -170,7 +169,7 @@ async def mine(cmd):
 	else:
 		# Mismined. Potentially kill the player for spamming the wrong channel.
 		mismined = last_mismined_times.get(cmd.message.author.id)
-		resp = await ewcmd.start(cmd = cmd)
+
 
 		if mismined == None:
 			mismined = {
@@ -194,7 +193,7 @@ async def mine(cmd):
 			user_data.die()
 			user_data.persist()
 
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
+			await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 		else:
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))
+			await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))

@@ -24,7 +24,6 @@ last_slotsed_times = {}
 last_rouletted_times = {}
 
 async def pachinko(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_pachinkoed_times
@@ -58,7 +57,7 @@ async def pachinko(cmd):
 			user_data.slimecredit -= value
 			user_data.persist()
 
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
 			await asyncio.sleep(3)
 
 			ball_count = 10
@@ -84,7 +83,7 @@ async def pachinko(cmd):
 					response += " ... **ding!**"
 					winballs += 1
 
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 			winnings = winballs * 250
@@ -105,11 +104,10 @@ async def pachinko(cmd):
 		last_pachinkoed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 async def craps(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_crapsed_times
@@ -176,10 +174,9 @@ async def craps(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def slots(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_slotsed_times
@@ -213,7 +210,7 @@ async def slots(cmd):
 			user_data.persist()
 
 			# Add some suspense...
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
+			await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 			await asyncio.sleep(3)
 
 			slots = [
@@ -231,7 +228,7 @@ async def slots(cmd):
 			# Roll those tumblers!
 			spins = 3
 			while spins > 0:
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "{} {} {}".format(
+				await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "{} {} {}".format(
 					slots[random.randrange(0, slots_len)],
 					slots[random.randrange(0, slots_len)],
 					slots[random.randrange(0, slots_len)]
@@ -297,10 +294,9 @@ async def slots(cmd):
 		last_slotsed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def roulette(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	bet = ""
 	all_bets = ["0", "00", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
@@ -345,7 +341,7 @@ async def roulette(cmd):
 			elif bet not in all_bets:
 				response = "The dealer didn't understand your wager. Use !help to see a guide to the casino."
 			else:
-				await cmd.client.edit_message(resp, ewutils.formatMessage(
+				await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
 					cmd.message.author,
 					"https://ew.krakissi.net/img/sr.gif"
 				))
@@ -416,4 +412,4 @@ async def roulette(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

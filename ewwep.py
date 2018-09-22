@@ -506,7 +506,6 @@ async def attack(cmd):
 
 """ player kills themself """
 async def suicide(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 
 	# Only allowed in the combat zone.
@@ -543,11 +542,10 @@ async def suicide(cmd):
 			response = "\*click* Alas, your gun has jammed."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ Player spars with a friendly player to gain slime. """
 async def spar(cmd):
-	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -683,11 +681,10 @@ async def spar(cmd):
 		response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ equip a weapon """
 async def equip(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 	user_data = EwUser(member = cmd.message.author)
 
@@ -731,11 +728,10 @@ async def equip(cmd):
 			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ name a weapon using a slime poudrin """
 async def annoint(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 
 	if cmd.tokens_count < 2:
@@ -777,4 +773,4 @@ async def annoint(cmd):
 				response = "You place your weapon atop the poudrin and annoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(annoint_name)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

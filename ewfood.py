@@ -69,8 +69,6 @@ async def menu(cmd):
 
 """ players order food, for themselves or somebody else """
 async def order(cmd):
-	resp = await ewcmd.start(cmd = cmd)
-
 	user_data = EwUser(member = cmd.message.author)
 	poi = ewcfg.id_to_poi.get(user_data.poi)
 
@@ -160,4 +158,4 @@ async def order(cmd):
 					target_data.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

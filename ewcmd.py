@@ -100,7 +100,6 @@ async def score(cmd):
 
 """ show player information and description """
 async def data(cmd):
-	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
 	member = None
@@ -186,7 +185,7 @@ async def data(cmd):
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 	if member != None:
@@ -229,12 +228,10 @@ def weather_txt(id_server):
 
 """ time and weather information """
 async def weather(cmd):
-	resp = await start(cmd = cmd)
-
 	response = weather_txt(cmd.message.server.id)
 	
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """
