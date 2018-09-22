@@ -150,7 +150,7 @@ slimes_permine = 20
 slimes_perdrink = 500
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
-slimes_toenlist = 420
+slimes_toenlist = 0
 slimes_perspar_base = 3000
 slimes_hauntratio = 40
 slimes_hauntmax = 5000
@@ -159,8 +159,8 @@ slimes_perpachinko = 500
 
 # hunger
 hunger_max = 250
-hunger_pershot = 1
-hunger_perspar = 1
+hunger_pershot = 10
+hunger_perspar = 30
 hunger_permine = 1
 hunger_pertick = 3
 
@@ -209,16 +209,16 @@ emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
 
 # Emotes for the negaslime writhe animation
-emote_vt = "<:vt:473955145189949451>"
-emote_ve = "<:ve:473955145500065793>"
-emote_va = "<:va:473955145621700629>"
-emote_v_ = "<:v_:473955145953050645>"
-emote_s_ = "<:s_:473955145441607700>"
-emote_ht = "<:ht:473955145357590539>"
-emote_hs = "<:hs:473955145143549963>"
-emote_he = "<:he:473955145454190605>"
-emote_h_ = "<:h_:473955145491677187>"
-emote_blank = "<:blank:438387278361001985>"
+emote_vt = "<:vt:492067858160025600>"
+emote_ve = "<:ve:492067844930928641>"
+emote_va = "<:va:492067850878451724>"
+emote_v_ = "<:v_:492067837565861889>"
+emote_s_ = "<:s_:492067830624157708>"
+emote_ht = "<:ht:492067823150039063>"
+emote_hs = "<:hs:492067783396294658>"
+emote_he = "<:he:492067814933266443>"
+emote_h_ = "<:h_:492067806465228811>"
+emote_blank = "<:blank:492087853702971403>"
 
 # Common strings.
 str_casino_closed = "The Slime Casino only operates at night."
@@ -283,6 +283,7 @@ col_max_level = 'max_level'
 col_max_ghostbusts = 'max_ghostbusts'
 col_total_damagedealt = 'total_damagedealt'
 col_total_deaths = 'total_deaths'
+col_busted = 'busted'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
@@ -764,13 +765,6 @@ weather_list = [
 		day = "You can barely see to the next block in the sickly greenish NLAC smog.",
 		sunset = "Visibility only grows worse in the fog as the sun sets and the daylight fades.",
 		night = "Everything is obscured by the darkness of night and the thick city smog."
-	),
-		EwWeather(
-		name = "gray",
-		sunrise = "Everything is still and gray.",
-		day = "Everything is still and gray.",
-		sunset = "Everything is still and gray.",
-		night = "Everything is still and gray."
 	)
 ]
 
@@ -1301,7 +1295,7 @@ poi_list = [
 			"dt",
 		],
 		str_name = "Downtown NLACakaNM",
-		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
+		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains ENDLESS WAR, SlimeCorp HQ and the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
 		coord = (23, 16),
 		coord_alias = [
 			(24, 16),
@@ -1339,7 +1333,6 @@ poi_list = [
 		coord = (17, 13),
 		channel = "cop-killtown",
 		role = "Cop Killtown",
-		pvp = False,
 		factions = [
 			faction_killers
 		]
@@ -1380,7 +1373,6 @@ poi_list = [
 		coord = (25, 21),
 		channel = "rowdy-roughhouse",
 		role = "Rowdy Roughhouse",
-		pvp = False,
 		factions = [
 			faction_rowdys
 		]
@@ -1538,8 +1530,7 @@ poi_list = [
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.\n\nTo the Northeast is Vagrant's Corner. To the Northwest is the Green Light District.",
 		coord = (32, 18),
 		channel = "juvies-row",
-		role = "Juvie's Row",
-		pvp = False
+		role = "Juvie's Row"
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",
@@ -1652,8 +1643,7 @@ poi_list = [
 		life_states = [
 			life_state_corpse
 		],
-		role = "Sewers",
-		pvp = False
+		role = "Sewers"
 	),
 	EwPoi( # stock-exchange
 		id_poi = poi_id_stockexchange,
@@ -1833,7 +1823,7 @@ poi_list = [
 			"mine"
 		],
 		str_name = "The Mines",
-		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the Negaslime. Prolonged contact with the Negaslime has temporarily suffused the walls with profane energy, making them solid to ghosts.",
+		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the NEGASLIME. Prolonged contact with the NEGASLIME has temporarily suffused the walls with profane energy, making them solid to ghosts.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",

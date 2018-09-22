@@ -1,3 +1,4 @@
+import asyncio
 import time
 import random
 
@@ -131,12 +132,12 @@ class EwEffectContainer:
 
 """ Player deals damage to another player. """
 async def attack(cmd):
-	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
 	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
+	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 	if ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
@@ -164,6 +165,8 @@ async def attack(cmd):
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
 		slimes_spent = int(slimes_bylevel / 10)
 		slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		if weapon is None:
+			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
 
 		fumble_chance = (random.randrange(10) - 4)
@@ -214,7 +217,6 @@ async def attack(cmd):
 			user_data.hunger += ewcfg.hunger_pershot
 			
 			# Weaponized flavor text.
-			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 			# Weapon-specific adjustments
@@ -268,10 +270,10 @@ async def attack(cmd):
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 				
 				if coinbounty > 0:
-					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 				#adjust busts
-				user_data.busts += 1
+				#user_data.busts += 1
 
 			else:
 				# A non-lethal blow!
@@ -313,10 +315,7 @@ async def attack(cmd):
 			user_data.persist()
 			shootee_data.persist()
 
-			if boss_member != None:
-				boss_data = EwUser(member = boss_member)
-				boss_data.change_slimes(n = boss_slimes)
-				boss_data.persist()
+			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(shootee_data.id_user))
 
 		elif shootee_data.life_state == ewcfg.life_state_corpse:
 			# Target is already dead and not a ghost.
@@ -344,7 +343,6 @@ async def attack(cmd):
 				user_data.hunger += ewcfg.hunger_pershot
 				
 				# Weaponized flavor text.
-				weapon = ewcfg.weapon_map.get(user_data.weapon)
 				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
 
 				# Weapon-specific adjustments
@@ -392,8 +390,7 @@ async def attack(cmd):
 						if was_juvenile:
 							user_data.change_slimes(n = slimes_dropped + shootee_data.slimes, source = ewcfg.source_killing)
 						else:
-							market_data = EwMarket(id_server = cmd.message.server.id)
-							coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
+							coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 							user_data.slimecredit += coinbounty
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
@@ -404,7 +401,7 @@ async def attack(cmd):
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
-					shootee_data.change_slimes(n = -((shootee_data.totaldamage  - shootee_data.slimes) / 10)) #ghost slime
+					shootee_data.change_slimes(n = -((shootee_data.totaldamage - shootee_data.slimes) / 10)) #ghost slime
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -430,7 +427,7 @@ async def attack(cmd):
 						shootee_data.trauma = ""
 					
 					if coinbounty > 0:
-						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), message.author.display_name)
+						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 					#adjust kills and bounty
 					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
@@ -504,7 +501,7 @@ async def attack(cmd):
 				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ player kills themself """
@@ -692,9 +689,14 @@ async def spar(cmd):
 async def equip(cmd):
 	resp = await ewcmd.start(cmd)
 	response = ""
+	user_data = EwUser(member = cmd.message.author)
 
 	if cmd.message.channel.name != ewcfg.channel_dojo:
 		response = "You must go to the #{} to change your equipment.".format(ewcfg.channel_dojo)
+	elif user_data.life_state == ewcfg.life_state_corpse:
+		response = "Ghosts can't equip weapons."
+	elif user_data.life_state == ewcfg.life_state_juvenile:
+		response = "Juvies can't equip weapons."
 	else:
 		value = None
 		if cmd.tokens_count > 1:
@@ -708,7 +710,6 @@ async def equip(cmd):
 				conn = conn_info.get('conn')
 				cursor = conn.cursor()
 
-				user_data = EwUser(member = cmd.message.author)
 				user_skills = ewutils.weaponskills_get(member = cmd.message.author)
 
 				user_data.weapon = weapon.id_weapon
