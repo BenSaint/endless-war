@@ -155,7 +155,7 @@ slimes_onrevive_everyone = 20
 slimes_toenlist = 0
 slimes_perspar_base = 3000
 slimes_hauntratio = 40
-slimes_hauntmax = 5000
+slimes_hauntmax = 20000
 slimes_perslot = 100
 slimes_perpachinko = 500
 
@@ -313,6 +313,8 @@ col_timestamp = 'timestamp'
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
+it_food = "food"
+it_weapon = "weapon"
 
 # Categories of events that change your slime total, for statistics tracking
 source_mining = 0
@@ -1251,6 +1253,28 @@ item_def_list = [
 		item_props = {
 			'qitem_name': 'Quest Item',
 			'qitem_desc': 'Something important to somebody.'
+		}
+	),
+
+	EwItemDef(
+		item_type = it_food,
+		str_name = "{fitem_name}",
+		str_desc = "{fitem_desc}",
+		soulbound = False,
+		item_props = {
+			'fitem_name': 'Food Item',
+			'fitem_desc': 'Food.'
+		}
+	),
+
+	EwItemDef(
+		item_type = it_weapon,
+		str_name = "{witem_name}",
+		str_desc = "{witem_desc}",
+		soulbound = False,
+		item_props = {
+			'witem_name': 'Weapon',
+			'witem_desc': 'It\'s a weapon of some sort.'
 		}
 	)
 ]

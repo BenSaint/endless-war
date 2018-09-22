@@ -106,7 +106,9 @@ async def haunt(cmd):
 		elif haunted_data.life_state == ewcfg.life_state_enlisted or haunted_data.life_state == ewcfg.life_state_juvenile:
 			# Target can be haunted by the player.
 			haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
-			if haunted_slimes > ewcfg.slimes_hauntmax:
+			if user_data.poi == haunted_data.poi:  # when haunting someone face to face, there is no cap and you get double the amount
+				haunted_slimes *= 2
+			elif haunted_slimes > ewcfg.slimes_hauntmax:
 				haunted_slimes = ewcfg.slimes_hauntmax
 
 			haunted_data.change_slimes(n = -haunted_slimes)

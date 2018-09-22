@@ -439,7 +439,7 @@ async def move(cmd):
 	):
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
-	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted:
+	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted and poi != ewcfg.poi_id_thesewers:  # sometimes busted ghosts get stuck outside the sewers
 		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
 
 	if poi.coord == None or poi_current == None or poi_current.coord == None:

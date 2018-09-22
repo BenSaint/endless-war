@@ -93,8 +93,12 @@ async def order(cmd):
 			if member.id == cmd.message.author.id:
 				member = None
 
+		member_data = EwUser(member = member)
+
 		if food == None or food.vendor not in poi.vendors:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
+		elif member_data.poi != ewcfg.poi_id_foodcourt:
+			response = "The delivery service has become unavailable due to unforeseen circumstances."
 		else:
 			market_data = EwMarket(id_server = cmd.message.server.id)
 
