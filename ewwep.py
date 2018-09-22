@@ -261,7 +261,7 @@ async def attack(cmd):
 			if was_busted:
 				# Move around slime as a result of the shot.
 				market_data = EwMarket(id_server = cmd.message.server.id)
-				coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
+				coinbounty = int(shootee_data.bounty / 1000)
 				user_data.slimecredit += coinbounty
 
 				# Player was busted.

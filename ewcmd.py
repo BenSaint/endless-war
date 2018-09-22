@@ -119,7 +119,7 @@ async def data(cmd):
 		else:
 			response += "You are a level {} slimeboi.".format(user_data.slimelevel)
 		
-		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+		coinbounty = int(user_data.bounty / 1000)
 
 		weapon = ewcfg.weapon_map.get(user_data.weapon)
 		if weapon != None:
@@ -166,7 +166,7 @@ async def data(cmd):
 			else:
 				response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 			
-			coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+			coinbounty = int(user_data.bounty / 1000)
 
 			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			if weapon != None:

@@ -53,6 +53,7 @@ cmd_map = {
 	# Attack another player
 	ewcfg.cmd_kill: ewwep.attack,
 	ewcfg.cmd_shoot: ewwep.attack,
+	ewcfg.cmd_attack: ewwep.attack,
 
 	# Choose your weapon
 	ewcfg.cmd_equip: ewwep.equip,
@@ -166,6 +167,7 @@ cmd_map = {
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
+	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
 	ewcfg.cmd_booru: ewcmd.booru,
