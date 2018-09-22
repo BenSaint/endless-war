@@ -588,8 +588,8 @@ async def move(cmd):
 					)
 			else:
 				if val > 0:
-					await asyncio.sleep(val/30)
-					#await asyncio.sleep(val)
+					#await asyncio.sleep(val/30)
+					await asyncio.sleep(val)
 
 """
 	Dump out the visual description of the area you're in.
