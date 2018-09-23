@@ -495,13 +495,10 @@ async def on_message(message):
 
 		# Scold/ignore offline players.
 		if message.author.status == discord.Status.offline:
-			resp = await ewcmd.start(cmd = cmd_obj)
+
 			response = "You cannot participate in the ENDLESS WAR while offline."
 
-			if resp != None:
-				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
-			else:
-				await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
 
 			return
 
@@ -556,7 +553,7 @@ async def on_message(message):
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
-			resp = await ewcmd.start(cmd = cmd_obj)
+
 			response = ""
 
 			if mentions_count == 0:
@@ -574,7 +571,7 @@ async def on_message(message):
 				else:
 					response = 'Unrecognized role.'
 
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			await client.send_message(cmd.message.channel, ewutils.formatMessage(message.author, response))
 
 		# didn't match any of the command words.
 		else:
