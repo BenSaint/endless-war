@@ -162,18 +162,17 @@ async def attack(cmd):
 		strikes = 0
 
 		# Slime level data. Levels are in powers of 10.
-		#slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
-		#slimes_spent = int(slimes_bylevel / 10)
-		#slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
-		slimes_spent = int(user_data.slimes / 50)
+		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
+		slimes_spent = int(slimes_bylevel / 10)
+		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
 		slimes_damage = int((slimes_spent * 2) * (100 + (user_data.weaponskill * 10)) / 100.0)
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
 
-		fumble_chance = (random.randrange(10) - 4)
-		if fumble_chance > user_data.weaponskill:
-			miss = True
+		#fumble_chance = (random.randrange(10) - 4)
+		#if fumble_chance > user_data.weaponskill:
+			#miss = True
 
 		user_iskillers = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers
 		user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
@@ -467,13 +466,11 @@ async def attack(cmd):
 								damage = damage
 							)
 					else:
-						if miss:
-							response = "{} is unharmed.".format(member.display_name)
-						else:
-							response = "{target_name} is hit!! {target_name} loses {damage} slime!".format(
-								target_name = member.display_name,
-								damage = damage
-							)
+						# unarmed attacks have no miss or crit chance
+						response = "{target_name} is hit!! {target_name} loses {damage} slime!".format(
+							target_name = member.display_name,
+							damage = damage
+						)
 			else:
 				response = 'You are unable to attack {}.'.format(member.display_name)
 

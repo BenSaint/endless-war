@@ -396,12 +396,13 @@ def wef_rifle(ctn = None):
 # weapon effect function for "nun-chucks"
 def wef_nunchucks(ctn = None):
 	ctn.strikes = 0
-	count = 5
-	while count > 0:
-		if random.randrange(3) == 1:
-			ctn.strikes += 1
+	dmg = ctn.slimes_damage
+	ctn.slimes_damage = 0
 
-		count -= 1
+	for count in range(5):
+		if random.randint(1, 3) == 1:
+			ctn.strikes += 1
+			ctn.slimes_damage += int(dmg / 2)
 
 	if ctn.strikes == 5:
 		ctn.crit = True
