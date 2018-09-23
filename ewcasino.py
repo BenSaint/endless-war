@@ -24,6 +24,7 @@ last_slotsed_times = {}
 last_rouletted_times = {}
 
 async def pachinko(cmd):
+	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_pachinkoed_times
@@ -57,7 +58,7 @@ async def pachinko(cmd):
 			user_data.slimecredit -= value
 			user_data.persist()
 
-			resp = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
+			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
 			await asyncio.sleep(3)
 
 			ball_count = 10
@@ -104,7 +105,7 @@ async def pachinko(cmd):
 		last_pachinkoed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 
 async def craps(cmd):
@@ -177,6 +178,7 @@ async def craps(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def slots(cmd):
+	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_slotsed_times
@@ -210,7 +212,7 @@ async def slots(cmd):
 			user_data.persist()
 
 			# Add some suspense...
-			resp = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
+			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 			await asyncio.sleep(3)
 
 			slots = [
@@ -294,7 +296,7 @@ async def slots(cmd):
 		last_slotsed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def roulette(cmd):
 	resp = await ewcmd.start(cmd = cmd)

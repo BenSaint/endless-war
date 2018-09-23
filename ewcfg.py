@@ -1943,7 +1943,8 @@ poi_list = [
 			"casino",
 			"slimecasino",
 			"theslimecasino",
-			"tc",
+			"tc",  # the casino
+			"sc",  # slime casino
 			"cas"
 		],
 		str_name = "The Casino",

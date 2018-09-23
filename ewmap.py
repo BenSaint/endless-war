@@ -423,14 +423,13 @@ def inaccessible(user_data = None, poi = None):
 	else:
 		return False
 
+
 """
 	Player command to move themselves from one place to another.
 """
 async def move(cmd):
 	if channel_name_is_poi(cmd.message.channel.name) == False:
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You must {} in a zone's channel.".format(cmd.tokens[0])))
-
-
 
 	target_name = ewutils.flattenTokenListToString(cmd.tokens[1:])
 	if target_name == None or len(target_name) == 0:
@@ -447,7 +446,7 @@ async def move(cmd):
 		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
 
 	if inaccessible(user_data = user_data, poi = poi):
-		return await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
 	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted and poi != ewcfg.poi_id_thesewers:  # sometimes busted ghosts get stuck outside the sewers
 		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
