@@ -40,7 +40,7 @@ async def pardon(cmd):
 				member_data.persist()
 				response = "{} has been released from his association with the {}.".format(member.display_name, faction_old)
 
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ Destroy a megaslime of your own for lore reasons. """
 async def deadmega(cmd):
@@ -61,4 +61,4 @@ async def deadmega(cmd):
 			response = "Alas, poor megaslime. You have {:,} slime remaining.".format(user_data.slimes)
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

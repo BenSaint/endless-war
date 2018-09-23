@@ -60,7 +60,7 @@ async def enlist(cmd):
 		response = "You can't do that right now, bitch."
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ mine for slime (or endless rocks) """
 async def mine(cmd):
@@ -105,7 +105,7 @@ async def mine(cmd):
 
 			last_mismined_times[cmd.message.author.id] = mismined
 
-			if mismined['count'] >= 5:
+			if mismined['count'] >= 7:  # up to 6 messages can be buffered by discord and people have been dying unfairly because of that
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
 				user_data.die()
@@ -186,14 +186,14 @@ async def mine(cmd):
 
 		last_mismined_times[cmd.message.author.id] = mismined
 
-		if mismined['count'] >= 3:
+		if mismined['count'] >= 5:
 			# Death
 			last_mismined_times[cmd.message.author.id] = None
 
 			user_data.die()
 			user_data.persist()
 
-			await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 		else:
-			await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))

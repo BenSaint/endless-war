@@ -14,7 +14,7 @@ async def donate(cmd):
 	if cmd.message.channel.name != ewcfg.channel_slimecorphq:
 		# Only allowed in SlimeCorp HQ.
 		response = "You must go to SlimeCorp HQ to donate slime."
-		await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	user_data = EwUser(member = cmd.message.author)
@@ -60,7 +60,7 @@ async def donate(cmd):
 		response = ewcfg.str_exchange_specify.format(currency = "slime", action = "donate")
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ transfer slimecoin between players """
 async def xfer(cmd):
@@ -69,13 +69,13 @@ async def xfer(cmd):
 	if cmd.message.channel.name != ewcfg.channel_stockexchange:
 		# Only allowed in the stock exchange.
 		response = ewcfg.str_exchange_channelreq.format(currency = "SlimeCoin", action = "transfer")
-		await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	if cmd.mentions_count != 1:
 		# Must have exactly one target to send to.
 		response = "Mention the player you want to send SlimeCoin to."
-		await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	member = cmd.mentions[0]
@@ -84,7 +84,7 @@ async def xfer(cmd):
 	if target_data.life_state == ewcfg.life_state_kingpin:
 		# Disallow transfers to RF and CK kingpins.
 		response = "You can't transfer SlimeCoin to a known criminal warlord."
-		await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	user_data = EwUser(member = cmd.message.author)
@@ -128,7 +128,7 @@ async def xfer(cmd):
 			response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ show player's slimecoin balance """

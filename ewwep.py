@@ -542,7 +542,7 @@ async def suicide(cmd):
 			response = "\*click* Alas, your gun has jammed."
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ Player spars with a friendly player to gain slime. """
 async def spar(cmd):
@@ -681,7 +681,7 @@ async def spar(cmd):
 		response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ equip a weapon """
 async def equip(cmd):
@@ -728,7 +728,7 @@ async def equip(cmd):
 			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ name a weapon using a slime poudrin """
 async def annoint(cmd):
@@ -773,4 +773,4 @@ async def annoint(cmd):
 				response = "You place your weapon atop the poudrin and annoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(annoint_name)
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

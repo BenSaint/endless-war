@@ -185,7 +185,7 @@ async def data(cmd):
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 	if member != None:

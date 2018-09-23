@@ -64,7 +64,7 @@ async def revive(cmd):
 			response = 'You\'re not dead just yet.'
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ haunt living players to steal slime """
@@ -126,7 +126,7 @@ async def haunt(cmd):
 		response = "Your spookiness is appreciated, but ENDLESS WAR didn\'t understand that name."
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def negaslime(cmd):
 	negaslime = 0
@@ -157,4 +157,4 @@ async def negaslime(cmd):
 	market_data = EwMarket(id_server = cmd.message.server.id)
 	negaslime += market_data.negaslime
 
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))
