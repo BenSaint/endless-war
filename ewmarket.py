@@ -141,4 +141,4 @@ async def slimecoin(cmd):
 	response = "You have {:,} SlimeCoin.".format(user_slimecredit)
 
 	# Send the response to the player.
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

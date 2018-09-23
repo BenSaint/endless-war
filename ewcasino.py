@@ -415,4 +415,4 @@ async def roulette(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await  cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))

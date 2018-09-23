@@ -658,9 +658,9 @@ async def spar(cmd):
 
 					#Notify if max skill is reached	
 					if weapon != None:
-						if user_data.weaponskill == 5:
+						if user_data.weaponskill >= 5:
 							response += ' {} is a master of the {}.'.format(cmd.message.author.display_name, weapon.id_weapon)
-						if sparred_data.weaponskill == 5:
+						if sparred_data.weaponskill >= 5:
 							response += ' {} is a master of the {}.'.format(member.display_name, weapon.id_weapon)
 
 				else:

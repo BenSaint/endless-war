@@ -433,23 +433,23 @@ async def move(cmd):
 
 	target_name = ewutils.flattenTokenListToString(cmd.tokens[1:])
 	if target_name == None or len(target_name) == 0:
-		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Where to?"))
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Where to?"))
 
 	user_data = EwUser(member = cmd.message.author)
 	poi_current = ewcfg.id_to_poi.get(user_data.poi)
 	poi = ewcfg.id_to_poi.get(target_name)
 
 	if poi == None:
-		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Never heard of it."))
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Never heard of it."))
 
 	if poi.id_poi == user_data.poi:
-		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
 
 	if inaccessible(user_data = user_data, poi = poi):
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
 	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted and poi != ewcfg.poi_id_thesewers:  # sometimes busted ghosts get stuck outside the sewers
-		return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
 
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
 		path = EwPath(cost = 60)
@@ -461,7 +461,7 @@ async def move(cmd):
 		)
 
 		if path == None:
-			return await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
+			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
 
 	global moves_active
 	global move_counter
@@ -475,7 +475,7 @@ async def move(cmd):
 
 	minutes = int(path.cost / 60)
 
-	await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
 		poi.str_name,
 		(" It's {} minute{} away.".format(
 			minutes,

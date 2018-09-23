@@ -546,7 +546,7 @@ async def item_use(cmd):
 					# take the endless rock away from the player who !used it
 					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
 
-		await  cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
 		                                                                         'Use which item? (check **!inventory**)'))
