@@ -147,17 +147,14 @@ cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
 
 # Slime costs/values
-slimes_tokill = 20
-slimes_permine = 20
-slimes_perdrink = 500
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 0
-slimes_perspar_base = 3000
+slimes_perspar_base = 1000
 slimes_hauntratio = 40
 slimes_hauntmax = 20000
-slimes_perslot = 100
-slimes_perpachinko = 500
+slimes_perslot = 10
+slimes_perpachinko = 50
 
 # hunger
 hunger_max = 250

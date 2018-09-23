@@ -162,9 +162,11 @@ async def attack(cmd):
 		strikes = 0
 
 		# Slime level data. Levels are in powers of 10.
-		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
-		slimes_spent = int(slimes_bylevel / 10)
-		slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		#slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
+		#slimes_spent = int(slimes_bylevel / 10)
+		#slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		slimes_spent = int(user_data.slimes / 50)
+		slimes_damage = int((slimes_spent * 2) * (100 + (user_data.weaponskill * 10)) / 100.0)
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
@@ -623,7 +625,7 @@ async def spar(cmd):
 
 					# Weaker player gains slime based on the slime of the stronger player.
 					possiblegain = (ewcfg.slimes_perspar_base * (2 ** weaker_player.slimelevel))
-					slimegain = possiblegain if (stronger_player.slimes / 10) > possiblegain else (stronger_player.slimes / 10)
+					slimegain = min(possiblegain, stronger_player.slimes / 20)
 					weaker_player.change_slimes(n = slimegain)
 					
 					#hunger drain for both players
