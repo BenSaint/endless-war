@@ -1676,7 +1676,8 @@ poi_list = [
 		alias = [
 			"charcoal",
 			"park2",
-			"badinitials",
+			"cpark",
+			"awkwardinitials",
 			"cp"
 		],
 		str_name = "Charcoal Park",
@@ -1739,9 +1740,9 @@ poi_list = [
 			"sexchange",
 			"stockexchange",
 			"slimestockexchange",
-			"sex",
+			"sex",  # slime's end is "se"
 			"sec",
-			"sx"  # slime's end is "se"
+			"sx"
 		],
 		str_name = "The Slime Stock Exchange",
 		str_desc = "A large interior space filled with vacant teller booths and data screens designed to dissplay market data, all powered off. Punch cards and ticker tape are strewn about the silent, empty floor.\n\nExits into Downtown NLACakaNM.",
@@ -1774,7 +1775,6 @@ poi_list = [
 			"theater",
 			"movie",
 			"movies",
-			"c",
 			"nc"
 		],
 		str_name = "NLACakaNM Cinemas",
@@ -1794,6 +1794,7 @@ poi_list = [
 			"pizzahut",
 			"tacobell",
 			"kfc",
+			"fcourt",
 			"fc"
 		],
 		str_name = "The NLACakaNM Food Court",
@@ -1910,6 +1911,7 @@ poi_list = [
 			"slimeoidlaboratory",
 			"slimeoidlab",
 			"slimeoidlabs",
+			"slab",
 			"sl"
 		],
 		str_name = "SlimeCorp Slimeoid Laboratory",
@@ -1942,7 +1944,8 @@ poi_list = [
 			"theslimecasino",
 			"tc",  # the casino
 			"sc",  # slime casino
-			"cas"
+			"cas",
+			"c"
 		],
 		str_name = "The Casino",
 		str_desc = "The casino is filled with tables and machines for playing games of chance, and garishly decorated wall-to-wall. Lights which normally flash constantly cover everything, but now they all sit unlit.",
