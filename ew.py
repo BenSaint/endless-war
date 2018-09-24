@@ -145,11 +145,8 @@ class EwUser:
 	""" gain or lose slime, recording statistics and potentially leveling up. """
 	def change_slimes(self, n = 0, source = None):
 		if source == ewcfg.source_damage:
-			if n > self.slimes: #lethal blow
-				self.totaldamage += self.slimes
-			else:
-				self.totaldamage -= int(n) #minus a negative
-				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
+			self.totaldamage -= int(n) #minus a negative
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
 
 		if source == ewcfg.source_mining:
 			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesmined, n = int(n))
@@ -162,6 +159,8 @@ class EwUser:
 		
 		#level up
 		new_level = len(str(int(self.slimes)))
+		if self.life_state == ewcfg.life_state_corpse:
+			new_level -= 1 # because the minus sign in the slimes str throws the length off by 1
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
 			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
