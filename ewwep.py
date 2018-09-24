@@ -189,10 +189,6 @@ async def attack(cmd):
 			# disallow kill if the player has killed recently
 			response = "Take a moment to appreciate your last slaughter."
 
-		elif shootee_data.id_killer == user_data.id_user:
-			# Don't allow the shootee to be shot by the same player twice.
-			response = "You have already proven your superiority over {}.".format(member.display_name)
-
 		elif shootee_data.poi != user_data.poi:
 			response = "You can't reach them from where you are."
 
