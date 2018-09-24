@@ -163,9 +163,9 @@ async def attack(cmd):
 
 		# Slime level data. Levels are in powers of 10.
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
-		slimes_spent = int(slimes_bylevel / 10)
+		slimes_spent = int(slimes_bylevel / 20)
 		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
-		slimes_damage = int((slimes_spent * 2) * (100 + (user_data.weaponskill * 10)) / 100.0)
+		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
