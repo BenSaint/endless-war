@@ -87,7 +87,7 @@ async def pachinko(cmd):
 				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
-			winnings = winballs * 250
+			winnings = int(winballs * ewcfg.slimes_perpachinko / 2)
 
 			# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
 			user_data = EwUser(member = cmd.message.author)
