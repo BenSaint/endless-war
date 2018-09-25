@@ -9,13 +9,12 @@ from ew import EwUser, EwMarket
 
 """ donate slime to slimecorp in exchange for slimecoin """
 async def donate(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	if cmd.message.channel.name != ewcfg.channel_slimecorphq:
 		# Only allowed in SlimeCorp HQ.
 		response = "You must go to SlimeCorp HQ to donate slime."
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	user_data = EwUser(member = cmd.message.author)
@@ -61,23 +60,22 @@ async def donate(cmd):
 		response = ewcfg.str_exchange_specify.format(currency = "slime", action = "donate")
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ transfer slimecoin between players """
 async def xfer(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	if cmd.message.channel.name != ewcfg.channel_stockexchange:
 		# Only allowed in the stock exchange.
 		response = ewcfg.str_exchange_channelreq.format(currency = "SlimeCoin", action = "transfer")
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	if cmd.mentions_count != 1:
 		# Must have exactly one target to send to.
 		response = "Mention the player you want to send SlimeCoin to."
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	member = cmd.mentions[0]
@@ -86,7 +84,7 @@ async def xfer(cmd):
 	if target_data.life_state == ewcfg.life_state_kingpin:
 		# Disallow transfers to RF and CK kingpins.
 		response = "You can't transfer SlimeCoin to a known criminal warlord."
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		return
 
 	user_data = EwUser(member = cmd.message.author)
@@ -130,12 +128,11 @@ async def xfer(cmd):
 			response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ show player's slimecoin balance """
 async def slimecoin(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	response = ""
 
 	user_slimecredit = EwUser(member = cmd.message.author).slimecredit
@@ -144,4 +141,4 @@ async def slimecoin(cmd):
 	response = "You have {:,} SlimeCoin.".format(user_slimecredit)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

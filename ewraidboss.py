@@ -19,7 +19,7 @@ async def writhe(cmd):
 
 	if user_data.life_state != ewcfg.life_state_grandfoe:
 		response = "Only the NEGASLIME {} can do that.".format(ewcfg.emote_negaslime)
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		# play animation
 		he = ewcfg.emote_he

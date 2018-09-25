@@ -163,15 +163,16 @@ async def attack(cmd):
 
 		# Slime level data. Levels are in powers of 10.
 		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
-		slimes_spent = int(slimes_bylevel / 10)
-		slimes_damage = int((slimes_bylevel / 5.0) * (100 + (user_data.weaponskill * 5)) / 100.0)
+		slimes_spent = int(slimes_bylevel / 20)
+		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
+		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage
 
-		fumble_chance = (random.randrange(10) - 4)
-		if fumble_chance > user_data.weaponskill:
-			miss = True
+		#fumble_chance = (random.randrange(10) - 4)
+		#if fumble_chance > user_data.weaponskill:
+			#miss = True
 
 		user_iskillers = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers
 		user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
@@ -187,10 +188,6 @@ async def attack(cmd):
 		elif (time_now - user_data.time_lastkill) < ewcfg.cd_kill:
 			# disallow kill if the player has killed recently
 			response = "Take a moment to appreciate your last slaughter."
-
-		elif shootee_data.id_killer == user_data.id_user:
-			# Don't allow the shootee to be shot by the same player twice.
-			response = "You have already proven your superiority over {}.".format(member.display_name)
 
 		elif shootee_data.poi != user_data.poi:
 			response = "You can't reach them from where you are."
@@ -261,7 +258,7 @@ async def attack(cmd):
 			if was_busted:
 				# Move around slime as a result of the shot.
 				market_data = EwMarket(id_server = cmd.message.server.id)
-				coinbounty = int(shootee_data.bounty / (market_data.rate_exchange / 1000000.0))
+				coinbounty = int(shootee_data.bounty / 1000)
 				user_data.slimecredit += coinbounty
 
 				# Player was busted.
@@ -465,13 +462,11 @@ async def attack(cmd):
 								damage = damage
 							)
 					else:
-						if miss:
-							response = "{} is unharmed.".format(member.display_name)
-						else:
-							response = "{target_name} is hit!! {target_name} loses {damage} slime!".format(
-								target_name = member.display_name,
-								damage = damage
-							)
+						# unarmed attacks have no miss or crit chance
+						response = "{target_name} is hit!! {target_name} loses {damage} slime!".format(
+							target_name = member.display_name,
+							damage = damage
+						)
 			else:
 				response = 'You are unable to attack {}.'.format(member.display_name)
 
@@ -506,7 +501,6 @@ async def attack(cmd):
 
 """ player kills themself """
 async def suicide(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 
 	# Only allowed in the combat zone.
@@ -543,11 +537,10 @@ async def suicide(cmd):
 			response = "\*click* Alas, your gun has jammed."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ Player spars with a friendly player to gain slime. """
 async def spar(cmd):
-	resp = await ewcmd.start(cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -625,7 +618,7 @@ async def spar(cmd):
 
 					# Weaker player gains slime based on the slime of the stronger player.
 					possiblegain = (ewcfg.slimes_perspar_base * (2 ** weaker_player.slimelevel))
-					slimegain = possiblegain if (stronger_player.slimes / 10) > possiblegain else (stronger_player.slimes / 10)
+					slimegain = min(possiblegain, stronger_player.slimes / 20)
 					weaker_player.change_slimes(n = slimegain)
 					
 					#hunger drain for both players
@@ -658,9 +651,9 @@ async def spar(cmd):
 
 					#Notify if max skill is reached	
 					if weapon != None:
-						if user_data.weaponskill == 5:
+						if user_data.weaponskill >= 5:
 							response += ' {} is a master of the {}.'.format(cmd.message.author.display_name, weapon.id_weapon)
-						if sparred_data.weaponskill == 5:
+						if sparred_data.weaponskill >= 5:
 							response += ' {} is a master of the {}.'.format(member.display_name, weapon.id_weapon)
 
 				else:
@@ -683,11 +676,10 @@ async def spar(cmd):
 		response = 'Your fighting spirit is appreciated, but ENDLESS WAR didn\'t understand that name.'
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ equip a weapon """
 async def equip(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 	user_data = EwUser(member = cmd.message.author)
 
@@ -731,11 +723,10 @@ async def equip(cmd):
 			response = "Choose your weapon: {}".format(ewutils.formatNiceList(names = ewcfg.weapon_names, conjunction = "or"))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ name a weapon using a slime poudrin """
 async def annoint(cmd):
-	resp = await ewcmd.start(cmd)
 	response = ""
 
 	if cmd.tokens_count < 2:
@@ -777,4 +768,4 @@ async def annoint(cmd):
 				response = "You place your weapon atop the poudrin and annoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(annoint_name)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

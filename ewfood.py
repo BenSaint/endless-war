@@ -69,8 +69,6 @@ async def menu(cmd):
 
 """ players order food, for themselves or somebody else """
 async def order(cmd):
-	resp = await ewcmd.start(cmd = cmd)
-
 	user_data = EwUser(member = cmd.message.author)
 	poi = ewcfg.id_to_poi.get(user_data.poi)
 
@@ -93,8 +91,12 @@ async def order(cmd):
 			if member.id == cmd.message.author.id:
 				member = None
 
+		member_data = EwUser(member = member)
+
 		if food == None or food.vendor not in poi.vendors:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
+		elif member is not None and member_data.poi != ewcfg.poi_id_foodcourt:
+			response = "The delivery service has become unavailable due to unforeseen circumstances."
 		else:
 			market_data = EwMarket(id_server = cmd.message.server.id)
 
@@ -156,4 +158,4 @@ async def order(cmd):
 					target_data.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

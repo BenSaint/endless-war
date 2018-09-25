@@ -431,7 +431,6 @@ def inventory(
 	Dump out a player's inventory.
 """
 async def inventory_print(cmd):
-	resp = await cmd.client.send_message(cmd.message.author, '...')
 	response = "You are holding:\n"
 
 	items = inventory(
@@ -453,7 +452,7 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 
-	await cmd.client.edit_message(resp, response)
+	await cmd.client.send_message(cmd.message.channel, response)
 
 
 """
@@ -468,7 +467,6 @@ async def item_look(cmd):
 		item_id_int = None
 
 	if item_id != None and len(item_id) > 0:
-		resp = await cmd.client.send_message(cmd.message.channel, '...')
 		response = "You don't have one."
 
 		items = inventory(
@@ -498,7 +496,7 @@ async def item_look(cmd):
 
 			response = name + "\n\n" + response
 
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
 
@@ -512,7 +510,6 @@ async def item_use(cmd):
 		item_id_int = None
 
 	if item_id != None and len(item_id) > 0:
-		resp = await cmd.client.send_message(cmd.message.channel, '...')
 		response = "You don't have one."
 
 		items = inventory(
@@ -549,7 +546,7 @@ async def item_use(cmd):
 					# take the endless rock away from the player who !used it
 					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
 
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
 		                                                                         'Use which item? (check **!inventory**)'))
