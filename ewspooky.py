@@ -34,6 +34,7 @@ async def revive(cmd):
 				player_data.change_slimes(n = -player_data.slimes) # set to 0
 
 			# Give player some initial slimes.
+			player_data.slimelevel = 0
 			player_data.change_slimes(n = ewcfg.slimes_onrevive)
 
 			# Set time of last revive. This used to provied spawn protection, but currently isn't used.

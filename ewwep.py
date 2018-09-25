@@ -168,7 +168,7 @@ async def attack(cmd):
 		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
-		slimes_dropped = shootee_data.totaldamage
+		slimes_dropped = shootee_data.totaldamage + shootee_data.slimes
 
 		#fumble_chance = (random.randrange(10) - 4)
 		#if fumble_chance > user_data.weaponskill:
@@ -270,7 +270,7 @@ async def attack(cmd):
 					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 				#adjust busts
-				#user_data.busts += 1
+				ewstats.change_stat(user = user_data, metric = ewcfg.stat_ghostbusts, n = 1)
 
 			else:
 				# A non-lethal blow!
@@ -314,9 +314,13 @@ async def attack(cmd):
 
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.server.get_member(shootee_data.id_user))
 
-		elif shootee_data.life_state == ewcfg.life_state_corpse:
+		elif shootee_data.life_state == ewcfg.life_state_corpse and shootee_data.busted == True:
 			# Target is already dead and not a ghost.
 			response = "{} is already dead.".format(member.display_name)
+
+		elif shootee_data.life_state == ewcfg.life_state_corpse and user_data.ghostbust == False:
+			# Target is a ghost but user is not able to bust 
+			response = "You don't know how to fight a ghost."
 
 		else:
 			# Slimes from this shot might be awarded to the boss.
@@ -385,7 +389,7 @@ async def attack(cmd):
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes > 0:
 						if was_juvenile:
-							user_data.change_slimes(n = slimes_dropped + shootee_data.slimes, source = ewcfg.source_killing)
+							user_data.change_slimes(n = slimes_dropped, source = ewcfg.source_killing)
 						else:
 							coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 							user_data.slimecredit += coinbounty
@@ -395,10 +399,17 @@ async def attack(cmd):
 					# Steal items
 					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
 
+					#add bounty
+					user_data.add_bounty(n = (shootee_data.bounty / 2) + (slimes_dropped / 4))
+
+					# Give a bonus to the player's weapon skill for killing a stronger player.
+					if shootee_data.slimelevel > user_data.slimelevel:
+						user_data.add_weaponskill(n = 1)
+
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
 					shootee_data.die()
-					shootee_data.change_slimes(n = -((shootee_data.totaldamage - shootee_data.slimes) / 10)) #ghost slime
+					shootee_data.change_slimes(n = -slimes_dropped / 10)
 
 					if weapon != None:
 						response = weapon.str_damage.format(
@@ -426,13 +437,8 @@ async def attack(cmd):
 					if coinbounty > 0:
 						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
-					#adjust kills and bounty
+					#adjust kills
 					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
-					user_data.add_bounty(n = (shootee_data.bounty / 2) + (shootee_data.totaldamage / 4))
-
-					# Give a bonus to the player's weapon skill for killing a stronger player.
-					if shootee_data.slimelevel > user_data.slimelevel:
-						user_data.add_weaponskill(n = 1)
 
 				else:
 					# A non-lethal blow!
