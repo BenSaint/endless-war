@@ -527,24 +527,12 @@ async def item_use(cmd):
 			item_def = item.get('item_def')
 			id_item = item.get('id_item')
 			name = item.get('name')
+			item_type = item.get('item_type')
 
 			user_data = EwUser(member = cmd.message.author)
 
-			if name.lower() == "endless rock":
-				if user_data.poi != ewcfg.poi_id_endlesswar:
-					response = "You have to be near ENDLESS WAR to use this item."
-				else:
-					# EW: Wake
-					response = "You use the Endless Rock to awaken ENDLESS WAR."
-					await ewutils.post_in_multiple_channels(
-						# @everyone is purposely misspelled so testing isnt annoying everyone
-						message = "@everyone ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
-						channels = cmd.message.server.channels,  # all channels
-						client = cmd.client
-					)
-
-					# take the endless rock away from the player who !used it
-					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
+			if item_type == ewcfg.it_food:
+				user_data.eat(item)
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:

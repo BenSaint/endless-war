@@ -1256,23 +1256,28 @@ item_def_list = [
 
 	EwItemDef(
 		item_type = it_food,
-		str_name = "{fitem_name}",
-		str_desc = "{fitem_desc}",
+		str_name = "{food_name}",
+		str_desc = "{food_desc}",
 		soulbound = False,
 		item_props = {
-			'fitem_name': 'Food Item',
-			'fitem_desc': 'Food.'
+			'food_name': 'Food Item',
+			'food_desc': 'Food.',
+			'recover_hunger': 0,
+			'price': 0,
+			'inebriation': 0,
+			'vendor': None,
+			'str_eat': 'You eat the food item.'
 		}
 	),
 
 	EwItemDef(
 		item_type = it_weapon,
-		str_name = "{witem_name}",
-		str_desc = "{witem_desc}",
+		str_name = "{weapon_name}",
+		str_desc = "{weapon_desc}",
 		soulbound = False,
 		item_props = {
-			'witem_name': 'Weapon',
-			'witem_desc': 'It\'s a weapon of some sort.'
+			'weapon_name': 'Weapon',
+			'weapon_desc': 'It\'s a weapon of some sort.'
 		}
 	)
 ]
