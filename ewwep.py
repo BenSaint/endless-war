@@ -26,6 +26,9 @@ class EwWeapon:
 	# Displayed when this weapon is used for a !kill
 	str_kill = ""
 
+	# Displayed to the dead victim in the sewers. Brief phrase such as "gunned down" etc.
+	str_killdescriptor = ""
+
 	# Displayed when viewing the !trauma of another player.
 	str_trauma = ""
 
@@ -63,6 +66,7 @@ class EwWeapon:
 		alias = [],
 		str_equip = "",
 		str_kill = "",
+		str_killdescriptor = "",
 		str_trauma = "",
 		str_trauma_self = "",
 		str_weapon = "",
@@ -79,6 +83,7 @@ class EwWeapon:
 		self.alias = alias
 		self.str_equip = str_equip
 		self.str_kill = str_kill
+		self.str_killdescriptor = str_killdescriptor
 		self.str_trauma = str_trauma
 		self.str_trauma_self = str_trauma_self
 		self.str_weapon = str_weapon
@@ -134,6 +139,7 @@ class EwEffectContainer:
 async def attack(cmd):
 	time_now = int(time.time())
 	response = ""
+	deathreport = ""
 	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
@@ -265,6 +271,9 @@ async def attack(cmd):
 				shootee_data.die()
 
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
+
+				deathreport = "Your ghost has been busted by {}. {}".format(cmd.message.author.display_name, ewcfg.emote_bustin)
+				deathreport = "{} ".format(ewcfg.emote_bustin) + ewutils.formatMessage(member, deathreport)
 				
 				if coinbounty > 0:
 					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
@@ -411,6 +420,7 @@ async def attack(cmd):
 					shootee_data.die()
 					shootee_data.change_slimes(n = -slimes_dropped / 10)
 
+					kill_descriptor = "beaten to death"
 					if weapon != None:
 						response = weapon.str_damage.format(
 							name_player = cmd.message.author.display_name,
@@ -418,6 +428,7 @@ async def attack(cmd):
 							hitzone = randombodypart,
 							strikes = strikes
 						)
+						kill_descriptor = weapon.str_killdescriptor
 						if crit:
 							response += " {}".format(weapon.str_crit.format(
 								name_player = cmd.message.author.display_name,
@@ -433,6 +444,8 @@ async def attack(cmd):
 					else:
 						response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target = member.display_name)
 						shootee_data.trauma = ""
+					deathreport = "You were {} by {}. {}".format(kill_descriptor, cmd.message.author.display_name, ewcfg.emote_slimeskull)
+					deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(member, deathreport)
 					
 					if coinbounty > 0:
 						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
@@ -503,6 +516,9 @@ async def attack(cmd):
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	if deathreport != "":
+		sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+		await cmd.client.send_message(sewerchannel, deathreport)
 
 
 """ player kills themself """
@@ -538,12 +554,17 @@ async def suicide(cmd):
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
 			response = '{} has willingly returned to the slime. {}'.format(cmd.message.author.display_name, ewcfg.emote_slimeskull)
+			deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
+			deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, deathreport)
 		else:
 			# This should never happen. We handled all the role cases. Just in case.
 			response = "\*click* Alas, your gun has jammed."
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	if deathreport != "":
+		sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+		await cmd.client.send_message(sewerchannel, deathreport)
 
 """ Player spars with a friendly player to gain slime. """
 async def spar(cmd):
