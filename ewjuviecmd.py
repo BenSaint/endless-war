@@ -113,6 +113,8 @@ async def mine(cmd):
 				
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+				sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+				await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
 			else:
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 		else:
@@ -195,5 +197,7 @@ async def mine(cmd):
 
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+			sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+			await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
 		else:
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))

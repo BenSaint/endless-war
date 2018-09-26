@@ -455,3 +455,15 @@ async def post_in_multiple_channels(message = None, channels = None, client = No
 		if channel.type == discord.ChannelType.text:
 			await client.send_message(channel, message)
 	return
+
+def get_channel(server = None, channel_name = ""):
+	channel = None
+	for chan in server.channels:
+		if chan.name == channel_name:
+			channel = chan
+		logMsg("found channel {}".format(chan.name))
+
+	if channel == None:
+		logMsg("channel {} not found.".format(channel_name))
+
+	return channel

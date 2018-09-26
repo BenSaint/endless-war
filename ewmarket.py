@@ -43,8 +43,8 @@ async def donate(cmd):
 			user_data.persist()
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
-			# Destroy all common items.
-			ewitem.item_destroyall(member = cmd.message.author)
+			sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+			await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a medical mishap. {}".format(ewcfg.emote_slimeskull)))
 		else:
 			# Do the transfer if the player can afford it.
 			user_data.slimes -= cost_total
