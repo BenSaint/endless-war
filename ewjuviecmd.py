@@ -119,10 +119,10 @@ async def mine(cmd):
 			# Determine if a poudrin is found.
 			poudrin = False
 			poudrinamount = 0
-			poudrinchance = random.randrange(3600)
+			poudrinchance = random.randrange(7200)
 			if poudrinchance == 0:
 				poudrin = True
-				poudrinamount = (random.randrange(2) + 1)
+				poudrinamount = 1 if random.randint(1, 10) > 1 else 2
 
 			user_initial_level = user_data.slimelevel
 

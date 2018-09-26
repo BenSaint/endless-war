@@ -167,8 +167,7 @@ class EwUser:
 			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
 		
 	def die(self):
-		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
-			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
+		if self.life_state != ewcfg.life_state_corpse:  # don't count ghost deaths toward total deaths
 			self.life_state = ewcfg.life_state_corpse
 			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
 		else:

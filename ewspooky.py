@@ -27,6 +27,7 @@ async def revive(cmd):
 			fee = (player_data.slimecredit / 10)
 			player_data.slimecredit -= fee
 			market_data.slimes_revivefee += fee
+			player_data.busted = False
 			
 			# Preserve negaslime
 			if player_data.slimes < 0:
