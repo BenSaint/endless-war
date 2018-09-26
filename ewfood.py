@@ -1,4 +1,5 @@
 import ewcfg
+import ewitem
 import ewutils
 import ewcmd
 from ew import EwUser, EwMarket
@@ -29,6 +30,9 @@ class EwFood:
 	# Alcoholic effect
 	inebriation = 0
 
+	# Flavor text displayed when you inspect this food.
+	str_desc = ""
+
 	def __init__(
 		self,
 		id_food = "",
@@ -38,7 +42,8 @@ class EwFood:
 		str_name = "",
 		vendor = "",
 		str_eat = "",
-		inebriation = 0
+		inebriation = 0,
+		str_desc = ""
 	):
 		self.id_food = id_food
 		self.alias = alias
@@ -48,6 +53,7 @@ class EwFood:
 		self.vendor = vendor
 		self.str_eat = str_eat
 		self.inebriation = inebriation
+		self.str_desc = str_desc
 
 
 """ show all available food items """
@@ -95,7 +101,7 @@ async def order(cmd):
 
 		if food == None or food.vendor not in poi.vendors:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
-		elif member is not None and member_data.poi != ewcfg.poi_id_foodcourt:
+		elif member is not None and member_data.poi != user_data.poi:
 			response = "The delivery service has become unavailable due to unforeseen circumstances."
 		else:
 			market_data = EwMarket(id_server = cmd.message.server.id)
@@ -150,6 +156,23 @@ async def order(cmd):
 
 				if food.id_food == "coleslaw":
 					user_data.ghostbust = True
+
+				item_props = {
+					'food_name': food.str_name,
+					'food_desc': food.str_desc,
+					'recover_hunger': food.recover_hunger,
+					'price': food.price,
+					'inebriation': food.inebriation,
+					'vendor': food.vendor,
+					'str_eat': food.str_eat
+				}
+
+				food_item = ewitem.item_create(
+					item_type = ewcfg.it_food,
+					id_user = cmd.message.author.id,
+					id_server = cmd.message.server.id,
+					item_props = item_props
+				)
 
 				user_data.persist()
 				market_data.persist()

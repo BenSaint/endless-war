@@ -783,7 +783,7 @@ for weather in weather_list:
 	weather_map[weather.name] = weather
 
 # All food items in the game.
-food_list = [
+food_list = [  # todo: write descriptions for food items
 	EwFood(
 		id_food = "slimentonic",
 		alias = [
