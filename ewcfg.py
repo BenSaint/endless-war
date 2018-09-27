@@ -1932,7 +1932,7 @@ poi_list = [
 			"tm"
 		],
 		str_name = "The Mines",
-		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.",
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Juvie's Row.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
