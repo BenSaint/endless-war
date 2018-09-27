@@ -1932,7 +1932,7 @@ poi_list = [
 			"tm"
 		],
 		str_name = "The Mines",
-		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the NEGASLIME. Prolonged contact with the NEGASLIME has temporarily suffused the walls with profane energy, making them solid to ghosts.",
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
