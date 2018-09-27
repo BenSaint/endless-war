@@ -154,9 +154,6 @@ async def order(cmd):
 				if member == None and user_data.hunger <= 0:
 					response += "\n\nYou're stuffed!"
 
-				if food.id_food == "coleslaw":
-					user_data.ghostbust = True
-
 				item_props = {
 					'food_name': food.str_name,
 					'food_desc': food.str_desc,

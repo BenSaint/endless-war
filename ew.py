@@ -209,6 +209,19 @@ class EwUser:
 				weaponname = self.weaponname
 			)
 
+	def eat(self, food_item = None):
+		item_props = food_item.item_props
+
+		self.hunger -= item_props['recover_hunger']
+		if self.hunger < 0:
+			self.hunger = 0
+		self.inebriation += item_props['inebriation']
+		if self.inebriation > 20:
+			self.inebriation = 20
+
+		if food_item.id_item == "coleslaw":
+			self.ghostbust = True
+
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
 		if(id_user == None) and (id_server == None):

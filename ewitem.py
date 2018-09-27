@@ -524,11 +524,12 @@ async def item_use(cmd):
 				break
 
 		if item_sought != None:
-			item_def = item.get('item_def')
-			id_item = item.get('id_item')
-			name = item.get('name')
-			item_type = item.get('item_type')
+			id_item = item_sought.get('id_item')
+			item_def = item_sought.get('item_def')
+			name = item_sought.get('name')
+			item_type = item_sought.get('item_type')
 
+			item = EwItem(id_item = id_item)
 			user_data = EwUser(member = cmd.message.author)
 
 			if item_type == ewcfg.it_food:
