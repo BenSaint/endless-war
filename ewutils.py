@@ -448,7 +448,7 @@ def execute_sql_query(sql_query = None):
 
 
 """
-	
+	Send a message to multiple chat channels at once.
 """
 async def post_in_multiple_channels(message = None, channels = None, client = None):
 	for channel in channels:
@@ -456,14 +456,13 @@ async def post_in_multiple_channels(message = None, channels = None, client = No
 			await client.send_message(channel, message)
 	return
 
+"""
+	Find a chat channel by name in a server.
+"""
 def get_channel(server = None, channel_name = ""):
 	channel = None
 	for chan in server.channels:
 		if chan.name == channel_name:
 			channel = chan
-		logMsg("found channel {}".format(chan.name))
-
-	if channel == None:
-		logMsg("channel {} not found.".format(channel_name))
 
 	return channel
