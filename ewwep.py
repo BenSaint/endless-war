@@ -524,6 +524,7 @@ async def attack(cmd):
 """ player kills themself """
 async def suicide(cmd):
 	response = ""
+	deathreport = ""
 
 	# Only allowed in the combat zone.
 	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
