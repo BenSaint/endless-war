@@ -412,7 +412,7 @@ async def attack(cmd):
 					user_data.add_bounty(n = (shootee_data.bounty / 2) + (slimes_dropped / 4))
 
 					# Give a bonus to the player's weapon skill for killing a stronger player.
-					if shootee_data.slimelevel > user_data.slimelevel:
+					if shootee_data.slimelevel >= user_data.slimelevel:
 						user_data.add_weaponskill(n = 1)
 
 					# Player was killed.
