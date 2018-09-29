@@ -63,15 +63,14 @@ async def score(cmd):
 	user_data = None
 	member = None
 
-	poudrins = ewitem.inventory(
-		id_user = cmd.message.author.id,
-		id_server = cmd.message.server.id,
-		item_type_filter = ewcfg.it_slimepoudrin
-	)
-	poudrins_count = len(poudrins)
-
 	if cmd.mentions_count == 0:
 		user_data = EwUser(member = cmd.message.author)
+		poudrins = ewitem.inventory(
+			id_user = cmd.message.author.id,
+			id_server = cmd.message.server.id,
+			item_type_filter = ewcfg.it_slimepoudrin
+		)
+		poudrins_count = len(poudrins)
 
 		# return my score
 		response = "You currently have {:,} slime{}.".format(user_data.slimes, (" and {} slime poudrin{}".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
@@ -79,6 +78,12 @@ async def score(cmd):
 	else:
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)
+		poudrins = ewitem.inventory(
+			id_user = user_data.id_user,
+			id_server = cmd.message.server.id,
+			item_type_filter = ewcfg.it_slimepoudrin
+		)
+		poudrins_count = len(poudrins)
 
 		if user_data.life_state == ewcfg.life_state_grandfoe:
 			# Can't see a raid boss's slime score.
@@ -95,7 +100,6 @@ async def score(cmd):
 
 """ show player information and description """
 async def data(cmd):
-	resp = await start(cmd = cmd)
 	response = ""
 	user_data = None
 	member = None
@@ -114,7 +118,7 @@ async def data(cmd):
 		else:
 			response += "You are a level {} slimeboi.".format(user_data.slimelevel)
 		
-		coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+		coinbounty = int(user_data.bounty / 1000)
 
 		weapon = ewcfg.weapon_map.get(user_data.weapon)
 		if weapon != None:
@@ -128,13 +132,20 @@ async def data(cmd):
 
 		user_kills = ewstats.get_stat(user = user_data, metric = ewcfg.stat_kills)
 		if user_kills > 0:
-			response += " They have {:,} confirmed kills.".format(user_kills)
+			response += " You have {:,} confirmed kills.".format(user_kills)
 		
 		if coinbounty != 0:
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if user_data.hunger > 0:
 			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewcfg.hunger_max)
+
+		if user_data.ghostbust:
+			response += " The coleslaw in your stomach enables you to bust ghosts."
+
+		if user_data.busted and user_data.life_state == ewcfg.life_state_corpse:
+			response += " You are busted and therefore cannot leave the sewers without reviving."
+
 	else:
 		member = cmd.mentions[0]
 		user_data = EwUser(member = member)
@@ -154,7 +165,7 @@ async def data(cmd):
 			else:
 				response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 			
-			coinbounty = int(user_data.bounty / (market_data.rate_exchange / 1000000.0))
+			coinbounty = int(user_data.bounty / 1000)
 
 			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			if weapon != None:
@@ -174,7 +185,7 @@ async def data(cmd):
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 	if member != None:
@@ -217,12 +228,10 @@ def weather_txt(id_server):
 
 """ time and weather information """
 async def weather(cmd):
-	resp = await start(cmd = cmd)
-
 	response = weather_txt(cmd.message.server.id)
 	
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """

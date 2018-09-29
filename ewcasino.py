@@ -109,7 +109,6 @@ async def pachinko(cmd):
 
 
 async def craps(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 
 	global last_crapsed_times
@@ -176,7 +175,7 @@ async def craps(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def slots(cmd):
 	resp = await ewcmd.start(cmd = cmd)

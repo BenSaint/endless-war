@@ -30,10 +30,8 @@ async def updateRoles(
 	faction_roles_remove = [
 		ewcfg.role_juvenile,
 		ewcfg.role_juvenile_pvp,
-		ewcfg.role_rowdyfucker,
 		ewcfg.role_rowdyfuckers,
 		ewcfg.role_rowdyfuckers_pvp,
-		ewcfg.role_copkiller,
 		ewcfg.role_copkillers,
 		ewcfg.role_copkillers_pvp,
 		ewcfg.role_corpse,

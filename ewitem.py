@@ -1,6 +1,5 @@
 import ewutils
 import ewcfg
-import discord
 from ew import EwUser
 from ewplayer import EwPlayer
 
@@ -268,31 +267,33 @@ def item_create(
 """
 	Destroy all of a player's non-soulbound items.
 """
-def item_destroyall(member = None):
-	if member == None:
-		return
+def item_destroyall(id_server = None, id_user = None, member = None):
+	if member != None:
+		id_server = member.server.id
+		id_user = member.id
 
-	try:
-		# Get database handles if they weren't passed.
-		conn_info = ewutils.databaseConnect()
-		conn = conn_info.get('conn')
-		cursor = conn.cursor()
+	if id_server != None and id_user != None:
+		try:
+			# Get database handles if they weren't passed.
+			conn_info = ewutils.databaseConnect()
+			conn = conn_info.get('conn')
+			cursor = conn.cursor()
 
-		# Create the item in the database.
-		cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
-			id_user = ewcfg.col_id_user,
-			id_server = ewcfg.col_id_server,
-			soulbound = ewcfg.col_soulbound,
-		), (
-			member.server.id,
-			member.id
-		))
+			# Create the item in the database.
+			cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
+				id_user = ewcfg.col_id_user,
+				id_server = ewcfg.col_id_server,
+				soulbound = ewcfg.col_soulbound,
+			), (
+				id_user,
+				id_server
+			))
 
-		conn.commit()
-	finally:
-		# Clean up the database handles.
-		cursor.close()
-		ewutils.databaseClose(conn_info)
+			conn.commit()
+		finally:
+			# Clean up the database handles.
+			cursor.close()
+			ewutils.databaseClose(conn_info)
 
 
 """
@@ -430,7 +431,6 @@ def inventory(
 	Dump out a player's inventory.
 """
 async def inventory_print(cmd):
-	resp = await cmd.client.send_message(cmd.message.author, '...')
 	response = "You are holding:\n"
 
 	items = inventory(
@@ -452,7 +452,7 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 
-	await cmd.client.edit_message(resp, response)
+	await cmd.client.send_message(cmd.message.channel, response)
 
 
 """
@@ -467,7 +467,6 @@ async def item_look(cmd):
 		item_id_int = None
 
 	if item_id != None and len(item_id) > 0:
-		resp = await cmd.client.send_message(cmd.message.channel, '...')
 		response = "You don't have one."
 
 		items = inventory(
@@ -497,7 +496,7 @@ async def item_look(cmd):
 
 			response = name + "\n\n" + response
 
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
 
@@ -511,7 +510,6 @@ async def item_use(cmd):
 		item_id_int = None
 
 	if item_id != None and len(item_id) > 0:
-		resp = await cmd.client.send_message(cmd.message.channel, '...')
 		response = "You don't have one."
 
 		items = inventory(
@@ -532,27 +530,26 @@ async def item_use(cmd):
 
 			user_data = EwUser(member = cmd.message.author)
 
-			channels = cmd.message.server.channels
-
 			if name.lower() == "endless rock":
 				if user_data.poi != ewcfg.poi_id_endlesswar:
-					response = "You have to be in the Endless War Control Room to use this item."
+					response = "You have to be near ENDLESS WAR to use this item."
 				else:
 					# EW: Wake
-					response = "You use the Endless Rock to awaken Endless War (me). Thank you."
-					for channel in channels:
-						if channel.type == discord.ChannelType.text:
-							# @everyone is purposely misspelled so testing isnt annoying everyone
-							await cmd.client.send_message(channel, "@everyon I HAVE AWOKEN. https://ew.krakissi.net/img/revive.gif")
+					response = "You use the Endless Rock to awaken ENDLESS WAR."
+					await ewutils.post_in_multiple_channels(
+						# @everyone is purposely misspelled so testing isnt annoying everyone
+						message = "@everyone ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
+						channels = cmd.message.server.channels,  # all channels
+						client = cmd.client
+					)
 
-					# destroy the endless rock (for testing purposes, just remove it from the player's inventory)
-					#item_delete(id_item)
+					# take the endless rock away from the player who !used it
 					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
 
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
-		                                                                         'Inspect which item? (check **!inventory**)'))
+		                                                                         'Use which item? (check **!inventory**)'))
 
 
 """

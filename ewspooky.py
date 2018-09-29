@@ -12,7 +12,6 @@ from ew import EwUser, EwMarket
 
 """ revive yourself from the dead. """
 async def revive(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -35,18 +34,17 @@ async def revive(cmd):
 				player_data.change_slimes(n = -player_data.slimes) # set to 0
 
 			# Give player some initial slimes.
+			player_data.slimelevel = 0
 			player_data.change_slimes(n = ewcfg.slimes_onrevive)
-
-			# Clear weapon and weaponskill.
-			player_data.weapon = ""
-			player_data.weaponskill = 0
-			ewutils.weaponskills_clear(member = cmd.message.author)
 
 			# Set time of last revive. This used to provied spawn protection, but currently isn't used.
 			player_data.time_lastrevive = time_now
 
 			# Set life state. This is what determines whether the player is actually alive.
 			player_data.life_state = ewcfg.life_state_juvenile
+
+			# Get the player out of the sewers. Will be endless-war eventually.
+			player_data.poi = ewcfg.poi_id_downtown
 
 			player_data.persist()
 			market_data.persist()
@@ -56,7 +54,7 @@ async def revive(cmd):
 				if member.id != cmd.message.author.id and member.id != cmd.client.user.id:
 					member_data = EwUser(member = member)
 
-					if member_data.life_state != ewcfg.life_state_corpse:
+					if member_data.life_state != ewcfg.life_state_corpse and member_data.life_state != ewcfg.life_state_grandfoe:
 						member_data.change_slimes(n = ewcfg.slimes_onrevive_everyone)
 						member_data.persist()
 
@@ -67,12 +65,11 @@ async def revive(cmd):
 			response = 'You\'re not dead just yet.'
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ haunt living players to steal slime """
 async def haunt(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	time_now = int(time.time())
 	response = ""
 
@@ -88,9 +85,8 @@ async def haunt(cmd):
 		if user_data.life_state != ewcfg.life_state_corpse:
 			# Only dead players can haunt.
 			response = "You can't haunt now. Try {}.".format(ewcfg.cmd_suicide)
-		elif cmd.message.channel.name != ewcfg.channel_sewers:
-			# Allowed only from the-sewers.
-			response = "You must haunt from #{}.".format(ewcfg.channel_sewers)
+		elif user_data.busted:
+			response = "You can't haunt while you're busted."
 		elif haunted_data.life_state == ewcfg.life_state_kingpin:
 			# Disallow haunting of generals.
 			response = "He is too far from the sewers in his ivory tower, and thus cannot be haunted."
@@ -109,7 +105,9 @@ async def haunt(cmd):
 		elif haunted_data.life_state == ewcfg.life_state_enlisted or haunted_data.life_state == ewcfg.life_state_juvenile:
 			# Target can be haunted by the player.
 			haunted_slimes = int(haunted_data.slimes / ewcfg.slimes_hauntratio)
-			if haunted_slimes > ewcfg.slimes_hauntmax:
+			if user_data.poi == haunted_data.poi:  # when haunting someone face to face, there is no cap and you get double the amount
+				haunted_slimes *= 2
+			elif haunted_slimes > ewcfg.slimes_hauntmax:
 				haunted_slimes = ewcfg.slimes_hauntmax
 
 			haunted_data.change_slimes(n = -haunted_slimes)
@@ -120,7 +118,7 @@ async def haunt(cmd):
 			user_data.persist()
 			haunted_data.persist()
 
-			response = "{} has been haunted by a discontent corpse! Slime has been lost!".format(member.display_name)
+			response = "{} has been haunted by the ghost of {}! Slime has been lost!".format(member.display_name, cmd.message.author.display_name)
 		else:
 			# Some condition we didn't think of.
 			response = "You cannot haunt {}.".format(member.display_name)
@@ -129,10 +127,9 @@ async def haunt(cmd):
 		response = "Your spookiness is appreciated, but ENDLESS WAR didn\'t understand that name."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def negaslime(cmd):
-	resp = await ewcmd.start(cmd = cmd)
 	negaslime = 0
 
 	try:
@@ -161,4 +158,4 @@ async def negaslime(cmd):
 	market_data = EwMarket(id_server = cmd.message.server.id)
 	negaslime += market_data.negaslime
 
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "The dead have amassed {:,} negative slime.".format(negaslime)))

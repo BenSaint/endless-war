@@ -1,6 +1,7 @@
 import ewutils
 import ewcfg
 import ewstats
+import ewitem
 
 """ Market data model for database persistence """
 class EwMarket:
@@ -63,9 +64,6 @@ class EwMarket:
 				cursor.close()
 				ewutils.databaseClose(conn_info)
 
-			# FIXME weather is temporarily always gray
-			self.weather = 'gray'
-
 	""" Save market data object to the database. """
 	def persist(self):
 		try:
@@ -125,6 +123,7 @@ class EwUser:
 	faction = ""
 	poi = ""
 	life_state = 0
+	busted = False
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -146,11 +145,8 @@ class EwUser:
 	""" gain or lose slime, recording statistics and potentially leveling up. """
 	def change_slimes(self, n = 0, source = None):
 		if source == ewcfg.source_damage:
-			if n > self.slimes: #lethal blow
-				self.totaldamage += self.slimes
-			else:
-				self.totaldamage -= int(n) #minus a negative
-				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
+			self.totaldamage -= int(n) #minus a negative
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
 
 		if source == ewcfg.source_mining:
 			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesmined, n = int(n))
@@ -163,14 +159,19 @@ class EwUser:
 		
 		#level up
 		new_level = len(str(int(self.slimes)))
+		if self.life_state == ewcfg.life_state_corpse:
+			new_level -= 1 # because the minus sign in the slimes str throws the length off by 1
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
 			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
 		
 	def die(self):
 		if self.life_state != ewcfg.life_state_corpse: # don't count ghost deaths toward total deaths
+			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
 			self.life_state = ewcfg.life_state_corpse
 			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
+		else:
+			self.busted = True  # this method is called for busted ghosts too
 		self.slimes = 0
 		self.poi = ewcfg.poi_id_thesewers
 		self.bounty = 0
@@ -178,15 +179,35 @@ class EwUser:
 		self.slimelevel = 1
 		self.hunger = 0
 		self.inebriation = 0
+		self.ghostbust = False
+		# Clear weapon and weaponskill.
+		self.weapon = ""
+		self.weaponskill = 0
+		ewutils.weaponskills_clear(id_server = self.id_server, id_user = self.id_user)
 		ewstats.clear_on_death(id_server = self.id_server, id_user = self.id_user)
+		ewitem.item_destroyall(id_server = self.id_server, id_user = self.id_user)
 
 	def add_bounty(self, n = 0):
 		self.bounty += int(n)
 		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_bounty, value = self.bounty)
 
 	def add_weaponskill(self, n = 0):
-		self.weaponskill += int(n)
-		ewstats.track_maximum(user = self, metric = ewcfg.max_wepskill, value = self.weaponskill)
+		# Save the current weapon's skill
+		if self.weapon != None and self.weapon != "":
+			if self.weaponskill == None:
+				self.weaponskill = 0
+				self.weaponname = ""
+
+			self.weaponskill += int(n)
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_wepskill, value = self.weaponskill)
+
+			ewutils.weaponskills_set(
+				id_server = self.id_server,
+				id_user = self.id_user,
+				weapon = self.weapon,
+				weaponskill = self.weaponskill,
+				weaponname = self.weaponname
+			)
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -206,7 +227,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -226,7 +247,8 @@ class EwUser:
 					ewcfg.col_inebriation,
 					ewcfg.col_faction,
 					ewcfg.col_poi,
-					ewcfg.col_life_state
+					ewcfg.col_life_state,
+					ewcfg.col_busted
 				), (
 					id_user,
 					id_server
@@ -255,6 +277,7 @@ class EwUser:
 					self.faction = result[17]
 					self.poi = result[18]
 					self.life_state = result[19]
+					self.busted = (result[20] == 1)
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -304,7 +327,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -327,7 +350,8 @@ class EwUser:
 				ewcfg.col_inebriation,
 				ewcfg.col_faction,
 				ewcfg.col_poi,
-				ewcfg.col_life_state
+				ewcfg.col_life_state,
+				ewcfg.col_busted
 			), (
 				self.id_user,
 				self.id_server,
@@ -347,26 +371,13 @@ class EwUser:
 				self.time_lasthaunt,
 				self.time_lastinvest,
 				self.weaponname,
-				(1 if self.ghostbust == True else 0),
+				(1 if self.ghostbust else 0),
 				self.inebriation,
 				self.faction,
 				self.poi,
-				self.life_state
+				self.life_state,
+				(1 if self.busted else 0)
 			))
-
-			# Save the current weapon's skill
-			if self.weapon != None and self.weapon != "":
-				if self.weaponskill == None:
-					self.weaponskill = 0
-					self.weaponname = ""
-
-				ewutils.weaponskills_set(
-					id_server = self.id_server,
-					id_user = self.id_user,
-					weapon = self.weapon,
-					weaponskill = self.weaponskill,
-					weaponname = self.weaponname
-				)
 
 			conn.commit()
 		finally:

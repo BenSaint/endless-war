@@ -14,7 +14,7 @@ class EwFood:
 	# Hunger reduced by eating this food.
 	recover_hunger = 0
 
-	# Cost in slime to eat this food.
+	# Cost in SlimeCoin to eat this food.
 	price = 0
 
 	# A nice string name describing this food.
@@ -69,8 +69,6 @@ async def menu(cmd):
 
 """ players order food, for themselves or somebody else """
 async def order(cmd):
-	resp = await ewcmd.start(cmd = cmd)
-
 	user_data = EwUser(member = cmd.message.author)
 	poi = ewcfg.id_to_poi.get(user_data.poi)
 
@@ -93,8 +91,12 @@ async def order(cmd):
 			if member.id == cmd.message.author.id:
 				member = None
 
+		member_data = EwUser(member = member)
+
 		if food == None or food.vendor not in poi.vendors:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
+		elif member is not None and member_data.poi != ewcfg.poi_id_foodcourt:
+			response = "The delivery service has become unavailable due to unforeseen circumstances."
 		else:
 			market_data = EwMarket(id_server = cmd.message.server.id)
 
@@ -102,12 +104,7 @@ async def order(cmd):
 			if member != None:
 				target_data = EwUser(member = member)
 
-			if food.price == 0:
-				value = 0
-			else:
-				value = int(food.price / (market_data.rate_exchange / 1000000.0))
-				if value <= 0:
-					value = 1
+			value = food.price
 
 			# Kingpins eat free.
 			if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
@@ -151,6 +148,9 @@ async def order(cmd):
 				if member == None and user_data.hunger <= 0:
 					response += "\n\nYou're stuffed!"
 
+				if food.id_food == "coleslaw":
+					user_data.ghostbust = True
+
 				user_data.persist()
 				market_data.persist()
 
@@ -158,4 +158,4 @@ async def order(cmd):
 					target_data.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

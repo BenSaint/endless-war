@@ -33,7 +33,6 @@ import ewitem
 import ewmap
 import ewrolemgr
 import ewraidboss
-import ewevent
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -54,6 +53,10 @@ cmd_map = {
 	# Attack another player
 	ewcfg.cmd_kill: ewwep.attack,
 	ewcfg.cmd_shoot: ewwep.attack,
+	ewcfg.cmd_attack: ewwep.attack,
+
+	# Choose your weapon
+	ewcfg.cmd_equip: ewwep.equip,
 
 	# Kill yourself
 	ewcfg.cmd_suicide: ewwep.suicide,
@@ -122,6 +125,9 @@ cmd_map = {
 	ewcfg.cmd_slimecredit: ewmarket.slimecoin,
 	ewcfg.cmd_slimecredit_alt1: ewmarket.slimecoin,
 
+	# Donate your slime to SlimeCorp in exchange for SlimeCoin.
+	ewcfg.cmd_donate: ewmarket.donate,
+
 
 	# show player inventory
 	ewcfg.cmd_inventory: ewitem.inventory_print,
@@ -154,13 +160,14 @@ cmd_map = {
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
 
-	# as negaslime: kill all players in your district
-	ewcfg.cmd_writhe: ewraidboss.writhe,
+	# kill all players in your district; could be re-used for a future raid boss
+	#ewcfg.cmd_writhe: ewraidboss.writhe,
 
 	# Misc
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
+	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
 	ewcfg.cmd_booru: ewcmd.booru,
@@ -196,7 +203,6 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
-	
 	if False: 
 		twitch_client_id = ewutils.getTwitchClientId()
 
@@ -489,13 +495,10 @@ async def on_message(message):
 
 		# Scold/ignore offline players.
 		if message.author.status == discord.Status.offline:
-			resp = await ewcmd.start(cmd = cmd_obj)
+
 			response = "You cannot participate in the ENDLESS WAR while offline."
 
-			if resp != None:
-				await client.edit_message(resp, ewutils.formatMessage(message.author, response))
-			else:
-				await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
 
 			return
 
@@ -550,7 +553,7 @@ async def on_message(message):
 
 		# Debug command to override the role of a user
 		elif debug == True and cmd == (ewcfg.cmd_prefix + 'setrole'):
-			resp = await ewcmd.start(cmd = cmd_obj)
+
 			response = ""
 
 			if mentions_count == 0:
@@ -568,7 +571,7 @@ async def on_message(message):
 				else:
 					response = 'Unrecognized role.'
 
-			await client.edit_message(resp, ewutils.formatMessage(message.author, response))
+			await client.send_message(cmd.message.channel, ewutils.formatMessage(message.author, response))
 
 		# didn't match any of the command words.
 		else:

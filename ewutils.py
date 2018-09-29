@@ -4,6 +4,8 @@ import time
 import re
 import random
 
+import discord
+
 import ewcfg
 from ew import EwUser
 
@@ -192,7 +194,7 @@ def databaseClose(conn_info):
 
 """ format responses with the username: """
 def formatMessage(user_target, message):
-	return "*{}*: {}".format(user_target.display_name, message)
+	return "*{}*: {}".format(user_target.display_name, message).replace("@", "\{at\}")
 
 """ decay slime totals for all users """
 def decaySlimes(id_server = None):
@@ -373,7 +375,7 @@ def weaponskills_set(id_server = None, id_user = None, member = None, weapon = N
 			cursor.close()
 			databaseClose(conn_info)
 
-""" Clear all weapon skills for a player (probably called on !revive). """
+""" Clear all weapon skills for a player (probably called on death). """
 def weaponskills_clear(id_server = None, id_user = None, member = None):
 	if member != None:
 		id_server = member.server.id
@@ -403,6 +405,7 @@ def weaponskills_clear(id_server = None, id_user = None, member = None):
 			cursor.close()
 			databaseClose(conn_info)
 
+
 re_flattener = re.compile("[ '\"!@#$%^&*().,/?{}\[\];:]")
 
 """
@@ -422,9 +425,9 @@ def flattenTokenListToString(tokens):
 	return target_name
 
 
-'''
+"""
 	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable)
-'''
+"""
 def execute_sql_query(sql_query = None):
 	data = None
 
@@ -442,3 +445,25 @@ def execute_sql_query(sql_query = None):
 		databaseClose(conn_info)
 
 	return data
+
+
+"""
+	
+"""
+async def post_in_multiple_channels(message = None, channels = None, client = None):
+	for channel in channels:
+		if channel.type == discord.ChannelType.text:
+			await client.send_message(channel, message)
+	return
+
+def get_channel(server = None, channel_name = ""):
+	channel = None
+	for chan in server.channels:
+		if chan.name == channel_name:
+			channel = chan
+		logMsg("found channel {}".format(chan.name))
+
+	if channel == None:
+		logMsg("channel {} not found.".format(channel_name))
+
+	return channel
