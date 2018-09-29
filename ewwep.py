@@ -596,6 +596,8 @@ async def spar(cmd):
 
 			if user_data.hunger >= ewcfg.hunger_max:
 				response = "You are too exhausted to train right now. Go get some grub!"
+			elif user_data.poi != ewcfg.poi_id_dojo or sparred_data.poi != ewcfg.poi_id_dojo:
+				response = "Both players need to be in the dojo to spar."
 			elif sparred_data.hunger >= ewcfg.hunger_max:
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
