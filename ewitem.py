@@ -120,7 +120,7 @@ class EwItem:
 				cursor.close()
 				ewutils.databaseClose(conn_info)
 
-	""" Save user data object to the database. """
+	""" Save item data object to the database. """
 	def persist(self):
 		try:
 			conn_info = ewutils.databaseConnect()
@@ -279,14 +279,13 @@ def item_destroyall(id_server = None, id_user = None, member = None):
 			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
-			# Create the item in the database.
 			cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
 				id_user = ewcfg.col_id_user,
 				id_server = ewcfg.col_id_server,
 				soulbound = ewcfg.col_soulbound,
 			), (
-				id_user,
-				id_server
+				id_server,
+				id_user
 			))
 
 			conn.commit()
