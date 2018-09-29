@@ -206,7 +206,7 @@ emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
-emote_bustin = "<:bustin:494302358839361554>"
+emote_bustin = "<:bustin:495241224848932865>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -1932,7 +1932,7 @@ poi_list = [
 			"tm"
 		],
 		str_name = "The Mines",
-		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the NEGASLIME. Prolonged contact with the NEGASLIME has temporarily suffused the walls with profane energy, making them solid to ghosts.",
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Juvie's Row.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",

@@ -524,6 +524,7 @@ async def attack(cmd):
 """ player kills themself """
 async def suicide(cmd):
 	response = ""
+	deathreport = ""
 
 	# Only allowed in the combat zone.
 	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
@@ -644,7 +645,7 @@ async def spar(cmd):
 					stronger_player = sparred_data if user_data is weaker_player else user_data
 
 					# Weaker player gains slime based on the slime of the stronger player.
-					possiblegain = (ewcfg.slimes_perspar_base * (2 ** weaker_player.slimelevel))
+					possiblegain = int(ewcfg.slimes_perspar_base * (2.2 ** weaker_player.slimelevel))
 					slimegain = min(possiblegain, stronger_player.slimes / 20)
 					weaker_player.change_slimes(n = slimegain)
 					

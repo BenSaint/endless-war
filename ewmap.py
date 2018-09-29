@@ -448,8 +448,14 @@ async def move(cmd):
 	if inaccessible(user_data = user_data, poi = poi):
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
-	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted and poi != ewcfg.poi_id_thesewers:  # sometimes busted ghosts get stuck outside the sewers
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted:
+		if user_data.poi == ewcfg.poi_id_thesewers:
+			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+		else:  # sometimes busted ghosts get stuck outside the sewers
+			user_data.poi = ewcfg.poi_id_thesewers
+			user_data.persist()
+			await ewrolemgr.updateRoles(cmd.client, cmd.message.author)
+			return
 
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
 		path = EwPath(cost = 60)
