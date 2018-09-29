@@ -454,7 +454,7 @@ async def move(cmd):
 		else:  # sometimes busted ghosts get stuck outside the sewers
 			user_data.poi = ewcfg.poi_id_thesewers
 			user_data.persist()
-			ewrolemgr.updateRoles(cmd.client, cmd.message.author)
+			await ewrolemgr.updateRoles(cmd.client, cmd.message.author)
 			return
 
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
