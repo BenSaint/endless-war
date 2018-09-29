@@ -83,19 +83,27 @@ async def order(cmd):
 		response = ewcfg.str_food_channelreq.format(action = "order")
 	else:
 		value = None
+		togo = False
 		if cmd.tokens_count > 1:
 			for token in cmd.tokens[1:]:
-				if token.startswith('<@') == False:
+				if token.startswith('<@') == False and token not in "togo":  # togo can be spelled together or separate
 					value = token
+					break
+			for token in cmd.tokens[1:]:
+				if token in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
+					togo = True
 					break
 
 		food = ewcfg.food_map.get(value)
+		if food.vendor == ewcfg.vendor_vendingmachine:
+			togo = True
 
 		member = None
-		if cmd.mentions_count == 1:
-			member = cmd.mentions[0]
-			if member.id == cmd.message.author.id:
-				member = None
+		if not togo:  # cant order togo for someone else, you can just give it to them in person
+			if cmd.mentions_count == 1:
+				member = cmd.mentions[0]
+				if member.id == cmd.message.author.id:
+					member = None
 
 		member_data = EwUser(member = member)
 
@@ -110,7 +118,7 @@ async def order(cmd):
 			if member != None:
 				target_data = EwUser(member = member)
 
-			value = food.price
+			value = food.price if not togo else food.price * 10
 
 			# Kingpins eat free.
 			if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
@@ -126,50 +134,59 @@ async def order(cmd):
 			else:
 				user_data.slimecredit -= value
 
-				if target_data != None:
-					target_data.hunger -= food.recover_hunger
-					if target_data.hunger < 0:
-						target_data.hunger = 0
-					target_data.inebriation += food.inebriation
-					if target_data.inebriation > 20:
-						target_data.inebriation = 20
-					
-				else:
-					user_data.hunger -= food.recover_hunger
-					if user_data.hunger < 0:
-						user_data.hunger = 0
-					user_data.inebriation += food.inebriation
-					if user_data.inebriation > 20:
-						user_data.inebriation = 20
+				if not togo:
 
-				market_data.slimes_casino += food.price
+					if target_data != None:
+						target_data.hunger -= food.recover_hunger
+						if target_data.hunger < 0:
+							target_data.hunger = 0
+						target_data.inebriation += food.inebriation
+						if target_data.inebriation > 20:
+							target_data.inebriation = 20
+
+					else:
+						user_data.hunger -= food.recover_hunger
+						if user_data.hunger < 0:
+							user_data.hunger = 0
+						user_data.inebriation += food.inebriation
+						if user_data.inebriation > 20:
+							user_data.inebriation = 20
+
+					market_data.slimes_casino += food.price
+				else:
+					inv = ewitem.inventory(
+						id_user = cmd.message.author.id,
+						id_server = cmd.message.server.id
+					)
+					#for item in inv:
+					#todo finish this shit
+
+					item_props = {
+						'food_name': food.str_name,
+						'food_desc': food.str_desc,
+						'recover_hunger': food.recover_hunger,
+						'price': food.price,
+						'inebriation': food.inebriation,
+						'vendor': food.vendor,
+						'str_eat': food.str_eat
+					}
+
+					ewitem.item_create(
+						item_type = ewcfg.it_food,
+						id_user = cmd.message.author.id,
+						id_server = cmd.message.server.id,
+						item_props = item_props
+					)
 
 				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{sharetext}{flavor}".format(
 					cost = value,
 					vendor = food.vendor,
 					food = food.str_name,
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
-					flavor = food.str_eat
+					flavor = food.str_eat if not togo else ""
 				)
 				if member == None and user_data.hunger <= 0:
 					response += "\n\nYou're stuffed!"
-
-				item_props = {
-					'food_name': food.str_name,
-					'food_desc': food.str_desc,
-					'recover_hunger': food.recover_hunger,
-					'price': food.price,
-					'inebriation': food.inebriation,
-					'vendor': food.vendor,
-					'str_eat': food.str_eat
-				}
-
-				food_item = ewitem.item_create(
-					item_type = ewcfg.it_food,
-					id_user = cmd.message.author.id,
-					id_server = cmd.message.server.id,
-					item_props = item_props
-				)
 
 				user_data.persist()
 				market_data.persist()

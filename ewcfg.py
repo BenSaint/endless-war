@@ -145,6 +145,7 @@ cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
+cmd_buy = cmd_prefix + 'buy'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -776,6 +777,7 @@ vendor_pizzahut = 'Pizza Hut'
 vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
 vendor_mtndew = 'Mtn Dew Fountain'
+vendor_vendingmachine = 'vending machine'
 
 # A map of name to EwWeather objects.
 weather_map = {}

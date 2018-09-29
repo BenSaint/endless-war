@@ -115,7 +115,7 @@ cmd_map = {
 
 	# Order refreshing food and drinks!
 	ewcfg.cmd_order: ewfood.order,
-
+	ewcfg.cmd_buy: ewfood.order,
 
 	# Transfer slime between players. Shares a cooldown with investments.
 	ewcfg.cmd_transfer: ewmarket.xfer,
