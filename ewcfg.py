@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v1.99"
+version = "v2.01"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -42,6 +42,7 @@ poi_id_cinema = "nlacakanmcinemas"
 poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
+poi_id_slimecorphq = "slimecorphq"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -78,6 +79,7 @@ channel_arena = "battle-arena"
 channel_nlacu = "nlac-university"
 channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
+channel_slimecorphq = "slimecorp-hq"
 
 # Commands
 cmd_prefix = '!'
@@ -85,6 +87,7 @@ cmd_enlist = cmd_prefix + 'enlist'
 cmd_revive = cmd_prefix + 'revive'
 cmd_kill = cmd_prefix + 'kill'
 cmd_shoot = cmd_prefix + 'shoot'
+cmd_attack = cmd_prefix + 'attack'
 cmd_devour = cmd_prefix + 'devour'
 cmd_mine = cmd_prefix + 'mine'
 cmd_score = cmd_prefix + 'slimes'
@@ -103,7 +106,7 @@ cmd_slimeslots = cmd_prefix + 'slimeslots'
 cmd_slimecraps = cmd_prefix + 'slimecraps'
 cmd_slimeroulette = cmd_prefix + 'slimeroulette'
 cmd_deadmega = cmd_prefix + 'deadmega'
-cmd_invest = cmd_prefix + 'invest'
+cmd_donate = cmd_prefix + 'donate'
 cmd_slimecredit = cmd_prefix + 'slimecoin'
 cmd_slimecredit_alt1 = cmd_prefix + 'slimecredit'
 cmd_withdraw = cmd_prefix + 'withdraw'
@@ -141,24 +144,22 @@ cmd_booru = cmd_prefix + 'booru'
 cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
+cmd_news = cmd_prefix + 'news'
 
 # Slime costs/values
-slimes_tokill = 20
-slimes_permine = 20
-slimes_perdrink = 500
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
-slimes_toenlist = 420
-slimes_perspar_base = 3000
+slimes_toenlist = 0
+slimes_perspar_base = 1000
 slimes_hauntratio = 40
-slimes_hauntmax = 5000
-slimes_perslot = 100
-slimes_perpachinko = 500
+slimes_hauntmax = 20000
+slimes_perslot = 10
+slimes_perpachinko = 50
 
 # hunger
 hunger_max = 250
-hunger_pershot = 1
-hunger_perspar = 1
+hunger_pershot = 10
+hunger_perspar = 30
 hunger_permine = 1
 hunger_pertick = 3
 
@@ -205,18 +206,19 @@ emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
+emote_bustin = "<:bustin:494302358839361554>"
 
 # Emotes for the negaslime writhe animation
-emote_vt = "<:vt:473955145189949451>"
-emote_ve = "<:ve:473955145500065793>"
-emote_va = "<:va:473955145621700629>"
-emote_v_ = "<:v_:473955145953050645>"
-emote_s_ = "<:s_:473955145441607700>"
-emote_ht = "<:ht:473955145357590539>"
-emote_hs = "<:hs:473955145143549963>"
-emote_he = "<:he:473955145454190605>"
-emote_h_ = "<:h_:473955145491677187>"
-emote_blank = "<:blank:438387278361001985>"
+emote_vt = "<:vt:492067858160025600>"
+emote_ve = "<:ve:492067844930928641>"
+emote_va = "<:va:492067850878451724>"
+emote_v_ = "<:v_:492067837565861889>"
+emote_s_ = "<:s_:492067830624157708>"
+emote_ht = "<:ht:492067823150039063>"
+emote_hs = "<:hs:492067783396294658>"
+emote_he = "<:he:492067814933266443>"
+emote_h_ = "<:h_:492067806465228811>"
+emote_blank = "<:blank:492087853702971403>"
 
 # Common strings.
 str_casino_closed = "The Slime Casino only operates at night."
@@ -253,7 +255,6 @@ col_slimes = 'slimes'
 col_slimelevel = 'slimelevel'
 col_hunger = 'hunger'
 col_totaldamage = 'totaldamage'
-col_kills = 'kills'
 col_weapon = 'weapon'
 col_weaponskill = 'weaponskill'
 col_trauma = 'trauma'
@@ -272,15 +273,7 @@ col_ghostbust = 'ghostbust'
 col_faction = 'faction'
 col_poi = 'poi'
 col_life_state = 'life_state'
-col_max_kills = 'max_kills'
-col_max_slimesowned = 'max_slimesowned'
-col_max_bountyonhead = 'max_bountyonhead'
-col_max_slimecredit = 'max_slimecredit'
-col_max_poudrins = 'max_poudrins'
-col_max_level = 'max_level'
-col_max_ghostbusts = 'max_ghostbusts'
-col_total_damagedealt = 'total_damagedealt'
-col_total_deaths = 'total_deaths'
+col_busted = 'busted'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
@@ -308,6 +301,8 @@ col_timestamp = 'timestamp'
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
+it_food = "food"
+it_weapon = "weapon"
 
 # Categories of events that change your slime total, for statistics tracking
 source_mining = 0
@@ -392,12 +387,13 @@ def wef_rifle(ctn = None):
 # weapon effect function for "nun-chucks"
 def wef_nunchucks(ctn = None):
 	ctn.strikes = 0
-	count = 5
-	while count > 0:
-		if random.randrange(3) == 1:
-			ctn.strikes += 1
+	dmg = ctn.slimes_damage
+	ctn.slimes_damage = 0
 
-		count -= 1
+	for count in range(5):
+		if random.randint(1, 3) == 1:
+			ctn.strikes += 1
+			ctn.slimes_damage += int(dmg / 2)
 
 	if ctn.strikes == 5:
 		ctn.crit = True
@@ -511,6 +507,7 @@ weapon_list = [
 		str_trauma_self = "You have scarring on both temples, which occasionally bleeds.",
 		str_trauma = "They have scarring on both temples, which occasionally bleeds.",
 		str_kill = "{name_player} puts their gun to {name_target}'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {emote_skull}",
+		str_killdescriptor = "gunned down",
 		str_damage = "{name_target} takes a bullet to the {hitzone}!!",
 		str_duel = "**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads.",
 		fn_effect = wef_gun
@@ -530,6 +527,7 @@ weapon_list = [
 		str_trauma_self = "Your torso is riddled with scarred-over bulletholes.",
 		str_trauma = "Their torso is riddled with scarred-over bulletholes.",
 		str_kill = "**RAT-TAT-TAT-TAT-TAT!!** {name_player} rains a hail of bullets directly into {name_target}!! They're officially toast! {emote_skull}",
+		str_killdescriptor = "gunned down",
 		str_damage = "Bullets rake over {name_target}'s {hitzone}!!",
 		str_duel = "**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts.",
 		fn_effect = wef_rifle
@@ -550,6 +548,7 @@ weapon_list = [
 		str_trauma_self = "You are covered in deep bruises. You hate martial arts of all kinds.",
 		str_trauma = "They are covered in deep bruises. They hate martial arts of all kinds.",
 		str_kill = "**HIIII-YAA!!** With expert timing, {name_player} brutally batters {name_target} to death, then strikes a sweet kung-fu pose. {emote_skull}",
+		str_killdescriptor = "fatally bludgeoned",
 		str_damage = "{name_target} takes {strikes} nun-chuck whacks directly in the {hitzone}!!",
 		str_duel = "**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision.",
 		fn_effect = wef_nunchucks
@@ -571,6 +570,7 @@ weapon_list = [
 		str_trauma_self = "A single clean scar runs across the entire length of your body.",
 		str_trauma = "A single clean scar runs across the entire length of their body.",
 		str_kill = "Faster than the eye can follow, {name_player}'s blade glints in the greenish light. {name_target} falls over, now in two pieces. {emote_skull}",
+		str_killdescriptor = "bisected",
 		str_damage = "{name_target} is slashed across the {hitzone}!!",
 		str_duel = "**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly.",
 		fn_effect = wef_katana
@@ -591,6 +591,7 @@ weapon_list = [
 		str_trauma_self = "Your head appears to be slightly concave on one side.",
 		str_trauma = "Their head appears to be slightly concave on one side.",
 		str_kill = "{name_player} pulls back for a brutal swing! **CRUNCCHHH.** {name_target}'s brains splatter over the sidewalk. {emote_skull}",
+		str_killdescriptor = "nail bat battered",
 		str_damage = "{name_target} is struck with a hard blow to the {hitzone}!!",
 		str_duel = "**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time.",
 		fn_effect = wef_bat
@@ -611,6 +612,7 @@ weapon_list = [
 		str_trauma_self = "There is noticeable bruising and scarring around your neck.",
 		str_trauma = "There is noticeable bruising and scarring around their neck.",
 		str_kill = "{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
+		str_killdescriptor = "garrote wired",
 		str_damage = "{name_target} is ensnared by {name_player}'s wire!!",
 		str_duel = "{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire.",
 		fn_effect = wef_garrote
@@ -631,6 +633,7 @@ weapon_list = [
 		str_trauma_self = "You've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_trauma = "They've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_kill = "{name_player} slugs {name_target} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well. {emote_skull}",
+		str_killdescriptor = "pummeled to death",
 		str_damage = "{name_target} is socked in the {hitzone}!!",
 		str_duel = "**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good.",
 		fn_effect = wef_brassknuckles
@@ -652,6 +655,7 @@ weapon_list = [
 		str_trauma_self = "You're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_trauma = "They're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_kill = "**SMASH!** {name_target}'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {name_player} is suspected of arson. {emote_skull}",
+		str_killdescriptor = "exploded",
 		str_damage = "{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!",
 		str_duel = "{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency.",
 		fn_effect = wef_molotov
@@ -674,6 +678,7 @@ weapon_list = [
 		str_trauma_self = "You are covered in scarred-over lacerations and puncture wounds.",
 		str_trauma = "They are covered in scarred-over lacerations and puncture wounds.",
 		str_kill = "A blade flashes through the air!! **THUNK.** {name_target} is a goner, but {name_player} slits their throat before fleeing the scene, just to be safe. {emote_skull}",
+		str_killdescriptor = "knifed",
 		str_damage = "{name_target} is stuck by a knife in the {hitzone}!!",
 		str_duel = "**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air.",
 		fn_effect = wef_knives
@@ -692,6 +697,7 @@ weapon_list = [
 		str_trauma_self = "You are wrapped tightly in bandages that hold your two halves together.",
 		str_trauma = "They are wrapped tightly in bandages that hold their two halves together.",
 		str_kill = "**SLASHH!!** {name_player}'s scythe cleaves the air, and {name_target} staggers. A moment later, {name_target}'s torso topples off their waist. {emote_skull}",
+		str_killdescriptor = "sliced in twain",
 		str_damage = "{name_target} is cleaved through the {hitzone}!!",
 		str_duel = "**WHOOSH, WHOOSH** {name_player} and {name_target} swing their blades in wide arcs, dodging one another's deadly slashes.",
 		fn_effect = wef_scythe
@@ -762,13 +768,6 @@ weather_list = [
 		day = "You can barely see to the next block in the sickly greenish NLAC smog.",
 		sunset = "Visibility only grows worse in the fog as the sun sets and the daylight fades.",
 		night = "Everything is obscured by the darkness of night and the thick city smog."
-	),
-		EwWeather(
-		name = "gray",
-		sunrise = "Everything is still and gray.",
-		day = "Everything is still and gray.",
-		sunset = "Everything is still and gray.",
-		night = "Everything is still and gray."
 	)
 ]
 
@@ -792,7 +791,7 @@ food_list = [
 			"tonic",
 		],
 		recover_hunger = 20,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
 		vendor = vendor_bar,
@@ -804,7 +803,7 @@ food_list = [
 			"colada",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slima colada',
 		vendor = vendor_bar,
@@ -817,7 +816,7 @@ food_list = [
 			"slimeka",
 		],
 		recover_hunger = 5,
-		price = 90,
+		price = 1,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
 		vendor = vendor_bar,
@@ -832,7 +831,7 @@ food_list = [
 			"bottle",
 		],
 		recover_hunger = 40,
-		price = 3000,
+		price = 20,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
 		vendor = vendor_bar,
@@ -844,7 +843,7 @@ food_list = [
 			"",
 		],
 		recover_hunger = 10,
-		price = 180,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slimy nipple',
 		vendor = vendor_bar,
@@ -856,7 +855,7 @@ food_list = [
 			"beach",
 		],
 		recover_hunger = 30,
-		price = 240,
+		price = 3,
 		inebriation = 2,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -868,7 +867,7 @@ food_list = [
 			"goo",
 		],
 		recover_hunger = 30,
-		price = 160,
+		price = 2,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
 		vendor = vendor_bar,
@@ -880,7 +879,7 @@ food_list = [
 			"manhattan",
 		],
 		recover_hunger = 25,
-		price = 200,
+		price = 3,
 		inebriation = 3,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -892,7 +891,7 @@ food_list = [
 			"mary",
 		],
 		recover_hunger = 35,
-		price = 140,
+		price = 2,
 		inebriation = 2,
 		str_name = 'slimy mary',
 		vendor = vendor_bar,
@@ -905,7 +904,7 @@ food_list = [
 			"beer",
 		],
 		recover_hunger = 30,
-		price = 150,
+		price = 2,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
 		vendor = vendor_bar,
@@ -929,7 +928,7 @@ food_list = [
 			"pizzaslice",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pizza',
 		vendor = vendor_pizzahut,
@@ -940,8 +939,8 @@ food_list = [
 		alias = [
 			"peperoni",
 		],
-		recover_hunger = 60,
-		price = 110,
+		recover_hunger = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
 		vendor = vendor_pizzahut,
@@ -953,7 +952,7 @@ food_list = [
 			"meatpizza",
 		],
 		recover_hunger = 70,
-		price = 160,
+		price = 2,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
 		vendor = vendor_pizzahut,
@@ -964,8 +963,8 @@ food_list = [
 		alias = [
 			"buffalowings",
 		],
-		recover_hunger = 90,
-		price = 175,
+		recover_hunger = 80,
+		price = 2,
 		inebriation = 0,
 		str_name = 'buffalo wings',
 		vendor = vendor_pizzahut,
@@ -977,7 +976,7 @@ food_list = [
 			"softtaco",
 		],
 		recover_hunger = 30,
-		price = 50,
+		price = 1,
 		inebriation = 0,
 		str_name = 'soft taco',
 		vendor = vendor_tacobell,
@@ -990,7 +989,7 @@ food_list = [
 			"nachotaco"
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
@@ -1002,7 +1001,7 @@ food_list = [
 			"ranchtaco",
 		],
 		recover_hunger = 40,
-		price = 70,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
 		vendor = vendor_tacobell,
@@ -1014,7 +1013,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 60,
-		price = 100,
+		price = 2,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
 		vendor = vendor_tacobell,
@@ -1027,7 +1026,7 @@ food_list = [
 			"quesomachorito"
 		],
 		recover_hunger = 140,
-		price = 250,
+		price = 5,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
 		vendor = vendor_tacobell,
@@ -1039,7 +1038,7 @@ food_list = [
 			"slaw",
 		],
 		recover_hunger = 20,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
 		vendor = vendor_kfc,
@@ -1052,7 +1051,7 @@ food_list = [
 			"gravy"
 		],
 		recover_hunger = 30,
-		price = 55,
+		price = 1,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
 		vendor = vendor_kfc,
@@ -1065,7 +1064,7 @@ food_list = [
 			"chicken",
 		],
 		recover_hunger = 120,
-		price = 220,
+		price = 4,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
 		vendor = vendor_kfc,
@@ -1077,7 +1076,7 @@ food_list = [
 			"gordita",
 		],
 		recover_hunger = 70,
-		price = 130,
+		price = 2,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
 		vendor = vendor_kfc,
@@ -1090,8 +1089,8 @@ food_list = [
 			"sauce",
 			"saucepacket",
 		],
-		recover_hunger = 5,
-		price = 10,
+		recover_hunger = 0,
+		price = 0,
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
@@ -1104,8 +1103,8 @@ food_list = [
 			"mountaindew",
 			"greendew"
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew',
 		vendor = vendor_mtndew,
@@ -1116,8 +1115,8 @@ food_list = [
 		alias = [
 			"bluedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Baja Blast',
 		vendor = vendor_mtndew,
@@ -1128,8 +1127,8 @@ food_list = [
 		alias = [
 			"reddew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Code Red',
 		vendor = vendor_mtndew,
@@ -1140,8 +1139,8 @@ food_list = [
 		alias = [
 			"blackdew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Pitch Black',
 		vendor = vendor_mtndew,
@@ -1152,8 +1151,8 @@ food_list = [
 		alias = [
 			"whitedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew White-Out',
 		vendor = vendor_mtndew,
@@ -1164,8 +1163,8 @@ food_list = [
 		alias = [
 			"orangedew",
 		],
-		recover_hunger = 20,
-		price = 35,
+		recover_hunger = 10,
+		price = 1,
 		inebriation = 0,
 		str_name = 'Mtn Dew Livewire',
 		vendor = vendor_mtndew,
@@ -1254,6 +1253,28 @@ item_def_list = [
 			'qitem_name': 'Quest Item',
 			'qitem_desc': 'Something important to somebody.'
 		}
+	),
+
+	EwItemDef(
+		item_type = it_food,
+		str_name = "{fitem_name}",
+		str_desc = "{fitem_desc}",
+		soulbound = False,
+		item_props = {
+			'fitem_name': 'Food Item',
+			'fitem_desc': 'Food.'
+		}
+	),
+
+	EwItemDef(
+		item_type = it_weapon,
+		str_name = "{witem_name}",
+		str_desc = "{witem_desc}",
+		soulbound = False,
+		item_props = {
+			'witem_name': 'Weapon',
+			'witem_desc': 'It\'s a weapon of some sort.'
+		}
 	)
 ]
 
@@ -1280,6 +1301,18 @@ poi_list = [
 		channel = channel_endlesswar,
 		role = "Endless War"
 	),
+	EwPoi( # slimecorp HQ
+		id_poi = poi_id_slimecorphq,
+		alias = [
+			"slimecorp",
+			"hq",
+		],
+		str_name = "SlimeCorp HQ",
+		str_desc = "Within the gleaming metal hull of the towering SlimeCorp HQ, brightly lit sterile white hallways wind like a maze, past countless receptionists' desks, waiting rooms, and high-tech stainless steel vault doors.",
+		coord = (27, 18),
+		channel = channel_slimecorphq,
+		role = "SlimeCorp HQ"
+	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
 		alias = [
@@ -1287,11 +1320,13 @@ poi_list = [
 			"dt",
 		],
 		str_name = "Downtown NLACakaNM",
-		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
+		str_desc = "Skyscrapers tower over every street as far as the eye can see. Fluorescent signs flash advertisements in strange glyphs and the streets roar with the sound of engines and scraping metal from the subway deep underground.\n\nThis area contains ENDLESS WAR, SlimeCorp HQ and the Slime Stock Exchange. To the north is Smogsburg. To the East is the Green Light District. To the South is the Rowdy Roughhouse. To the Southwest is Poudrin Alley. To the West is Krak Bay. To the Northwest is Cop Killtown.",
 		coord = (23, 16),
 		coord_alias = [
 			(24, 16),
-			(25, 16)
+			(25, 16),
+			(25, 17),
+			(25, 18)
 		],
 		channel = "downtown",
 		role = "Downtown"
@@ -1301,6 +1336,7 @@ poi_list = [
 		alias = [
 			"smog",
 			"smogs",
+			"sb"
 		],
 		str_name = "Smogsburg",
 		str_desc = "The pavement rumbles as subway trains grind along their tracks far beneath your feet. In every direction, smokestacks belch sickly clouds into the sky.\n\nThis area contains the Bazaar. To the North is Arsonbrook. To the Northeast is Little Chernobyl. To the East is Old New Yonkers. To the South is Downtown NLACakaNM. To the West is Cop Killtown. To the Northwest is Astatine Heights.",
@@ -1316,14 +1352,14 @@ poi_list = [
 			"killers",
 			"killer",
 			"killtown",
-			"copkt"
+			"copkt",
+			"ck"
 		],
 		str_name = "Cop Killtown",
 		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.\n\nTo the North is Astatine Heights. To the Northeast is Little Chernobyl. To the East is Smogsburg. To the Southeast is Downtown NLACakaNM. To the West is Vandal Park. To the Northwest is Gatlingsdale.",
 		coord = (17, 13),
 		channel = "cop-killtown",
 		role = "Cop Killtown",
-		pvp = False,
 		factions = [
 			faction_killers
 		]
@@ -1331,7 +1367,8 @@ poi_list = [
 	EwPoi( # 4
 		id_poi = "krakbay",
 		alias = [
-			"krak"
+			"krak",
+			"kb"
 		],
 		str_name = "Krak Bay",
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.\n\nThis area contains the Food Court. To the East is Downtown NLACakaNM. To the Southeast is Poudrin Alley. To the South is Ooze Gardens. To the Southwest is South Sleezeborough. To the West is North Sleezeborough. To the Northwest is Glocksbury.",
@@ -1342,7 +1379,8 @@ poi_list = [
 	EwPoi( # 5
 		id_poi = "poudrinalley",
 		alias = [
-			"poudrin"
+			"poudrin",
+			"pa"
 		],
 		str_name = "Poudrin Alley",
 		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.\n\nThis area contains the 7-11. To the Northeast is Downtown NLACakaNM. To the East is the Rowdy Roughhouse. To the South is Cratersville. To the Southwest is Ooze Gardens. To the Northwest is Krak Bay.",
@@ -1357,14 +1395,14 @@ poi_list = [
 			"rowdys",
 			"rowdies",
 			"roughhouse",
-			"rowdyrh"
+			"rowdyrh",
+			"rr"
 		],
 		str_name = "Rowdy Roughhouse",
 		str_desc = "Rusted pink metal shanties are hastily constructed as far as the eye can see, sometimes stacked on top of one another, forming high towers and densely populated mazes.\n\nTo the North is Downtown NLACakaNM. To the South is Wreckington. To the Southwest is Cratersville. To the West is Poudrin Alley.",
 		coord = (25, 21),
 		channel = "rowdy-roughhouse",
 		role = "Rowdy Roughhouse",
-		pvp = False,
 		factions = [
 			faction_rowdys
 		]
@@ -1372,7 +1410,8 @@ poi_list = [
 	EwPoi( # 7
 		id_poi = "greenlightdistrict",
 		alias = [
-			"greenlight"
+			"greenlight",
+			"gld"
 		],
 		str_name = "Green Light District",
 		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.\n\nThis area contains the Slime Casino. To the East is Juvie's Row. To the West is Downtown NLACakaNM.",
@@ -1382,6 +1421,9 @@ poi_list = [
 	),
 	EwPoi( # 8
 		id_poi = "oldnewyonkers",
+		alias = [
+			"ony"
+		],
 		str_name = "Old New Yonkers",
 		str_desc = "Rows of three-story brick and stone condominiums with white marble moulding wind along lanes of chipped cobblestone. Wrought-iron spikes jut from windows and balconies.\n\nTo the Northeast is New New Yonkers. To the Southeeast is Vagrant's Corner. To the Southwest is Smogsburg. To the East is Little Chernobyl. To the Northwest is Brawlden.",
 		coord = (32, 9),
@@ -1391,7 +1433,10 @@ poi_list = [
 	EwPoi( # 9
 		id_poi = "littlechernobyl",
 		alias = [
-			"chernobyl"
+			"chernobyl",
+			"lilchernobyl",
+			"lilchern",
+			"lc"
 		],
 		str_name = "Little Chernobyl",
 		str_desc = "Pathetic little gardens front the uneven parking lots of corporate complexes housing dentists, fortune-tellers, real estate agencies, and other equally dull and pointless ventures.\n\nTo the North is Brawlden. To the East is Old New Yonkers. To the West is Arsonbrook.",
@@ -1402,7 +1447,8 @@ poi_list = [
 	EwPoi( # 10
 		id_poi = "arsonbrook",
 		alias = [
-			"arson"
+			"arson",
+			"ab"
 		],
 		str_name = "Arsonbrook",
 		str_desc = "North of the bridge, you see large swathes of what were once suburbs blackened and flat, occasionally still smoking. Legends say a Starbucks tried to open here once.\n\nTo the East is Brawlden. To the Southeast is Little Chernobyl. To the South is Smogsburg. To the West is Astatine Heights.",
@@ -1413,7 +1459,9 @@ poi_list = [
 	EwPoi( # 11
 		id_poi = "astatineheights",
 		alias = [
-			"astatine"
+			"astatine",
+			"heights",
+			"ah"
 		],
 		str_name = "Astatine Heights",
 		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards.\n\nThis area contains NLACakaNM Cinemas. To the East is Arsonbrook. To the Southeast is Smogsburg. To the South is Cop Killtown. To the Southwest is Gatlingsdale. To the West is Toxington.",
@@ -1425,6 +1473,8 @@ poi_list = [
 		id_poi = "gatlingsdale",
 		alias = [
 			"gatlings",
+			"gatling",
+			"gd"
 		],
 		str_name = "Gatlingsdale",
 		str_desc = "The brightest young minds of NLACakaNM fritter away their time here, amid hallowed halls of learning ringed endlessly by foreign book stores and vintage clothing shops.\n\nTo the Northeast is Astatine Heights. To the Southeast is Cop Killtown. To the Southwest is Vandal Park. To the West is Polonium Hill. To the Northwest is Toxington.",
@@ -1436,6 +1486,8 @@ poi_list = [
 		id_poi = "vandalpark",
 		alias = [
 			"vandal",
+			"park",
+			"vp"
 		],
 		str_name = "Vandal Park",
 		str_desc = "The more-or-less clean air carries the roar of the crowd across the grassy fields surrounding the Battle Arena.\n\nThis area contains the Battle Arena. To the Northeast is Gatlingsdale. To the East is Cop Killtown. To the South is Glocksbury. To the Southwest is West Glocksbury. To the Northwest is Polonium Hill.",
@@ -1446,7 +1498,8 @@ poi_list = [
 	EwPoi( # 14
 		id_poi = "glocksbury",
 		alias = [
-			"glocks"
+			"glocks",
+			"gb"
 		],
 		str_name = "Glocksbury",
 		str_desc = "You smell bacon. *Figurative* bacon. The streets are too orderly here... the cops must be about. Absolutely vile.\n\nTo the North is Vandal Park. To the Southeast is Krak Bay. To the South is North Sleezeborough. To the West is West Glocksbury.",
@@ -1459,7 +1512,10 @@ poi_list = [
 		alias = [
 			"northsleezeboro",
 			"nsleezeborough",
-			"nsleezeboro"
+			"nsleezeboro",
+			"nsleeze",
+			"northsleeze",
+			"nsb"
 		],
 		str_name = "North Sleezeborough",
 		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.\n\nTo the North is Glocksbury. To the East is Krak Bay. To the South is South Sleezeborough.",
@@ -1472,7 +1528,10 @@ poi_list = [
 		alias = [
 			"southsleezeboro",
 			"ssleezeborough",
-			"ssleezeboro"
+			"ssleezeboro",
+			"ssleeze",
+			"southsleeze",
+			"ssb"
 		],
 		str_name = "South Sleezeborough",
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Gardens.",
@@ -1483,7 +1542,9 @@ poi_list = [
 	EwPoi( # 17
 		id_poi = "oozegardens",
 		alias = [
-			"ooze"
+			"ooze",
+			"gardens",
+			"og"
 		],
 		str_name = "Ooze Gardens",
 		str_desc = "A bird chirps its last before falling dead from a withered tree. A trickle of slime runs down its bark. The resident's attempts to beautify the neighborhood with foliage have really backfired, aesthetically speaking.\n\nTo the North is Krak Bay. To the Northeast is Poudrin Alley. To the East is Cratersville. To the West is South Sleezeborough.",
@@ -1494,7 +1555,9 @@ poi_list = [
 	EwPoi( # 18
 		id_poi = "cratersville",
 		alias = [
-			"craters"
+			"craters",
+			"cville",
+			"cv"
 		],
 		str_name = "Cratersville",
 		str_desc = "The people here hurry to their destinations, avoiding eye contact. They must be wary after seeing gang members level the next town over not too long ago.\n\nTo the North is Poudrin Alley. To the Northeast is the Rowdy Roughhouse. To the East is Wreckington. To the West is Ooze Gardens.",
@@ -1505,7 +1568,9 @@ poi_list = [
 	EwPoi( # 19
 		id_poi = "wreckington",
 		alias = [
-			"wrecking"
+			"wrecking",
+			"wton",
+			"wt"
 		],
 		str_name = "Wreckington",
 		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.\n\nTo the North is the Rowdy Roughhouse. To the West is Cratersville.",
@@ -1517,18 +1582,22 @@ poi_list = [
 		id_poi = "juviesrow",
 		alias = [
 			"juvies",
+			"jrow",
+			"jr"
 		],
 		str_name = "Juvie's Row",
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.\n\nTo the Northeast is Vagrant's Corner. To the Northwest is the Green Light District.",
 		coord = (32, 18),
 		channel = "juvies-row",
-		role = "Juvie's Row",
-		pvp = False
+		role = "Juvie's Row"
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",
 		alias = [
-			"slimes"
+			"slimes",
+			"send",
+			"end",
+			"se"
 		],
 		str_name = "Slime's End",
 		str_desc = "The narrow peninsula is bordered on both sides by the Slime Sea. The phosphorescence of the Sea illuminates the land and sky with an eerily even green glow.\n\n To the North is Vagrant's Corner.",
@@ -1539,7 +1608,9 @@ poi_list = [
 	EwPoi( # 22
 		id_poi = "vagrantscorner",
 		alias = [
-			"vagrants"
+			"vagrants",
+			"vcorner",
+			"vc"
 		],
 		str_name = "Vagrant's Corner",
 		str_desc = "The glow of the Slime Sea illumunates the undersides of the docks and the heavy industrial machinery designed to pump slime into the cargo holds of outbound barges.\n\nThis area contains The King's Wife's Son Speakeasy. To the North is New New Yonkers. To the Northeast is Assault Flats Beach Resort. To the South is Slime's End. To the Southwest is Juvie's Row. To the West is the Green Light District. To the Northwest is Old New Yonkers.",
@@ -1556,7 +1627,8 @@ poi_list = [
 			"resort",
 			"assault",
 			"flats",
-			"assflats"
+			"assflats",
+			"afbr"
 		],
 		str_name = "Assault Flats Beach Resort",
 		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront.\n\nTo the South is Vagrant's Corner. To the West is New New Yonkers.",
@@ -1566,6 +1638,11 @@ poi_list = [
 	),
 	EwPoi( # 24
 		id_poi = "newnewyonkers",
+		alias = [
+			"nnewyonkers",
+			"nnyonkers",
+			"nny"
+		],
 		str_name = "New New Yonkers",
 		str_desc = "Trendy restaurants and clubs sit empty in this sparsely-populated failed gentrification experiment.\n\nTo the East is Assault Flats Beach Resort. To the South is Vagrant's Corner. To the Southwest is Old New Yonkers. To the West is Brawlden.",
 		coord = (36, 4),
@@ -1575,6 +1652,8 @@ poi_list = [
 	EwPoi( # 25
 		id_poi = "brawlden",
 		alias = [
+			"den",
+			"bd"
 		],
 		str_name = "Brawlden",
 		str_desc = "Rough-looking bewifebeatered citizens are everywhere, doing unspecified maintenence on strange machines propped up on cinderblocks. A SlimeCorp Laboratory hums and whirrs in the distance, day and night.\n\nThis area contains the Slimeoid Laboratory. To the East is New New Yonkers. To the Southeast is Old New Yonkers. To the South is Little Chernobyl. To the West is Arsonbrook.",
@@ -1584,6 +1663,10 @@ poi_list = [
 	),
 	EwPoi( # 26
 		id_poi = "toxington",
+		alias = [
+			"tton",
+			"tt"
+		],
 		str_name = "Toxington",
 		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.\n\nTo the East is Astatine Heights. To the Southeast is Gatlingsdale. To the South is Polonium Hill. To the East is Charcoal Park.",
 		coord = (9, 4),
@@ -1593,7 +1676,11 @@ poi_list = [
 	EwPoi( # 27
 		id_poi = "charcoalpark",
 		alias = [
-			"charcoal"
+			"charcoal",
+			"park2",
+			"cpark",
+			"awkwardinitials",
+			"cp"
 		],
 		str_name = "Charcoal Park",
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.\n\nTo the East is Toxington. To the South is Polonium Hill.",
@@ -1604,7 +1691,10 @@ poi_list = [
 	EwPoi( # 28
 		id_poi = "poloniumhill",
 		alias = [
-			"polonium"
+			"polonium",
+			"hill",
+			"phill",
+			"ph"
 		],
 		str_name = "Polonium Hill",
 		str_desc = "The gently rolling terrain is speckled with hideous minimansions that obviously cost a fortune and look like complete shit.\n\nTo the North is Charcoal Park. To the Northeast is Toxington. To the East is Gatlingsdale. To the Southeast is Vandal park. To the South is West Glocksbury.",
@@ -1615,8 +1705,11 @@ poi_list = [
 	EwPoi( # 29
 		id_poi = "westglocksbury",
 		alias = [
+			"wglocksbury",
 			"westglocks",
-			"wglocks"
+			"wglocks",
+			"wgb",
+			"wg"
 		],
 		str_name = "West Glocksbury",
 		str_desc = "Gunshots ring out periodically from somewhere in the distance, hidden by laundromats and barber shops. Even the most jaded NLACakaNMite may get a bit nervous 'round these parts.\n\n To the North is Polonium Hill. To the Northeast is Vandal Park. To the East is Glocksbury",
@@ -1627,8 +1720,11 @@ poi_list = [
 	EwPoi( # the-sewers
 		id_poi = poi_id_thesewers,
 		alias = [
+			"drain",
 			"sewers",
-			"sewer"
+			"sewer",
+			"ts",
+			"s"
 		],
 		str_name = "The Sewers",
 		str_desc = "A vast subterranean maze of concrete tunnels, eternally echoing with the dripping of water and decayed slime runoff. All the waste of NLACakaNM eventually winds up here, citizens included.",
@@ -1636,16 +1732,19 @@ poi_list = [
 		life_states = [
 			life_state_corpse
 		],
-		role = "Sewers",
-		pvp = False
+		role = "Sewers"
 	),
 	EwPoi( # stock-exchange
 		id_poi = poi_id_stockexchange,
 		alias = [
 			"stocks",
 			"exchange",
+			"sexchange",
 			"stockexchange",
-			"slimestockexchange"
+			"slimestockexchange",
+			"sex",  # slime's end is "se"
+			"sec",
+			"sx"
 		],
 		str_name = "The Slime Stock Exchange",
 		str_desc = "A large interior space filled with vacant teller booths and data screens designed to dissplay market data, all powered off. Punch cards and ticker tape are strewn about the silent, empty floor.\n\nExits into Downtown NLACakaNM.",
@@ -1658,7 +1757,9 @@ poi_list = [
 		id_poi = poi_id_bazaar,
 		alias = [
 			"bazaar",
-			"market"
+			"market",
+			"bz",
+			"b"
 		],
 		str_name = "The Bazaar",
 		str_desc = "An open-air marketplace where professional merchants and regular citizens alike can hock their wares. It's currently completely barren.\n\nExits into Brawlden.",
@@ -1675,7 +1776,8 @@ poi_list = [
 			"cinemas",
 			"theater",
 			"movie",
-			"movies"
+			"movies",
+			"nc"
 		],
 		str_name = "NLACakaNM Cinemas",
 		str_desc = "A delightfully run-down movie theater, with warm carpeted walls fraying ever so slightly. Films hand picked by the Rowdy Fucker and/or Cop Killer are regularly screened.\n\nExits into Astatine Heights.",
@@ -1693,7 +1795,9 @@ poi_list = [
 			"food-court",
 			"pizzahut",
 			"tacobell",
-			"kfc"
+			"kfc",
+			"fcourt",
+			"fc"
 		],
 		str_name = "The NLACakaNM Food Court",
 		str_desc = "A large, brightly-lit area with tiled walls and floors, lined on all sides with Yum! Brand food vendors, surrounding the city's prized MTN DEW Fountain. The place is completely dead.\n\nExits into Krak Bay.",
@@ -1715,7 +1819,8 @@ poi_list = [
 			"university",
 			"nlacuniversity",
 			"college",
-			"uni"
+			"uni",
+			"nu"
 		],
 		str_name = "New Los Angeles City University",
 		str_desc = "An expansive campus housing massive numbers of students and administrators, all here in pursuit of knowledge. The campus is open to visitors, but there's nobody here.\n\nExits into Gatlingsdale.",
@@ -1729,7 +1834,9 @@ poi_list = [
 		alias = [
 			"thearena",
 			"arena",
-			"battlearena"
+			"battlearena",
+			"a",
+			"ba"
 		],
 		str_name = "The Battle Arena",
 		str_desc = "A huge arena stadium capable of housing tens of thousands of battle enthusiasts, ringing a large field where Slimeoid Battles are held. All the seats are empty.\n\nExits into Vandal Park.",
@@ -1744,7 +1851,9 @@ poi_list = [
 			"dojo",
 			"training",
 			"sparring",
-			"thedojo"
+			"thedojo",
+			"td",
+			"d"
 		],
 		str_name = "The Dojo",
 		str_desc = "A modest, easily overlooked building, but containing all the facilities necessary for becoming a killing machine. Bamboo and parchment walls separate the dojo floor into large tatami-matted sections.\n\nExits into South Sleezeborough.",
@@ -1759,7 +1868,9 @@ poi_list = [
 			"kingswifessonspeakeasy",
 			"kingswifesson",
 			"speakeasy",
-			"bar"
+			"bar",
+			"sez",  # se is already slime's end
+			"ez"
 		],
 		str_name = "The King's Wife's Son Speakeasy",
 		str_desc = "A rustic tavern with dark wooden walls and floor, bearing innumerable knickknacks on the walls and high wooden stools arranged in front of a bar made of patina'd copper. There's nobody here.\n\nExits into Vagrant's Corner.",
@@ -1801,7 +1912,9 @@ poi_list = [
 			"slimecorplabs",
 			"slimeoidlaboratory",
 			"slimeoidlab",
-			"slimeoidlabs"
+			"slimeoidlabs",
+			"slab",
+			"sl"
 		],
 		str_name = "SlimeCorp Slimeoid Laboratory",
 		str_desc = "A nondescript building containing mysterious SlimeCorp industrial equipment. Large glass tubes and metallic vats seem to be designed to serve as incubators. The lab is empty and the equipment is not being powered.\n\nExits into Brawlden.",
@@ -1814,10 +1927,12 @@ poi_list = [
 		id_poi = poi_id_mine,
 		alias = [
 			"mines",
-			"mine"
+			"mine",
+			"m",
+			"tm"
 		],
 		str_name = "The Mines",
-		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the Negaslime. Prolonged contact with the Negaslime has temporarily suffused the walls with profane energy, making them solid to ghosts.",
+		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the NEGASLIME. Prolonged contact with the NEGASLIME has temporarily suffused the walls with profane energy, making them solid to ghosts.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
@@ -1828,7 +1943,11 @@ poi_list = [
 		alias = [
 			"casino",
 			"slimecasino",
-			"theslimecasino"
+			"theslimecasino",
+			"tc",  # the casino
+			"sc",  # slime casino
+			"cas",
+			"c"
 		],
 		str_name = "The Casino",
 		str_desc = "The casino is filled with tables and machines for playing games of chance, and garishly decorated wall-to-wall. Lights which normally flash constantly cover everything, but now they all sit unlit.",
@@ -1856,4 +1975,3 @@ for poi in poi_list:
 	id_to_poi[poi.id_poi] = poi
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
-
