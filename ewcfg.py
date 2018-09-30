@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v2.01"
+version = "v2.02"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -206,7 +206,7 @@ emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
-emote_bustin = "<:bustin:495241224848932865>"
+emote_bustin = "<:bustin:455194248741126144>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -1362,7 +1362,8 @@ poi_list = [
 		role = "Cop Killtown",
 		factions = [
 			faction_killers
-		]
+		],
+		pvp = False
 	),
 	EwPoi( # 4
 		id_poi = "krakbay",
@@ -1405,7 +1406,8 @@ poi_list = [
 		role = "Rowdy Roughhouse",
 		factions = [
 			faction_rowdys
-		]
+		],
+		pvp = False
 	),
 	EwPoi( # 7
 		id_poi = "greenlightdistrict",
@@ -1589,7 +1591,8 @@ poi_list = [
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.\n\nTo the Northeast is Vagrant's Corner. To the Northwest is the Green Light District.",
 		coord = (32, 18),
 		channel = "juvies-row",
-		role = "Juvie's Row"
+		role = "Juvie's Row",
+		pvp = False
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",
