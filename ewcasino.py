@@ -305,7 +305,8 @@ async def roulette(cmd):
 	all_bets = ["0", "00", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
 				"16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31",
 				"32", "33", "34", "35", "36", "1strow", "2ndrow", "3rdrow", "1st12", "2nd12", "3rd12", "1to18",
-				"19to36", "even", "odd", "pink", "purple"]
+				"19to36", "even", "odd", "pink", "purple", "green"]
+	img_base = "https://ew.krakissi.net/img/cas/sr/"
 
 	global last_rouletted_times
 	last_used = last_rouletted_times.get(cmd.message.author.id)
@@ -340,13 +341,13 @@ async def roulette(cmd):
 			elif value > user_data.slimecredit or value == 0:
 				response = "You don't have enough SlimeCoin."
 			elif len(bet) == 0:
-				response = "You need to say what you're betting on. Options are: {}".format(ewutils.formatNiceList(names = all_bets))
+				response = "You need to say what you're betting on. Options are: {}\n{}board.png".format(ewutils.formatNiceList(names = all_bets), img_base)
 			elif bet not in all_bets:
-				response = "The dealer didn't understand your wager. Use !help to see a guide to the casino."
+				response = "The dealer didn't understand your wager. Options are: {}\n{}board.png".format(ewutils.formatNiceList(names = all_bets), img_base)
 			else:
 				await cmd.client.edit_message(resp, ewutils.formatMessage(
 					cmd.message.author,
-					"https://ew.krakissi.net/img/sr.gif"
+					img_base + "sr.gif"
 				))
 
 				user_data.slimecredit -= value
@@ -371,6 +372,7 @@ async def roulette(cmd):
 				nineteentothirtysix = ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
 				pink = ["2", "4", "6", "8", "10", "11", "13", "15", "17", "20", "22", "24", "26", "28", "29", "31", "33", "35"]
 				purple = ["1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "23", "25", "27", "30", "32", "34", "36"]
+				green = ["0", "00"]
 
 				if roll == bet:
 					winnings = (value * 36)
@@ -398,14 +400,19 @@ async def roulette(cmd):
 					winnings = (value * 2)
 				elif bet == "purple" and roll in purple:
 					winnings = (value * 2)
+				elif bet == "green" and roll in green:
+					winnings = (value * 18)
 				else:
 					winnings = 0
 
-				response = "The ball landed on {}!".format(roll)
+				response = "The ball landed on {}!\n".format(roll)
 				if winnings > 0:
 					response += " You won {} SlimeCoin!".format(winnings)
 				else:
 					response += " You lost your bet..."
+
+				# Assemble image file name.
+				response += "\n\n{}{}.gif".format(img_base, roll)
 
 				# add winnings
 				user_data = EwUser(member = cmd.message.author)
