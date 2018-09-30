@@ -206,7 +206,7 @@ emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
-emote_bustin = "<:bustin:495241224848932865>"
+emote_bustin = "<:bustin:455194248741126144>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
