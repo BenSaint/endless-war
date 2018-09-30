@@ -305,7 +305,7 @@ async def roulette(cmd):
 	all_bets = ["0", "00", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
 				"16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31",
 				"32", "33", "34", "35", "36", "1strow", "2ndrow", "3rdrow", "1st12", "2nd12", "3rd12", "1to18",
-				"19to36", "even", "odd", "pink", "purple"]
+				"19to36", "even", "odd", "pink", "purple", "green"]
 
 	global last_rouletted_times
 	last_used = last_rouletted_times.get(cmd.message.author.id)
@@ -340,9 +340,9 @@ async def roulette(cmd):
 			elif value > user_data.slimecredit or value == 0:
 				response = "You don't have enough SlimeCoin."
 			elif len(bet) == 0:
-				response = "You need to say what you're betting on. Options are: {}".format(ewutils.formatNiceList(names = all_bets))
+				response = "You need to say what you're betting on. Options are: {}\n https://i.imgur.com/vjCqwxO.png".format(ewutils.formatNiceList(names = all_bets))
 			elif bet not in all_bets:
-				response = "The dealer didn't understand your wager. Use !help to see a guide to the casino."
+				response = "The dealer didn't understand your wager. Options are: {}\n https://i.imgur.com/vjCqwxO.png".format(ewutils.formatNiceList(names = all_bets))
 			else:
 				await cmd.client.edit_message(resp, ewutils.formatMessage(
 					cmd.message.author,
@@ -371,6 +371,7 @@ async def roulette(cmd):
 				nineteentothirtysix = ["19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"]
 				pink = ["2", "4", "6", "8", "10", "11", "13", "15", "17", "20", "22", "24", "26", "28", "29", "31", "33", "35"]
 				purple = ["1", "3", "5", "7", "9", "12", "14", "16", "18", "19", "21", "23", "25", "27", "30", "32", "34", "36"]
+				green = ["0", "00"]
 
 				if roll == bet:
 					winnings = (value * 36)
@@ -398,10 +399,89 @@ async def roulette(cmd):
 					winnings = (value * 2)
 				elif bet == "purple" and roll in purple:
 					winnings = (value * 2)
+				elif bet == "green" and roll in green:
+					winnings = (value * 18)
 				else:
 					winnings = 0
 
-				response = "The ball landed on {}!".format(roll)
+				if roll = 00:
+					result = "https://i.imgur.com/GktcSVH.gif"
+				elif roll = 0:
+					result = "https://i.imgur.com/g8H6vAz.gif"
+				elif roll = 1:
+					result = "https://i.imgur.com/cBCGq1L.gif"
+				elif roll = 2:
+					result = "https://i.imgur.com/kcIgqNL.gif"
+				elif roll = 3:
+					result = "https://i.imgur.com/5duffCf.gif"
+				elif roll = 4:
+					result = "https://i.imgur.com/5duffCf.gif"
+				elif roll = 5:
+					result = "https://i.imgur.com/PnoiPFj.gif"
+				elif roll = 6:
+					result = "https://i.imgur.com/uImDW55.gif"
+				elif roll = 7:
+					result = "https://i.imgur.com/09IDVoh.gif"
+				elif roll = 8:
+					result = "https://i.imgur.com/ntEW6SG.gif"
+				elif roll = 9:
+					result = "https://i.imgur.com/PF2cZ8B.gif"
+				elif roll = 10:
+					result = "https://i.imgur.com/o5tAvxJ.gif"
+				elif roll = 11:
+					result = "https://i.imgur.com/BHP0pZK.gif"
+				elif roll = 12:
+					result = "https://i.imgur.com/cSK2zQf.gif"
+				elif roll = 13:
+					result = "https://i.imgur.com/3QfWhVJ.gif"
+				elif roll = 14:
+					result = "https://i.imgur.com/ZqcgNmc.gif"
+				elif roll = 15:
+					result = "https://i.imgur.com/AR7hX4P.gif"
+				elif roll = 16:
+					result = "https://i.imgur.com/Hbbhz08.gif"
+				elif roll = 17:
+					result = "https://i.imgur.com/ojtbPLb.gif"
+				elif roll = 18:
+					result = "https://i.imgur.com/2E1IY6i.gif"
+				elif roll = 19:
+					result = "https://i.imgur.com/4QCDSQ9.gif"
+				elif roll = 20:
+					result = "https://i.imgur.com/fK0ym0S.gif"
+				elif roll = 21:
+					result = "https://i.imgur.com/liRuqyc.gif"
+				elif roll = 22:
+					result = "https://i.imgur.com/FH2gDi1.gif"
+				elif roll = 23:
+					result = "https://i.imgur.com/H2SEx4f.gif"
+				elif roll = 24:
+					result = "https://i.imgur.com/6WXrjcU.gif"
+				elif roll = 25:
+					result = "https://i.imgur.com/Tq3mzzw.gif"
+				elif roll = 26:
+					result = "https://i.imgur.com/6s13qX7.gif"
+				elif roll = 27:
+					result = "https://i.imgur.com/iWAytbg.gif"
+				elif roll = 28:
+					result = "https://i.imgur.com/B5ub0Qr.gif"
+				elif roll = 29:
+					result = "https://i.imgur.com/0moBb2p.gif"
+				elif roll = 30:
+					result = "https://i.imgur.com/tqBAErF.gif"
+				elif roll = 31:
+					result = "https://i.imgur.com/nohsd0J.gif"
+				elif roll = 32:
+					result = "https://i.imgur.com/1j6c4MH.gif"
+				elif roll = 33:
+					result = "https://i.imgur.com/3QdJ8hK.gif"
+				elif roll = 34:
+					result = "https://i.imgur.com/D8NgTSW.gif"
+				elif roll = 35:
+					result = "https://i.imgur.com/14O20Y8.gif"
+				elif roll = 36:
+					result = "https://i.imgur.com/khw8Wo3.gif"
+				
+				response = "The ball landed on {}!\n {}".format(roll, result)
 				if winnings > 0:
 					response += " You won {} SlimeCoin!".format(winnings)
 				else:
