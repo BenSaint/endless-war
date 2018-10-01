@@ -80,6 +80,7 @@ channel_nlacu = "nlac-university"
 channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
+channel_leaderboard = "leaderboard"
 
 # Commands
 cmd_prefix = '!'
@@ -196,6 +197,8 @@ emote_copkiller = "<:copkiller:431275071945048075>"
 emote_rowdyfucker = "<:rowdyfucker:431275088076079105>"
 emote_theeye = "<:theeye:431429098909466634>"
 emote_slime1 = "<:slime1:431564830541873182>"
+emote_slime2 = "<:slime2:431570132901560320>"
+emote_slime3 = "<:slime3:431659469844381717>"
 emote_slime4 = "<:slime4:431570132901560320>"
 emote_slime5 = "<:slime5:431659469844381717>"
 emote_slimeskull = "<:slimeskull:431670526621122562>"
@@ -207,6 +210,12 @@ emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
 emote_bustin = "<:bustin:455194248741126144>"
+emote_ghost = "<:lordofghosts:434002083256205314>"
+emote_slimefull = "<:slimefull:496397819154923553>"
+emote_purple = "<:purple:496397848343216138>"
+emote_pink = "<:pink:496397871180939294>"
+emote_slimecoin = "<:slimecoin:440576133214240769>"
+emote_slimegun = "<:slimegun:436500203743477760>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -303,6 +312,14 @@ it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
 it_food = "food"
 it_weapon = "weapon"
+
+# Leaderboard score categories
+leaderboard_slimes = "SLIMIEST"
+leaderboard_slimecredit = "SLIMECOIN BARONS"
+leaderboard_ghosts = "ANTI-SLIMIEST"
+leaderboard_podrins = "PODRIN LORDS"
+leaderboard_bounty = "MOST WANTED"
+leaderboard_kingpins = "KINGPINS' COFFERS"
 
 # Categories of events that change your slime total, for statistics tracking
 source_mining = 0

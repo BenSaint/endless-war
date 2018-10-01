@@ -33,6 +33,7 @@ import ewitem
 import ewmap
 import ewrolemgr
 import ewraidboss
+import ewleaderboard
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -47,6 +48,7 @@ last_helped_times = {}
 
 # Map of server ID to a map of active users on that server.
 active_users_map = {}
+
 
 # Map of all command words in the game to their implementing function.
 cmd_map = {
@@ -355,6 +357,9 @@ async def on_ready():
 
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
+
+					# Post leaderboards
+					await ewleaderboard.post_leaderboards(client = client, server = server)
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
