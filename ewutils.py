@@ -466,3 +466,50 @@ def get_channel(server = None, channel_name = ""):
 			channel = chan
 
 	return channel
+
+"""
+	Return the role name of a user's faction. Takes user data object or life_state and faction tag
+"""
+def get_faction(user_data = None, life_state = ewcfg.life_state_corpse, faction = ""):
+	life_state = life_state
+	faction = faction
+	if user_data != None:
+		life_state = user_data.life_state
+		faction = user_data.faction
+
+	faction_role = ewcfg.role_corpse
+
+	if life_state == ewcfg.life_state_juvenile:
+		faction_role = ewcfg.role_juvenile
+
+	elif life_state == ewcfg.life_state_enlisted:
+		if faction == ewcfg.faction_killers:
+			faction_role = ewcfg.role_copkillers
+
+		elif faction == ewcfg.faction_rowdys:
+			faction_role = ewcfg.role_rowdyfuckers
+
+		else:
+			faction_role = ewcfg.role_juvenile
+
+	elif life_state == ewcfg.life_state_kingpin:
+		faction_role = ewcfg.role_kingpin
+
+	elif life_state == ewcfg.life_state_grandfoe:
+		faction_role = ewcfg.role_grandfoe
+
+	return faction_role
+
+def get_faction_symbol(faction = ""):
+	if faction == ewcfg.role_corpse:
+		result = ewcfg.emote_ghost
+	elif faction == ewcfg.role_juvenile:
+		result = ewcfg.emote_slimefull
+	elif faction == ewcfg.role_copkillers:
+		result = ewcfg.emote_purple
+	elif faction == ewcfg.role_rowdyfuckers:
+		result = ewcfg.emote_pink
+	else:
+		result = ewcfg.emote_blank
+
+	return result
