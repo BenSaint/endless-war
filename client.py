@@ -358,8 +358,9 @@ async def on_ready():
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
 
-					# Post leaderboards
-					await ewleaderboard.post_leaderboards(client = client, server = server)
+					# Post leaderboards at 6am NLACakaNM time.
+					if market_data.clock == 6:
+						await ewleaderboard.post_leaderboards(client = client, server = server)
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
