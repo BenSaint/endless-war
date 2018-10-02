@@ -49,7 +49,6 @@ def make_userdata_board(server = None, category = "", title = "", lowscores = Fa
 				row = cursor.fetchone()
 				i += 1
 
-		conn.commit()
 	finally:
 		# Clean up the database handles.
 		cursor.close()
@@ -79,7 +78,6 @@ def make_kingpin_board(server = None, title = ""):
 		for row in rows:
 			entries.append(row)
 
-		conn.commit()
 	finally:
 		# Clean up the database handles.
 		cursor.close()
@@ -119,10 +117,13 @@ def board_header(title):
 	return emote + bar + title + bar + emote + "\n"
 
 def board_entry(entry, rank):
-	result = "{:,}. | ".format(rank)
 	faction = ewutils.get_faction(life_state = entry[1], faction = entry[2])
 	faction_symbol = ewutils.get_faction_symbol(faction)
-	result += "{} | ".format(faction_symbol)
-	result += "{:,} | ".format(entry[3])
-	result += "{} \n".format(entry[0])
+
+	result = "{} `{:_>15} | {}`\n".format(
+		faction_symbol,
+		"{:,}".format(entry[3]),
+		entry[0]
+	)
+
 	return result
