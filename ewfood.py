@@ -118,7 +118,7 @@ async def order(cmd):
 			if member != None:
 				target_data = EwUser(member = member)
 
-			value = food.price if not togo else food.price * 10
+			value = food.price if not togo else food.price * ewcfg.togo_price_increase
 
 			# Kingpins eat free.
 			if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
@@ -141,16 +141,16 @@ async def order(cmd):
 						if target_data.hunger < 0:
 							target_data.hunger = 0
 						target_data.inebriation += food.inebriation
-						if target_data.inebriation > 20:
-							target_data.inebriation = 20
+						if target_data.inebriation > ewcfg.inebriation_max:
+							target_data.inebriation = ewcfg.inebriation_max
 
 					else:
 						user_data.hunger -= food.recover_hunger
 						if user_data.hunger < 0:
 							user_data.hunger = 0
 						user_data.inebriation += food.inebriation
-						if user_data.inebriation > 20:
-							user_data.inebriation = 20
+						if user_data.inebriation > ewcfg.inebriation_max:
+							user_data.inebriation = ewcfg.inebriation_max
 
 					market_data.slimes_casino += food.price
 				else:
@@ -158,8 +158,15 @@ async def order(cmd):
 						id_user = cmd.message.author.id,
 						id_server = cmd.message.server.id
 					)
-					#for item in inv:
-					#todo finish this shit
+					food_in_inv = 0
+					for item in inv:
+						if item.get('item_type') == ewcfg.it_food:
+							food_in_inv += 1
+
+					if food_in_inv >= ewcfg.max_food_in_inv:
+						# user_data never got persisted so the player won't lose money unnecessarily
+						response = "You can't carry any more food than that."
+						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 					item_props = {
 						'food_name': food.str_name,
@@ -185,7 +192,7 @@ async def order(cmd):
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
 					flavor = food.str_eat if not togo else ""
 				)
-				if member == None and user_data.hunger <= 0:
+				if member == None and user_data.hunger <= 0 and not togo:
 					response += "\n\nYou're stuffed!"
 
 				user_data.persist()

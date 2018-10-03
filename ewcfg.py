@@ -165,7 +165,14 @@ hunger_permine = 1
 hunger_pertick = 3
 
 #inebriation
+inebriation_max = 20
 inebriation_pertick = 2
+
+# max item amounts
+max_food_in_inv = 5
+
+# price multipliers
+togo_price_increase = 10
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
@@ -785,7 +792,7 @@ for weather in weather_list:
 	weather_map[weather.name] = weather
 
 # All food items in the game.
-food_list = [  # todo: write descriptions for food items
+food_list = [  # todo: write !inspect descriptions for food items
 	EwFood(
 		id_food = "slimentonic",
 		alias = [
@@ -1904,7 +1911,10 @@ poi_list = [
 		channel = channel_711,
 		role = "7-11",
 		coord = (19, 25),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_vendingmachine
+		]
 	),
 	EwPoi( # the-labs
 		id_poi = poi_id_slimeoidlab,
