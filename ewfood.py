@@ -143,6 +143,8 @@ async def order(cmd):
 						target_data.inebriation += food.inebriation
 						if target_data.inebriation > ewcfg.inebriation_max:
 							target_data.inebriation = ewcfg.inebriation_max
+						if food.id_food == "coleslaw":
+							target_data.ghostbust = True
 
 					else:
 						user_data.hunger -= food.recover_hunger
@@ -151,8 +153,9 @@ async def order(cmd):
 						user_data.inebriation += food.inebriation
 						if user_data.inebriation > ewcfg.inebriation_max:
 							user_data.inebriation = ewcfg.inebriation_max
+						if food.id_food == "coleslaw":
+							user_data.ghostbust = True
 
-					market_data.slimes_casino += food.price
 				else:
 					inv = ewitem.inventory(
 						id_user = cmd.message.author.id,
