@@ -1,3 +1,5 @@
+import time
+
 import ewutils
 import ewcfg
 import ewstats
@@ -212,17 +214,24 @@ class EwUser:
 	def eat(self, food_item = None):
 		item_props = food_item.item_props
 
-		self.hunger -= int(item_props['recover_hunger'])
-		if self.hunger < 0:
-			self.hunger = 0
-		self.inebriation += int(item_props['inebriation'])
-		if self.inebriation > 20:
-			self.inebriation = 20
+		if float(food_item.time_expir if not None else 0) < time.time():
+			response = "You realize that the food you were trying to eat is already spoiled. In disgust, you throw it away."
+		else:
+			self.hunger -= int(item_props['recover_hunger'])
+			if self.hunger < 0:
+				self.hunger = 0
+			self.inebriation += int(item_props['inebriation'])
+			if self.inebriation > 20:
+				self.inebriation = 20
 
-		if food_item.id_item == "coleslaw":
-			self.ghostbust = True
+			if food_item.id_item == "coleslaw":
+				self.ghostbust = True
+
+			response = item_props['str_eat'] + ("\n\nYou're stuffed!" if self.hunger <= 0 else "")
 
 		ewitem.item_delete(food_item.id_item)
+
+		return response
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):

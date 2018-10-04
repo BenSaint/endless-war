@@ -1,3 +1,5 @@
+import time
+
 import ewcfg
 import ewitem
 import ewutils
@@ -33,6 +35,9 @@ class EwFood:
 	# Flavor text displayed when you inspect this food.
 	str_desc = ""
 
+	# Expiration time (can be left blank for standard expiration time)
+	time_expir = 0
+
 	def __init__(
 		self,
 		id_food = "",
@@ -43,7 +48,8 @@ class EwFood:
 		vendor = "",
 		str_eat = "",
 		inebriation = 0,
-		str_desc = ""
+		str_desc = "",
+		time_expir = 0
 	):
 		self.id_food = id_food
 		self.alias = alias
@@ -54,6 +60,7 @@ class EwFood:
 		self.str_eat = str_eat
 		self.inebriation = inebriation
 		self.str_desc = str_desc
+		self.time_expir = time_expir if time_expir > 0 else ewcfg.std_food_expir
 
 
 """ show all available food items """
@@ -178,7 +185,8 @@ async def order(cmd):
 						'price': food.price,
 						'inebriation': food.inebriation,
 						'vendor': food.vendor,
-						'str_eat': food.str_eat
+						'str_eat': food.str_eat,
+						'time_expir': time.time() + (food.time_expir if food.time_expir is not None else ewcfg.std_food_expir)
 					}
 
 					ewitem.item_create(

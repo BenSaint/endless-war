@@ -142,7 +142,7 @@ class EwItem:
 				self.id_server,
 				self.id_user,
 				self.item_type,
-				self.time_expir,
+				self.time_expir if self.time_expir is not None else self.item_props['time_expir'],
 				self.stack_max,
 				self.stack_size,
 				(1 if self.soulbound else 0)
@@ -476,7 +476,7 @@ async def item_look(cmd):
 
 		item_sought = None
 		for item in items:
-			if item.get('id_item') == item_id_int or ewutils.flattenTokenListToString(item.get('name')) == item_id:
+			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
 				item_sought = item
 				break
 
@@ -533,8 +533,7 @@ async def item_use(cmd):
 			user_data = EwUser(member = cmd.message.author)
 
 			if item_type == ewcfg.it_food:
-				user_data.eat(item)
-				response = item.item_props['str_eat'] + ("\n\nYou're stuffed!" if user_data.hunger <= 0 else "")
+				response = user_data.eat(item)
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:

@@ -174,6 +174,9 @@ max_food_in_inv = 5
 # price multipliers
 togo_price_increase = 10
 
+# standard food expiration in seconds
+std_food_expir = 3600
+
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
 
@@ -1275,7 +1278,8 @@ item_def_list = [
 			'price': 0,
 			'inebriation': 0,
 			'vendor': None,
-			'str_eat': 'You eat the food item.'
+			'str_eat': 'You eat the food item.',
+			'time_expir': std_food_expir
 		}
 	),
 
