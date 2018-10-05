@@ -1111,7 +1111,7 @@ food_list = [
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
-		str_eat = "You disgard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
+		str_eat = "You discard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
 	),
 	EwFood(
 		id_food = "mtndew",
@@ -1328,7 +1328,8 @@ poi_list = [
 		str_desc = "Within the gleaming metal hull of the towering SlimeCorp HQ, brightly lit sterile white hallways wind like a maze, past countless receptionists' desks, waiting rooms, and high-tech stainless steel vault doors.",
 		coord = (27, 18),
 		channel = channel_slimecorphq,
-		role = "SlimeCorp HQ"
+		role = "SlimeCorp HQ",
+		pvp = False
 	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
