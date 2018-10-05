@@ -898,7 +898,7 @@ food_list = [
 		recover_hunger = 25,
 		price = 5,
 		inebriation = 3,
-		str_name = 'slime on the beach',
+		str_name = 'manhattan project',
 		vendor = vendor_bar,
 		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
