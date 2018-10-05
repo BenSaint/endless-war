@@ -129,7 +129,7 @@ async def mine(cmd):
 			user_initial_level = user_data.slimelevel
 
 			# Add mined slime to the user.
-			user_data.change_slimes(n = int(10 * (1.9 ** user_data.slimelevel)), source = ewcfg.source_mining)
+			user_data.change_slimes(n = int(10 * (2 ** user_data.slimelevel)), source = ewcfg.source_mining)
 
 			was_levelup = True if user_initial_level < user_data.slimelevel else False
 
