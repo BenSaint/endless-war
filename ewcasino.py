@@ -389,7 +389,7 @@ async def roulette(cmd):
 				elif bet == "3rd12" and roll in thirdtwelve:
 					winnings = (value * 3)
 				elif bet == "1to18" and roll in onetoeighteen:
-					winnings = (value * 3)
+					winnings = (value * 2)
 				elif bet == "19to36" and roll in nineteentothirtysix:
 					winnings = (value * 2)
 				elif bet == "odd" and roll in odd:
