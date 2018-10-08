@@ -2,13 +2,15 @@ import datetime
 
 import ewcfg
 import ewutils
+from ew import EwMarket
 
 async def post_leaderboards(client = None, server = None):
 	leaderboard_channel = ewutils.get_channel(server = server, channel_name = ewcfg.channel_leaderboard)
 
-	time = str(datetime.datetime.now()).rpartition(':')[0]
+	market = EwMarket(id_server = server.id)
+	time = "day {}".format(market.day) 
 
-	await client.send_message(leaderboard_channel, "▓{} **STATE OF THE CITY** {} {}▓".format(ewcfg.emote_theeye, time, ewcfg.emote_theeye)) 
+	await client.send_message(leaderboard_channel, "▓▓{} **STATE OF THE CITY:** {} {}▓▓".format(ewcfg.emote_theeye, time, ewcfg.emote_theeye))
 
 	topslimes = make_userdata_board(server = server, category = ewcfg.col_slimes, title = ewcfg.leaderboard_slimes)
 	await client.send_message(leaderboard_channel, topslimes)
@@ -101,18 +103,27 @@ def format_board(entries = None, title = ""):
 def board_header(title):
 	emote = None
 
-	bar = " ▓▓▓▓▓▓▓ "
+	bar = " ▓▓▓▓▓"
 
 	if title == ewcfg.leaderboard_slimes:
 		emote = ewcfg.emote_slime2
+
+		bar += "▓▓▓ "
 	elif title == ewcfg.leaderboard_slimecredit:
 		emote = ewcfg.emote_slimecoin
+		bar += " "
 	elif title == ewcfg.leaderboard_ghosts:
 		emote = ewcfg.emote_negaslime
+
+		bar += "▓ "
 	elif title == ewcfg.leaderboard_bounty:
 		emote = ewcfg.emote_slimegun
+
+		bar += "▓ "
 	elif title == ewcfg.leaderboard_kingpins:
 		emote = ewcfg.emote_theeye
+
+		bar += " "
 
 	return emote + bar + title + bar + emote + "\n"
 

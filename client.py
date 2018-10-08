@@ -331,6 +331,7 @@ async def on_ready():
 
 					if market_data.clock >= 24 or market_data.clock < 0:
 						market_data.clock = 0
+						market_data.day += 1
 
 					if random.randrange(30) == 0:
 						pattern_count = len(ewcfg.weather_list)

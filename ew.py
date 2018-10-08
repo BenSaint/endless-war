@@ -9,6 +9,7 @@ class EwMarket:
 
 	clock = 0
 	weather = 'sunny'
+	day = 0
 	
 	slimes_casino = 0
 	slimes_revivefee = 0
@@ -30,7 +31,7 @@ class EwMarket:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
 					ewcfg.col_slimes_casino,
 					ewcfg.col_rate_market,
 					ewcfg.col_rate_exchange,
@@ -40,6 +41,7 @@ class EwMarket:
 					ewcfg.col_negaslime,
 					ewcfg.col_clock,
 					ewcfg.col_weather,
+					ewcfg.col_day
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -54,6 +56,7 @@ class EwMarket:
 					self.negaslime = result[6]
 					self.clock = result[7]
 					self.weather = result[8]
+					self.day = result[9]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -72,7 +75,7 @@ class EwMarket:
 			cursor = conn.cursor();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_server,
 				ewcfg.col_slimes_casino,
 				ewcfg.col_rate_market,
@@ -82,7 +85,8 @@ class EwMarket:
 				ewcfg.col_slimes_revivefee,
 				ewcfg.col_negaslime,
 				ewcfg.col_clock,
-				ewcfg.col_weather
+				ewcfg.col_weather,
+				ewcfg.col_day
 			), (
 				self.id_server,
 				self.slimes_casino,
@@ -93,7 +97,8 @@ class EwMarket:
 				self.slimes_revivefee,
 				self.negaslime,
 				self.clock,
-				self.weather
+				self.weather,
+				self.day
 			))
 
 			conn.commit()
