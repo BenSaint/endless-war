@@ -263,6 +263,7 @@ async def attack(cmd):
 
 			if was_busted:
 				# Move around slime as a result of the shot.
+				user_data.change_slimes(n = (10 ** shootee_data.slimelevel) / 10)
 				market_data = EwMarket(id_server = cmd.message.server.id)
 				coinbounty = int(shootee_data.bounty / 1000)
 				user_data.slimecredit += coinbounty
@@ -723,6 +724,7 @@ async def equip(cmd):
 		value = None
 		if cmd.tokens_count > 1:
 			value = cmd.tokens[1]
+			value = value.lower()
 
 		weapon = ewcfg.weapon_map.get(value)
 		if weapon != None:

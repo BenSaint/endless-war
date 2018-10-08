@@ -216,6 +216,7 @@ emote_purple = "<:purple:496397848343216138>"
 emote_pink = "<:pink:496397871180939294>"
 emote_slimecoin = "<:slimecoin:440576133214240769>"
 emote_slimegun = "<:slimegun:436500203743477760>"
+emote_testemote = "<:purple:496348895098699796>" # test server emote 
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -298,6 +299,7 @@ col_slimes_revivefee = 'slimes_revivefee'
 col_negaslime = 'negaslime'
 col_clock = 'clock'
 col_weather = 'weather'
+col_day = 'day'
 
 # Database columns for stats
 col_total_slime = 'total_slime'
@@ -553,6 +555,8 @@ weapon_list = [
 		id_weapon = "nun-chucks",
 		alias = [
 			"nanchacku",
+			"nunchaku",
+			"chucks",
 			"numchucks",
 			"nunchucks"
 		],
@@ -1759,6 +1763,7 @@ poi_list = [
 		id_poi = poi_id_stockexchange,
 		alias = [
 			"stocks",
+			"stock",
 			"exchange",
 			"sexchange",
 			"stockexchange",

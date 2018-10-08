@@ -30,7 +30,7 @@ CREATE TABLE users (
 	inebriation int NOT NULL DEFAULT '0',
 	faction varchar(32) NOT NULL default '',
 	poi varchar(64) NOT NULL default 'downtown',
-	life_state int NOT NULL DEFAULT '0',
+	life_state int NOT NULL DEFAULT '1',
 	busted int NOT NULL DEFAULT '0',
 	
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
@@ -56,6 +56,7 @@ CREATE TABLE markets (
 	negaslime bigint NOT NULL DEFAULT '0',
 	clock int NOT NULL DEFAULT '0',
 	weather varchar(32) NOT NULL DEFAULT 'sunny',
+	day int NOT NULL DEFAULT '727',
 
 	PRIMARY KEY (id_server)
 );

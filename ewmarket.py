@@ -90,55 +90,52 @@ async def xfer(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	market_data = EwMarket(id_server = cmd.message.author.server.id)
 
-	if market_data.clock > 19 or market_data.clock < 6:
-		response = ewcfg.str_exchange_closed
-	else:
-		# Parse the slime value to send.
-		value = None
-		if cmd.tokens_count > 1:
-			value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
+	# Parse the slime value to send.
+	value = None
+	if cmd.tokens_count > 1:
+		value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
 
-		if value != None:
-			if value < 0:
-				value = user_data.slimes
-			if value <= 0:
-				value = None
+	if value != None:
+		if value < 0:
+			value = user_data.slimes
+		if value <= 0:
+			value = None
 
-		if value != None:
-			# Cost including the 5% transfer fee.
-			cost_total = int(value * 1.05)
+	if value != None:
+		# Cost including the 5% transfer fee.
+		cost_total = int(value * 1.05)
 
-			if user_data.slimecredit < cost_total:
-				response = "You don't have enough SlimeCoin. ({:,}/{:,})".format(user_data.slimecredit, cost_total)
-			elif user_data.time_lastinvest + ewcfg.cd_invest > time_now:
-				# Limit frequency of investments.
-				response = ewcfg.str_exchange_busy.format(action = "transfer")
-			else:
-				# Do the transfer if the player can afford it.
-				target_data.slimecredit += value
-				user_data.slimecredit -= cost_total
-				user_data.time_lastinvest = time_now
-
-				# Persist changes
-				response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime = value, target_name = member.display_name, fee = (cost_total - value))
-
-				user_data.persist()
-				target_data.persist()
+		if user_data.slimecredit < cost_total:
+			response = "You don't have enough SlimeCoin. ({:,}/{:,})".format(user_data.slimecredit, cost_total)
 		else:
-			response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
+			# Do the transfer if the player can afford it.
+			target_data.slimecredit += value
+			user_data.slimecredit -= cost_total
+			user_data.time_lastinvest = time_now
+
+			# Persist changes
+			response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime = value, target_name = member.display_name, fee = (cost_total - value))
+
+			user_data.persist()
+			target_data.persist()
+	else:
+		response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
-
 """ show player's slimecoin balance """
 async def slimecoin(cmd):
 	response = ""
+	user_data = None
 
-	user_slimecredit = EwUser(member = cmd.message.author).slimecredit
-
-	net_worth = int(user_slimecredit * 1000)
-	response = "You have {:,} SlimeCoin.".format(user_slimecredit)
+	if cmd.mentions_count == 0:
+		coins = EwUser(member = cmd.message.author).slimecredit
+		response = "You have {:,} SlimeCoin.".format(coins)
+	else:
+		member = cmd.mentions[0]
+		coins = EwUser(member = member).slimecredit
+		response = "{} has {:,} SlimeCoin.".format(member.display_name, coins)
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
