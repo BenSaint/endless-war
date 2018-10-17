@@ -252,7 +252,11 @@ async def attack(cmd):
 			user_data.time_lastrevive = 0
 
 			# Spend slimes, to a minimum of zero
-			user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
+			user_data.change_slimes(n = (-user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent), source = ewcfg.source_spending)
+
+			# Damage stats
+			ewstats.track_maximum(user = user_data, metric = ewcfg.stat_max_hitdealt, value = slimes_damage)
+			ewstats.change_stat(user = user_data, metric = ewcfg.stat_lifetime_damagedealt, n = slimes_damage)
 
 			# Remove repeat killing protection if.
 			if user_data.id_killer == shootee_data.id_user:
@@ -263,13 +267,15 @@ async def attack(cmd):
 
 			if was_busted:
 				# Move around slime as a result of the shot.
-				user_data.change_slimes(n = (10 ** shootee_data.slimelevel) / 10)
+				user_data.change_slimes(n = (10 ** shootee_data.slimelevel) / 10, source = ewcfg.source_busting)
 				market_data = EwMarket(id_server = cmd.message.server.id)
 				coinbounty = int(shootee_data.bounty / 1000)
-				user_data.slimecredit += coinbounty
+				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
+
+				ewstats.track_maximum(user = user_data, metric = ewcfg.stat_biggest_bust_level, value = shootee_data.slimelevel)
 
 				# Player was busted.
-				shootee_data.die()
+				shootee_data.die(cause = ewcfg.cause_busted)
 
 				response = "{name_target}\'s ghost has been **BUSTED**!!".format(name_target = member.display_name)
 
@@ -280,11 +286,11 @@ async def attack(cmd):
 					response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
 
 				#adjust busts
-				ewstats.change_stat(user = user_data, metric = ewcfg.stat_ghostbusts, n = 1)
+				ewstats.increment_stat(user = user_data, metric = ewcfg.stat_ghostbusts)
 
 			else:
 				# A non-lethal blow!
-				shootee_data.change_slimes(n = slimes_damage)
+				shootee_data.change_slimes(n = slimes_damage, source = ewcfg.source_busting)
 				damage = str(slimes_damage)
 
 				if weapon != None:
@@ -386,7 +392,11 @@ async def attack(cmd):
 				user_data.time_lastrevive = 0
 
 				# Spend slimes, to a minimum of zero
-				user_data.change_slimes(n = -user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent)
+				user_data.change_slimes(n = (-user_data.slimes if slimes_spent >= user_data.slimes else -slimes_spent), source = ewcfg.source_spending)
+
+				# Damage stats
+				ewstats.track_maximum(user = user_data, metric = ewcfg.stat_max_hitdealt, value = slimes_damage)
+				ewstats.change_stat(user = user_data, metric = ewcfg.stat_lifetime_damagedealt, n = slimes_damage)
 
 				# Remove repeat killing protection if.
 				if user_data.id_killer == shootee_data.id_user:
@@ -396,13 +406,21 @@ async def attack(cmd):
 					was_killed = True
 
 				if was_killed:
+					#adjust statistics
+					ewstats.increment_stat(user = user_data, metric = ewcfg.stat_kills)
+					ewstats.track_maximum(user = user_data, metric = ewcfg.stat_biggest_kill, value = int(slimes_dropped))
+					if user_data.slimelevel > shootee_data.slimelevel:
+						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_ganks)
+					elif user_data.slimelevel < shootee_data.slimelevel:
+						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_takedowns)
+
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes > 0:
 						if was_juvenile:
 							user_data.change_slimes(n = slimes_dropped, source = ewcfg.source_killing)
 						else:
 							coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
-							user_data.slimecredit += coinbounty
+							user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
 
@@ -418,8 +436,8 @@ async def attack(cmd):
 
 					# Player was killed.
 					shootee_data.id_killer = user_data.id_user
-					shootee_data.die()
-					shootee_data.change_slimes(n = -slimes_dropped / 10)
+					shootee_data.die(cause = ewcfg.cause_killing)
+					shootee_data.change_slimes(n = -slimes_dropped / 10, source = ewcfg.source_ghostification)
 
 					kill_descriptor = "beaten to death"
 					if weapon != None:
@@ -450,10 +468,6 @@ async def attack(cmd):
 					
 					if coinbounty > 0:
 						response += "\n\n SlimeCorp transfers {} SlimeCoin to {}\'s account.".format(str(coinbounty), cmd.message.author.display_name)
-
-					#adjust kills
-					ewstats.change_stat(user = user_data, metric = ewcfg.stat_kills, n = 1)
-
 				else:
 					# A non-lethal blow!
 					shootee_data.change_slimes(n = -slimes_damage, source = ewcfg.source_damage)
@@ -549,7 +563,7 @@ async def suicide(cmd):
 		elif user_iskillers or user_isrowdys:
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
 			user_data.id_killer = cmd.message.author.id
-			user_data.die()
+			user_data.die(cause = ewcfg.cause_suicide)
 			user_data.persist()
 
 			# Assign the corpse role to the player. He dead.
@@ -786,7 +800,7 @@ async def annoint(cmd):
 				response = "Equip a weapon first."
 			else:
 				# Perform the ceremony.
-				user_data.change_slimes(n = -100)
+				user_data.change_slimes(n = -100, source = ewcfg.source_spending)
 				user_data.weaponname = annoint_name
 
 				if user_data.weaponskill < 10:

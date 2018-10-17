@@ -196,7 +196,7 @@ def databaseClose(conn_info):
 def formatMessage(user_target, message):
 	return "*{}*: {}".format(user_target.display_name, message).replace("@", "\{at\}")
 
-""" decay slime totals for all users """
+""" 0 slime totals for all users """
 def decaySlimes(id_server = None):
 	if id_server != None:
 		try:
@@ -204,17 +204,18 @@ def decaySlimes(id_server = None):
 			conn = conn_info.get('conn')
 			cursor = conn.cursor();
 
-			cursor.execute("SELECT id_user, slimes FROM users WHERE id_server = %s AND {slimes} > 1".format(
+			cursor.execute("SELECT id_user FROM users WHERE id_server = %s AND {slimes} > 1".format(
 				slimes = ewcfg.col_slimes
 			), (
 				id_server,
 			))
 
 			users = cursor.fetchall()
+			total_decayed = 0
 
 			for user in users:
-				slimes = user[1]
-				slimes_to_decay = slimes - (slimes * (.5 ** (ewcfg.update_market / ewcfg.slime_half_life)))
+				user_data = EwUser(id_user = user[0], id_server = id_server)
+				slimes_to_decay = user_data.slimes - (user_data.slimes * (.5 ** (ewcfg.update_market / ewcfg.slime_half_life)))
 
 				#round up or down, randomly weighted
 				remainder = slimes_to_decay - int(slimes_to_decay)
@@ -223,16 +224,17 @@ def decaySlimes(id_server = None):
 				slimes_to_decay = int(slimes_to_decay)
 
 				if slimes_to_decay >= 1:
-					cursor.execute("UPDATE users SET {slimes} = {slimes} - {decay} WHERE {id_server} = %s AND {id_user} = %s".format(
-						slimes = ewcfg.col_slimes,
-						decay = slimes_to_decay,
-						id_server = ewcfg.col_id_server,
-						id_user = ewcfg.col_id_user
-					), (
-						id_server,
-						user[0]
-					))
-					#logMsg("decayed {} slimes from user ID: {}".format(slimes_to_decay, user[0]))
+					user_data.change_slimes(n = -slimes_to_decay, source = ewcfg.source_decay)
+					user_data.persist()
+					total_decayed += slimes_to_decay
+
+			cursor.execute("UPDATE markets SET {decayed} = ({decayed} + %s) WHERE {server} = %s".format(
+				decayed = ewcfg.col_decayed_slimes,
+				server = ewcfg.col_id_server
+			), (
+				total_decayed,
+				id_server
+			))
 
 			conn.commit()
 		finally:

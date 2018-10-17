@@ -57,6 +57,7 @@ CREATE TABLE markets (
 	clock int NOT NULL DEFAULT '0',
 	weather varchar(32) NOT NULL DEFAULT 'sunny',
 	day int NOT NULL DEFAULT '726',
+	decayed_slimes bigint NOT NULL DEFAULT '0',
 
 	PRIMARY KEY (id_server)
 );

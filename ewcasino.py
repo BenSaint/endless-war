@@ -49,10 +49,6 @@ async def pachinko(cmd):
 		if value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin to play."
 		else:
-			#subtract slimecoin from player
-			user_data.slimecredit -= value
-			user_data.persist()
-
 			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
 			await asyncio.sleep(3)
 
@@ -87,8 +83,8 @@ async def pachinko(cmd):
 			# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
 			user_data = EwUser(member = cmd.message.author)
 
-			# add winnings
-			user_data.slimecredit += winnings
+			# add winnings/subtract losses
+			user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 			user_data.persist()
 
 			if winnings > 0:
@@ -120,6 +116,7 @@ async def craps(cmd):
 	else:
 		last_crapsed_times[cmd.message.author.id] = time_now
 		value = None
+		winnings = 0
 
 		if cmd.tokens_count > 1:
 			value = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
@@ -133,7 +130,6 @@ async def craps(cmd):
 			elif value > user_data.slimecredit:
 				response = "You don't have that much SlimeCoin to bet with."
 			else:
-				user_data.slimecredit -= value
 
 				roll1 = random.randint(1,6)
 				roll2 = random.randint(1,6)
@@ -152,10 +148,11 @@ async def craps(cmd):
 				if (roll1 + roll2) == 7:
 					winnings = 5 * value
 					response += "\n\n**You rolled a 7! It's your lucky day. You won {:,} SlimeCoin.**".format(winnings)
-					user_data.slimecredit += winnings
 				else:
 					response += "\n\nYou didn't roll 7. You lost your SlimeCoins."
 
+				# add winnings/subtract losses
+				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 				user_data.persist()
 		else:
 			response = "Specify how much SlimeCoin you will wager."
@@ -188,10 +185,6 @@ async def slots(cmd):
 		if value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin."
 		else:
-			#subtract slimecoin from player
-			user_data.slimecredit -= value
-			user_data.persist()
-
 			# Add some suspense...
 			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 			await asyncio.sleep(3)
@@ -270,8 +263,8 @@ async def slots(cmd):
 			# Significant time has passed since the user issued this command. We can't trust that their data hasn't changed.
 			user_data = EwUser(member = cmd.message.author)
 
-			# add winnings
-			user_data.slimecredit += winnings
+			# add winnings/subtract losses
+			user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 			user_data.persist()
 
 		last_slotsed_times[cmd.message.author.id] = 0
@@ -326,8 +319,6 @@ async def roulette(cmd):
 					img_base + "sr.gif"
 				))
 
-				user_data.slimecredit -= value
-				user_data.persist()
 				await asyncio.sleep(5)
 
 				roll = str(random.randint(1, 38))
@@ -390,9 +381,8 @@ async def roulette(cmd):
 				# Assemble image file name.
 				response += "\n\n{}{}.gif".format(img_base, roll)
 
-				# add winnings
-				user_data = EwUser(member = cmd.message.author)
-				user_data.slimecredit += winnings
+				# add winnings/subtract losses
+				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 				user_data.persist()
 		else:
 			response = "Specify how much SlimeCoin you will wager."

@@ -10,6 +10,7 @@ import ewcmd
 import ewitem
 import ewmap
 import ewrolemgr
+import ewstats
 from ew import EwUser, EwMarket
 
 # Map of user ID to a map of recent miss-mining time to count. If the count
@@ -108,7 +109,7 @@ async def mine(cmd):
 			if mismined['count'] >= 7:  # up to 6 messages can be buffered by discord and people have been dying unfairly because of that
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
-				user_data.die()
+				user_data.die(cause = ewcfg.cause_mining)
 				user_data.persist()
 				
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
@@ -162,6 +163,8 @@ async def mine(cmd):
 					elif poudrinamount == 2:
 						response += "You unearthed two slime poudrins! "
 
+					ewstats.change_stat(user = user_data, metric = ewcfg.stat_lifetime_poudrins, n = poudrinamount)
+
 					ewutils.logMsg('{} has found {} poudrin(s)!'.format(cmd.message.author.display_name, poudrinamount))
 
 				if was_levelup:
@@ -192,7 +195,7 @@ async def mine(cmd):
 			# Death
 			last_mismined_times[cmd.message.author.id] = None
 
-			user_data.die()
+			user_data.die(cause = ewcfg.cause_mining)
 			user_data.persist()
 
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))

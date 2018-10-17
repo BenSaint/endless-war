@@ -5,6 +5,7 @@ import ewitem
 import ewrolemgr
 import ewutils
 import ewcfg
+import ewstats
 from ew import EwUser, EwMarket
 
 """ donate slime to slimecorp in exchange for slimecoin """
@@ -39,7 +40,7 @@ async def donate(cmd):
 
 		if user_data.slimes < cost_total:
 			response = "Acid-green flashes of light and bloodcurdling screams emanate from small window of SlimeCorp HQ. Unfortunately, you did not survive the procedure. Your body is dumped down a disposal chute to the sewers."
-			user_data.die()
+			user_data.die(cause = ewcfg.cause_donation)
 			user_data.persist()
 			# Assign the corpse role to the player. He dead.
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
@@ -47,8 +48,8 @@ async def donate(cmd):
 			await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a medical mishap. {}".format(ewcfg.emote_slimeskull)))
 		else:
 			# Do the transfer if the player can afford it.
-			user_data.slimes -= cost_total
-			user_data.slimecredit += coin_total
+			user_data.change_slimes(n = -cost_total, source = ewcfg.source_spending)
+			user_data.change_slimecredit(n = coin_total, coinsource = ewcfg.coinsource_donation)
 			user_data.time_lastinvest = time_now
 
 			# Persist changes
@@ -109,8 +110,8 @@ async def xfer(cmd):
 			response = "You don't have enough SlimeCoin. ({:,}/{:,})".format(user_data.slimecredit, cost_total)
 		else:
 			# Do the transfer if the player can afford it.
-			target_data.slimecredit += value
-			user_data.slimecredit -= cost_total
+			target_data.change_slimecredit(n = value, coinsource = ewcfg.coinsource_transfer)
+			user_data.change_slimecredit(n = -cost_total, coinsource = ewcfg.coinsource_transfer)
 			user_data.time_lastinvest = time_now
 
 			# Persist changes
