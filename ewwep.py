@@ -168,7 +168,7 @@ async def attack(cmd):
 		strikes = 0
 
 		# Slime level data. Levels are in powers of 10.
-		slimes_bylevel = int((10 ** user_data.slimelevel) / 10)
+		slimes_bylevel = int(user_data.slimelevel ** 5)
 		slimes_spent = int(slimes_bylevel / 20)
 		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
 		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
@@ -267,7 +267,7 @@ async def attack(cmd):
 
 			if was_busted:
 				# Move around slime as a result of the shot.
-				user_data.change_slimes(n = (10 ** shootee_data.slimelevel) / 10, source = ewcfg.source_busting)
+				user_data.change_slimes(n = (shootee_data.slimelevel ** 5), source = ewcfg.source_busting)
 				market_data = EwMarket(id_server = cmd.message.server.id)
 				coinbounty = int(shootee_data.bounty / 1000)
 				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)

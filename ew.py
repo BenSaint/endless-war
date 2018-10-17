@@ -189,9 +189,7 @@ class EwUser:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeshaunted, n = change)
 
 		# potentially level up
-		new_level = len(str(int(self.slimes)))
-		if self.life_state == ewcfg.life_state_corpse:
-			new_level -= 1 # because the minus sign in the slimes str throws the length off by 1
+		new_level = int(abs(self.slimes) ** 0.2)
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
 			if self.life_state == ewcfg.life_state_corpse: 
