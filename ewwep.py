@@ -419,10 +419,12 @@ async def attack(cmd):
 						if was_juvenile:
 							user_data.change_slimes(n = slimes_dropped, source = ewcfg.source_killing)
 						else:
-							coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 							user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
+
+					# Collect bounty		
+					coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 
 					# Steal items
 					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
