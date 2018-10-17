@@ -196,7 +196,7 @@ def databaseClose(conn_info):
 def formatMessage(user_target, message):
 	return "*{}*: {}".format(user_target.display_name, message).replace("@", "\{at\}")
 
-""" 0 slime totals for all users """
+""" Decay slime totals for all users """
 def decaySlimes(id_server = None):
 	if id_server != None:
 		try:
