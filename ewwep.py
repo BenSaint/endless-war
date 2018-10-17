@@ -415,7 +415,7 @@ async def attack(cmd):
 						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_takedowns)
 
 					# Move around slime as a result of the shot.
-					if shootee_data.slimes > 0:
+					if shootee_data.slimes >= 0:
 						if was_juvenile:
 							user_data.change_slimes(n = slimes_dropped, source = ewcfg.source_killing)
 						else:
