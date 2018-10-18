@@ -25,7 +25,7 @@ async def revive(cmd):
 
 			# Endless War collects his fee.
 			fee = (player_data.slimecredit / 10)
-			player_data.slimecredit -= fee
+			player_data.change_slimecredit(n = -fee, coinsource = ewcfg.coinsource_revival)
 			market_data.slimes_revivefee += fee
 			
 			# Preserve negaslime
@@ -113,8 +113,8 @@ async def haunt(cmd):
 			if -user_data.slimes < haunted_slimes:  # cap on for how much you can haunt
 				haunted_slimes = -user_data.slimes
 
-			haunted_data.change_slimes(n = -haunted_slimes)
-			user_data.change_slimes(n = -haunted_slimes)
+			haunted_data.change_slimes(n = -haunted_slimes, source = ewcfg.source_haunted)
+			user_data.change_slimes(n = -haunted_slimes, source = ewcfg.source_haunter)
 			user_data.time_lasthaunt = time_now
 
 			# Persist changes to the database.

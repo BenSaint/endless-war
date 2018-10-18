@@ -300,6 +300,7 @@ col_negaslime = 'negaslime'
 col_clock = 'clock'
 col_weather = 'weather'
 col_day = 'day'
+col_decayed_slimes = 'decayed_slimes'
 
 # Database columns for stats
 col_total_slime = 'total_slime'
@@ -322,11 +323,6 @@ leaderboard_ghosts = "ANTI-SLIMIEST"
 leaderboard_podrins = "PODRIN LORDS"
 leaderboard_bounty = "MOST WANTED"
 leaderboard_kingpins = "KINGPINS' COFFERS"
-
-# Categories of events that change your slime total, for statistics tracking
-source_mining = 0
-source_damage = 1
-source_killing = 2
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
@@ -357,23 +353,78 @@ hitzone_list = [
 
 # User statistics we track 
 stat_max_slimes = 'max_slimes'
+stat_lifetime_slimes = 'lifetime_slimes'
+stat_lifetime_slimeloss = 'lifetime_slime_loss'
+stat_lifetime_slimesdecayed = 'lifetime_slimes_decayed'
 stat_slimesmined = 'slimes_mined'
-stat_slimesfromkills = 'slimes_from_kills'
 stat_max_slimesmined = 'max_slimes_mined'
+stat_lifetime_slimesmined = 'lifetime_slimes_mined'
+stat_slimesfromkills = 'slimes_from_kills'
 stat_max_slimesfromkills = 'max_slimes_from_kills'
+stat_lifetime_slimesfromkills = 'lifetime_slimes_from_kills'
+stat_lifetime_slimeshaunted = 'lifetime_slimes_haunted'
 stat_max_level = 'max_level'
+stat_max_ghost_level = 'max_ghost_level'
 stat_max_hitsurvived = 'max_hit_survived'
+stat_max_hitdealt = 'max_hit_dealt'
+stat_max_hauntinflicted = 'max_haunt_inflicted' 
 stat_kills = 'kills'
 stat_max_kills = 'max_kills'
+stat_biggest_kill = 'biggest_kill'
+stat_lifetime_kills = 'lifetime_kills'
+stat_lifetime_ganks = 'lifetime_ganks'
+stat_lifetime_takedowns = 'lifetime_takedowns'
 stat_max_wepskill = 'max_wep_skill'
 stat_max_slimecredit = 'max_slime_coins'
+stat_lifetime_slimecredit = 'lifetime_slime_coins'
+stat_slimecredit_spent_on_revives = 'slimecoins_spent_on_revives'
+stat_biggest_casino_win = 'biggest_casino_win'
+stat_biggest_casino_loss = 'biggest_casino_loss'
+stat_lifetime_casino_winnings = 'lifetime_casino_winnings'
+stat_lifetime_casino_losses = 'lifetime_casino_losses'
+stat_bounty_collected = 'bounty_collected'
 stat_max_bounty = 'max_bounty'
 stat_ghostbusts = 'ghostbusts'
+stat_biggest_bust_level = 'biggest_bust_level'
+stat_lifetime_ghostbusts = 'lifetime_ghostbusts'
 stat_max_ghostbusts = 'max_ghostbusts'
 stat_max_poudrins = 'max_poudrins'
-stat_total_damagedealt = 'total_damagedealt'
-stat_total_deaths = 'total_deaths'
+stat_poudrins_looted = 'poudrins_looted'
+stat_lifetime_poudrins = 'lifetime_poudrins'
+stat_lifetime_damagedealt = 'lifetime_damage_dealt'
+stat_lifetime_selfdamage = 'lifetime_self_damage'
+stat_lifetime_deaths = 'lifetime_deaths'
+stat_lifetime_pve_deaths = 'lifetime_pve_deaths'
 
+# Categories of events that change your slime total, for statistics tracking
+source_mining = 0
+source_damage = 1
+source_killing = 2
+source_self_damage = 3
+source_busting = 4
+source_haunter = 5
+source_haunted = 6
+source_spending = 7
+source_decay = 8
+source_ghostification = 9
+
+# Categories of events that change your slimecoin total, for statistics tracking
+coinsource_spending = 0
+coinsource_donation = 1
+coinsource_bounty = 2
+coinsource_revival = 3
+coinsource_casino = 4
+coinsource_transfer = 5
+
+# Causes of death, for statistics tracking
+cause_killing = 0
+cause_mining = 1
+cause_grandfoe = 2
+cause_donation = 3
+cause_busted = 4
+cause_suicide = 5
+
+# List of user statistics that reset to 0 on death
 stats_clear_on_death = [
 	stat_slimesmined,
 	stat_slimesfromkills,
@@ -418,7 +469,7 @@ def wef_nunchucks(ctn = None):
 		ctn.crit = True
 	elif ctn.strikes == 0:
 		ctn.miss = True
-		ctn.user_data.slimes -= int(ctn.slimes_damage / 2)
+		ctn.user_data.change_slimes(n = (-ctn.slimes_damage / 2), source = source_self_damage)
 
 # weapon effect function for "katana"
 def wef_katana(ctn = None):
@@ -477,7 +528,7 @@ def wef_molotov(ctn = None):
 
 	if aim <= 10:
 		ctn.crit = True
-		ctn.user_data.slimes -= ctn.slimes_damage
+		ctn.user_data.change_slimes(n = -ctn.slimes_damage, source = source_self_damage)
 	elif aim > 10 and aim <= 20:
 		ctn.miss = True
 		ctn.slimes_damage = 0
@@ -497,7 +548,7 @@ def wef_knives(ctn = None):
 
 # weapon effect function for "scythe"
 def wef_scythe(ctn = None):
-	ctn.user_data.slimes -= int(ctn.slimes_spent * 0.33)
+	ctn.user_data.change_slimes(n = (-ctn.slimes_spent * 0.33), source = source_self_damage)
 	ctn.slimes_damage = int(ctn.slimes_damage * 1.25)
 	aim = (random.randrange(10) + 1)
 
