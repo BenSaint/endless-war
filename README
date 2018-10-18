@@ -59,6 +59,7 @@ CREATE TABLE markets (
 	day int NOT NULL DEFAULT '726',
 	decayed_slimes bigint NOT NULL DEFAULT '0',
 
+
 	PRIMARY KEY (id_server)
 );
 
