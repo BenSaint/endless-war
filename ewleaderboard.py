@@ -12,6 +12,8 @@ async def post_leaderboards(client = None, server = None):
 
 	await client.send_message(leaderboard_channel, "▓▓{} **STATE OF THE CITY:** {} {}▓▓".format(ewcfg.emote_theeye, time, ewcfg.emote_theeye))
 
+	kingpins = make_kingpin_board(server = server, title = ewcfg.leaderboard_kingpins)
+	await client.send_message(leaderboard_channel, kingpins)
 	topslimes = make_userdata_board(server = server, category = ewcfg.col_slimes, title = ewcfg.leaderboard_slimes)
 	await client.send_message(leaderboard_channel, topslimes)
 	topcoins = make_userdata_board(server = server, category = ewcfg.col_slimecredit, title = ewcfg.leaderboard_slimecredit)
@@ -20,8 +22,6 @@ async def post_leaderboards(client = None, server = None):
 	await client.send_message(leaderboard_channel, topghosts)
 	topbounty = make_userdata_board(server = server, category = ewcfg.col_bounty, title = ewcfg.leaderboard_bounty)
 	await client.send_message(leaderboard_channel, topbounty)
-	kingpins = make_kingpin_board(server = server, title = ewcfg.leaderboard_kingpins)
-	await client.send_message(leaderboard_channel, kingpins)
 
 def make_userdata_board(server = None, category = "", title = "", lowscores = False, rows = 5):
 	entries = []
