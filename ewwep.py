@@ -414,6 +414,9 @@ async def attack(cmd):
 					elif user_data.slimelevel < shootee_data.slimelevel:
 						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_takedowns)
 
+					# Collect bounty
+					coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
+
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes >= 0:
 						if was_juvenile:
@@ -422,9 +425,6 @@ async def attack(cmd):
 							user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 							user_data.change_slimes(n = slimes_dropped / 2, source = ewcfg.source_killing)
 							boss_slimes += int(slimes_dropped / 2)
-
-					# Collect bounty		
-					coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
 
 					# Steal items
 					ewitem.item_loot(member = member, id_user_target = cmd.message.author.id)
