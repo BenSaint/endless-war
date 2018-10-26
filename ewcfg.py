@@ -146,6 +146,8 @@ cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
+cmd_thrash = cmd_prefix + 'thrash'
+cmd_dab = cmd_prefix + 'dab'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -216,6 +218,8 @@ emote_purple = "<:purple:496397848343216138>"
 emote_pink = "<:pink:496397871180939294>"
 emote_slimecoin = "<:slimecoin:440576133214240769>"
 emote_slimegun = "<:slimegun:436500203743477760>"
+emote_ck = "<:ck:504173691488305152>"
+emote_rf = "<:rf:504174176656162816>"
 emote_testemote = "<:purple:496348895098699796>" # test server emote 
 
 # Emotes for the negaslime writhe animation
