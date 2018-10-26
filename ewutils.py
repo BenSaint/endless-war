@@ -506,11 +506,11 @@ def get_faction_symbol(faction = ""):
 	if faction == ewcfg.role_corpse:
 		result = ewcfg.emote_ghost
 	elif faction == ewcfg.role_juvenile:
-		result = ewcfg.emote_slimefull
+		result = ewcfg.emote_slime3
 	elif faction == ewcfg.role_copkillers:
-		result = ewcfg.emote_purple
+		result = ewcfg.emote_ck
 	elif faction == ewcfg.role_rowdyfuckers:
-		result = ewcfg.emote_pink
+		result = ewcfg.emote_rf
 	else:
 		result = ewcfg.emote_blank
 
