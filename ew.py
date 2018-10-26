@@ -11,7 +11,8 @@ class EwMarket:
 
 	clock = 0
 	weather = 'sunny'
-	
+	day = 0
+
 	slimes_casino = 0
 	slimes_revivefee = 0
 
@@ -20,6 +21,7 @@ class EwMarket:
 	boombust = 0
 	time_lasttick = 0
 	negaslime = 0
+	decayed_slimes = 0
 
 	""" Load the market data for this server from the database. """
 	def __init__(self, id_server = None):
@@ -32,7 +34,7 @@ class EwMarket:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM markets WHERE id_server = %s".format(
 					ewcfg.col_slimes_casino,
 					ewcfg.col_rate_market,
 					ewcfg.col_rate_exchange,
@@ -42,6 +44,8 @@ class EwMarket:
 					ewcfg.col_negaslime,
 					ewcfg.col_clock,
 					ewcfg.col_weather,
+					ewcfg.col_day,
+					ewcfg.col_decayed_slimes
 				), (self.id_server, ))
 				result = cursor.fetchone();
 
@@ -56,6 +60,8 @@ class EwMarket:
 					self.negaslime = result[6]
 					self.clock = result[7]
 					self.weather = result[8]
+					self.day = result[9]
+					self.decayed_slimes = result[10]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO markets(id_server) VALUES(%s)", (id_server, ))
@@ -74,7 +80,7 @@ class EwMarket:
 			cursor = conn.cursor();
 
 			# Save the object.
-			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO markets({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_server,
 				ewcfg.col_slimes_casino,
 				ewcfg.col_rate_market,
@@ -84,7 +90,9 @@ class EwMarket:
 				ewcfg.col_slimes_revivefee,
 				ewcfg.col_negaslime,
 				ewcfg.col_clock,
-				ewcfg.col_weather
+				ewcfg.col_weather,
+				ewcfg.col_day,
+				ewcfg.col_decayed_slimes
 			), (
 				self.id_server,
 				self.slimes_casino,
@@ -95,7 +103,9 @@ class EwMarket:
 				self.slimes_revivefee,
 				self.negaslime,
 				self.clock,
-				self.weather
+				self.weather,
+				self.day,
+				self.decayed_slimes
 			))
 
 			conn.commit()
@@ -146,34 +156,59 @@ class EwUser:
 			
 	""" gain or lose slime, recording statistics and potentially leveling up. """
 	def change_slimes(self, n = 0, source = None):
-		if source == ewcfg.source_damage:
-			if n > self.slimes: #lethal blow
-				self.totaldamage += self.slimes
-			else:
-				self.totaldamage -= int(n) #minus a negative
-				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = int(n))
+		change = int(n)
+		self.slimes += change
 
-		if source == ewcfg.source_mining:
-			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesmined, n = int(n))
+		if n >= 0:
+			ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimes, n = change)
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_slimes, value = self.slimes)
 
-		if source == ewcfg.source_killing:
-			ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = int(n))
+			if source == ewcfg.source_mining:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesmined, n = change)
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesmined, n = change)
 
-		self.slimes += int(n)
-		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_slimes, value = self.slimes)
-		
-		#level up
-		new_level = len(str(int(self.slimes)))
+			if source == ewcfg.source_killing:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change)
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesfromkills, n = change)
+		else:
+			change *= -1 # convert to positive number
+			if source != ewcfg.source_spending and source != ewcfg.source_ghostification:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeloss, n = change)
+
+			if source == ewcfg.source_damage:
+				self.totaldamage += change
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hitsurvived, value = change)
+
+			if source == ewcfg.source_self_damage:
+				self.totaldamage += change
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_selfdamage, n = change)
+
+			if source == ewcfg.source_decay:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesdecayed, n = change)
+
+			if source == ewcfg.source_haunter:
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_hauntinflicted, value = change)
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeshaunted, n = change)
+
+		# potentially level up
+		new_level = int(abs(self.slimes) ** 0.2)
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
-			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
+			if self.life_state == ewcfg.life_state_corpse:
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_ghost_level, value = self.slimelevel)
+			else:
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
 		
-	def die(self):
-		if self.life_state != ewcfg.life_state_corpse:  # don't count ghost deaths toward total deaths
-			self.life_state = ewcfg.life_state_corpse
-			ewstats.change_stat(user = self, metric = ewcfg.stat_total_deaths, n = 1)
+	def die(self, cause = None):
+		if cause == ewcfg.cause_busted:
+			self.busted = True
 		else:
-			self.busted = True  # this method is called for busted ghosts too
+			self.busted = False  # reset busted state on normal death; potentially move this to ewspooky.revive
+			self.life_state = ewcfg.life_state_corpse
+			ewstats.increment_stat(user = self, metric = ewcfg.stat_lifetime_deaths)
+			ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeloss, n = self.slimes)
+			if cause != ewcfg.cause_killing and cause != ewcfg.cause_suicide:
+				ewstats.increment_stat(user = self, metric = ewcfg.stat_lifetime_pve_deaths)
 		self.slimes = 0
 		self.poi = ewcfg.poi_id_thesewers
 		self.bounty = 0
@@ -192,6 +227,26 @@ class EwUser:
 	def add_bounty(self, n = 0):
 		self.bounty += int(n)
 		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_bounty, value = self.bounty)
+
+	def change_slimecredit(self, n = 0, coinsource = None):
+		change = int(n)
+		self.slimecredit += change
+
+		if change >= 0:
+			ewstats.track_maximum(user = self, metric = ewcfg.stat_max_slimecredit, value = self.slimecredit)
+			ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimecredit, n = change)
+			if coinsource == ewcfg.coinsource_bounty:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_bounty_collected, n = change)
+			if coinsource == ewcfg.coinsource_casino:
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_biggest_casino_win, value = change)
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_casino_winnings, n = change)
+		else:
+			change *= -1
+			if coinsource == ewcfg.coinsource_revival:
+				ewstats.change_stat(user = self, metric = ewcfg.stat_slimecredit_spent_on_revives, n = change)
+			if coinsource == ewcfg.coinsource_casino:
+				ewstats.track_maximum(user = self, metric = ewcfg.stat_biggest_casino_loss, value = change)
+				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_casino_losses, n = change)
 
 	def add_weaponskill(self, n = 0):
 		# Save the current weapon's skill

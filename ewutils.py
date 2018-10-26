@@ -194,9 +194,9 @@ def databaseClose(conn_info):
 
 """ format responses with the username: """
 def formatMessage(user_target, message):
-	return "*{}*: {}".format(user_target.display_name, message)
+	return "*{}*: {}".format(user_target.display_name, message).replace("@", "\{at\}")
 
-""" decay slime totals for all users """
+""" Decay slime totals for all users """
 def decaySlimes(id_server = None):
 	if id_server != None:
 		try:
@@ -204,17 +204,18 @@ def decaySlimes(id_server = None):
 			conn = conn_info.get('conn')
 			cursor = conn.cursor();
 
-			cursor.execute("SELECT id_user, slimes FROM users WHERE id_server = %s AND {slimes} > 1".format(
+			cursor.execute("SELECT id_user FROM users WHERE id_server = %s AND {slimes} > 1".format(
 				slimes = ewcfg.col_slimes
 			), (
 				id_server,
 			))
 
 			users = cursor.fetchall()
+			total_decayed = 0
 
 			for user in users:
-				slimes = user[1]
-				slimes_to_decay = slimes - (slimes * (.5 ** (ewcfg.update_market / ewcfg.slime_half_life)))
+				user_data = EwUser(id_user = user[0], id_server = id_server)
+				slimes_to_decay = user_data.slimes - (user_data.slimes * (.5 ** (ewcfg.update_market / ewcfg.slime_half_life)))
 
 				#round up or down, randomly weighted
 				remainder = slimes_to_decay - int(slimes_to_decay)
@@ -223,16 +224,17 @@ def decaySlimes(id_server = None):
 				slimes_to_decay = int(slimes_to_decay)
 
 				if slimes_to_decay >= 1:
-					cursor.execute("UPDATE users SET {slimes} = {slimes} - {decay} WHERE {id_server} = %s AND {id_user} = %s".format(
-						slimes = ewcfg.col_slimes,
-						decay = slimes_to_decay,
-						id_server = ewcfg.col_id_server,
-						id_user = ewcfg.col_id_user
-					), (
-						id_server,
-						user[0]
-					))
-					#logMsg("decayed {} slimes from user ID: {}".format(slimes_to_decay, user[0]))
+					user_data.change_slimes(n = -slimes_to_decay, source = ewcfg.source_decay)
+					user_data.persist()
+					total_decayed += slimes_to_decay
+
+			cursor.execute("UPDATE markets SET {decayed} = ({decayed} + %s) WHERE {server} = %s".format(
+				decayed = ewcfg.col_decayed_slimes,
+				server = ewcfg.col_id_server
+			), (
+				total_decayed,
+				id_server
+			))
 
 			conn.commit()
 		finally:
@@ -448,10 +450,68 @@ def execute_sql_query(sql_query = None):
 
 
 """
-	
+	Send a message to multiple chat channels at once.
 """
 async def post_in_multiple_channels(message = None, channels = None, client = None):
 	for channel in channels:
 		if channel.type == discord.ChannelType.text:
 			await client.send_message(channel, message)
 	return
+
+"""
+	Find a chat channel by name in a server.
+"""
+def get_channel(server = None, channel_name = ""):
+	channel = None
+	for chan in server.channels:
+		if chan.name == channel_name:
+			channel = chan
+
+	return channel
+
+"""
+	Return the role name of a user's faction. Takes user data object or life_state and faction tag
+"""
+def get_faction(user_data = None, life_state = ewcfg.life_state_corpse, faction = ""):
+	life_state = life_state
+	faction = faction
+	if user_data != None:
+		life_state = user_data.life_state
+		faction = user_data.faction
+
+	faction_role = ewcfg.role_corpse
+
+	if life_state == ewcfg.life_state_juvenile:
+		faction_role = ewcfg.role_juvenile
+
+	elif life_state == ewcfg.life_state_enlisted:
+		if faction == ewcfg.faction_killers:
+			faction_role = ewcfg.role_copkillers
+
+		elif faction == ewcfg.faction_rowdys:
+			faction_role = ewcfg.role_rowdyfuckers
+
+		else:
+			faction_role = ewcfg.role_juvenile
+
+	elif life_state == ewcfg.life_state_kingpin:
+		faction_role = ewcfg.role_kingpin
+
+	elif life_state == ewcfg.life_state_grandfoe:
+		faction_role = ewcfg.role_grandfoe
+
+	return faction_role
+
+def get_faction_symbol(faction = ""):
+	if faction == ewcfg.role_corpse:
+		result = ewcfg.emote_ghost
+	elif faction == ewcfg.role_juvenile:
+		result = ewcfg.emote_slime3
+	elif faction == ewcfg.role_copkillers:
+		result = ewcfg.emote_ck
+	elif faction == ewcfg.role_rowdyfuckers:
+		result = ewcfg.emote_rf
+	else:
+		result = ewcfg.emote_blank
+
+	return result

@@ -33,6 +33,7 @@ import ewitem
 import ewmap
 import ewrolemgr
 import ewraidboss
+import ewleaderboard
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -47,6 +48,7 @@ last_helped_times = {}
 
 # Map of server ID to a map of active users on that server.
 active_users_map = {}
+
 
 # Map of all command words in the game to their implementing function.
 cmd_map = {
@@ -85,6 +87,11 @@ cmd_map = {
 	ewcfg.cmd_time: ewcmd.weather,
 	ewcfg.cmd_clock: ewcmd.weather,
 	ewcfg.cmd_weather: ewcmd.weather,
+
+
+	# Rowdys thrash and Killers dab.
+	ewcfg.cmd_thrash: ewcmd.thrash,
+	ewcfg.cmd_dab: ewcmd.dab,
 
 
 	# Show the total of negative slime in the world.
@@ -329,6 +336,7 @@ async def on_ready():
 
 					if market_data.clock >= 24 or market_data.clock < 0:
 						market_data.clock = 0
+						market_data.day += 1
 
 					if random.randrange(30) == 0:
 						pattern_count = len(ewcfg.weather_list)
@@ -355,6 +363,10 @@ async def on_ready():
 
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
+
+					# Post leaderboards at 6am NLACakaNM time.
+					if market_data.clock == 6:
+						await ewleaderboard.post_leaderboards(client = client, server = server)
 
 		except:
 			ewutils.logMsg('An error occurred in the scheduled slime market update task:')
@@ -575,8 +587,6 @@ async def on_message(message):
 
 		# didn't match any of the command words.
 		else:
-			resp = await ewcmd.start(cmd = cmd_obj)
-
 			""" couldn't process the command. bail out!! """
 			""" bot rule 0: be cute """
 			randint = random.randint(1,3)
@@ -586,10 +596,9 @@ async def on_message(message):
 			elif randint == 3:
 				msg_mistake = "ENDLESS WAR pays you no mind."
 
-			await asyncio.sleep(1)
-			await client.edit_message(resp, msg_mistake)
+			msg = await client.send_message(cmd_obj.message.channel, msg_mistake)
 			await asyncio.sleep(2)
-			await client.delete_message(resp)
+			await client.delete_message(msg)
 
 	elif content_tolower.find(ewcfg.cmd_howl) >= 0 or content_tolower.find(ewcfg.cmd_howl_alt1) >= 0 or re_awoo.match(content_tolower):
 		""" Howl if !howl is in the message at all. """

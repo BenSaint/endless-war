@@ -41,26 +41,7 @@ async def updateRoles(
 	]
 
 	# Manage faction roles.
-	faction_role = ewcfg.role_corpse
-
-	if user_data.life_state == ewcfg.life_state_juvenile:
-		faction_role = ewcfg.role_juvenile
-
-	elif user_data.life_state == ewcfg.life_state_enlisted:
-		if user_data.faction == ewcfg.faction_killers:
-			faction_role = ewcfg.role_copkillers
-
-		elif user_data.faction == ewcfg.faction_rowdys:
-			faction_role = ewcfg.role_rowdyfuckers
-
-		else:
-			faction_role = ewcfg.role_juvenile
-
-	elif user_data.life_state == ewcfg.life_state_kingpin:
-		faction_role = ewcfg.role_kingpin
-
-	elif user_data.life_state == ewcfg.life_state_grandfoe:
-		faction_role = ewcfg.role_grandfoe
+	faction_role = ewutils.get_faction(user_data = user_data)
 
 	faction_roles_remove.remove(faction_role)
 

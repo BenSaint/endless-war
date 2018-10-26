@@ -139,7 +139,7 @@ async def order(cmd):
 					credits = user_data.slimecredit
 				)
 			else:
-				user_data.slimecredit -= value
+				user_data.change_slimecredit(n = -value, coinsource = ewcfg.coinsource_spending)
 
 				if not togo:
 

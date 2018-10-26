@@ -25,7 +25,7 @@ async def revive(cmd):
 
 			# Endless War collects his fee.
 			fee = (player_data.slimecredit / 10)
-			player_data.slimecredit -= fee
+			player_data.change_slimecredit(n = -fee, coinsource = ewcfg.coinsource_revival)
 			market_data.slimes_revivefee += fee
 			player_data.busted = False
 			
@@ -35,6 +35,7 @@ async def revive(cmd):
 				player_data.change_slimes(n = -player_data.slimes) # set to 0
 
 			# Give player some initial slimes.
+			player_data.slimelevel = 0
 			player_data.change_slimes(n = ewcfg.slimes_onrevive)
 
 			# Set time of last revive. This used to provied spawn protection, but currently isn't used.
@@ -110,8 +111,11 @@ async def haunt(cmd):
 			elif haunted_slimes > ewcfg.slimes_hauntmax:
 				haunted_slimes = ewcfg.slimes_hauntmax
 
-			haunted_data.change_slimes(n = -haunted_slimes)
-			user_data.change_slimes(n = -haunted_slimes)
+			if -user_data.slimes < haunted_slimes:  # cap on for how much you can haunt
+				haunted_slimes = -user_data.slimes
+
+			haunted_data.change_slimes(n = -haunted_slimes, source = ewcfg.source_haunted)
+			user_data.change_slimes(n = -haunted_slimes, source = ewcfg.source_haunter)
 			user_data.time_lasthaunt = time_now
 
 			# Persist changes to the database.

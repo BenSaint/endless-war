@@ -100,6 +100,9 @@ def change_stat(id_server = None, id_user = None, user = None, metric = None, n 
 		cursor.close()
 		ewutils.databaseClose(conn_info)
 
+def increment_stat(id_server = None, id_user = None, user = None, metric = None):
+	change_stat(id_server = id_server, id_user = id_user, user = user, metric = metric, n = 1)
+
 """ Update a user statistic only if the new value is higher. return True if change occurred """
 def track_maximum(id_server = None, id_user = None, user = None, metric = None, value = 0):
 	if(id_user == None) and (id_server == None):

@@ -1,5 +1,6 @@
 import ewutils
 import ewcfg
+import ewstats
 from ew import EwUser
 from ewplayer import EwPlayer
 
@@ -120,7 +121,7 @@ class EwItem:
 				cursor.close()
 				ewutils.databaseClose(conn_info)
 
-	""" Save user data object to the database. """
+	""" Save item data object to the database. """
 	def persist(self):
 		try:
 			conn_info = ewutils.databaseConnect()
@@ -279,14 +280,13 @@ def item_destroyall(id_server = None, id_user = None, member = None):
 			conn = conn_info.get('conn')
 			cursor = conn.cursor()
 
-			# Create the item in the database.
 			cursor.execute("DELETE FROM items WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
 				id_user = ewcfg.col_id_user,
 				id_server = ewcfg.col_id_server,
 				soulbound = ewcfg.col_soulbound,
 			), (
-				id_user,
-				id_server
+				id_server,
+				id_user
 			))
 
 			conn.commit()
@@ -312,7 +312,21 @@ def item_loot(
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
-		# Create the item in the database.
+		# TODO more elegant solution for tracking this sort of thing -- get amount of poudrins taken for stat tracking
+		cursor.execute("SELECT * FROM items WHERE {id_server} = %s AND {id_user} = %s AND {item_type} = %s".format(
+			id_user = ewcfg.col_id_user,
+			id_server = ewcfg.col_id_server,
+			item_type = ewcfg.col_item_type,
+		), (
+			member.server.id,
+			member.id,
+			ewcfg.it_slimepoudrin
+		))
+		poudrins_looted = cursor.rowcount
+		ewutils.logMsg("Attempting to loot {} poudrins.".format(poudrins_looted))
+		ewstats.change_stat(id_server = member.server.id, id_user = id_user_target, metric = ewcfg.stat_poudrins_looted, n = poudrins_looted)
+
+		# Re-assign lootable items to looting user
 		cursor.execute("UPDATE items SET {id_user} = %s WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
 			id_user = ewcfg.col_id_user,
 			id_server = ewcfg.col_id_server,

@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v2.00"
+version = "v2.05"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -80,6 +80,7 @@ channel_nlacu = "nlac-university"
 channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
+channel_leaderboard = "leaderboard"
 
 # Commands
 cmd_prefix = '!'
@@ -146,12 +147,14 @@ cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
 cmd_buy = cmd_prefix + 'buy'
+cmd_thrash = cmd_prefix + 'thrash'
+cmd_dab = cmd_prefix + 'dab'
 
 # Slime costs/values
 slimes_onrevive = 20
 slimes_onrevive_everyone = 20
 slimes_toenlist = 0
-slimes_perspar_base = 1000
+slimes_perspar_base = 0
 slimes_hauntratio = 40
 slimes_hauntmax = 20000
 slimes_perslot = 10
@@ -207,6 +210,8 @@ emote_copkiller = "<:copkiller:431275071945048075>"
 emote_rowdyfucker = "<:rowdyfucker:431275088076079105>"
 emote_theeye = "<:theeye:431429098909466634>"
 emote_slime1 = "<:slime1:431564830541873182>"
+emote_slime2 = "<:slime2:431570132901560320>"
+emote_slime3 = "<:slime3:431659469844381717>"
 emote_slime4 = "<:slime4:431570132901560320>"
 emote_slime5 = "<:slime5:431659469844381717>"
 emote_slimeskull = "<:slimeskull:431670526621122562>"
@@ -217,6 +222,16 @@ emote_dice4 = "<:dice4:436942524406300683>"
 emote_dice5 = "<:dice5:436942524444049408>"
 emote_dice6 = "<:dice6:436942524469346334>"
 emote_negaslime = "<:negaslime:453826200616566786>"
+emote_bustin = "<:bustin:455194248741126144>"
+emote_ghost = "<:lordofghosts:434002083256205314>"
+emote_slimefull = "<:slimefull:496397819154923553>"
+emote_purple = "<:purple:496397848343216138>"
+emote_pink = "<:pink:496397871180939294>"
+emote_slimecoin = "<:slimecoin:440576133214240769>"
+emote_slimegun = "<:slimegun:436500203743477760>"
+emote_ck = "<:ck:504173691488305152>"
+emote_rf = "<:rf:504174176656162816>"
+emote_testemote = "<:purple:496348895098699796>" # test server emote
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -265,7 +280,6 @@ col_slimes = 'slimes'
 col_slimelevel = 'slimelevel'
 col_hunger = 'hunger'
 col_totaldamage = 'totaldamage'
-col_kills = 'kills'
 col_weapon = 'weapon'
 col_weaponskill = 'weaponskill'
 col_trauma = 'trauma'
@@ -284,15 +298,6 @@ col_ghostbust = 'ghostbust'
 col_faction = 'faction'
 col_poi = 'poi'
 col_life_state = 'life_state'
-col_max_kills = 'max_kills'
-col_max_slimesowned = 'max_slimesowned'
-col_max_bountyonhead = 'max_bountyonhead'
-col_max_slimecredit = 'max_slimecredit'
-col_max_poudrins = 'max_poudrins'
-col_max_level = 'max_level'
-col_max_ghostbusts = 'max_ghostbusts'
-col_total_damagedealt = 'total_damagedealt'
-col_total_deaths = 'total_deaths'
 col_busted = 'busted'
 
 # Database columns for user statistics
@@ -309,6 +314,8 @@ col_slimes_revivefee = 'slimes_revivefee'
 col_negaslime = 'negaslime'
 col_clock = 'clock'
 col_weather = 'weather'
+col_day = 'day'
+col_decayed_slimes = 'decayed_slimes'
 
 # Database columns for stats
 col_total_slime = 'total_slime'
@@ -324,10 +331,13 @@ it_questitem = "questitem"
 it_food = "food"
 it_weapon = "weapon"
 
-# Categories of events that change your slime total, for statistics tracking
-source_mining = 0
-source_damage = 1
-source_killing = 2
+# Leaderboard score categories
+leaderboard_slimes = "SLIMIEST"
+leaderboard_slimecredit = "SLIMECOIN BARONS"
+leaderboard_ghosts = "ANTI-SLIMIEST"
+leaderboard_podrins = "PODRIN LORDS"
+leaderboard_bounty = "MOST WANTED"
+leaderboard_kingpins = "KINGPINS' COFFERS"
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
@@ -358,23 +368,78 @@ hitzone_list = [
 
 # User statistics we track 
 stat_max_slimes = 'max_slimes'
+stat_lifetime_slimes = 'lifetime_slimes'
+stat_lifetime_slimeloss = 'lifetime_slime_loss'
+stat_lifetime_slimesdecayed = 'lifetime_slimes_decayed'
 stat_slimesmined = 'slimes_mined'
-stat_slimesfromkills = 'slimes_from_kills'
 stat_max_slimesmined = 'max_slimes_mined'
+stat_lifetime_slimesmined = 'lifetime_slimes_mined'
+stat_slimesfromkills = 'slimes_from_kills'
 stat_max_slimesfromkills = 'max_slimes_from_kills'
+stat_lifetime_slimesfromkills = 'lifetime_slimes_from_kills'
+stat_lifetime_slimeshaunted = 'lifetime_slimes_haunted'
 stat_max_level = 'max_level'
+stat_max_ghost_level = 'max_ghost_level'
 stat_max_hitsurvived = 'max_hit_survived'
+stat_max_hitdealt = 'max_hit_dealt'
+stat_max_hauntinflicted = 'max_haunt_inflicted'
 stat_kills = 'kills'
 stat_max_kills = 'max_kills'
+stat_biggest_kill = 'biggest_kill'
+stat_lifetime_kills = 'lifetime_kills'
+stat_lifetime_ganks = 'lifetime_ganks'
+stat_lifetime_takedowns = 'lifetime_takedowns'
 stat_max_wepskill = 'max_wep_skill'
 stat_max_slimecredit = 'max_slime_coins'
+stat_lifetime_slimecredit = 'lifetime_slime_coins'
+stat_slimecredit_spent_on_revives = 'slimecoins_spent_on_revives'
+stat_biggest_casino_win = 'biggest_casino_win'
+stat_biggest_casino_loss = 'biggest_casino_loss'
+stat_lifetime_casino_winnings = 'lifetime_casino_winnings'
+stat_lifetime_casino_losses = 'lifetime_casino_losses'
+stat_bounty_collected = 'bounty_collected'
 stat_max_bounty = 'max_bounty'
 stat_ghostbusts = 'ghostbusts'
+stat_biggest_bust_level = 'biggest_bust_level'
+stat_lifetime_ghostbusts = 'lifetime_ghostbusts'
 stat_max_ghostbusts = 'max_ghostbusts'
 stat_max_poudrins = 'max_poudrins'
-stat_total_damagedealt = 'total_damagedealt'
-stat_total_deaths = 'total_deaths'
+stat_poudrins_looted = 'poudrins_looted'
+stat_lifetime_poudrins = 'lifetime_poudrins'
+stat_lifetime_damagedealt = 'lifetime_damage_dealt'
+stat_lifetime_selfdamage = 'lifetime_self_damage'
+stat_lifetime_deaths = 'lifetime_deaths'
+stat_lifetime_pve_deaths = 'lifetime_pve_deaths'
 
+# Categories of events that change your slime total, for statistics tracking
+source_mining = 0
+source_damage = 1
+source_killing = 2
+source_self_damage = 3
+source_busting = 4
+source_haunter = 5
+source_haunted = 6
+source_spending = 7
+source_decay = 8
+source_ghostification = 9
+
+# Categories of events that change your slimecoin total, for statistics tracking
+coinsource_spending = 0
+coinsource_donation = 1
+coinsource_bounty = 2
+coinsource_revival = 3
+coinsource_casino = 4
+coinsource_transfer = 5
+
+# Causes of death, for statistics tracking
+cause_killing = 0
+cause_mining = 1
+cause_grandfoe = 2
+cause_donation = 3
+cause_busted = 4
+cause_suicide = 5
+
+# List of user statistics that reset to 0 on death
 stats_clear_on_death = [
 	stat_slimesmined,
 	stat_slimesfromkills,
@@ -419,7 +484,7 @@ def wef_nunchucks(ctn = None):
 		ctn.crit = True
 	elif ctn.strikes == 0:
 		ctn.miss = True
-		ctn.user_data.slimes -= int(ctn.slimes_damage / 2)
+		ctn.user_data.change_slimes(n = (-ctn.slimes_damage / 2), source = source_self_damage)
 
 # weapon effect function for "katana"
 def wef_katana(ctn = None):
@@ -478,7 +543,7 @@ def wef_molotov(ctn = None):
 
 	if aim <= 10:
 		ctn.crit = True
-		ctn.user_data.slimes -= ctn.slimes_damage
+		ctn.user_data.change_slimes(n = -ctn.slimes_damage, source = source_self_damage)
 	elif aim > 10 and aim <= 20:
 		ctn.miss = True
 		ctn.slimes_damage = 0
@@ -498,7 +563,7 @@ def wef_knives(ctn = None):
 
 # weapon effect function for "scythe"
 def wef_scythe(ctn = None):
-	ctn.user_data.slimes -= int(ctn.slimes_spent * 0.33)
+	ctn.user_data.change_slimes(n = (-ctn.slimes_spent * 0.33), source = source_self_damage)
 	ctn.slimes_damage = int(ctn.slimes_damage * 1.25)
 	aim = (random.randrange(10) + 1)
 
@@ -527,6 +592,7 @@ weapon_list = [
 		str_trauma_self = "You have scarring on both temples, which occasionally bleeds.",
 		str_trauma = "They have scarring on both temples, which occasionally bleeds.",
 		str_kill = "{name_player} puts their gun to {name_target}'s head. **BANG**. Execution-style. Blood pools across the hot asphalt. {emote_skull}",
+		str_killdescriptor = "gunned down",
 		str_damage = "{name_target} takes a bullet to the {hitzone}!!",
 		str_duel = "**BANG BANG.** {name_player} and {name_target} practice their quick-draw, bullets whizzing past one another's heads.",
 		fn_effect = wef_gun
@@ -546,6 +612,7 @@ weapon_list = [
 		str_trauma_self = "Your torso is riddled with scarred-over bulletholes.",
 		str_trauma = "Their torso is riddled with scarred-over bulletholes.",
 		str_kill = "**RAT-TAT-TAT-TAT-TAT!!** {name_player} rains a hail of bullets directly into {name_target}!! They're officially toast! {emote_skull}",
+		str_killdescriptor = "gunned down",
 		str_damage = "Bullets rake over {name_target}'s {hitzone}!!",
 		str_duel = "**RAT-TAT-TAT-TAT-TAT!!** {name_player} and {name_target} practice shooting at distant targets with quick, controlled bursts.",
 		fn_effect = wef_rifle
@@ -554,6 +621,8 @@ weapon_list = [
 		id_weapon = "nun-chucks",
 		alias = [
 			"nanchacku",
+			"nunchaku",
+			"chucks",
 			"numchucks",
 			"nunchucks"
 		],
@@ -566,6 +635,7 @@ weapon_list = [
 		str_trauma_self = "You are covered in deep bruises. You hate martial arts of all kinds.",
 		str_trauma = "They are covered in deep bruises. They hate martial arts of all kinds.",
 		str_kill = "**HIIII-YAA!!** With expert timing, {name_player} brutally batters {name_target} to death, then strikes a sweet kung-fu pose. {emote_skull}",
+		str_killdescriptor = "fatally bludgeoned",
 		str_damage = "{name_target} takes {strikes} nun-chuck whacks directly in the {hitzone}!!",
 		str_duel = "**HII-YA! HOOOAAAAAHHHH!!** {name_player} and {name_target} twirl wildly around one another, lashing out with kung-fu precision.",
 		fn_effect = wef_nunchucks
@@ -587,6 +657,7 @@ weapon_list = [
 		str_trauma_self = "A single clean scar runs across the entire length of your body.",
 		str_trauma = "A single clean scar runs across the entire length of their body.",
 		str_kill = "Faster than the eye can follow, {name_player}'s blade glints in the greenish light. {name_target} falls over, now in two pieces. {emote_skull}",
+		str_killdescriptor = "bisected",
 		str_damage = "{name_target} is slashed across the {hitzone}!!",
 		str_duel = "**CRACK!! THWACK!! CRACK!!** {name_player} and {name_target} duel with bamboo swords, viciously striking at head, wrist and belly.",
 		fn_effect = wef_katana
@@ -607,6 +678,7 @@ weapon_list = [
 		str_trauma_self = "Your head appears to be slightly concave on one side.",
 		str_trauma = "Their head appears to be slightly concave on one side.",
 		str_kill = "{name_player} pulls back for a brutal swing! **CRUNCCHHH.** {name_target}'s brains splatter over the sidewalk. {emote_skull}",
+		str_killdescriptor = "nail bat battered",
 		str_damage = "{name_target} is struck with a hard blow to the {hitzone}!!",
 		str_duel = "**SMASHH! CRAASH!!** {name_player} and {name_target} run through the neighborhood, breaking windshields, crushing street signs, and generally having a hell of a time.",
 		fn_effect = wef_bat
@@ -627,6 +699,7 @@ weapon_list = [
 		str_trauma_self = "There is noticeable bruising and scarring around your neck.",
 		str_trauma = "There is noticeable bruising and scarring around their neck.",
 		str_kill = "{name_player} quietly moves behind {name_target} and... **!!!** After a brief struggle, only a cold body remains. {emote_skull}",
+		str_killdescriptor = "garrote wired",
 		str_damage = "{name_target} is ensnared by {name_player}'s wire!!",
 		str_duel = "{name_player} and {name_target} compare their dexterity by playing Cat's Cradle with deadly wire.",
 		fn_effect = wef_garrote
@@ -647,6 +720,7 @@ weapon_list = [
 		str_trauma_self = "You've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_trauma = "They've got two black eyes, missing teeth, and a profoundly crooked nose.",
 		str_kill = "{name_player} slugs {name_target} right between the eyes! *POW! THWACK!!* **CRUNCH.** Shit. May have gotten carried away there. Oh, well. {emote_skull}",
+		str_killdescriptor = "pummeled to death",
 		str_damage = "{name_target} is socked in the {hitzone}!!",
 		str_duel = "**POW! BIFF!!** {name_player} and {name_target} take turns punching each other in the abs. It hurts so good.",
 		fn_effect = wef_brassknuckles
@@ -668,6 +742,7 @@ weapon_list = [
 		str_trauma_self = "You're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_trauma = "They're wrapped in bandages. What skin is showing appears burn-scarred.",
 		str_kill = "**SMASH!** {name_target}'s front window shatters and suddenly flames are everywhere!! The next morning, police report that {name_player} is suspected of arson. {emote_skull}",
+		str_killdescriptor = "exploded",
 		str_damage = "{name_target} dodges a bottle, but is singed on the {hitzone} by the blast!!",
 		str_duel = "{name_player} and {name_target} compare notes on frontier chemistry, seeking the optimal combination of combustibility and fuel efficiency.",
 		fn_effect = wef_molotov
@@ -690,6 +765,7 @@ weapon_list = [
 		str_trauma_self = "You are covered in scarred-over lacerations and puncture wounds.",
 		str_trauma = "They are covered in scarred-over lacerations and puncture wounds.",
 		str_kill = "A blade flashes through the air!! **THUNK.** {name_target} is a goner, but {name_player} slits their throat before fleeing the scene, just to be safe. {emote_skull}",
+		str_killdescriptor = "knifed",
 		str_damage = "{name_target} is stuck by a knife in the {hitzone}!!",
 		str_duel = "**TING! TING!!** {name_player} and {name_target} take turns hitting one another's knives out of the air.",
 		fn_effect = wef_knives
@@ -708,6 +784,7 @@ weapon_list = [
 		str_trauma_self = "You are wrapped tightly in bandages that hold your two halves together.",
 		str_trauma = "They are wrapped tightly in bandages that hold their two halves together.",
 		str_kill = "**SLASHH!!** {name_player}'s scythe cleaves the air, and {name_target} staggers. A moment later, {name_target}'s torso topples off their waist. {emote_skull}",
+		str_killdescriptor = "sliced in twain",
 		str_damage = "{name_target} is cleaved through the {hitzone}!!",
 		str_duel = "**WHOOSH, WHOOSH** {name_player} and {name_target} swing their blades in wide arcs, dodging one another's deadly slashes.",
 		fn_effect = wef_scythe
@@ -802,7 +879,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"tonic",
 		],
 		recover_hunger = 20,
-		price = 2,
+		price = 4,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
 		vendor = vendor_bar,
@@ -814,7 +891,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"colada",
 		],
 		recover_hunger = 25,
-		price = 3,
+		price = 5,
 		inebriation = 2,
 		str_name = 'slima colada',
 		vendor = vendor_bar,
@@ -842,7 +919,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"bottle",
 		],
 		recover_hunger = 40,
-		price = 20,
+		price = 30,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
 		vendor = vendor_bar,
@@ -866,7 +943,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"beach",
 		],
 		recover_hunger = 30,
-		price = 3,
+		price = 7,
 		inebriation = 2,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
@@ -878,7 +955,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"goo",
 		],
 		recover_hunger = 30,
-		price = 2,
+		price = 6,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
 		vendor = vendor_bar,
@@ -890,9 +967,9 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"manhattan",
 		],
 		recover_hunger = 25,
-		price = 3,
+		price = 5,
 		inebriation = 3,
-		str_name = 'slime on the beach',
+		str_name = 'manhattan project',
 		vendor = vendor_bar,
 		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
 	),
@@ -901,8 +978,8 @@ food_list = [  # todo: write !inspect descriptions for food items
 		alias = [
 			"mary",
 		],
-		recover_hunger = 35,
-		price = 2,
+		recover_hunger = 25,
+		price = 5,
 		inebriation = 2,
 		str_name = 'slimy mary',
 		vendor = vendor_bar,
@@ -915,7 +992,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"beer",
 		],
 		recover_hunger = 30,
-		price = 2,
+		price = 6,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
 		vendor = vendor_bar,
@@ -939,7 +1016,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"pizzaslice",
 		],
 		recover_hunger = 40,
-		price = 1,
+		price = 4,
 		inebriation = 0,
 		str_name = 'slice of pizza',
 		vendor = vendor_pizzahut,
@@ -951,7 +1028,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"peperoni",
 		],
 		recover_hunger = 50,
-		price = 1,
+		price = 5,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
 		vendor = vendor_pizzahut,
@@ -963,7 +1040,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"meatpizza",
 		],
 		recover_hunger = 70,
-		price = 2,
+		price = 7,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
 		vendor = vendor_pizzahut,
@@ -975,7 +1052,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"buffalowings",
 		],
 		recover_hunger = 80,
-		price = 2,
+		price = 8,
 		inebriation = 0,
 		str_name = 'buffalo wings',
 		vendor = vendor_pizzahut,
@@ -987,7 +1064,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"softtaco",
 		],
 		recover_hunger = 30,
-		price = 1,
+		price = 3,
 		inebriation = 0,
 		str_name = 'soft taco',
 		vendor = vendor_tacobell,
@@ -999,8 +1076,8 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"nachocheese",
 			"nachotaco"
 		],
-		recover_hunger = 40,
-		price = 1,
+		recover_hunger = 30,
+		price = 4,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
@@ -1011,8 +1088,8 @@ food_list = [  # todo: write !inspect descriptions for food items
 		alias = [
 			"ranchtaco",
 		],
-		recover_hunger = 40,
-		price = 1,
+		recover_hunger = 30,
+		price = 4,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
 		vendor = vendor_tacobell,
@@ -1024,7 +1101,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"gordita",
 		],
 		recover_hunger = 60,
-		price = 2,
+		price = 6,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
 		vendor = vendor_tacobell,
@@ -1037,7 +1114,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"quesomachorito"
 		],
 		recover_hunger = 140,
-		price = 5,
+		price = 15,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
 		vendor = vendor_tacobell,
@@ -1048,8 +1125,8 @@ food_list = [  # todo: write !inspect descriptions for food items
 		alias = [
 			"slaw",
 		],
-		recover_hunger = 20,
-		price = 1,
+		recover_hunger = 10,
+		price = 2,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
 		vendor = vendor_kfc,
@@ -1062,7 +1139,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"gravy"
 		],
 		recover_hunger = 30,
-		price = 1,
+		price = 3,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
 		vendor = vendor_kfc,
@@ -1075,7 +1152,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 			"chicken",
 		],
 		recover_hunger = 120,
-		price = 4,
+		price = 12,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
 		vendor = vendor_kfc,
@@ -1086,8 +1163,8 @@ food_list = [  # todo: write !inspect descriptions for food items
 		alias = [
 			"gordita",
 		],
-		recover_hunger = 70,
-		price = 2,
+		recover_hunger = 60,
+		price = 6,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
 		vendor = vendor_kfc,
@@ -1105,7 +1182,7 @@ food_list = [  # todo: write !inspect descriptions for food items
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
-		str_eat = "You disgard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
+		str_eat = "You discard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
 	),
 	EwFood(
 		id_food = "mtndew",
@@ -1328,7 +1405,8 @@ poi_list = [
 		str_desc = "Within the gleaming metal hull of the towering SlimeCorp HQ, brightly lit sterile white hallways wind like a maze, past countless receptionists' desks, waiting rooms, and high-tech stainless steel vault doors.",
 		coord = (27, 18),
 		channel = channel_slimecorphq,
-		role = "SlimeCorp HQ"
+		role = "SlimeCorp HQ",
+		pvp = False
 	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
@@ -1373,13 +1451,14 @@ poi_list = [
 			"ck"
 		],
 		str_name = "Cop Killtown",
-		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.\n\nTo the North is Astatine Heights. To the Northeast is Little Chernobyl. To the East is Smogsburg. To the Southeast is Downtown NLACakaNM. To the West is Vandal Park. To the Northwest is Gatlingsdale.",
+		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.\n\nTo the North is Astatine Heights. To the East is Smogsburg. To the Southeast is Downtown NLACakaNM. To the West is Vandal Park. To the Northwest is Gatlingsdale.",
 		coord = (17, 13),
 		channel = "cop-killtown",
 		role = "Cop Killtown",
 		factions = [
 			faction_killers
-		]
+		],
+		pvp = False
 	),
 	EwPoi( # 4
 		id_poi = "krakbay",
@@ -1422,7 +1501,8 @@ poi_list = [
 		role = "Rowdy Roughhouse",
 		factions = [
 			faction_rowdys
-		]
+		],
+		pvp = False
 	),
 	EwPoi( # 7
 		id_poi = "greenlightdistrict",
@@ -1431,7 +1511,7 @@ poi_list = [
 			"gld"
 		],
 		str_name = "Green Light District",
-		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.\n\nThis area contains the Slime Casino. To the East is Juvie's Row. To the West is Downtown NLACakaNM.",
+		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.\n\nThis area contains the Slime Casino. To the East is Vagrant's Corner. To the Southeast is Juvie's Row. To the West is Downtown NLACakaNM.",
 		coord = (29, 14),
 		channel = "green-light-district",
 		role = "Green Light District"
@@ -1606,7 +1686,8 @@ poi_list = [
 		str_desc = "Quaint little Juvie shanties pepper the landscape around the entrance to the slime mines. Pale rocks and sticks are arranged in sad fascimiles of white picket fences. You're filled with pity, as well as disgust.\n\nTo the Northeast is Vagrant's Corner. To the Northwest is the Green Light District.",
 		coord = (32, 18),
 		channel = "juvies-row",
-		role = "Juvie's Row"
+		role = "Juvie's Row",
+		pvp = False
 	),
 	EwPoi( # 21
 		id_poi = "slimesend",
@@ -1755,6 +1836,7 @@ poi_list = [
 		id_poi = poi_id_stockexchange,
 		alias = [
 			"stocks",
+			"stock",
 			"exchange",
 			"sexchange",
 			"stockexchange",
@@ -1952,7 +2034,7 @@ poi_list = [
 			"tm"
 		],
 		str_name = "The Mines",
-		str_desc = "These mines once glowed with the power of slime, but they've now gone dark, sucked dry by the NEGASLIME. Prolonged contact with the NEGASLIME has temporarily suffused the walls with profane energy, making them solid to ghosts.",
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Juvie's Row.",
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",

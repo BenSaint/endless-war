@@ -3,6 +3,7 @@
 """
 import time
 import random
+import math
 
 import ewcfg
 import ewutils
@@ -10,6 +11,7 @@ import ewcmd
 import ewitem
 import ewmap
 import ewrolemgr
+import ewstats
 from ew import EwUser, EwMarket
 
 # Map of user ID to a map of recent miss-mining time to count. If the count
@@ -108,11 +110,13 @@ async def mine(cmd):
 			if mismined['count'] >= 7:  # up to 6 messages can be buffered by discord and people have been dying unfairly because of that
 				# Death
 				last_mismined_times[cmd.message.author.id] = None
-				user_data.die()
+				user_data.die(cause = ewcfg.cause_mining)
 				user_data.persist()
 				
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 				await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+				sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+				await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
 			else:
 				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 		else:
@@ -127,7 +131,11 @@ async def mine(cmd):
 			user_initial_level = user_data.slimelevel
 
 			# Add mined slime to the user.
-			user_data.change_slimes(n = 10 * (2 ** user_data.slimelevel), source = ewcfg.source_mining)
+			mining_yield = (user_data.slimelevel ** 5 / 10) + 1
+			alternate_yield = 10000 + (200 * math.log(user_data.slimelevel ** 50))
+			if alternate_yield < mining_yield:
+				mining_yield = alternate_yield
+			user_data.change_slimes(n = mining_yield, source = ewcfg.source_mining)
 
 			was_levelup = True if user_initial_level < user_data.slimelevel else False
 
@@ -160,6 +168,8 @@ async def mine(cmd):
 					elif poudrinamount == 2:
 						response += "You unearthed two slime poudrins! "
 
+					ewstats.change_stat(user = user_data, metric = ewcfg.stat_lifetime_poudrins, n = poudrinamount)
+
 					ewutils.logMsg('{} has found {} poudrin(s)!'.format(cmd.message.author.display_name, poudrinamount))
 
 				if was_levelup:
@@ -190,10 +200,12 @@ async def mine(cmd):
 			# Death
 			last_mismined_times[cmd.message.author.id] = None
 
-			user_data.die()
+			user_data.die(cause = ewcfg.cause_mining)
 			user_data.persist()
 
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have died in a mining accident."))
 			await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+			sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+			await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
 		else:
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))
