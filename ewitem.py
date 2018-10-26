@@ -1,3 +1,5 @@
+import time
+
 import ewutils
 import ewcfg
 import ewstats
@@ -495,9 +497,9 @@ async def item_look(cmd):
 				break
 
 		if item_sought != None:
-			item_def = item.get('item_def')
-			id_item = item.get('id_item')
-			name = item.get('name')
+			item_def = item_sought.get('item_def')
+			id_item = item_sought.get('id_item')
+			name = item_sought.get('name')
 			response = item_def.str_desc
 
 			# Replace up to two levels of variable substitutions.
@@ -507,6 +509,11 @@ async def item_look(cmd):
 
 				if response.find('{') >= 0:
 					response = response.format_map(item_inst.item_props)
+
+				if item_sought.get('item_type') == ewcfg.it_food:
+					if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
+						response += " This food item is rotten so you decide to throw it away."
+						item_delete(id_item)
 
 			response = name + "\n\n" + response
 
