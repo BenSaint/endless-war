@@ -89,6 +89,11 @@ cmd_map = {
 	ewcfg.cmd_weather: ewcmd.weather,
 
 
+	# Rowdys thrash and Killers dab.
+	ewcfg.cmd_thrash: ewcmd.thrash,
+	ewcfg.cmd_dab: ewcmd.dab,
+
+
 	# Show the total of negative slime in the world.
 	#ewcfg.cmd_negaslime: ewspooky.negaslime,
 
