@@ -134,12 +134,15 @@ class EwUser:
 	poi = ""
 	life_state = 0
 	busted = False
+	rr_challenger = ""
 
 	time_lastkill = 0
 	time_lastrevive = 0
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
+	#For possible time limit 
+	time_last_rr = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -282,7 +285,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -303,7 +306,9 @@ class EwUser:
 					ewcfg.col_faction,
 					ewcfg.col_poi,
 					ewcfg.col_life_state,
-					ewcfg.col_busted
+					ewcfg.col_busted,
+					ewcfg.col_rrchallenger,
+					ewcfg.col_time_last_rr
 				), (
 					id_user,
 					id_server
@@ -333,6 +338,8 @@ class EwUser:
 					self.poi = result[18]
 					self.life_state = result[19]
 					self.busted = (result[20] == 1)
+					self.rr_challenger = result[21]
+					self.time_last_rr = result[22]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
@@ -381,8 +388,8 @@ class EwUser:
 
 			self.limit_fix();
 
-			# Save the object.
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			# Save the object.	
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -406,7 +413,9 @@ class EwUser:
 				ewcfg.col_faction,
 				ewcfg.col_poi,
 				ewcfg.col_life_state,
-				ewcfg.col_busted
+				ewcfg.col_busted,
+				ewcfg.col_rrchallenger,
+				ewcfg.col_time_last_rr
 			), (
 				self.id_user,
 				self.id_server,
@@ -431,7 +440,9 @@ class EwUser:
 				self.faction,
 				self.poi,
 				self.life_state,
-				(1 if self.busted else 0)
+				(1 if self.busted else 0),
+				self.rr_challenger,
+				self.time_last_rr
 			))
 
 			conn.commit()
