@@ -287,3 +287,21 @@ async def wiki(cmd):
 """
 async def booru(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Booru: http://rfck.booru.org/'))
+	
+""" Accept a russian roulette challenge """
+async def accept(cmd):
+	user = EwUser(member = cmd.message.author)
+	if(user.rr_challenger != ""):
+		if(user.rr_challenger != user.id_user):
+			response = "You accept the challenge! Both of you head out back behind the casino and load a bullet into the gun."
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	return
+
+""" Refuse a russian roulette challenge """
+async def refuse(cmd):
+	user = EwUser(member = cmd.message.author)
+	if(user.rr_challenger != ""):
+		if(user.rr_challenger != user.id_user):
+			response = "You refuse the challenge, but not before leaving a large puddle of urine beneath you."
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	return
