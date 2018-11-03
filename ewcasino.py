@@ -448,96 +448,71 @@ async def russian_roulette(cmd):
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 			return
 
-	bet = None
-	if(cmd.tokens_count > 1):
-		#Parse slimecoin to bet
-		bet = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
-	if(bet != None):
-		if(bet <= 0):
-			bet = None		
-	#Check if both players have the necessary slimecoin
-		if(challenger.slimecredit < bet):
-			response = "You do not have the required funds"
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
-
-		if(challengee.slimecredit < bet):
-			response = "{} does not have the required funds".format(member.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
-
-	if(bet != None):
-		response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
-		#Assign a challenger so players can't be challenged
-		challenger.rr_challenger = challenger.id_user
-		challengee.rr_challenger = challenger.id_user
-		challenger.persist()
-		challengee.persist()
-		#Wait for an answer
-		accepted = 0
-		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check=check)
-		if(msg != None):
-			if(msg.content == "!accept"):
-				accepted = 1
-		#Start game
-		if(accepted == 1):
-			for spin in range(1, 7):
-				#Challenger goes second
-				if((spin%2) == 0):
-					player = author
-				else:
-					player = member
-				response = "You put the gun to your head and pull the trigger..."
-				res = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(player, response))
-				await asyncio.sleep(1)
-
-				#Player dies
-				if(random.randint(1, (7-spin)) == 1):
-					await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " **BANG**")))
-					#Challenger dies
-					if((spin%2) == 0):
-						response = "You won {} SlimeCoin!".format(bet*2)
-						await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
-						challenger.change_slimecredit(n = -bet, coinsource = ewcfg.coinsource_casino)
-						challengee.change_slimecredit(n = bet, coinsource = ewcfg.coinsource_casino)
-						challenger.id_killer = challenger.id_user
-						challenger.die(cause = ewcfg.cause_suicide)
-
-					#Challangee dies
-					else:
-						response = "You won {} SlimeCoin!".format(bet*2)
-						await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-						challenger.change_slimecredit(n = bet, coinsource = ewcfg.coinsource_casino)
-						challengee.change_slimecredit(n = -bet, coinsource = ewcfg.coinsource_casino)
-						challengee.id_killer = challengee.id_user
-						challengee.die(cause = ewcfg.cause_suicide)					
-					break
-
-				#Or survives
-				else:
-					await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
-					await asyncio.sleep(1)
-					#track spins ?
-		#Or cancel the challenge
-		else:
-			response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		challenger.rr_challenger = ""
-		challengee.rr_challenger = ""
+	response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+	#Assign a challenger so a player can't be challenged twice
+	challenger.rr_challenger = challenger.id_user
+	challengee.rr_challenger = challenger.id_user
+	challenger.persist()
+	challengee.persist()
+	#Wait for an answer
+	accepted = 0
+	msg = await cmd.client.wait_for_message(timeout = 10, author = member, check=check)
+	if(msg != None):
+		if(msg.content == "!accept"):
+			accepted = 1
+	#Start game
+	if(accepted == 1):
 		challenger.time_last_rr = int(time.time())
 		challengee.time_last_rr = int(time.time())
-		challenger.persist()
-		challengee.persist()
-		await ewrolemgr.updateRoles(client = cmd.client, member = author)
-		await ewrolemgr.updateRoles(client = cmd.client, member = member)
-		deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
-		deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(player, deathreport)
-		sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-		await cmd.client.send_message(sewerchannel, deathreport)
-		return
-	#Specify an amount to bet
+		for spin in range(1, 7):
+			#Challenger goes second
+			if((spin%2) == 0):
+				player = author
+			else:
+				player = member
+			response = "You put the gun to your head and pull the trigger..."
+			res = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(player, response))
+			await asyncio.sleep(1)
+
+			#Player dies
+			if(random.randint(1, (7-spin)) == 1):
+				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " **BANG**")))
+				#Challenger dies
+				if((spin%2) == 0):
+					response = "You return to the Casino with {}'s slime.".format(author.display_name).replace("@", "\{at\}")
+					await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+					challengee.change_slimes(n = challenger.slimes, source = ewcfg.source_killing)
+					challenger.id_killer = challenger.id_user
+					challenger.die(cause = ewcfg.cause_suicide)
+
+				#Challangee dies
+				else:
+					response = "You return to the Casino with {}'s slime.".format(member.display_name).replace("@", "\{at\}")
+					await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+					challenger.change_slimes(n = challengee.slimes, source = ewcfg.source_killing)
+					challengee.id_killer = challengee.id_user
+					challengee.die(cause = ewcfg.cause_suicide)					
+				break
+
+			#Or survives
+			else:
+				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
+				await asyncio.sleep(1)
+				#track spins ?
+	#Or cancel the challenge
 	else:
-		response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "bet")
+		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+
+	challenger.rr_challenger = ""
+	challengee.rr_challenger = ""
+	challenger.persist()
+	challengee.persist()
+	await ewrolemgr.updateRoles(client = cmd.client, member = author)
+	await ewrolemgr.updateRoles(client = cmd.client, member = member)
+	deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
+	deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(player, deathreport)
+	sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+	await cmd.client.send_message(sewerchannel, deathreport)
+	return
