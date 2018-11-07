@@ -450,9 +450,6 @@ async def russian_roulette(cmd):
 			response = "Juveniles are too cowardly to gamble their lives."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 			return
-		
-	response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
 
 	#Assign a challenger so players can't be challenged
 	challenger.rr_challenger = challenger.id_user
@@ -460,6 +457,9 @@ async def russian_roulette(cmd):
 
 	challenger.persist()
 	challengee.persist()
+
+	response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
 
 	#Wait for an answer
 	accepted = 0
@@ -470,9 +470,15 @@ async def russian_roulette(cmd):
 
 	#Start game
 	if(accepted == 1):
+		challenger = EwUser(member = author)
+		challengee = EwUser(member = member)
+
 		challenger.time_last_rr = int(time.time())
 		challengee.time_last_rr = int(time.time())
 		
+		challenger.persist()
+		challengee.persist()
+
 		for spin in range(1, 7):
 			#Challenger goes second
 			if((spin % 2) == 0):
@@ -493,6 +499,9 @@ async def russian_roulette(cmd):
 				if((spin % 2) == 0):
 					await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
 
+					challenger = EwUser(member = author)
+					challengee = EwUser(member = member)
+
 					challengee.change_slimes(n = challenger.slimes, source = ewcfg.source_killing)
 
 					challenger.id_killer = challenger.id_user
@@ -502,23 +511,40 @@ async def russian_roulette(cmd):
 				else:
 					await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
+					challenger = EwUser(member = author)
+					challengee = EwUser(member = member)
+
 					challenger.change_slimes(n = challengee.slimes, source = ewcfg.source_killing)
 
 					challengee.id_killer = challengee.id_user
-					challengee.die(cause = ewcfg.cause_suicide)					
+					challengee.die(cause = ewcfg.cause_suicide)	
+					
+				challenger.persist()
+				challengee.persist()
+				
+				await ewrolemgr.updateRoles(client = cmd.client, member = author)
+				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
+				deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
+				deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(player, deathreport)
+
+				sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+				await cmd.client.send_message(sewerchannel, deathreport)
 				break
 
 			#Or survives
 			else:
 				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
 				await asyncio.sleep(1)
-				#track spins ?
+				#track spins?
 
 	#Or cancel the challenge
 	else:
 		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+
+	challenger = EwUser(member = author)
+	challengee = EwUser(member = member)
 
 	challenger.rr_challenger = ""
 	challengee.rr_challenger = ""
@@ -526,12 +552,4 @@ async def russian_roulette(cmd):
 	challenger.persist()
 	challengee.persist()
 
-	await ewrolemgr.updateRoles(client = cmd.client, member = author)
-	await ewrolemgr.updateRoles(client = cmd.client, member = member)
-
-	deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
-	deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(author, deathreport)
-
-	sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-	await cmd.client.send_message(sewerchannel, deathreport)
 	return
