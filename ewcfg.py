@@ -172,13 +172,13 @@ inebriation_max = 20
 inebriation_pertick = 2
 
 # max item amounts
-max_food_in_inv = 5
+max_food_inv_mod = 8  # modifier for how much food you can carry. the player's slime level is divided by this number to calculate the number of carriable food items
 
 # price multipliers
-togo_price_increase = 10
+togo_price_increase = 2
 
 # standard food expiration in seconds
-std_food_expir = 3600
+std_food_expir = 12 * 3600  # 12 hours
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks

@@ -1,3 +1,4 @@
+import math
 import time
 
 import ewcfg
@@ -163,7 +164,7 @@ async def order(cmd):
 						if food.id_food == "coleslaw":
 							user_data.ghostbust = True
 
-				else:
+				else:  # if it's togo
 					inv = ewitem.inventory(
 						id_user = cmd.message.author.id,
 						id_server = cmd.message.server.id
@@ -173,7 +174,7 @@ async def order(cmd):
 						if item.get('item_type') == ewcfg.it_food:
 							food_in_inv += 1
 
-					if food_in_inv >= ewcfg.max_food_in_inv:
+					if food_in_inv >= math.ceil(user_data.slimelevel / ewcfg.max_food_inv_mod):
 						# user_data never got persisted so the player won't lose money unnecessarily
 						response = "You can't carry any more food than that."
 						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
