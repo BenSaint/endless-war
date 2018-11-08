@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v2.05"
+version = "v2.06"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -149,6 +149,9 @@ cmd_news = cmd_prefix + 'news'
 cmd_buy = cmd_prefix + 'buy'
 cmd_thrash = cmd_prefix + 'thrash'
 cmd_dab = cmd_prefix + 'dab'
+cmd_russian = cmd_prefix + 'russianroulette'
+cmd_accept = cmd_prefix + 'accept'
+cmd_refuse = cmd_prefix + 'refuse'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -192,6 +195,8 @@ cd_spar = 600
 cd_haunt = 600
 cd_invest = 1200
 cd_boombust = 22
+#For possible time limit on russian roulette
+cd_rr = 600
 
 # PvP timer pushouts
 time_pvp_kill = 600
@@ -299,6 +304,8 @@ col_faction = 'faction'
 col_poi = 'poi'
 col_life_state = 'life_state'
 col_busted = 'busted'
+col_rrchallenger = 'rr_challenger_id'
+col_time_last_rr = 'time_last_rr'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
@@ -410,6 +417,9 @@ stat_lifetime_damagedealt = 'lifetime_damage_dealt'
 stat_lifetime_selfdamage = 'lifetime_self_damage'
 stat_lifetime_deaths = 'lifetime_deaths'
 stat_lifetime_pve_deaths = 'lifetime_pve_deaths'
+#Track revolver trigger pulls survived?
+stat_lifetime_spins_survived = 'lifetime_spins_survived'
+stat_max_spins_survived = 'max_spins_survived'
 
 # Categories of events that change your slime total, for statistics tracking
 source_mining = 0

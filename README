@@ -32,7 +32,8 @@ CREATE TABLE users (
 	poi varchar(64) NOT NULL default 'downtown',
 	life_state int NOT NULL DEFAULT '1',
 	busted int NOT NULL DEFAULT '0',
-	
+	rr_challenger_id varchar(128) NOT NULL DEFAULT '',
+	time_last_rr int NOT NULL DEFAULT '0'
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
 
