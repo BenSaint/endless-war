@@ -320,6 +320,11 @@ col_total_players = 'total_players'
 col_total_players_pvp = 'total_players_pvp'
 col_timestamp = 'timestamp'
 
+# Database columns for districts
+col_district = 'district'
+col_controlling_faction = 'controlling_faction'
+col_capture_progress = 'capture_progress'
+
 # Item type names
 it_medal = "medal"
 it_slimepoudrin = "slimepoudrin"
@@ -2066,3 +2071,7 @@ for poi in poi_list:
 	id_to_poi[poi.id_poi] = poi
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
+
+property_classes = {
+	"downtown": "S"  # todo finish
+}
