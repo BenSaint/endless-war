@@ -145,7 +145,9 @@ async def attack(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
-	if ewmap.poi_is_pvp(user_data.poi) == False:
+	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
+		response = "You can't commit violence from here."
+	elif ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
 	elif cmd.mentions_count > 1:
 		response = "One shot at a time!"
