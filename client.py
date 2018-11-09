@@ -181,9 +181,11 @@ cmd_map = {
 	#ewcfg.cmd_help: ewcmd.help,
 	#ewcfg.cmd_help_alt1: ewcmd.help,
 	#ewcfg.cmd_help_alt2: ewcmd.help
-	ewcfg.cmd_russian: ewcasino.russian_roulette,
-	ewcfg.cmd_accept: ewcmd.accept,
-	ewcfg.cmd_refuse: ewcmd.refuse
+
+	# FIXME debug - temporarily disabled
+	#ewcfg.cmd_russian: ewcasino.russian_roulette,
+	#ewcfg.cmd_accept: ewcmd.accept,
+	#ewcfg.cmd_refuse: ewcmd.refuse
 }
 
 debug = False
