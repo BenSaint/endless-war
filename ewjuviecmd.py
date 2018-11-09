@@ -125,7 +125,7 @@ async def mine(cmd):
 			poudrinamount = 0
 
 			# juvies get poudrins 4 times as often as enlisted players
-			poudrin_rarity = ewcfg.poudrin_rarity / (4 if user_data.life_state == ewcfg.life_state_juvenile else 1)
+			poudrin_rarity = ewcfg.poudrin_rarity / (2 if user_data.life_state == ewcfg.life_state_juvenile else 1)
 			poudrin_mined = random.randint(1, poudrin_rarity)
 
 			if poudrin_mined == 1:
