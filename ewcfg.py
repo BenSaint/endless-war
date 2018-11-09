@@ -175,6 +175,9 @@ inebriation_pertick = 2
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
 
+# Poudrin rarity (for enlisted players)
+poudrin_rarity = 2400
+
 # Lifetimes
 invuln_onrevive = 0
 

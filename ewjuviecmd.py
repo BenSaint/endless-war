@@ -123,10 +123,14 @@ async def mine(cmd):
 			# Determine if a poudrin is found.
 			poudrin = False
 			poudrinamount = 0
-			poudrinchance = random.randrange(3600)
-			if poudrinchance == 0:
+
+			# juvies get poudrins 4 times as often as enlisted players
+			poudrin_rarity = ewcfg.poudrin_rarity / (2 if user_data.life_state == ewcfg.life_state_juvenile else 1)
+			poudrin_mined = random.randint(1, poudrin_rarity)
+
+			if poudrin_mined == 1:
 				poudrin = True
-				poudrinamount = (random.randrange(2) + 1)
+				poudrinamount = 1 if random.randint(1, 3) != 1 else 2  # 33% chance of extra drop
 
 			user_initial_level = user_data.slimelevel
 
