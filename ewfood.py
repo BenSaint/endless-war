@@ -94,15 +94,15 @@ async def order(cmd):
 		togo = False
 		if cmd.tokens_count > 1:
 			for token in cmd.tokens[1:]:
-				if token.startswith('<@') == False and token not in "togo":  # togo can be spelled together or separate
+				if token.startswith('<@') == False and token.lower not in "togo":  # togo can be spelled together or separate
 					value = token
 					break
 			for token in cmd.tokens[1:]:
-				if token in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
+				if token.lower in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
 					togo = True
 					break
 
-		food = ewcfg.food_map.get(value)
+		food = ewcfg.food_map.get(value.lower)
 		if food.vendor == ewcfg.vendor_vendingmachine:
 			togo = True
 
@@ -174,7 +174,7 @@ async def order(cmd):
 						if item.get('item_type') == ewcfg.it_food:
 							food_in_inv += 1
 
-					if food_in_inv >= math.ceil(user_data.slimelevel / ewcfg.max_food_inv_mod):
+					if food_in_inv >= math.ceil(user_data.slimelevel / ewcfg.max_food_in_inv_mod):
 						# user_data never got persisted so the player won't lose money unnecessarily
 						response = "You can't carry any more food than that."
 						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
