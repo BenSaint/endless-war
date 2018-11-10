@@ -159,8 +159,9 @@ slimes_toenlist = 0
 slimes_perspar_base = 0
 slimes_hauntratio = 40
 slimes_hauntmax = 20000
-slimes_perslot = 10
-slimes_perpachinko = 50
+slimes_perslot = 100
+slimes_perpachinko = 500
+slimecoin_exchangerate = 100
 
 # hunger
 hunger_max = 250

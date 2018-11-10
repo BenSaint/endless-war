@@ -167,11 +167,9 @@ async def attack(cmd):
 		crit = False
 		strikes = 0
 
-		# Slime level data. Levels are in powers of 10.
-		slimes_bylevel = int(user_data.slimelevel ** 5)
-		slimes_spent = int(slimes_bylevel / 20)
-		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
+		slimes_spent = int(ewutils.slime_bylevel(user_data.slimelevel) / 20)
 		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
+
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage + shootee_data.slimes
@@ -269,7 +267,7 @@ async def attack(cmd):
 				# Move around slime as a result of the shot.
 				user_data.change_slimes(n = (shootee_data.slimelevel ** 5), source = ewcfg.source_busting)
 				market_data = EwMarket(id_server = cmd.message.server.id)
-				coinbounty = int(shootee_data.bounty / 1000)
+				coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)
 				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 
 				ewstats.track_maximum(user = user_data, metric = ewcfg.stat_biggest_bust_level, value = shootee_data.slimelevel)
@@ -415,7 +413,7 @@ async def attack(cmd):
 						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_takedowns)
 
 					# Collect bounty
-					coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
+					coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)  # 100 slime per coin
 
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes >= 0:

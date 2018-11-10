@@ -192,7 +192,7 @@ class EwUser:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeshaunted, n = change)
 
 		# potentially level up
-		new_level = int(abs(self.slimes) ** 0.2)
+		new_level = ewutils.level_byslime(self.slimes)
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
 			if self.life_state == ewcfg.life_state_corpse: 

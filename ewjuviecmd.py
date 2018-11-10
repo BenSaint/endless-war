@@ -135,10 +135,13 @@ async def mine(cmd):
 			user_initial_level = user_data.slimelevel
 
 			# Add mined slime to the user.
-			mining_yield = (user_data.slimelevel ** 5 / 10) + 1
-			alternate_yield = 10000 + (200 * math.log(user_data.slimelevel ** 50))
-			if alternate_yield < mining_yield:
-				mining_yield = alternate_yield
+			slime_bylevel = ewutils.slime_bylevel(user_data.slimelevel)
+
+			mining_yield = math.floor((slime_bylevel / 10) + 1)
+			alternate_yield = math.floor(200 + slime_bylevel ** (1 / math.e))
+
+			mining_yield = min(mining_yield, alternate_yield)
+
 			user_data.change_slimes(n = mining_yield, source = ewcfg.source_mining)
 
 			was_levelup = True if user_initial_level < user_data.slimelevel else False

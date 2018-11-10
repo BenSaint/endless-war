@@ -515,3 +515,15 @@ def get_faction_symbol(faction = ""):
 		result = ewcfg.emote_blank
 
 	return result
+
+"""
+	Calculate the slime amount needed to reach a certain level
+"""
+def slime_bylevel(slimelevel):
+	return int(slimelevel ** 4)
+
+"""
+	Calculate what level the player should be at, given their slime amount
+"""
+def level_byslime(slime):
+	return int(abs(slime) ** 0.25)
