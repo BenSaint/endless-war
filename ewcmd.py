@@ -118,7 +118,7 @@ async def data(cmd):
 		else:
 			response += "You are a level {} slimeboi.".format(user_data.slimelevel)
 		
-		coinbounty = int(user_data.bounty / 1000)
+		coinbounty = int(user_data.bounty / ewcfg.slimecoin_exchangerate)
 
 		weapon = ewcfg.weapon_map.get(user_data.weapon)
 		if weapon != None:
@@ -138,7 +138,9 @@ async def data(cmd):
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if user_data.hunger > 0:
-			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewcfg.hunger_max)
+			response += " You are {}% hungry.".format(
+				round(user_data.hunger * 100.0 / ewutils.hunger_max_bylevel(user_data.slimelevel), 1)
+			)
 
 		if user_data.ghostbust:
 			response += " The coleslaw in your stomach enables you to bust ghosts."
@@ -165,7 +167,7 @@ async def data(cmd):
 			else:
 				response = "{} is a level {} slimeboi.".format(member.display_name, user_data.slimelevel)
 			
-			coinbounty = int(user_data.bounty / 1000)
+			coinbounty = int(user_data.bounty / ewcfg.slimecoin_exchangerate)
 
 			weapon = ewcfg.weapon_map.get(user_data.weapon)
 			if weapon != None:

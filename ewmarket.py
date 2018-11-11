@@ -30,13 +30,13 @@ async def donate(cmd):
 		if value <= 0:
 			value = None
 
-	if value != None and value < 1000:
-		response = "You must volunteer to donate at least 1000 slime to receive compensation."
+	if value != None and value < ewcfg.slimecoin_exchangerate:
+		response = "You must volunteer to donate at least <exchangerate> slime to receive compensation."
 
 	elif value != None:
 		# Amount of slime invested.
 		cost_total = int(value)
-		coin_total = int(value / 1000)
+		coin_total = int(value / ewcfg.slimecoin_exchangerate)
 
 		if user_data.slimes < cost_total:
 			response = "Acid-green flashes of light and bloodcurdling screams emanate from small window of SlimeCorp HQ. Unfortunately, you did not survive the procedure. Your body is dumped down a disposal chute to the sewers."
