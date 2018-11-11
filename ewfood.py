@@ -102,7 +102,7 @@ async def order(cmd):
 					togo = True
 					break
 
-		food = ewcfg.food_map.get(value.lower())
+		food = ewcfg.food_map.get(value.lower() if value != None else value)
 		if food.vendor == ewcfg.vendor_vendingmachine:
 			togo = True
 
