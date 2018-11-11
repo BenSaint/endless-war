@@ -215,7 +215,7 @@ async def attack(cmd):
 			was_busted = False
 
 			#hunger drain
-			user_data.hunger += ewcfg.hunger_pershot
+			user_data.hunger += ewcfg.hunger_pershot * ewutils.hunger_cost_mod(user_data.slimelevel)
 			
 			# Weaponized flavor text.
 			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
@@ -355,7 +355,7 @@ async def attack(cmd):
 
 			if was_shot:
 				#hunger drain
-				user_data.hunger += ewcfg.hunger_pershot
+				user_data.hunger += ewcfg.hunger_pershot * ewutils.hunger_cost_mod(user_data.slimelevel)
 				
 				# Weaponized flavor text.
 				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
@@ -667,8 +667,8 @@ async def spar(cmd):
 					weaker_player.change_slimes(n = slimegain)
 					
 					#hunger drain for both players
-					user_data.hunger += ewcfg.hunger_perspar
-					sparred_data.hunger += ewcfg.hunger_perspar
+					user_data.hunger += ewcfg.hunger_perspar * ewutils.hunger_cost_mod(user_data.slimelevel)
+					sparred_data.hunger += ewcfg.hunger_perspar * ewutils.hunger_cost_mod(sparred_data.slimelevel)
 
 					# Bonus 50% slime to both players in a duel.
 					if duel:

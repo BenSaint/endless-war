@@ -538,3 +538,9 @@ def level_byslime(slime):
 def hunger_max_bylevel(slimelevel):
 	# note that when you change this formula, you'll also have to adjust its sql equivalent in pushupServerHunger
 	return max(ewcfg.min_stamina, slimelevel ** 2)
+
+"""
+	Calculate how much more stamina activities should cost
+"""
+def hunger_cost_mod(slimelevel):
+	return hunger_max_bylevel(slimelevel) / 200

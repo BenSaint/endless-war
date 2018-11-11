@@ -159,9 +159,14 @@ async def mine(cmd):
 				))
 
 			# Fatigue the miner.
-			user_data.hunger += ewcfg.hunger_permine * (200 / ewutils.hunger_max_bylevel(user_data.slimelevel))
-			#if random.randrange(10) > 6:
-			#	user_data.hunger += ewcfg.hunger_permine
+			hunger_cost_mod = ewutils.hunger_cost_mod(user_data.slimelevel)
+			extra = hunger_cost_mod - int(hunger_cost_mod)  # extra is the fractional part of hunger_cost_mod
+
+			user_data.hunger += ewcfg.hunger_permine * int(hunger_cost_mod)
+			if extra > 0:  # if hunger_cost_mod is not an integer
+				# there's an x% chance that an extra stamina is deducted, where x is the fractional part of hunger_cost_mod in percent (times 100)
+				if random.randint(1, 100) <= extra * 100:
+					user_data.hunger += ewcfg.hunger_permine
 
 			user_data.persist()
 

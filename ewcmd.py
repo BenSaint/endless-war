@@ -138,7 +138,9 @@ async def data(cmd):
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if user_data.hunger > 0:
-			response += " You are {}% hungry.".format(user_data.hunger * 100.0 / ewutils.hunger_max_bylevel(user_data.slimelevel))
+			response += " You are {}% hungry.".format(
+				round(user_data.hunger * 100.0 / ewutils.hunger_max_bylevel(user_data.slimelevel), 1)
+			)
 
 		if user_data.ghostbust:
 			response += " The coleslaw in your stomach enables you to bust ghosts."

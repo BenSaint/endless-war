@@ -94,15 +94,15 @@ async def order(cmd):
 		togo = False
 		if cmd.tokens_count > 1:
 			for token in cmd.tokens[1:]:
-				if token.startswith('<@') == False and token.lower not in "togo":  # togo can be spelled together or separate
+				if token.startswith('<@') == False and token.lower() not in "togo":  # togo can be spelled together or separate
 					value = token
 					break
 			for token in cmd.tokens[1:]:
-				if token.lower in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
+				if token.lower() in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
 					togo = True
 					break
 
-		food = ewcfg.food_map.get(value.lower)
+		food = ewcfg.food_map.get(value.lower())
 		if food.vendor == ewcfg.vendor_vendingmachine:
 			togo = True
 
@@ -197,10 +197,11 @@ async def order(cmd):
 						item_props = item_props
 					)
 
-				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{sharetext}{flavor}".format(
+				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{togo}{sharetext}{flavor}".format(
 					cost = value,
 					vendor = food.vendor,
 					food = food.str_name,
+					togo = " to go" if togo else "",
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
 					flavor = food.str_eat if not togo else ""
 				)
