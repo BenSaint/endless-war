@@ -151,7 +151,7 @@ async def attack(cmd):
 		response = "One shot at a time!"
 	elif cmd.mentions_count <= 0:
 		response = "Your bloodlust is appreciated, but ENDLESS WAR didn't understand that name."
-	elif user_data.hunger >= ewcfg.hunger_max:
+	elif user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
 		# Get shooting player's info
@@ -609,11 +609,11 @@ async def spar(cmd):
 			user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
 			user_isdead = user_data.life_state == ewcfg.life_state_corpse
 
-			if user_data.hunger >= ewcfg.hunger_max:
+			if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 				response = "You are too exhausted to train right now. Go get some grub!"
 			elif user_data.poi != ewcfg.poi_id_dojo or sparred_data.poi != ewcfg.poi_id_dojo:
 				response = "Both players need to be in the dojo to spar."
-			elif sparred_data.hunger >= ewcfg.hunger_max:
+			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
 				response = "The dead think they're too cool for conventional combat. Pricks."

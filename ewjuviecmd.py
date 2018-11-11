@@ -88,7 +88,7 @@ async def mine(cmd):
 
 	# Mine only in the mines.
 	if(cmd.message.channel.name == ewcfg.channel_mines):
-		if user_data.hunger >= ewcfg.hunger_max:
+		if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 			global last_mismined_times
 			mismined = last_mismined_times.get(cmd.message.author.id)
 
@@ -159,9 +159,9 @@ async def mine(cmd):
 				))
 
 			# Fatigue the miner.
-			user_data.hunger += ewcfg.hunger_permine
-			if random.randrange(10) > 6:
-				user_data.hunger += ewcfg.hunger_permine
+			user_data.hunger += ewcfg.hunger_permine * (200 / ewutils.hunger_max_bylevel(user_data.slimelevel))
+			#if random.randrange(10) > 6:
+			#	user_data.hunger += ewcfg.hunger_permine
 
 			user_data.persist()
 

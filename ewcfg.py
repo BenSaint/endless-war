@@ -164,7 +164,7 @@ slimes_perpachinko = 500
 slimecoin_exchangerate = 100
 
 # hunger
-hunger_max = 250
+min_stamina = 100
 hunger_pershot = 10
 hunger_perspar = 30
 hunger_permine = 1

@@ -146,8 +146,8 @@ class EwUser:
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
-		if self.hunger > ewcfg.hunger_max:
-			self.hunger = ewcfg.hunger_max
+		if self.hunger > ewutils.hunger_max_bylevel(self.slimelevel):
+			self.hunger = ewutils.hunger_max_bylevel(self.slimelevel)
 
 		if self.inebriation < 0:
 			self.inebriation = 0
