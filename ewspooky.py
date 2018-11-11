@@ -27,6 +27,7 @@ async def revive(cmd):
 			fee = (player_data.slimecredit / 10)
 			player_data.change_slimecredit(n = -fee, coinsource = ewcfg.coinsource_revival)
 			market_data.slimes_revivefee += fee
+			player_data.busted = False
 			
 			# Preserve negaslime
 			if player_data.slimes < 0:

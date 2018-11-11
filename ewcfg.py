@@ -146,6 +146,7 @@ cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
+cmd_buy = cmd_prefix + 'buy'
 cmd_thrash = cmd_prefix + 'thrash'
 cmd_dab = cmd_prefix + 'dab'
 cmd_russian = cmd_prefix + 'russianroulette'
@@ -171,7 +172,17 @@ hunger_permine = 1
 hunger_pertick = 3
 
 #inebriation
+inebriation_max = 20
 inebriation_pertick = 2
+
+# max item amounts
+max_food_in_inv_mod = 8  # modifier for how much food you can carry. the player's slime level is divided by this number to calculate the number of carriable food items
+
+# price multipliers
+togo_price_increase = 2
+
+# standard food expiration in seconds
+std_food_expir = 12 * 3600  # 12 hours
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
@@ -229,7 +240,7 @@ emote_slimecoin = "<:slimecoin:440576133214240769>"
 emote_slimegun = "<:slimegun:436500203743477760>"
 emote_ck = "<:ck:504173691488305152>"
 emote_rf = "<:rf:504174176656162816>"
-emote_testemote = "<:purple:496348895098699796>" # test server emote 
+emote_testemote = "<:purple:496348895098699796>" # test server emote
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -382,7 +393,7 @@ stat_max_level = 'max_level'
 stat_max_ghost_level = 'max_ghost_level'
 stat_max_hitsurvived = 'max_hit_survived'
 stat_max_hitdealt = 'max_hit_dealt'
-stat_max_hauntinflicted = 'max_haunt_inflicted' 
+stat_max_hauntinflicted = 'max_haunt_inflicted'
 stat_kills = 'kills'
 stat_max_kills = 'max_kills'
 stat_biggest_kill = 'biggest_kill'
@@ -867,6 +878,7 @@ vendor_pizzahut = 'Pizza Hut'
 vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
 vendor_mtndew = 'Mtn Dew Fountain'
+vendor_vendingmachine = 'vending machine'
 
 # A map of name to EwWeather objects.
 weather_map = {}
@@ -881,11 +893,12 @@ food_list = [
 			"tonic",
 		],
 		recover_hunger = 20,
-		price = 4,
+		price = 18,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
 		vendor = vendor_bar,
-		str_eat = "You stir your slime n' tonic with a thin straw before chugging it lustily."
+		str_eat = "You stir your slime n' tonic with a thin straw before chugging it lustily.",
+		str_desc = "The drink that has saved more juveniles’ lives than any trip to the nurse’s office could."
 	),
 	EwFood(
 		id_food = "slimacolada",
@@ -893,11 +906,12 @@ food_list = [
 			"colada",
 		],
 		recover_hunger = 25,
-		price = 5,
+		price = 22,
 		inebriation = 2,
 		str_name = 'slima colada',
 		vendor = vendor_bar,
-		str_eat = "Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain."
+		str_eat = "Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain.",
+		str_desc = "Perfect for if you like getting caught in acid rain, or if you enjoy gunning down grandmas in the dunes out of town."
 	),
 	EwFood(
 		id_food = "slimekashot",
@@ -906,11 +920,12 @@ food_list = [
 			"slimeka",
 		],
 		recover_hunger = 5,
-		price = 1,
+		price = 10,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
 		vendor = vendor_bar,
-		str_eat = "Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor."
+		str_eat = "Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor.",
+		str_desc = "Made with 100% unfiltered sludge from the city's harbor. Less internally damaging than a sawed-off shotgun blast to the colon, but not by much."
 	),
 	EwFood(
 		id_food = "cabernetslimeignon",
@@ -921,11 +936,12 @@ food_list = [
 			"bottle",
 		],
 		recover_hunger = 40,
-		price = 30,
+		price = 99,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
 		vendor = vendor_bar,
-		str_eat = "Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it."
+		str_eat = "Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it.",
+		str_desc = "A sophisticated drink for a sophisticated delinquent gangster with blood on his hands such as yourself."
 	),
 	EwFood(
 		id_food = "slimynipple",
@@ -933,11 +949,12 @@ food_list = [
 			"",
 		],
 		recover_hunger = 10,
-		price = 3,
+		price = 16,
 		inebriation = 2,
 		str_name = 'slimy nipple',
 		vendor = vendor_bar,
-		str_eat = "You drink the small glass of creamy, greenish layered fluids in one gulp."
+		str_eat = "You drink the small glass of creamy, greenish layered fluids in one gulp.",
+		str_desc = "Of the drinks with terrible names, this is the least amusing."
 	),
 	EwFood(
 		id_food = "slimeonthebeach",
@@ -945,11 +962,13 @@ food_list = [
 			"beach",
 		],
 		recover_hunger = 30,
-		price = 7,
+		price = 24,
 		inebriation = 2,
 		str_name = 'slime on the beach',
 		vendor = vendor_bar,
-		str_eat = "You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!"
+		str_eat = "You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!",
+		str_desc = "When you told the bartender you wanted Slime on the Beach, about a dozen other guys at the speakeasy all collectively and hilariously added"
+		           " “Yeah, wouldn’t we all”, chuckled under their breath, and beat the shit out of you outside afterward."
 	),
 		EwFood(
 		id_food = "goobalibre",
@@ -957,11 +976,12 @@ food_list = [
 			"goo",
 		],
 		recover_hunger = 30,
-		price = 6,
+		price = 22,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
 		vendor = vendor_bar,
-		str_eat = "The drink oozes tartly down your throat. It's pretty nasty, but you still like it."
+		str_eat = "The drink oozes tartly down your throat. It's pretty nasty, but you still like it.",
+		str_desc = "You’re lucky you got this glass so easily. Last time you had tried to convince the bartender you were over 21 for half an hour before you finally cracked and just ordered a coke."
 	),
 		EwFood(
 		id_food = "manhattanproject",
@@ -969,11 +989,12 @@ food_list = [
 			"manhattan",
 		],
 		recover_hunger = 25,
-		price = 5,
+		price = 20,
 		inebriation = 3,
 		str_name = 'manhattan project',
 		vendor = vendor_bar,
-		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb."
+		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb.",
+		str_desc = "We got tired of waiting for the bombs to drop so we made our own."
 	),
 	EwFood(
 		id_food = "slimymary",
@@ -981,11 +1002,14 @@ food_list = [
 			"mary",
 		],
 		recover_hunger = 25,
-		price = 5,
+		price = 20,
 		inebriation = 2,
 		str_name = 'slimy mary',
 		vendor = vendor_bar,
-		str_eat = "This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?"
+		str_eat = "This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?",
+		str_desc = "To get this drink you have to stand in the bathroom with the lights off and your back turned to the mirror. "
+		           "Say it’s name three times, turn around and open your eyes. Congratulations your wallet’s missing "
+		           "and I'm fucking your girlfriend."
 	),
 	EwFood(
 		id_food = "slimestout",
@@ -994,11 +1018,12 @@ food_list = [
 			"beer",
 		],
 		recover_hunger = 30,
-		price = 6,
+		price = 21,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
 		vendor = vendor_bar,
-		str_eat = "The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it."
+		str_eat = "The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it.",
+		str_desc = "Fun fact; Munchy and Ben actually stole the Blarney stone and use it as a doorstop. We are wanted terrorists in Ireland."
 	),
 	EwFood(
 		id_food = "water",
@@ -1010,7 +1035,8 @@ food_list = [
 		inebriation = 0,
 		str_name = 'glass of water',
 		vendor = vendor_bar,
-		str_eat = "The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though."
+		str_eat = "The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though.",
+		str_desc = "It’s a room temperature glass of tap water. Abstaining from drinking calories has never tasted this adequate!"
 	),
 	EwFood(
 		id_food = "pizza",
@@ -1018,11 +1044,12 @@ food_list = [
 			"pizzaslice",
 		],
 		recover_hunger = 40,
-		price = 4,
+		price = 12,
 		inebriation = 0,
 		str_name = 'slice of pizza',
 		vendor = vendor_pizzahut,
-		str_eat = "You grab a hot slice of that cheesy pie! Radical!!"
+		str_eat = "You grab a hot slice of that cheesy pie! Radical!!",
+		str_desc = "A supposedly hot slice of cheese pizza. Some of it’s pre-grated cheese hasn't fully melted yet, and it’s crust is hard and chewy. Reality is a cruel mistress."
 	),
 	EwFood(
 		id_food = "pepperoni",
@@ -1030,35 +1057,39 @@ food_list = [
 			"peperoni",
 		],
 		recover_hunger = 50,
-		price = 5,
+		price = 13,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
 		vendor = vendor_pizzahut,
-		str_eat = "You chomp into the spicy sausage slice, bro! Cowabunga!!"
+		str_eat = "You chomp into the spicy sausage slice, bro! Cowabunga!!",
+		str_desc = "An apparently appetizing slice of pepperoni pizza. It’s crust is limp and soggy from the excess"
+		           " grease it's slathered in, which is about the only thing you can taste on it as well."
 	),
 	EwFood(
 		id_food = "meatlovers",
 		alias = [
 			"meatpizza",
 		],
-		recover_hunger = 70,
-		price = 7,
+		recover_hunger = 100,
+		price = 17,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
 		vendor = vendor_pizzahut,
-		str_eat = "You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!"
+		str_eat = "You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!",
+		str_desc = "A thoroughly revolting slice Meat Lover's® pizza. You like meat, but you aren't sure if you're ready to love again."
 	),
 	EwFood(
 		id_food = "wings",
 		alias = [
 			"buffalowings",
 		],
-		recover_hunger = 80,
-		price = 8,
+		recover_hunger = 125,
+		price = 19,
 		inebriation = 0,
 		str_name = 'buffalo wings',
 		vendor = vendor_pizzahut,
-		str_eat = "Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!"
+		str_eat = "Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!",
+		str_desc = "Alright, some quick backstory: https://youtu.be/lqAh0jJTqvo"
 	),
 	EwFood(
 		id_food = "taco",
@@ -1066,11 +1097,13 @@ food_list = [
 			"softtaco",
 		],
 		recover_hunger = 30,
-		price = 3,
+		price = 11,
 		inebriation = 0,
 		str_name = 'soft taco',
 		vendor = vendor_tacobell,
-		str_eat = "It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?"
+		str_eat = "It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?",
+		str_desc = "A limp, pitiful soft shell taco. Mirroring its own weak exterior, it is the perfect food for weak-willed men"
+		           " without the strong moral character needed to tame the wild, wicked blast of flavor in more iconic Taco Bell tacos."
 	),
 	EwFood(
 		id_food = "nachocheesetaco",
@@ -1079,11 +1112,12 @@ food_list = [
 			"nachotaco"
 		],
 		recover_hunger = 30,
-		price = 4,
+		price = 13,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
-		str_eat = "You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*"
+		str_eat = "You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*",
+		str_desc = "This flavor…!! It’s an explosion of artificial cheese flavors and shrapnel sized bits of soggy shell that vaguely reminds you of word famous Nacho Cheese Doritos!!"
 	),
 	EwFood(
 		id_food = "coolranchtaco",
@@ -1091,23 +1125,28 @@ food_list = [
 			"ranchtaco",
 		],
 		recover_hunger = 30,
-		price = 4,
+		price = 13,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
 		vendor = vendor_tacobell,
-		str_eat = "You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*"
+		str_eat = "You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*",
+		str_desc = "This flavor…?? It’s a mushy mess of poorly seasoned mystery meat and pre-grated cheese powdered in preservatives"
+		           " trapped in a miserable shell that unfortunately reminds you of Doritos’ *other flavor* that isn't Nacho Cheese."
 	),
 	EwFood(
 		id_food = "quesarito",
 		alias = [
 			"gordita",
 		],
-		recover_hunger = 60,
-		price = 6,
+		recover_hunger = 65,
+		price = 15,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
 		vendor = vendor_tacobell,
-		str_eat = "It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness."
+		str_eat = "It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness.",
+		str_desc = "This travesty reminds you of your favorite My Little Pony: Friendship is Magic character Fluttershy for reasons you can't"
+		           " quite remember and that are pushed out of your mind from embarrassment before you can remember which"
+		           " analysis video you learned the joke from."
 	),
 	EwFood(
 		id_food = "steakvolcanoquesomachorito",
@@ -1115,12 +1154,14 @@ food_list = [
 			"machorito",
 			"quesomachorito"
 		],
-		recover_hunger = 140,
-		price = 15,
+		recover_hunger = 240,
+		price = 29,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
 		vendor = vendor_tacobell,
-		str_eat = "It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!"
+		str_eat = "It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!",
+		str_desc = "This pound of greasy, soggy, and flavorless artificially flavored fast food just broke through the damp, leaking"
+		           " paper bag you doubled wrapped it in. Guess you're going to have to eat it off the floor."
 	),
 	EwFood(
 		id_food = "coleslaw",
@@ -1128,11 +1169,12 @@ food_list = [
 			"slaw",
 		],
 		recover_hunger = 10,
-		price = 2,
+		price = 12,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
 		vendor = vendor_kfc,
-		str_eat = "It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?"
+		str_eat = "It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?",
+		str_desc = "This side is so horrific you might just start seeing dead people if you eat it."
 	),
 	EwFood(
 		id_food = "biscuitngravy",
@@ -1140,12 +1182,14 @@ food_list = [
 			"biscuit",
 			"gravy"
 		],
-		recover_hunger = 30,
-		price = 3,
+		recover_hunger = 20,
+		price = 10,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
 		vendor = vendor_kfc,
-		str_eat = "You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*"
+		str_eat = "You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*",
+		str_desc = "A cold biscuit that could break the glass if you threw it at window and scalding hot gravy that they let burn"
+		           " away the filth and grime in their pots so they don't have to clean them."
 	),
 	EwFood(
 		id_food = "chickenbucket",
@@ -1153,24 +1197,27 @@ food_list = [
 			"bucket",
 			"chicken",
 		],
-		recover_hunger = 120,
-		price = 12,
+		recover_hunger = 280,
+		price = 32,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
 		vendor = vendor_kfc,
-		str_eat = "You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit."
+		str_eat = "You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit.",
+		str_desc = "Children are starving in Africa and you order a bucket of fried chicken just for yourself."
+		           " Well, to be honest I don't even think the starving African children would touch KFC."
 	),
 	EwFood(
 		id_food = "famousbowl",
 		alias = [
 			"gordita",
 		],
-		recover_hunger = 60,
-		price = 6,
+		recover_hunger = 80,
+		price = 16,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
 		vendor = vendor_kfc,
-		str_eat = "You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!"
+		str_eat = "You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!",
+		str_desc = "It’s just not a meal unless it’s a potato-based meal with a calorie count in the six digits."
 	),
 	EwFood(
 		id_food = "barbecuesauce",
@@ -1184,7 +1231,8 @@ food_list = [
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
 		vendor = vendor_kfc,
-		str_eat = "You discard what's left of your dignity and purchace a packet of barbeque sauce to slurp down."
+		str_eat = "You discard what's left of your dignity and purchace a packet of barbeque sauce to slurp down.",
+		str_desc = "You're not alone. Confidential help is available for free. Call the suicide hotline if you're having thoughts of eating this."
 	),
 	EwFood(
 		id_food = "mtndew",
@@ -1194,11 +1242,12 @@ food_list = [
 			"greendew"
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with vivid green swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with vivid green swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial various citrus flavorings. Sick!!"
 	),
 	EwFood(
 		id_food = "bajablast",
@@ -1206,11 +1255,12 @@ food_list = [
 			"bluedew",
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Baja Blast',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with light bluish swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with light bluish swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial lime flavoring. Cool!!"
 	),
 	EwFood(
 		id_food = "codered",
@@ -1218,11 +1268,12 @@ food_list = [
 			"reddew",
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Code Red',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with red swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with red swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial cherry flavoring. Sweet!!"
 	),
 	EwFood(
 		id_food = "pitchblack",
@@ -1230,11 +1281,12 @@ food_list = [
 			"blackdew",
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Pitch Black',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with dark purple swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with dark purple swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial grape flavoring. Gnarly!!"
 	),
 	EwFood(
 		id_food = "whiteout",
@@ -1242,11 +1294,12 @@ food_list = [
 			"whitedew",
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew White-Out',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial lemon flavoring. Bodacious!!"
 	),
 	EwFood(
 		id_food = "livewire",
@@ -1254,11 +1307,12 @@ food_list = [
 			"orangedew",
 		],
 		recover_hunger = 10,
-		price = 1,
+		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Livewire',
 		vendor = vendor_mtndew,
-		str_eat = "You fill your jumbo fountain drink vessel with orange swill and gulp it down."
+		str_eat = "You fill your jumbo fountain drink vessel with orange swill and gulp it down.",
+		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial orange flavoring. Tubular!!"
 	)
 ]
 
@@ -1347,23 +1401,29 @@ item_def_list = [
 
 	EwItemDef(
 		item_type = it_food,
-		str_name = "{fitem_name}",
-		str_desc = "{fitem_desc}",
+		str_name = "{food_name}",
+		str_desc = "{food_desc}",
 		soulbound = False,
 		item_props = {
-			'fitem_name': 'Food Item',
-			'fitem_desc': 'Food.'
+			'food_name': 'Food Item',
+			'food_desc': 'Food.',
+			'recover_hunger': 0,
+			'price': 0,
+			'inebriation': 0,
+			'vendor': None,
+			'str_eat': 'You eat the food item.',
+			'time_expir': std_food_expir
 		}
 	),
 
 	EwItemDef(
 		item_type = it_weapon,
-		str_name = "{witem_name}",
-		str_desc = "{witem_desc}",
+		str_name = "{weapon_name}",
+		str_desc = "{weapon_desc}",
 		soulbound = False,
 		item_props = {
-			'witem_name': 'Weapon',
-			'witem_desc': 'It\'s a weapon of some sort.'
+			'weapon_name': 'Weapon',
+			'weapon_desc': 'It\'s a weapon of some sort.'
 		}
 	)
 ]
@@ -1993,7 +2053,10 @@ poi_list = [
 		channel = channel_711,
 		role = "7-11",
 		coord = (19, 25),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_vendingmachine
+		]
 	),
 	EwPoi( # the-labs
 		id_poi = poi_id_slimeoidlab,
