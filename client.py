@@ -167,6 +167,9 @@ cmd_map = {
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
 
+	#give an item to another player
+	ewcfg.cmd_give: ewitem.give,
+
 	# kill all players in your district; could be re-used for a future raid boss
 	#ewcfg.cmd_writhe: ewraidboss.writhe,
 

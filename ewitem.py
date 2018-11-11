@@ -589,3 +589,18 @@ def give_item(
 		ewutils.execute_sql_query(sql_query)
 
 	return True
+
+
+"""
+	Command that lets player give others items
+"""
+async def give(cmd):
+	id_user = cmd.message.author.id
+	id_server = cmd.message.server.id
+	member = cmd.mentions[0]
+
+	#todo: finish this and also outsource the item finding code from !uee and !inspect to a commonly usable function
+	give_item(
+		member = member,
+		#id_item =
+	)
