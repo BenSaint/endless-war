@@ -468,7 +468,7 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 
-	await cmd.client.send_message(cmd.message.channel, response)
+	await cmd.client.send_message(cmd.message.author, response)
 
 
 """
