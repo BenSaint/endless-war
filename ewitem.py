@@ -555,6 +555,7 @@ async def item_use(cmd):
 
 			if item_type == ewcfg.it_food:
 				response = user_data.eat(item)
+				user_data.persist()
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
