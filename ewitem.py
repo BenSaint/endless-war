@@ -510,10 +510,10 @@ async def item_look(cmd):
 				if response.find('{') >= 0:
 					response = response.format_map(item_inst.item_props)
 
-				if item_sought.get('item_type') == ewcfg.it_food:
-					if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
-						response += " This food item is rotten so you decide to throw it away."
-						item_delete(id_item)
+			if item_sought.get('item_type') == ewcfg.it_food:
+				if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
+					response += " This food item is rotten so you decide to throw it away."
+					item_delete(id_item)
 
 			response = name + "\n\n" + response
 
