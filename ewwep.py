@@ -145,13 +145,15 @@ async def attack(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
-	if ewmap.poi_is_pvp(user_data.poi) == False:
+	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
+		response = "You can't commit violence from here."
+	elif ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
 	elif cmd.mentions_count > 1:
 		response = "One shot at a time!"
 	elif cmd.mentions_count <= 0:
 		response = "Your bloodlust is appreciated, but ENDLESS WAR didn't understand that name."
-	elif user_data.hunger >= ewcfg.hunger_max:
+	elif user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 		response = "You are too exhausted for gang violence right now. Go get some grub!"
 	elif cmd.mentions_count == 1:
 		# Get shooting player's info
@@ -167,11 +169,9 @@ async def attack(cmd):
 		crit = False
 		strikes = 0
 
-		# Slime level data. Levels are in powers of 10.
-		slimes_bylevel = int(user_data.slimelevel ** 5)
-		slimes_spent = int(slimes_bylevel / 20)
-		#slimes_spent = int(user_data.slimes / 25)  # alternative method of calculation
+		slimes_spent = int(ewutils.slime_bylevel(user_data.slimelevel) / 20)
 		slimes_damage = int((slimes_spent * 4) * (100 + (user_data.weaponskill * 10)) / 100.0)
+
 		if weapon is None:
 			slimes_damage /= 2  # penalty for not using a weapon, otherwise fists would be on par with other weapons
 		slimes_dropped = shootee_data.totaldamage + shootee_data.slimes
@@ -217,7 +217,7 @@ async def attack(cmd):
 			was_busted = False
 
 			#hunger drain
-			user_data.hunger += ewcfg.hunger_pershot
+			user_data.hunger += ewcfg.hunger_pershot * ewutils.hunger_cost_mod(user_data.slimelevel)
 			
 			# Weaponized flavor text.
 			randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
@@ -269,7 +269,7 @@ async def attack(cmd):
 				# Move around slime as a result of the shot.
 				user_data.change_slimes(n = (shootee_data.slimelevel ** 5), source = ewcfg.source_busting)
 				market_data = EwMarket(id_server = cmd.message.server.id)
-				coinbounty = int(shootee_data.bounty / 1000)
+				coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)
 				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 
 				ewstats.track_maximum(user = user_data, metric = ewcfg.stat_biggest_bust_level, value = shootee_data.slimelevel)
@@ -357,7 +357,7 @@ async def attack(cmd):
 
 			if was_shot:
 				#hunger drain
-				user_data.hunger += ewcfg.hunger_pershot
+				user_data.hunger += ewcfg.hunger_pershot * ewutils.hunger_cost_mod(user_data.slimelevel)
 				
 				# Weaponized flavor text.
 				randombodypart = ewcfg.hitzone_list[random.randrange(len(ewcfg.hitzone_list))]
@@ -415,7 +415,7 @@ async def attack(cmd):
 						ewstats.increment_stat(user = user_data, metric = ewcfg.stat_lifetime_takedowns)
 
 					# Collect bounty
-					coinbounty = int(shootee_data.bounty / 1000)  # 1000 slime per coin
+					coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)  # 100 slime per coin
 
 					# Move around slime as a result of the shot.
 					if shootee_data.slimes >= 0:
@@ -611,11 +611,11 @@ async def spar(cmd):
 			user_isrowdys = user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys
 			user_isdead = user_data.life_state == ewcfg.life_state_corpse
 
-			if user_data.hunger >= ewcfg.hunger_max:
+			if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 				response = "You are too exhausted to train right now. Go get some grub!"
 			elif user_data.poi != ewcfg.poi_id_dojo or sparred_data.poi != ewcfg.poi_id_dojo:
 				response = "Both players need to be in the dojo to spar."
-			elif sparred_data.hunger >= ewcfg.hunger_max:
+			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
 				response = "The dead think they're too cool for conventional combat. Pricks."
@@ -669,8 +669,8 @@ async def spar(cmd):
 					weaker_player.change_slimes(n = slimegain)
 					
 					#hunger drain for both players
-					user_data.hunger += ewcfg.hunger_perspar
-					sparred_data.hunger += ewcfg.hunger_perspar
+					user_data.hunger += ewcfg.hunger_perspar * ewutils.hunger_cost_mod(user_data.slimelevel)
+					sparred_data.hunger += ewcfg.hunger_perspar * ewutils.hunger_cost_mod(sparred_data.slimelevel)
 
 					# Bonus 50% slime to both players in a duel.
 					if duel:

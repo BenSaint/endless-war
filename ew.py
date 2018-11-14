@@ -1,3 +1,5 @@
+import time
+
 import ewutils
 import ewcfg
 import ewstats
@@ -10,7 +12,7 @@ class EwMarket:
 	clock = 0
 	weather = 'sunny'
 	day = 0
-	
+
 	slimes_casino = 0
 	slimes_revivefee = 0
 
@@ -146,8 +148,8 @@ class EwUser:
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
-		if self.hunger > ewcfg.hunger_max:
-			self.hunger = ewcfg.hunger_max
+		if self.hunger > ewutils.hunger_max_bylevel(self.slimelevel):
+			self.hunger = ewutils.hunger_max_bylevel(self.slimelevel)
 
 		if self.inebriation < 0:
 			self.inebriation = 0
@@ -169,7 +171,7 @@ class EwUser:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesmined, n = change)
 
 			if source == ewcfg.source_killing:
-				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change) 
+				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change)
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesfromkills, n = change)
 		else:
 			change *= -1 # convert to positive number
@@ -192,10 +194,10 @@ class EwUser:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimeshaunted, n = change)
 
 		# potentially level up
-		new_level = int(abs(self.slimes) ** 0.2)
+		new_level = ewutils.level_byslime(self.slimes)
 		if new_level > self.slimelevel:
 			self.slimelevel = new_level
-			if self.life_state == ewcfg.life_state_corpse: 
+			if self.life_state == ewcfg.life_state_corpse:
 				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_ghost_level, value = self.slimelevel)
 			else:
 				ewstats.track_maximum(user = self, metric = ewcfg.stat_max_level, value = self.slimelevel)
@@ -266,6 +268,28 @@ class EwUser:
 				weaponskill = self.weaponskill,
 				weaponname = self.weaponname
 			)
+
+	def eat(self, food_item = None):
+		item_props = food_item.item_props
+
+		if float(food_item.time_expir if not None else 0) < time.time():
+			response = "You realize that the food you were trying to eat is already spoiled. In disgust, you throw it away."
+		else:
+			self.hunger -= int(item_props['recover_hunger'])
+			if self.hunger < 0:
+				self.hunger = 0
+			self.inebriation += int(item_props['inebriation'])
+			if self.inebriation > 20:
+				self.inebriation = 20
+
+			if food_item.id_item == "coleslaw":
+				self.ghostbust = True
+
+			response = item_props['str_eat'] + ("\n\nYou're stuffed!" if self.hunger <= 0 else "")
+
+		ewitem.item_delete(food_item.id_item)
+
+		return response
 
 	""" Create a new EwUser and optionally retrieve it from the database. """
 	def __init__(self, member = None, id_user = None, id_server = None):
@@ -342,10 +366,11 @@ class EwUser:
 					self.time_last_rr = result[22]
 				else:
 					# Create a new database entry if the object is missing.
-					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
+					cursor.execute("REPLACE INTO users(id_user, id_server, poi, life_state) VALUES(%s, %s, %s, %s)", (
 						id_user,
 						id_server,
-						ewcfg.poi_id_downtown
+						ewcfg.poi_id_downtown,
+						ewcfg.life_state_juvenile
 					))
 					
 					conn.commit()

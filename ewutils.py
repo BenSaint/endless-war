@@ -254,7 +254,11 @@ def pushupServerHunger(id_server = None):
 			cursor.execute("UPDATE users SET {hunger} = {hunger} + {tick} WHERE life_state > 0 AND id_server = %s AND hunger < {limit}".format(
 				hunger = ewcfg.col_hunger,
 				tick = ewcfg.hunger_pertick,
-				limit = ewcfg.hunger_max
+				# this function returns the bigger of two values; there is no simple way to do this in sql and we can't calculate it within this python script
+				limit = "0.5 * (({val1} + {val2}) + ABS({val1} - {val2}))".format(
+					val1 = ewcfg.min_stamina,
+					val2 = "POWER(" + ewcfg.col_slimelevel + ", 2)"
+				)
 			), (
 				id_server,
 			))
@@ -515,3 +519,28 @@ def get_faction_symbol(faction = ""):
 		result = ewcfg.emote_blank
 
 	return result
+
+"""
+	Calculate the slime amount needed to reach a certain level
+"""
+def slime_bylevel(slimelevel):
+	return int(slimelevel ** 4)
+
+"""
+	Calculate what level the player should be at, given their slime amount
+"""
+def level_byslime(slime):
+	return int(abs(slime) ** 0.25)
+
+"""
+	Calculate the maximum hunger level at the player's slimelevel
+"""
+def hunger_max_bylevel(slimelevel):
+	# note that when you change this formula, you'll also have to adjust its sql equivalent in pushupServerHunger
+	return max(ewcfg.min_stamina, slimelevel ** 2)
+
+"""
+	Calculate how much more stamina activities should cost
+"""
+def hunger_cost_mod(slimelevel):
+	return hunger_max_bylevel(slimelevel) / 200
