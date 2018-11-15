@@ -43,6 +43,8 @@ poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
 poi_id_slimecorphq = "slimecorphq"
+poi_id_cv_mines = "cratersvillemines"
+poi_id_tt_mines = "toxingtonmines"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -81,6 +83,8 @@ channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
 channel_leaderboard = "leaderboard"
+channel_cv_mines = "cratersville-mines"
+channel_tt_mines = "toxington-mines"
 
 # Commands
 cmd_prefix = '!'
@@ -2112,6 +2116,34 @@ poi_list = [
 		coord = (29, 16),
 		channel = channel_casino,
 		role = "Casino",
+		pvp = False
+	),
+	EwPoi(  # cratersville mines
+		id_poi = poi_id_cv_mines,
+		alias = [
+			"mines2",
+			"cvmines",
+			"cvm"
+		],
+		str_name = "The Cratersville Mines",
+		str_desc = "",  # todo add desc
+		coord = (19, 30),
+		channel = channel_cv_mines,
+		role = "Cratersville Mines",
+		pvp = False
+	),
+	EwPoi(  # toxington mines
+		id_poi = poi_id_tt_mines,
+		alias = [
+			"mines3",
+			"ttmines",
+			"ttm"
+		],
+		str_name = "The Toxington Mines",
+		str_desc = "",  # todo add desc
+		coord = (9, 2),
+		channel = channel_tt_mines,
+		role = "Toxington Mines",
 		pvp = False
 	)
 ]
