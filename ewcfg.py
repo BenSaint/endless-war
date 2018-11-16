@@ -326,6 +326,7 @@ col_timestamp = 'timestamp'
 # Database columns for districts
 col_district = 'district'
 col_controlling_faction = 'controlling_faction'
+col_capturing_faction = 'capturing_faction'
 col_capture_progress = 'capture_progress'
 
 # Item type names
