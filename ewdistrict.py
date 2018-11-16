@@ -44,10 +44,13 @@ class EwDistrict:
 				))
 
 	def persist(self):
-		ewutils.execute_sql_query("REPLACE INTO districts({controlling_faction}, {capturing_faction}, {capture_progress}) VALUES({ctrl_f},{capt_f), {cp})".format(
+		ewutils.execute_sql_query("REPLACE INTO districts(id_server, {district}, {controlling_faction}, {capturing_faction}, {capture_progress}) VALUES({id_server}, '{dist}', '{ctrl_f}', '{capt_f}', {cp})".format(
+			district = ewcfg.col_district,
 			controlling_faction = ewcfg.col_controlling_faction,
 			capturing_faction = ewcfg.col_capturing_faction,
 			capture_progress = ewcfg.col_capture_progress,
+			id_server = self.id_server,
+			dist = self.name,
 			ctrl_f = self.controlling_faction,
 			capt_f = self.capturing_faction,
 			cp = self.capture_progress
@@ -107,15 +110,21 @@ async def capture_tick(id_server):
 						if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
 							faction_capture = 'both'  # standstill, gang violence has to happen
 
-						elif faction != controlling_faction and faction_capture is None:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
-								faction_capture = faction
+						elif faction_capture is None:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
+							faction_capture = faction
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
 
-					if faction_capture == dist.capturing_faction:
+					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
+						if dist.capture_progress < ewcfg.max_capture_progress:  # stop at maximum progress
+							dist.capture_progress += ewcfg.capture_progress_per_tick
+
+					elif dist.capture_progress == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
 						dist.capture_progress += ewcfg.capture_progress_per_tick
-					else:
+						dist.capturing_faction = faction_capture
+
+					else:  # lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
 						dist.capture_progress -= ewcfg.capture_progress_per_tick
 
 					# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
@@ -146,6 +155,6 @@ async def capture_tick(id_server):
 async def call_capture_tick(id_server, interval = 10):
 	# causes a capture tick to happen exactly every 10 seconds (the "elapsed" thing might be unnecessary, depending on how long capture_tick ends up taking on average)
 	while True:
-		await asyncio.sleep(interval)
 		await capture_tick(id_server = id_server)
-		ewutils.logMsg("Capture tick happened on server %s." % id_server)
+		ewutils.logMsg("Capture tick happened on server %s." % id_server + " Timestamp: %d" % int(time.time()))
+		await asyncio.sleep(interval)
