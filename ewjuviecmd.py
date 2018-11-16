@@ -88,7 +88,7 @@ async def mine(cmd):
 
 	# Mine only in the mines.
 	if(cmd.message.channel.name == ewcfg.channel_mines):
-		if user_data.hunger >= ewcfg.hunger_max:
+		if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 			global last_mismined_times
 			mismined = last_mismined_times.get(cmd.message.author.id)
 
@@ -123,18 +123,25 @@ async def mine(cmd):
 			# Determine if a poudrin is found.
 			poudrin = False
 			poudrinamount = 0
-			poudrinchance = random.randrange(3600)
-			if poudrinchance == 0:
+
+			# juvies get poudrins 4 times as often as enlisted players
+			poudrin_rarity = ewcfg.poudrin_rarity / (2 if user_data.life_state == ewcfg.life_state_juvenile else 1)
+			poudrin_mined = random.randint(1, poudrin_rarity)
+
+			if poudrin_mined == 1:
 				poudrin = True
-				poudrinamount = (random.randrange(2) + 1)
+				poudrinamount = 1 if random.randint(1, 3) != 1 else 2  # 33% chance of extra drop
 
 			user_initial_level = user_data.slimelevel
 
 			# Add mined slime to the user.
-			mining_yield = (user_data.slimelevel ** 5 / 10) + 1
-			alternate_yield = 10000 + (200 * math.log(user_data.slimelevel ** 50))
-			if alternate_yield < mining_yield:
-				mining_yield = alternate_yield
+			slime_bylevel = ewutils.slime_bylevel(user_data.slimelevel)
+
+			mining_yield = math.floor((slime_bylevel / 10) + 1)
+			alternate_yield = math.floor(200 + slime_bylevel ** (1 / math.e))
+
+			mining_yield = min(mining_yield, alternate_yield)
+
 			user_data.change_slimes(n = mining_yield, source = ewcfg.source_mining)
 
 			was_levelup = True if user_initial_level < user_data.slimelevel else False
@@ -152,9 +159,14 @@ async def mine(cmd):
 				))
 
 			# Fatigue the miner.
-			user_data.hunger += ewcfg.hunger_permine
-			if random.randrange(10) > 6:
-				user_data.hunger += ewcfg.hunger_permine
+			hunger_cost_mod = ewutils.hunger_cost_mod(user_data.slimelevel)
+			extra = hunger_cost_mod - int(hunger_cost_mod)  # extra is the fractional part of hunger_cost_mod
+
+			user_data.hunger += ewcfg.hunger_permine * int(hunger_cost_mod)
+			if extra > 0:  # if hunger_cost_mod is not an integer
+				# there's an x% chance that an extra stamina is deducted, where x is the fractional part of hunger_cost_mod in percent (times 100)
+				if random.randint(1, 100) <= extra * 100:
+					user_data.hunger += ewcfg.hunger_permine
 
 			user_data.persist()
 

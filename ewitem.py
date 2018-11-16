@@ -1,3 +1,5 @@
+import time
+
 import ewutils
 import ewcfg
 import ewstats
@@ -143,7 +145,7 @@ class EwItem:
 				self.id_server,
 				self.id_user,
 				self.item_type,
-				self.time_expir,
+				self.time_expir if self.time_expir is not None else self.item_props['time_expir'],
 				self.stack_max,
 				self.stack_size,
 				(1 if self.soulbound else 0)
@@ -466,7 +468,7 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 
-	await cmd.client.send_message(cmd.message.channel, response)
+	await cmd.client.send_message(cmd.message.author, response)
 
 
 """
@@ -490,14 +492,14 @@ async def item_look(cmd):
 
 		item_sought = None
 		for item in items:
-			if item.get('id_item') == item_id_int or ewutils.flattenTokenListToString(item.get('name')) == item_id:
+			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
 				item_sought = item
 				break
 
 		if item_sought != None:
-			item_def = item.get('item_def')
-			id_item = item.get('id_item')
-			name = item.get('name')
+			item_def = item_sought.get('item_def')
+			id_item = item_sought.get('id_item')
+			name = item_sought.get('name')
 			response = item_def.str_desc
 
 			# Replace up to two levels of variable substitutions.
@@ -507,6 +509,11 @@ async def item_look(cmd):
 
 				if response.find('{') >= 0:
 					response = response.format_map(item_inst.item_props)
+
+			if item_sought.get('item_type') == ewcfg.it_food:
+				if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
+					response += " This food item is rotten so you decide to throw it away."
+					item_delete(id_item)
 
 			response = name + "\n\n" + response
 
@@ -533,32 +540,22 @@ async def item_use(cmd):
 
 		item_sought = None
 		for item in items:
-			if item.get('id_item') == item_id_int or ewutils.flattenTokenListToString(item.get('name')) == item_id:
+			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
 				item_sought = item
 				break
 
 		if item_sought != None:
-			item_def = item.get('item_def')
-			id_item = item.get('id_item')
-			name = item.get('name')
+			id_item = item_sought.get('id_item')
+			item_def = item_sought.get('item_def')
+			name = item_sought.get('name')
+			item_type = item_sought.get('item_type')
 
+			item = EwItem(id_item = id_item)
 			user_data = EwUser(member = cmd.message.author)
 
-			if name.lower() == "endless rock":
-				if user_data.poi != ewcfg.poi_id_endlesswar:
-					response = "You have to be near ENDLESS WAR to use this item."
-				else:
-					# EW: Wake
-					response = "You use the Endless Rock to awaken ENDLESS WAR."
-					await ewutils.post_in_multiple_channels(
-						# @everyone is purposely misspelled so testing isnt annoying everyone
-						message = "@everyone ENDLESS WAR has awoken. https://ew.krakissi.net/img/revive.gif",
-						channels = cmd.message.server.channels,  # all channels
-						client = cmd.client
-					)
-
-					# take the endless rock away from the player who !used it
-					give_item(id_user = '0', id_server = user_data.id_server, id_item = id_item)
+			if item_type == ewcfg.it_food:
+				response = user_data.eat(item)
+				user_data.persist()
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:

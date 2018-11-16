@@ -456,7 +456,10 @@ async def move(cmd):
 			user_data.persist()
 			await ewrolemgr.updateRoles(cmd.client, cmd.message.author)
 			return
-
+		
+	if user_data.rr_challenger != "":
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't run away now."))
+	
 	if poi.coord == None or poi_current == None or poi_current.coord == None:
 		path = EwPath(cost = 60)
 	else:

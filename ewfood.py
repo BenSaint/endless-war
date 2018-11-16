@@ -1,4 +1,8 @@
+import math
+import time
+
 import ewcfg
+import ewitem
 import ewutils
 import ewcmd
 from ew import EwUser, EwMarket
@@ -29,6 +33,12 @@ class EwFood:
 	# Alcoholic effect
 	inebriation = 0
 
+	# Flavor text displayed when you inspect this food.
+	str_desc = ""
+
+	# Expiration time (can be left blank for standard expiration time)
+	time_expir = 0
+
 	def __init__(
 		self,
 		id_food = "",
@@ -38,7 +48,9 @@ class EwFood:
 		str_name = "",
 		vendor = "",
 		str_eat = "",
-		inebriation = 0
+		inebriation = 0,
+		str_desc = "",
+		time_expir = 0
 	):
 		self.id_food = id_food
 		self.alias = alias
@@ -48,6 +60,8 @@ class EwFood:
 		self.vendor = vendor
 		self.str_eat = str_eat
 		self.inebriation = inebriation
+		self.str_desc = str_desc
+		self.time_expir = time_expir if time_expir > 0 else ewcfg.std_food_expir
 
 
 """ show all available food items """
@@ -77,19 +91,27 @@ async def order(cmd):
 		response = ewcfg.str_food_channelreq.format(action = "order")
 	else:
 		value = None
+		togo = False
 		if cmd.tokens_count > 1:
 			for token in cmd.tokens[1:]:
-				if token.startswith('<@') == False:
+				if token.startswith('<@') == False and token.lower() not in "togo":  # togo can be spelled together or separate
 					value = token
 					break
+			for token in cmd.tokens[1:]:
+				if token.lower() in "togo":  # lets people get away with just typing only to or only go (or only t etc.) but whatever
+					togo = True
+					break
 
-		food = ewcfg.food_map.get(value)
+		food = ewcfg.food_map.get(value.lower() if value != None else value)
+		if food != None and food.vendor == ewcfg.vendor_vendingmachine:
+			togo = True
 
 		member = None
-		if cmd.mentions_count == 1:
-			member = cmd.mentions[0]
-			if member.id == cmd.message.author.id:
-				member = None
+		if not togo:  # cant order togo for someone else, you can just give it to them in person
+			if cmd.mentions_count == 1:
+				member = cmd.mentions[0]
+				if member.id == cmd.message.author.id:
+					member = None
 
 		member_data = EwUser(member = member)
 
@@ -104,7 +126,7 @@ async def order(cmd):
 			if member != None:
 				target_data = EwUser(member = member)
 
-			value = food.price
+			value = food.price if not togo else food.price * ewcfg.togo_price_increase
 
 			# Kingpins eat free.
 			if user_data.life_state == ewcfg.life_state_kingpin or user_data.life_state == ewcfg.life_state_grandfoe:
@@ -120,36 +142,71 @@ async def order(cmd):
 			else:
 				user_data.change_slimecredit(n = -value, coinsource = ewcfg.coinsource_spending)
 
-				if target_data != None:
-					target_data.hunger -= food.recover_hunger
-					if target_data.hunger < 0:
-						target_data.hunger = 0
-					target_data.inebriation += food.inebriation
-					if target_data.inebriation > 20:
-						target_data.inebriation = 20
-					
-				else:
-					user_data.hunger -= food.recover_hunger
-					if user_data.hunger < 0:
-						user_data.hunger = 0
-					user_data.inebriation += food.inebriation
-					if user_data.inebriation > 20:
-						user_data.inebriation = 20
+				if not togo:
 
-				market_data.slimes_casino += food.price
+					if target_data != None:
+						target_data.hunger -= food.recover_hunger
+						if target_data.hunger < 0:
+							target_data.hunger = 0
+						target_data.inebriation += food.inebriation
+						if target_data.inebriation > ewcfg.inebriation_max:
+							target_data.inebriation = ewcfg.inebriation_max
+						if food.id_food == "coleslaw":
+							target_data.ghostbust = True
 
-				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{sharetext}{flavor}".format(
+					else:
+						user_data.hunger -= food.recover_hunger
+						if user_data.hunger < 0:
+							user_data.hunger = 0
+						user_data.inebriation += food.inebriation
+						if user_data.inebriation > ewcfg.inebriation_max:
+							user_data.inebriation = ewcfg.inebriation_max
+						if food.id_food == "coleslaw":
+							user_data.ghostbust = True
+
+				else:  # if it's togo
+					inv = ewitem.inventory(
+						id_user = cmd.message.author.id,
+						id_server = cmd.message.server.id
+					)
+					food_in_inv = 0
+					for item in inv:
+						if item.get('item_type') == ewcfg.it_food:
+							food_in_inv += 1
+
+					if food_in_inv >= math.ceil(user_data.slimelevel / ewcfg.max_food_in_inv_mod):
+						# user_data never got persisted so the player won't lose money unnecessarily
+						response = "You can't carry any more food than that."
+						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+					item_props = {
+						'food_name': food.str_name,
+						'food_desc': food.str_desc,
+						'recover_hunger': food.recover_hunger,
+						'price': food.price,
+						'inebriation': food.inebriation,
+						'vendor': food.vendor,
+						'str_eat': food.str_eat,
+						'time_expir': time.time() + (food.time_expir if food.time_expir is not None else ewcfg.std_food_expir)
+					}
+
+					ewitem.item_create(
+						item_type = ewcfg.it_food,
+						id_user = cmd.message.author.id,
+						id_server = cmd.message.server.id,
+						item_props = item_props
+					)
+
+				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{togo}{sharetext}{flavor}".format(
 					cost = value,
 					vendor = food.vendor,
 					food = food.str_name,
+					togo = " to go" if togo else "",
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
-					flavor = food.str_eat
+					flavor = food.str_eat if not togo else ""
 				)
-				if member == None and user_data.hunger <= 0:
+				if member == None and user_data.hunger <= 0 and not togo:
 					response += "\n\nYou're stuffed!"
-
-				if food.id_food == "coleslaw":
-					user_data.ghostbust = True
 
 				user_data.persist()
 				market_data.persist()
