@@ -34,6 +34,7 @@ import ewmap
 import ewrolemgr
 import ewraidboss
 import ewleaderboard
+import ewdistrict
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -253,6 +254,8 @@ async def on_ready():
 		for poi in ewcfg.poi_list:
 			if poi.pvp and poi.id_poi != ewcfg.poi_id_endlesswar:  # if it's a district and not RR, CK, or JR; this is not optimal but we dont have some kind of "is subzone" attribute
 				EwDistrict(id_server = server.id, district = poi.id_poi)
+
+		asyncio.ensure_future(ewdistrict.call_capture_tick(id_server = server.id, interval = 10))
 
 	try:
 		ewutils.logMsg('Creating message queue directory.')

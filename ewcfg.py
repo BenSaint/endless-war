@@ -174,6 +174,7 @@ inebriation_pertick = 2
 
 # district capturing
 capture_progress_per_tick = 10
+max_capture_progress = 60
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
