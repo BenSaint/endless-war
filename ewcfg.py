@@ -172,6 +172,9 @@ hunger_pertick = 3
 #inebriation
 inebriation_pertick = 2
 
+# district capturing
+capture_progress_per_tick = 10
+
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
 

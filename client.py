@@ -37,6 +37,7 @@ import ewleaderboard
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
+from ewdistrict import EwDistrict
 
 ewutils.logMsg('Starting up...')
 
@@ -247,6 +248,11 @@ async def on_ready():
 				elif(channel.name == ewcfg.channel_stockexchange):
 					channels_stockmarket[server.id] = channel
 					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
+
+		# create all the districts in the database, is only run on startup so it shouldn't be a big performance hit
+		for poi in ewcfg.poi_list:
+			if poi.pvp and poi.id_poi != ewcfg.poi_id_endlesswar:  # if it's a district and not RR, CK, or JR; this is not optimal but we dont have some kind of "is subzone" attribute
+				EwDistrict(id_server = server.id, district = poi.id_poi)
 
 	try:
 		ewutils.logMsg('Creating message queue directory.')
