@@ -196,7 +196,7 @@ while sys.argv:
 	sys.argv = sys.argv[1:]
 
 # When debug is enabled, additional commands are turned on.
-if debug == False:
+if debug == True:
 	ewutils.logMsg('Debug mode enabled.')
 
 @client.event
