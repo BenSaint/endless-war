@@ -309,7 +309,6 @@ col_poi = 'poi'
 col_life_state = 'life_state'
 col_busted = 'busted'
 col_rrchallenger = 'rr_challenger_id'
-col_time_last_rr = 'time_last_rr'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'

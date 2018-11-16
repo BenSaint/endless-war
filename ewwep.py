@@ -563,6 +563,12 @@ async def suicide(cmd):
 		elif user_isgeneral:
 			response = "\*click* Alas, your gun has jammed."
 		elif user_iskillers or user_isrowdys:
+			#Give slime to challenger if player suicides mid russian roulette
+			if user_data.rr_challenger != "":
+				roulette_chl = await cmd.client.get_user_info(user_data.rr_challenger)
+				challenger = EwUser(id_user= user_data.rr_challenger, id_server= user_data.id_server)
+				challenger.change_slimes(n = user_data.slimes, source = ewcfg.source_killing)
+				challenger.persist()
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
 			user_data.id_killer = cmd.message.author.id
 			user_data.die(cause = ewcfg.cause_suicide)
@@ -615,7 +621,7 @@ async def spar(cmd):
 				response = "You are too exhausted to train right now. Go get some grub!"
 			elif user_data.poi != ewcfg.poi_id_dojo or sparred_data.poi != ewcfg.poi_id_dojo:
 				response = "Both players need to be in the dojo to spar."
-			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
+			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(sparred_data.slimelevel):
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
 				response = "The dead think they're too cool for conventional combat. Pricks."
