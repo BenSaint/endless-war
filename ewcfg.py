@@ -2444,7 +2444,6 @@ poi_list = [
 		channel = channel_tt_mines,
 		role = "Toxington Mines",
 		pvp = False
-	)
 	),
 	EwPoi( # smokers-cough
 		id_poi = poi_id_diner,
@@ -2471,7 +2470,7 @@ poi_list = [
 		channel = channel_seafood,
 		role = "",
 		pvp = False
-	),
+	)
 ]
 
 id_to_poi = {}
