@@ -886,8 +886,8 @@ vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
 vendor_mtndew = 'Mtn Dew Fountain'
 vendor_vendingmachine = 'vending machine'
-vendor_seafood = 'seafood'
-vendor_diner = 'diner'
+vendor_seafood = 'Red Mobster Seafood'
+vendor_diner = "Smoker's Cough"
 
 # A map of name to EwWeather objects.
 weather_map = {}
@@ -2452,25 +2452,34 @@ poi_list = [
 			"smokerscough"
 		],
 		str_name = "The Smoker's Cough",
-		str_desc = "",
+		str_desc = "A quaint hole-in-the-wall vintage diner. The wallpaper may be peeling and the ‘80s paint job might be faded, but you’ll be damned if this place didn’t make an aesthetic stomping grounds for cheapskate juveniles like yourself. All the staff know you by name, they’ve memorized your order, and frankly they love you. You’re like a ninth son to the inbred owner and his many, many wives. It’s a cramped space, only fitting about 20 people maximum. The fluorescent lighting from the ceiling lamps invade every nook and cranny of the cyan and purple diner, even when the natural daylight could easily illuminate it just as well. You think you can see some mold on certain corners of the floor. Oh man, so cool.",
 		coord = (29, 24),
 		channel = channel_diner,
 		role = "Smoker's Cough",
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_diner
+		]
 	),
-	EwPoi( # seafood todo
+	EwPoi( # seafood
 		id_poi = poi_id_seafood,
 		alias = [
 			"seafood",
-			""
+			"redmobster"
+			"red"
+			"mobster"
+			"rm"
 		],
-		str_name = "",
-		str_desc = "",
+		str_name = "Red Mobster Seafood",
+		str_desc = "The last bastion of sospchication in this godforsaken city. A dimly lit, atmospheric fine dining restaurant with waiters and tables and archaic stuff like that. Upper crust juveniles and older fugitives make up the majority of the patrons, making you stick out like a sore thumb. Quiet, respectable murmurs pollute the air alongside the scrapping of silverware and the occasional hoity toity laugh. Everything about this place makes you sick.",
 		coord = (17, 4),
 		channel = channel_seafood,
-		role = "",
-		pvp = False
-	)
+		role = "Red Mobster Seafood",
+		pvp = False,
+		vendors = [
+			vendor_seafood
+		]
+	),
 ]
 
 id_to_poi = {}
