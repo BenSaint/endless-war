@@ -101,6 +101,9 @@ async def capture_tick(id_server):
 				# it's the faction's name, i.e. 'rowdys' or 'killers', and if both are present, it's 'both'
 				faction_capture = None
 
+				# how much progress will be made. is higher the more people of one faction are in a district, and is 0 if both teams are present
+				capture_speed = 0
+
 				# checks if any players are in the district and if there are only players of the same faction, i.e. progress can happen
 				for player in all_players:
 					# player[0] is their poi, player[2] their life_state. assigning them to variables might hurt the server's performance
@@ -109,23 +112,25 @@ async def capture_tick(id_server):
 
 						if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
 							faction_capture = 'both'  # standstill, gang violence has to happen
+							capture_speed = 0
 
-						elif faction_capture is None:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
+						elif faction_capture in [None, faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
 							faction_capture = faction
+							capture_speed += 1
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
 						if dist.capture_progress < ewcfg.max_capture_progress:  # stop at maximum progress
-							dist.capture_progress += ewcfg.capture_progress_per_tick
+							dist.capture_progress += ewcfg.capture_progress_per_tick * capture_speed
 
 					elif dist.capture_progress == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
-						dist.capture_progress += ewcfg.capture_progress_per_tick
+						dist.capture_progress += ewcfg.capture_progress_per_tick * capture_speed
 						dist.capturing_faction = faction_capture
 
 					else:  # lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
-						dist.capture_progress -= ewcfg.capture_progress_per_tick
+						dist.capture_progress -= ewcfg.capture_progress_per_tick * capture_speed
 
 					# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
 					if dist.capture_progress >= ewcfg.max_capture_progress:
