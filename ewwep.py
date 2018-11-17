@@ -779,16 +779,16 @@ async def equip(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ name a weapon using a slime poudrin """
-async def annoint(cmd):
+async def anoint(cmd):
 	response = ""
 
 	if cmd.tokens_count < 2:
 		response = "Specify a name for your weapon!"
 	else:
-		annoint_name = cmd.message.content[(len(ewcfg.cmd_annoint)):].strip()
+		anoint_name = cmd.message.content[(len(ewcfg.cmd_anoint)):].strip()
 
-		if len(annoint_name) > 32:
-			response = "That name is too long. ({:,}/32)".format(len(annoint_name))
+		if len(anoint_name) > 32:
+			response = "That name is too long. ({:,}/32)".format(len(anoint_name))
 		else:
 			user_data = EwUser(member = cmd.message.author)
 
@@ -808,7 +808,7 @@ async def annoint(cmd):
 			else:
 				# Perform the ceremony.
 				user_data.change_slimes(n = -100, source = ewcfg.source_spending)
-				user_data.weaponname = annoint_name
+				user_data.weaponname = anoint_name
 
 				if user_data.weaponskill < 10:
 					user_data.add_weaponskill(n = 1)
@@ -818,7 +818,7 @@ async def annoint(cmd):
 
 				user_data.persist()
 
-				response = "You place your weapon atop the poudrin and annoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(annoint_name)
+				response = "You place your weapon atop the poudrin and anoint it with slime. It is now known as {}!\n\nThe name draws you closer to your weapon. The poudrin was destroyed in the process.".format(anoint_name)
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

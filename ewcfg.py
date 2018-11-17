@@ -126,7 +126,7 @@ cmd_transfer = cmd_prefix + 'transfer'
 cmd_transfer_alt1 = cmd_prefix + 'xfer'
 cmd_menu = cmd_prefix + 'menu'
 cmd_order = cmd_prefix + 'order'
-cmd_annoint = cmd_prefix + 'annoint'
+cmd_anoint = cmd_prefix + 'anoint'
 cmd_disembody = cmd_prefix + 'disembody'
 cmd_war = cmd_prefix + 'war'
 cmd_toil = cmd_prefix + 'toil'
@@ -878,6 +878,8 @@ vendor_tacobell = 'Taco Bell'
 vendor_kfc = 'KFC'
 vendor_mtndew = 'Mtn Dew Fountain'
 vendor_vendingmachine = 'vending machine'
+vendor_seafood = 'seafood'
+vendor_diner = 'diner'
 
 # A map of name to EwWeather objects.
 weather_map = {}
@@ -1116,7 +1118,7 @@ food_list = [
 		str_name = 'Nacho Cheese taco',
 		vendor = vendor_tacobell,
 		str_eat = "You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*",
-		str_desc = "This flavor…!! It’s an explosion of artificial cheese flavors and shrapnel sized bits of soggy shell that vaguely reminds you of word famous Nacho Cheese Doritos!!"
+		str_desc = "This flavor…!! It’s an explosion of artificial cheese flavors and shrapnel sized bits of soggy shell that vaguely reminds you of world famous Nacho Cheese Doritos!!"
 	),
 	EwFood(
 		id_food = "coolranchtaco",
@@ -1312,7 +1314,301 @@ food_list = [
 		vendor = vendor_mtndew,
 		str_eat = "You fill your jumbo fountain drink vessel with orange swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial orange flavoring. Tubular!!"
-	)
+	),
+    EwFood(
+        id_food = "shrimpcocktail",
+        alias = [
+            "shimp",
+            "cocktail",
+        ],
+        recover_hunger = 200,
+        price = 26,
+        inebriation = 0,
+        str_name = 'a shrimp cocktail',
+        vendor = vendor_seafood,
+        str_eat = "You pull out the prawns and pop ‘em into your mouth one after without removing their shell. To wash down the shards of crustacean getting lodged in the roof of your mouth, you take vigorous swigs of the cocktail sauce straight out of the glass.",
+        str_desc = "A wavy glass of some shelled shrimp dipped in a weird, bitter ketchup that assaults your snout and mouth with unfortunate strength. Nothing is sacred."
+	),
+    EwFood(
+        id_food = "halibut",
+        alias = [
+            "halibut",
+        ],
+        recover_hunger = 280,
+        price = 32,
+        inebriation = 0,
+        str_name = 'a grilled halibut',
+        vendor = vendor_seafood,
+        str_eat = "You scarf down some delicious grilled halibut for the helluvit and it’s accompanying sides for the sidesuvit.",
+        str_desc = "A grilled hunk of halibut, served with chipotle dirty rice and corn."
+	),
+    EwFood(
+        id_food = "salmon",
+        alias = [
+            "salmon",
+        ],
+        recover_hunger = 280,
+        price = 34,
+        inebriation = 0,
+        str_name = 'a wood fired salmon',
+        vendor = vendor_seafood,
+        str_eat = "You swallow the wood fired salmon without saving any of its smoky aftertaste! Aww man, so much for the extra 2 SlimeCoin…",
+        str_desc = "A wood fired slice of salmon, served with a Dijon glaze and scalloped potatoes and broccoli on the side."
+	),
+    EwFood(
+        id_food = "mahimahi",
+        alias = [
+            "mahimahi",
+        ],
+        recover_hunger = 280,
+        price = 32,
+        inebriation = 0,
+        str_name = 'a sauteed mahi mahi',
+        vendor = vendor_seafood,
+        str_eat = "You gobble up the sauteed mahi mahi with lighting speed, reducing the proud fish into liquid in a matter of seconds.",
+        str_desc = "A sauteed measurement of mahi mahi, with a lemon pepper crust and served with scalloped potatoes and spinach."
+	),
+    EwFood(
+        id_food = "scallops",
+        alias = [
+            "scallops",
+        ],
+        recover_hunger = 240,
+        price = 29,
+        inebriation = 0,
+        str_name = 'pan-seared scallops',
+        vendor = vendor_seafood,
+        str_eat = "You lean your head back, grab a few scallops, and try throwing them up into air and landing them in your mouth. This goes extremely poorly.",
+        str_desc = "Some pan-seared scallops, served with goat cheese grits, sweet corn, and asparagus."
+	),
+    EwFood(
+        id_food = "clamchowder",
+        alias = [
+            "clam",
+            "chowder",
+        ],
+        recover_hunger = 175,
+        price = 23,
+        inebriation = 0,
+        str_name = 'a cup of clam chowder',
+        vendor = vendor_seafood,
+        str_eat = "You scoop out a glob of the hearty chowder and clench your fist above your head, letting it drizzle down all over your face and into your eager mouth. You’re a fucking freak.",
+        str_desc = "A bowl of New England clam chowder, served to you cold and runny in Arizona."
+	),
+    EwFood(
+        id_food = "steaknlobster",
+        alias = [
+            "lobster",
+            "steak",
+        ],
+        recover_hunger = 500,
+        price = 50,
+        inebriation = 0,
+        str_name = 'a rock lobster tail and a sirloin steak',
+        vendor = vendor_seafood,
+        str_eat = "You discard the napkin immediately, along with the silverware trapped inside of it, opting to instead to eat the meal with your hands. You pry the lobster from its shell first, ramming it into your mouth and taking a shot of melted butter to soften it up while you chew. You continue onto the steak, carefully sliced against the grain, and smother it in half a bottle of A1 sauce and just start to suck on the two inch pieces as if they were a jawbreaker or some other hard candy. You suck on the dead animal until it moistens to the point of liquefying, a solid hour and a half each. You burp loudly. Man, what an unforgettable dinner!",
+        str_desc = "A grilled 12oz sirloin steak and similarly sized rock lobster tail, served with scalloped potatoes, broccoli, asparagus, shallot herb butter along side a portrait of the chef that was autographed and kissed with a vibrant red lipstick. From his loving wife, or something? You break the portrait with your fist and your hand starts to bleed."
+	),
+    EwFood(
+        id_food = "kingpincrab",
+        alias = [
+            "crab",
+            "kingpin",
+        ],
+        recover_hunger = 450,
+        price = 46,
+        inebriation = 0,
+        str_name = 'an Arizonian Kingpin Crab',
+        vendor = vendor_seafood,
+        str_eat = "You’re too weak to properly crack the mighty crabs’ carapaces, even with the proper crab carapace cracking crackers. After about 10 minutes of desperately trying to, you just whip out whatever weapon you currently have quiped and start to viciously strike the crustaceans in a vain attempt to release their inner, delectable meat. You just end up destroying the entire table you’re eating at.",
+        str_desc = "Two imposing 1½ lb Arizonian Kingpin Crabs, steamed and split, served with a small side of melted butter. Their unique pink and purple carapaces that distinguish them are purely cosmetic, but you’ll always think one color tastes better than the other. D’awww..."
+	),
+    EwFood(
+        id_food = "champagne",
+        alias = [
+            "champagne",
+        ],
+        recover_hunger = 40,
+        price = 99,
+        inebriation = 99,
+        str_name = 'a bottle of champagne',
+        vendor = vendor_seafood,
+        str_eat = "You shake the bottle violently before popping off the cork and letting the geyser of pink alcohol blast your waiter in the face. Haha, what a fucking dumbass.",
+        str_desc = "The bubbly, carbonated bright pink liquid contained inside this bottle is very reminiscent of of the alcohol in Disney’s The Great Mouse Detective, otherwise known as most appealing liquid on Earth until you remember it’s not straight edge."
+	),
+    EwFood(
+        id_food = "sparklingwater",
+        alias = [
+            "sparklingwater",
+        ],
+        recover_hunger = 5,
+        price = 10,
+        inebriation = 0,
+        str_name = 'a glass of sparkling water',
+        vendor = vendor_seafood,
+        str_eat = "You savor every bubble in the lightly carbonated bliss. ‘Ah, just like in Roma,’ you think to yourself, eyes watering",
+        str_desc = "You savor every bubble of this lightly carbonated bliss. Your eyes begin to tear up as you fondly regard your own ecstasy. ‘Ah, just like in Roma…’"
+	),
+    EwFood(
+        id_food = "juviesroe",
+        alias = [
+            "roe",
+        ],
+        recover_hunger = 40,
+        price = 99,
+        inebriation = 0,
+        str_name = 'a bowl of decadent Juvie’s Roe',
+        vendor = vendor_seafood,
+        str_eat = "You don’t really know how to eat caviar, so you just scoop some of the disgusting slop out of the tin with your bare hands and get crushed eggs all over your mouth as you shovel it into your uncultured maw. It tastes, uh… high class? This was a waste of money.",
+        str_desc = "A small tin of wild, matured Juvie’s roe. A highly sought after delicacy by the upper crust of the critical improshived juveniles of the city. Considered by many to be the height of luxury, and utterly decadent show of unrivalled epicurean ecstasy. Sure, maybe the indescribable bursts of flavor that terrorize and confuse the uncultured masses COULD be described as non-existent, reducing the whole dish to a weird, goopy mess, BUT YOU KNOW BETTER!!!!"
+
+	),
+	EwFood(
+        id_food = "homefries",
+        alias = [
+            "fries",
+        ],
+        recover_hunger = 10,
+        price = 12,
+        inebriation = 0,
+        str_name = 'home fries',
+        vendor = vendor_diner,
+        str_eat = "You cram as many overcooked cubes of potato into your oversized maw as possible.You choke painfully on some of the tiny bits that that bypass your attempts at chewing and lodge themselves into your windpipe. You hunger for more.",
+        str_desc = "A greasy, over salted, crispy pile of miniature potato chunks, ranging from the average cubes to smaller irregularly shaped, condensed bits of pure fried potato skin. With a calorie count well above your recommended daily consumption in just a handful, you could subsist on these preservative riddled species of spud for well over a week and still gain weight. Too bad you can’t stop yourself from guzzling an entire plates worth in 5 minutes. Oops."
+	),
+    EwFood(
+        id_food = "pancakes",
+        alias = [
+            "flapjacks",
+        ],
+        recover_hunger = 40,
+        price = 12,
+        inebriation = 0,
+        str_name = 'three pancakes',
+        vendor = vendor_diner,
+        str_eat = "You drench your three flapjacks in a generous helping of maple syrup and slap a stick of butter on top for good measure. It’s a good thing you’ve drowned your pancakes in all this excess shit, or you might have actually tasted them! The soggy, limp fried dough is so much more appetizing when all it’s innate flavor is overrun by pure sugary excess.",
+        str_desc = "Pancakes are usually a pretty safe bet, no matter where you are. You can’t really mess up a pancake unless you’re specifically trying to burn it. Luckily, the dedicated chefs in the kitchen are doing just that! Thank God, you almost got a good meal in this city."
+	),
+    EwFood(
+        id_food = "chickennwaffles",
+        alias = [
+            "belgium",
+            "cnw",
+        ],
+        recover_hunger = 65,
+        price = 15,
+        inebriation = 0,
+        str_name = 'two chicken strips and a waffle',
+        vendor = vendor_diner,
+        str_eat = "You promptly seperate the two chicken strips and waffle on to separate plates, quarantining them off completely from one another. You dip the chicken strips into some ketchup and drizzle some syrup onto the waffles, making sure to NEVER combine the two bitter rivals and to cleanse your palette before switching between them. Ah, the life of a picky eater, it’s hard and no one understands.",
+        str_desc = "Waffles are the perfect test subject. Whether it’s a good waffle or a bad waffle, they’re all going to hover around the same average quality. So, whenever you’re in a new town and you wanna judge the quality of any given breakfast diner, order the waffle and rest easy knowing that even the worst waffle isn’t really that bad. Oh, this waffle? It’s terrible. At least you have two chicken strips that were clearly frozen and only heated up a couple of minutes before you received them. For all of the loss in quality and flavor, you can fuck up microwaving something."
+	),
+    EwFood(
+        id_food = "frenchtoast",
+        alias = [
+            "toast",
+        ],
+        recover_hunger = 40,
+        price = 12,
+        inebriation = 0,
+        str_name = 'four slices of french toast',
+        vendor = vendor_diner,
+        str_eat = "You brace untold misery, for your hopes and dreams to be smashed utterly and irreparably, and most importantly to have wasted 12 SlimeCoin on the worst meal of your life. Every hair on your body stands upright, as if preparing for a betrayal fueled stroke. You bite into the toast, and as soon as the sweet pastry touches your tongue you feel as though you finally resonate with the ending of critically acclaimed children’s movie Ratatouille. The bread is fluffy, light, and pleasantly moist, the perfect distribution of cinnamon and nutmeg, mixed with light sprinkles of sugar and vanilla, create a french toast that is sweet but not sickeningly so. You can’t believe you’re saying this, but… it’s perfect! Your compliments to the chef, you guess.",
+        str_desc = "French toast is the hardest to perfect out of the legendary fried dough trio. Requiring even cursory amounts of knowledge or expertise in the kitchen proves to be too much for the chefs of diners nationwide. And unlike both the pancake and the waffle, there is a huge difference between a good french toast and a bad french toast. There is nothing more euphoric than biting into a fluffy, moist, and sweet piece of good french toast, while conversely there is nothing that invokes the image of pigs greedily eating trash in their trough than the feeling of a sticky glob of undercooked dough slide down your throat from a bad french toast. You really have to be sure that the restaurant you’re ordering french toast knows what they’re doing, or else your night is ruined. Now, take a wild guess if the chefs at the Smoker’s Cough know what they’re doing."
+	),
+    EwFood(
+        id_food = "friedeggs",
+        alias = [
+            "eggs",
+        ],
+        recover_hunger = 30,
+        price = 11,
+        inebriation = 0,
+        str_name = 'two sunny side up eggs',
+        vendor = vendor_diner,
+        str_eat = "You isolate the yolks from your two fried eggs with surgical precision, leaving a clump of egg whites scraps and two perfectly contained yellow bubbles waiting to burst. You salt and pepper them both thoroughly before eating one after another, first chewing on the slightly discolored egg whites and then bursting each egg yolk whole in your mouth and letting the runny, golden goo to coat your insides.",
+        str_desc = "Sure, you like your egg yolks runny, but given by their snotty, green discoloration, it’s pretty likely these eggs were severely undercooked. Oh well, salmonella here we come!"
+	),
+    EwFood(
+        id_food = "eggsbenedict",
+        alias = [
+            "benedict",
+            "benny",
+        ],
+        recover_hunger = 30,
+        price = 13,
+        inebriation = 0,
+        str_name = 'an eggs benedict',
+        vendor = vendor_diner,
+        str_eat = "Even though you’re pretty sure you know what an eggs benedict is, you aren’t sure you know how to eat it. You pick up the muffin and just take a bite out of it directly, hollandaise sauce and egg yolk coat your nostrils and generally splatters all over your face. Who would eat something like this????",
+        str_desc = "An English muffin topped off with some ham, a poached egg, and hollandaise sauce. It seems like the sort of food that’d you would enjoy, it’s customizable and leans itself to quirky variants, it’s pretty easy to make, it has an egg on it… still, the food comes across as menacing. It’s thick sauce masks it’s ingredients, what secrets could it be hiding? You guess there’s only one way to find out. Gulp!"
+	),
+    EwFood(
+        id_food = "scrambledeggs",
+        alias = [
+            "scrambled",
+        ],
+        recover_hunger = 30,
+        price = 11,
+        inebriation = 0,
+        str_name = 'two scrambled eggs',
+        vendor = vendor_diner,
+        str_eat = "You attempt to strangle your ketchup bottle for the state mandated dollop of ketchup to be adequately mixed into your scrambled egg when tragedy strikes! The bottle is empty! It blasts out specs of ketchup and a funny noise a few times before you throw it against the wall in ballistic anger. You are forced to eat the eggs… plain. DEAR GOD!!!!",
+        str_desc = "Some scrambled eggs. Come on, you know what scrambled eggs are, right? Do I have to spell out everything for you? Do you want me to stay awake all night and come up with immature jokes and puns for every one of these fucking things? Come on kid, get real."
+	),
+    EwFood(
+        id_food = "omelette",
+        alias = [
+            "omelette",
+        ],
+        recover_hunger = 50,
+        price = 13,
+        inebriation = 0,
+        str_name = 'a western omelette',
+        vendor = vendor_diner,
+        str_eat = "You pour plenty of hot sauce all over your omelette and shove bite after bite into your slobbering mouth. The heat from the sauce and the bell peppers builds to a breaking point, causing you to blackout. You wake up an indeterminate amount of time later, covered in dried tears and sweat and your abdomen feeling as though you’re pregnant with Satan. You love pain.",
+        str_desc = "A delicious Denver omelette, stuffed with diced ham, onions, and green peppers. Looks great! Hm? Excuse me? What the fuck is a ‘western omelette’? Do people on the east coast seriously call Denver omelettes that? Are you joking me? You ask anyone on the sensible half of the country what the name of the best omelette is and they’ll bark back the long and storied history of John D. Omelette and his rough-and-tumble youth growing up in the mean streets of the great state of Colorado’s capital. Do they not know what Denver is? Do they think everything past the Appalachians are uncharted wilderness? Man, fuck you guys. We know were New York is, we know where Boston is, we know where Cincinnati is, we know our geography of the east coast like the back of our hand and it’s about time you start memorizing ours. Eat shit."
+	),
+    EwFood(
+        id_food = "orangejuice",
+        alias = [
+            "oj",
+            "juice",
+        ],
+        recover_hunger = 10,
+        price = 9,
+        inebriation = 0,
+        str_name = 'a glass of orange juice',
+        vendor = vendor_diner,
+        str_eat = "You swish around the decadent, pulpy orange juice in your mouth. This exacerbates your already poor dental hygiene, sending shockwaves of pain through your mouth as the sugary liquid washes up against dozens of cavities all throughout your mouth. But, you don’t care. You’re in heaven.",
+        str_desc = "A cavity creating, dental decaying, and enamel eroding glass of delicious orange juice. This vibrant citrus drink hits the spot any day of the week, any minute of the day, and every second of your short, pathetic life. Coffee is a myth, water is a joke, soda is piss. #juiceprideworldwide"
+	),
+    EwFood(
+        id_food = "milk",
+        alias = [
+            "fries",
+        ],
+        recover_hunger = 10,
+        price = 9,
+        inebriation = 0,
+        str_name = 'a glass of milk',
+        vendor = vendor_diner,
+        str_eat = "You take a swig of a nice, cold glass of whole milk and your palette is instantly clear of any sugary or syrupy foods you may have been eating. You are left in total cow induced euphoria.",
+        str_desc = "A simple glass of milk. No more, no less. "
+	),
+    EwFood(
+        id_food = "steakneggs",
+        alias = [
+            "steak",
+        ],
+        recover_hunger = 80,
+        price = 16,
+        inebriation = 0,
+        str_name = "two steak tips and two sunny side up eggs",
+        vendor = vendor_diner,
+        str_eat = "You break the yolk of your two fried eggs immediately, letting the yolk run and pool around the steak tips, acting as a dipping sauce. With each mouthwatering bite of juicy, medium rare steak coated in delicious, runny yolk, you reach a higher level of christ consciousness. How does no one else but you do this?",
+        str_desc = "The only actually filling meal they serve at the diner. Between the two medium rare steak tips and the perfectly cooked sunny side up eggs, you’ve got enough protein in this one meal to grow an extra muscle."
+	),
 ]
 
 # A map of id_food to EwFood objects.
