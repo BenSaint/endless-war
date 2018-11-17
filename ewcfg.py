@@ -43,6 +43,8 @@ poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
 poi_id_slimecorphq = "slimecorphq"
+poi_id_diner = "smokerscough"
+poi_id_seafood = "seafood"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -81,6 +83,8 @@ channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
 channel_leaderboard = "leaderboard"
+channel_diner = "smokers-cough"
+channel_seafood = "seafood" #todo change name
 
 # Commands
 cmd_prefix = '!'
@@ -2408,7 +2412,33 @@ poi_list = [
 		channel = channel_casino,
 		role = "Casino",
 		pvp = False
-	)
+	),
+	EwPoi( # smokers-cough
+		id_poi = poi_id_diner,
+		alias = [
+			"diner",
+			"smokerscough"
+		],
+		str_name = "The Smoker's Cough",
+		str_desc = "",
+		coord = (29, 24),
+		channel = channel_diner,
+		role = "Smoker's Cough",
+		pvp = False
+	),
+	EwPoi( # seafood todo
+		id_poi = poi_id_seafood,
+		alias = [
+			"seafood",
+			""
+		],
+		str_name = "",
+		str_desc = "",
+		coord = (17, 4),
+		channel = channel_seafood,
+		role = "",
+		pvp = False
+	),
 ]
 
 id_to_poi = {}
