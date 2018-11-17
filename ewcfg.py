@@ -268,7 +268,7 @@ str_exchange_closed = "The Exchange has closed for the night."
 str_exchange_specify = "Specify how much {currency} you will {action}."
 str_exchange_channelreq = "You must go to the #" + channel_stockexchange + " to {action} your {currency}."
 str_exchange_busy = "You can't {action} right now. Your slimebroker is busy."
-str_food_channelreq = "There's no food here. Go to the food court to {action}."
+str_food_channelreq = "There's no food here. Go to the Food Court, the Smoker's Cough, the Red Mobster or the Speakeasy to {action}."
 str_weapon_wielding_self = "You are wielding"
 str_weapon_wielding = "They are wielding"
 
