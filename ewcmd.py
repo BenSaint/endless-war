@@ -1,6 +1,11 @@
 import random
 import asyncio
 
+import ewutils
+import ewcfg
+import ewstats
+import ewitem
+
 import ewcfg
 import ewutils
 import ewitem

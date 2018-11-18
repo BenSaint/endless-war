@@ -1,5 +1,7 @@
 import random
 
+
+
 from ewwep import EwWeapon
 from ewweather import EwWeather
 from ewfood import EwFood
@@ -43,6 +45,9 @@ poi_id_bazaar = "thebazaar"
 poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
 poi_id_slimecorphq = "slimecorphq"
+poi_jr_farms = "jrfarms"
+poi_og_farms = "ogfarms"
+poi_ab_farms = "abfarms"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -81,6 +86,10 @@ channel_cinema = "nlacakanm-cinemas"
 channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
 channel_leaderboard = "leaderboard"
+channel_jr_farm = "arsonbrook-farm"
+channel_og_farm = "ooze-garden-farm"
+channel_ab_farm = "juvies-row-farm"
+
 
 # Commands
 cmd_prefix = '!'
@@ -146,6 +155,8 @@ cmd_pardon = cmd_prefix + 'pardon'
 cmd_writhe = cmd_prefix + 'writhe'
 cmd_use = cmd_prefix + 'use'
 cmd_news = cmd_prefix + 'news'
+cmd_reap = cmd_prefix + 'reap'
+cmd_sow = cmd_prefix + 'sow'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -353,7 +364,7 @@ hitzone_list = [
 	"calf"
 ]
 
-# User statistics we track 
+# User statistics we track
 stat_max_slimes = 'max_slimes'
 stat_slimesmined = 'slimes_mined'
 stat_slimesfromkills = 'slimes_from_kills'
@@ -377,6 +388,25 @@ stats_clear_on_death = [
 	stat_slimesfromkills,
 	stat_kills,
 	stat_ghostbusts
+]
+
+# Seeds you might !Sow
+seed_list = [
+        "Pink Rowddish"
+        "Sludgeberry"
+        "Pulp Gourd"
+        "Joybean"
+        "Brightshade"
+        "Dire Apple"
+        "Purple Killiflower"
+        "Razornut"
+        "Poke-tubers"
+        "Suganma Nuts"
+        "Dankwheat"
+        "Black Limes"
+        "Phosphorpoppy"
+        "Sour Potato"
+        "Blood Cabbage"
 ]
 
 # A Weapon Effect Function for "gun". Takes an EwEffectContainer as ctn.
@@ -1974,6 +2004,57 @@ poi_list = [
 		coord = (29, 16),
 		channel = channel_casino,
 		role = "Casino",
+		pvp = False
+	),
+        EwPoi( # JR Farm
+		id_poi = poi_jr_farms,
+		alias = [
+            "jrf" #juviesrow farms
+            "jrp" #juviesrow pantation
+			"jrfarms",
+			"jrfarm",
+			"jrplantation",
+			"jrplant"
+		],
+		str_name = "The Juvie's Row Farm",
+		str_desc = "An array of haphazardly placed farms dot the already dense, crowded areas between mining shaft entrances and impoverished juvenile housing. Pollution is rampant here, with the numerous trash heaps and sludge refineries enjoying the majority of earth under the smoke-smuggered stars. It’s soil is irradiated and barely arable, but it will do. It has to.",
+		coord = (32, 20),
+		channel = channel_jr_farm,
+		role = "JR Farm",
+		pvp = False
+	),
+        EwPoi( # OG Farm
+		id_poi = poi_og_farms,
+		alias = [
+            "ogf" #OozeGardens farms
+            "ogp" #OozeGardens pantation
+			"ogfarms",
+			"ogfarm",
+			"ogplantation",
+			"ogplant"
+		],
+		str_name = "The Ooze Garden Farms",
+		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
+		coord = (14, 27),
+		channel = channel_og_farm,
+		role = "OG Farm",
+		pvp = False
+	),
+        EwPoi( # AB Farm
+		id_poi = poi_ab_farms,
+		alias = [
+            "abf" #ArsonBrook farms
+            "abp" #ArsonBrook pantation
+			"abfarms",
+			"abfarm",
+			"abplantation",
+			"abplant"
+		],
+		str_name = "The Arsonbrook Farms",
+		str_desc = "A series of reedy creeks interspersed with quiet farms and burnt, black trees. It’s overcast skies make the embers from frequent forest fires glow even brighter by comparison. It’s soil is fertile with copious amounts of soot and accompanying nutrients.",
+		coord = (21, 1),
+		channel = channel_ab_farm,
+		role = "AB Farm",
 		pvp = False
 	)
 ]

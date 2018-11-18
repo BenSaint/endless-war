@@ -124,12 +124,15 @@ class EwUser:
 	poi = ""
 	life_state = 0
 	busted = False
-
+	farmActive = [False, False, False] #One tracker for each farm.
+	plantType = ["","",""]
+	
 	time_lastkill = 0
 	time_lastrevive = 0
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
+	time_lastsow = [0,0,0]
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -327,6 +330,7 @@ class EwUser:
 			self.limit_fix();
 
 			# Save the object.
+			# Todo Preserve Farming Data 	farmActive, plantType, time_lastsow
 			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
