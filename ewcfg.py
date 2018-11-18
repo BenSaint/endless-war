@@ -47,6 +47,9 @@ poi_id_cv_mines = "cratersvillemines"
 poi_id_tt_mines = "toxingtonmines"
 poi_id_diner = "smokerscough"
 poi_id_seafood = "redmobster"
+poi_jr_farms = "jrfarms"
+poi_og_farms = "ogfarms"
+poi_ab_farms = "abfarms"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -89,6 +92,10 @@ channel_cv_mines = "cratersville-mines"
 channel_tt_mines = "toxington-mines"
 channel_diner = "smokers-cough"
 channel_seafood = "red-mobster"
+channel_jr_farm = "arsonbrook-farm"
+channel_og_farm = "ooze-garden-farm"
+channel_ab_farm = "juvies-row-farm"
+
 
 # Commands
 cmd_prefix = '!'
@@ -160,6 +167,8 @@ cmd_dab = cmd_prefix + 'dab'
 cmd_russian = cmd_prefix + 'russianroulette'
 cmd_accept = cmd_prefix + 'accept'
 cmd_refuse = cmd_prefix + 'refuse'
+cmd_reap = cmd_prefix + 'reap'
+cmd_sow = cmd_prefix + 'sow'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -384,7 +393,7 @@ hitzone_list = [
 	"calf"
 ]
 
-# User statistics we track 
+# User statistics we track
 stat_max_slimes = 'max_slimes'
 stat_lifetime_slimes = 'lifetime_slimes'
 stat_lifetime_slimeloss = 'lifetime_slime_loss'
@@ -466,6 +475,25 @@ stats_clear_on_death = [
 	stat_slimesfromkills,
 	stat_kills,
 	stat_ghostbusts
+]
+
+# Seeds you might !Sow
+seed_list = [
+        "Pink Rowddish"
+        "Sludgeberry"
+        "Pulp Gourd"
+        "Joybean"
+        "Brightshade"
+        "Dire Apple"
+        "Purple Killiflower"
+        "Razornut"
+        "Poke-tubers"
+        "Suganma Nuts"
+        "Dankwheat"
+        "Black Limes"
+        "Phosphorpoppy"
+        "Sour Potato"
+        "Blood Cabbage"
 ]
 
 # A Weapon Effect Function for "gun". Takes an EwEffectContainer as ctn.
@@ -2694,6 +2722,57 @@ poi_list = [
 			vendor_seafood
 		]
 	),
+        EwPoi( # JR Farm
+		id_poi = poi_jr_farms,
+		alias = [
+            "jrf" #juviesrow farms
+            "jrp" #juviesrow pantation
+			"jrfarms",
+			"jrfarm",
+			"jrplantation",
+			"jrplant"
+		],
+		str_name = "The Juvie's Row Farm",
+		str_desc = "An array of haphazardly placed farms dot the already dense, crowded areas between mining shaft entrances and impoverished juvenile housing. Pollution is rampant here, with the numerous trash heaps and sludge refineries enjoying the majority of earth under the smoke-smuggered stars. It’s soil is irradiated and barely arable, but it will do. It has to.",
+		coord = (32, 20),
+		channel = channel_jr_farm,
+		role = "JR Farm",
+		pvp = False
+	),
+        EwPoi( # OG Farm
+		id_poi = poi_og_farms,
+		alias = [
+            "ogf" #OozeGardens farms
+            "ogp" #OozeGardens pantation
+			"ogfarms",
+			"ogfarm",
+			"ogplantation",
+			"ogplant"
+		],
+		str_name = "The Ooze Garden Farms",
+		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
+		coord = (14, 27),
+		channel = channel_og_farm,
+		role = "OG Farm",
+		pvp = False
+	),
+        EwPoi( # AB Farm
+		id_poi = poi_ab_farms,
+		alias = [
+            "abf" #ArsonBrook farms
+            "abp" #ArsonBrook pantation
+			"abfarms",
+			"abfarm",
+			"abplantation",
+			"abplant"
+		],
+		str_name = "The Arsonbrook Farms",
+		str_desc = "A series of reedy creeks interspersed with quiet farms and burnt, black trees. It’s overcast skies make the embers from frequent forest fires glow even brighter by comparison. It’s soil is fertile with copious amounts of soot and accompanying nutrients.",
+		coord = (21, 1),
+		channel = channel_ab_farm,
+		role = "AB Farm",
+		pvp = False
+	)
 ]
 
 id_to_poi = {}

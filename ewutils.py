@@ -4,6 +4,11 @@ import time
 import re
 import random
 
+import ewutils
+import ewcfg
+import ewstats
+import ewitem
+
 import discord
 
 import ewcfg
