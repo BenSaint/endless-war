@@ -145,7 +145,6 @@ class EwUser:
 	time_lastinvest = 0
 	#For possible time limit
 	time_last_rr = 0
-	time_lastsow = [0, 0, 0]
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -174,6 +173,8 @@ class EwUser:
 			if source == ewcfg.source_killing:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change)
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesfromkills, n = change)
+
+			# todo add source from farming
 		else:
 			change *= -1 # convert to positive number
 			if source != ewcfg.source_spending and source != ewcfg.source_ghostification:
