@@ -138,9 +138,6 @@ class EwUser:
 	busted = False
 	rr_challenger = ""
 
-	farmActive = [False, False, False] #One tracker for each farm.
-	plantType = ["", "", ""]
-
 	time_lastkill = 0
 	time_lastrevive = 0
 	time_lastspar = 0

@@ -210,6 +210,10 @@ poudrin_rarity = 2400
 # Lifetimes
 invuln_onrevive = 0
 
+# farming
+crops_time_to_grow = 1440  # in minutes; 1440 minutes are 24 hours
+reap_gain = 350000
+
 # Cooldowns
 cd_kill = 5
 cd_spar = 600
