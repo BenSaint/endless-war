@@ -44,7 +44,7 @@ poi_id_stockexchange = "theslimestockexchange"
 poi_id_endlesswar = "endlesswar"
 poi_id_slimecorphq = "slimecorphq"
 poi_id_diner = "smokerscough"
-poi_id_seafood = "seafood"
+poi_id_seafood = "redmobster"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -84,7 +84,7 @@ channel_bazaar = "bazaar"
 channel_slimecorphq = "slimecorp-hq"
 channel_leaderboard = "leaderboard"
 channel_diner = "smokers-cough"
-channel_seafood = "seafood" #todo change name
+channel_seafood = "red-mobster"
 
 # Commands
 cmd_prefix = '!'
@@ -1613,6 +1613,219 @@ food_list = [
         str_eat = "You break the yolk of your two fried eggs immediately, letting the yolk run and pool around the steak tips, acting as a dipping sauce. With each mouthwatering bite of juicy, medium rare steak coated in delicious, runny yolk, you reach a higher level of christ consciousness. How does no one else but you do this?",
         str_desc = "The only actually filling meal they serve at the diner. Between the two medium rare steak tips and the perfectly cooked sunny side up eggs, you’ve got enough protein in this one meal to grow an extra muscle."
 	),
+	EwFood(
+		id_food = "doubledown",
+		alias = [
+			"double",
+			"down",
+			"dd",
+		],
+		recover_hunger = 150,
+		price = 21,
+		inebriation = 0,
+		str_name = 'Double Down',
+		vendor = vendor_kfc,
+		str_eat = "You chomp into the meaty pseudo-sandwich! The Colonol's Special Sauce oozes over your lips and fingers, making you feel absolutely filthy.",
+		str_desc = "From between two crispy chicken filets oozes the Colonel's Special Sauce. Haha, nasty!"
+	),
+	EwFood(
+		id_food = "familymeal",
+		alias = [
+			"family",
+			"meal",
+			"fm",
+		],
+		recover_hunger = 360,
+		price = 39,
+		inebriation = 0,
+		str_name = 'KFC Family Meal',
+		vendor = vendor_kfc,
+		str_eat = "You stuff your face full of all manner of southern-style delicacies! You chew and chew until your jaw aches and tears stream down your cheeks.",
+		str_desc = "A veritable menagerie of homestyle goodness. Chicken, mashed potatoes, mac n' cheese, biscuits and gravy, the list goes on and on."
+	),
+	EwFood(
+		id_food = "plutoniumchicken",
+		alias = [
+			"pc",
+			"pluto",
+			"plutonium",
+			"pchicken",
+		],
+		recover_hunger = 450,
+		price = 46,
+		inebriation = 0,
+		str_name = 'whole plutonium-battered fried chicken',
+		vendor = vendor_kfc,
+		str_eat = "You crunch into the remains of this once-majestic animal. The odd metallic taste makes your tongue tingle in a most unsettling way.",
+		str_desc = "It resembles a cooked chicken, save for an extra wing or two, encrusted with an odd greenish-brown coating. May adversely affect sperm count."
+	),
+	EwFood(
+		id_food = "giantdeepdish",
+		alias = [
+			"gdd",
+			"deepdish,
+		],
+		recover_hunger = 320,
+		price = 35,
+		inebriation = 0,
+		str_name = 'giant deep-dish pizza',
+		vendor = vendor_pizzahut,
+		str_eat = "You slurp down slice after slice of sopping sauce-soaked pizza in a gruesome red runny spectacle.",
+		str_desc = "The sauce and cheese of this delicacy is like quicksand, anything falling in will sink to the bottom, never to be seen again."
+	),
+	EwFood(
+		id_food = "whackcalzone",
+		alias = [
+			"wc",
+			"whack",
+			"calzone,
+		],
+		recover_hunger = 500,
+		price = 50,
+		inebriation = 0,
+		str_name = 'Whack Calzone',
+		vendor = vendor_pizzahut,
+		str_eat = "Chomping into this collossal italian confection, searing hot cheese explodes out from the edges in every direction. De-LISH!!!",
+		str_desc = "It's literally just an upside-down pizza on top of another pizza."
+	),
+	EwFood(
+		id_food = "nachosupreme",
+		alias = [
+			"ns",
+			"nacho,
+			"nachos,
+			"supreme,
+		],
+		recover_hunger = 175,
+		price = 23,
+		inebriation = 0,
+		str_name = 'Nacho Supreme',
+		vendor = vendor_tacobell,
+		str_eat = "You shovel fistfuls of nacho detritus into your gaping maw. Your gums are savaged by the sharp edges of the crips corny chips.",
+		str_desc = "A plate full of crisp tortilla chips onto which ground beef, sour cream, cheese, tomatoes, and various assorted bullshit has been dumped."
+	),
+	EwFood(
+		id_food = "energytaco",
+		alias = [
+			"et",
+			"energy",
+			"etaco",
+		],
+		recover_hunger = 400,
+		price = 42,
+		inebriation = 0,
+		str_name = 'Energy Taco',
+		vendor = vendor_tacobell,
+		str_eat = "Biting into this taco, your mouth is numbed by a sudden discharge of stored energy, accompanied by a worrisome flash of greenish light. You can't say for sure if it tasted good or not.",
+		str_desc = "This resembles a normal taco, but where the cheese might normally be is a strange glowing green fluid. It occasionally sparks and crackles with limic energy."
+	),
+	EwFood(
+		id_food = "mtndewsyrup",
+		alias = [
+			"syrup",
+			"mdsyrup",
+			"mds",
+			"greensyrup",
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous green fluid reeks with a sickly-sweet citrusy odor."
+	),
+	EwFood(
+		id_food = "bajablastsyrup",
+		alias = [
+			"bbsyrup",
+			"bbs,
+			"bluesyrup",
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW Baja Blast syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous blue fluid reeks with a sickly-sweet tropical odor."
+	),
+	EwFood(
+		id_food = "coderedsyrup",
+		alias = [
+			"crsyrup",
+			"crs",
+			"redsyrup",
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW Code Red syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous red fluid reeks with a sickly-sweet cherry odor."
+	),
+	EwFood(
+		id_food = "pitchblacksyrup",
+		alias = [
+			"pbsyrup",
+			"pbs",
+			"blacksyrup",
+			"purplesyrup"
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW Pitch Black syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous purple fluid reeks with a sickly-sweet grapey odor."
+	),
+	EwFood(
+		id_food = "whiteoutsyrup",
+		alias = [
+			"wosyrup",
+			"wos"",
+			"whitesyrup",
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW White Out syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous pale fluid reeks with a sickly-sweet citrusy odor."
+	),
+	EwFood(
+		id_food = "livewiresyrup",
+		alias = [
+			"lwsyrup",
+			"lws"",
+			"orangesyrup",
+		],
+		recover_hunger = 200,
+		price = 26,
+		inebriation = 0,
+		str_name = 'cup of pure undiluted MTN DEW Livewire syrup',
+		vendor = vendor_mtndew,
+		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
+		str_desc = "This thick, viscous orange fluid reeks with a sickly-sweet orangey odor."
+	),
+	EwFood(
+		id_food = "razornuts",
+		alias = [
+			"rn",
+			"razor",
+			"nuts",
+		],
+		recover_hunger = 25,
+		price = 5,
+		inebriation = 0,
+		str_name = 'packet of salted razornuts',
+		vendor = vendor_bar,
+		str_eat = "You tear into the packet and eat the small, pointy nuts one at a time, carefully avoiding any accidental lacerations.",
+		str_desc = "It's a packet of locally-grown razornuts, roasted and salted to perfection. Perfect for snacking!"
+	),
 ]
 
 # A map of id_food to EwFood objects.
@@ -2429,7 +2642,7 @@ poi_list = [
 			vendor_diner
 		]
 	),
-	EwPoi( # seafood
+	EwPoi( # Red Mobster
 		id_poi = poi_id_seafood,
 		alias = [
 			"seafood",
