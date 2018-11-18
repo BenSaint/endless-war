@@ -1666,7 +1666,7 @@ food_list = [
 		id_food = "giantdeepdish",
 		alias = [
 			"gdd",
-			"deepdish,
+			"deepdish",
 		],
 		recover_hunger = 320,
 		price = 35,
@@ -1681,7 +1681,7 @@ food_list = [
 		alias = [
 			"wc",
 			"whack",
-			"calzone,
+			"calzone",
 		],
 		recover_hunger = 500,
 		price = 50,
@@ -1695,9 +1695,9 @@ food_list = [
 		id_food = "nachosupreme",
 		alias = [
 			"ns",
-			"nacho,
-			"nachos,
-			"supreme,
+			"nacho",
+			"nachos",
+			"supreme",
 		],
 		recover_hunger = 175,
 		price = 23,
@@ -1742,7 +1742,7 @@ food_list = [
 		id_food = "bajablastsyrup",
 		alias = [
 			"bbsyrup",
-			"bbs,
+			"bbs",
 			"bluesyrup",
 		],
 		recover_hunger = 200,
@@ -1788,7 +1788,7 @@ food_list = [
 		id_food = "whiteoutsyrup",
 		alias = [
 			"wosyrup",
-			"wos"",
+			"wos",
 			"whitesyrup",
 		],
 		recover_hunger = 200,
@@ -1803,7 +1803,7 @@ food_list = [
 		id_food = "livewiresyrup",
 		alias = [
 			"lwsyrup",
-			"lws"",
+			"lws",
 			"orangesyrup",
 		],
 		recover_hunger = 200,
