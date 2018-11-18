@@ -31,7 +31,7 @@ async def donate(cmd):
 			value = None
 
 	if value != None and value < ewcfg.slimecoin_exchangerate:
-		response = "You must volunteer to donate at least <exchangerate> slime to receive compensation."
+		response = "You must volunteer to donate at least %d slime to receive compensation." % ewcfg.slimecoin_exchangerate
 
 	elif value != None:
 		# Amount of slime invested.
