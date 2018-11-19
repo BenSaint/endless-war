@@ -2,7 +2,6 @@ import asyncio
 import time
 import random
 
-import ewcmd
 import ewcfg
 import ewutils
 import ewitem

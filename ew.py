@@ -143,7 +143,7 @@ class EwUser:
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
-	#For possible time limit 
+	#For possible time limit
 	time_last_rr = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
@@ -173,6 +173,8 @@ class EwUser:
 			if source == ewcfg.source_killing:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change)
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesfromkills, n = change)
+
+			# todo add source from farming
 		else:
 			change *= -1 # convert to positive number
 			if source != ewcfg.source_spending and source != ewcfg.source_ghostification:
@@ -411,7 +413,8 @@ class EwUser:
 
 			self.limit_fix();
 
-			# Save the object.	
+			# Save the object.
+			# Todo Preserve Farming Data 	farmActive, plantType, time_lastsow
 			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
