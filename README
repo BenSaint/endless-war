@@ -117,7 +117,7 @@ CREATE TABLE items_prop (
 );
 
 CREATE TABLE farms (
-    id_server varchar(128) NOT NULL,
+	id_server varchar(128) NOT NULL,
 	id_user varchar(128) NOT NULL,
 	farm varchar(32) NOT NULL,
 	time_lastsow int NOT NULL DEFAULT '0',
