@@ -1,4 +1,5 @@
 import random
+import asyncio
 
 import ewcfg
 import ewutils

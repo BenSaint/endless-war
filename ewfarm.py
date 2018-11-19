@@ -14,55 +14,59 @@ class EwFarm:
 	time_lastsow = 0
 
 	def __init__(
-			self,
-			id_server = None,
-			id_user = None,
-			farm = None
-		):
+		self,
+		id_server = None,
+		id_user = None,
+		farm = None
+	):
 		if id_server is not None and id_user is not None and farm is not None:
 			self.id_server = id_server
 			self.id_user = id_user
 			self.name = farm
 
 			data = ewutils.execute_sql_query(
-				"SELECT {time_lastsow} FROM farms WHERE id_server = {id_server} AND id_user = {id_user} AND {col_farm} = '{farm}'".format(
+				"SELECT {time_lastsow} FROM farms WHERE id_server = %s AND id_user = %s AND {col_farm} = %s".format(
 					time_lastsow = ewcfg.col_time_lastsow,
-					id_server = id_server,
-					id_user = id_user,
-					col_farm = ewcfg.col_farm,
-					farm = farm
-				))
+					col_farm = ewcfg.col_farm
+				), (
+					id_server,
+					id_user,
+					farm
+				)
+			)
 
 			if len(data) > 0:  # if data is not empty, i.e. it found an entry
 				# data is always a two-dimensional array and if we only fetch one row, we have to type data[0][x]
 				self.time_lastsow = data[0][0]
 			else:  # create new entry
 				ewutils.execute_sql_query(
-					"REPLACE INTO farms (id_server, id_user, {col_farm}) VALUES ({id_server}, {id_user}, '{farm}')".format(
-						id_server = id_server,
-						id_user = id_user,
-						col_farm = ewcfg.col_farm,
-						farm = farm
-					))
+					"REPLACE INTO farms (id_server, id_user, {col_farm}) VALUES (%s, %s, %s)".format(
+						col_farm = ewcfg.col_farm
+					), (
+						id_server,
+						id_user,
+						farm
+					)
+				)
 
 	def persist(self):
 		ewutils.execute_sql_query(
-			"REPLACE INTO farms(id_server, id_user, {col_farm}, {col_time_lastsow}) VALUES({id_server}, {id_user}, '{farm}', {time_lastsow})".format(
+			"REPLACE INTO farms(id_server, id_user, {col_farm}, {col_time_lastsow}) VALUES(%s, %s, %s, %s)".format(
 				col_farm = ewcfg.col_farm,
-				col_time_lastsow = ewcfg.col_time_lastsow,
-				id_server = self.id_server,
-				id_user = self.id_user,
-				farm = self.name,
-				time_lastsow = self.time_lastsow
-			))
-
+				col_time_lastsow = ewcfg.col_time_lastsow
+			), (
+				self.id_server,
+				self.id_user,
+				self.name,
+				self.time_lastsow
+			)
+		)
 
 
 """
 	Reap planted crops.
 """
 async def reap(cmd):
-
 	user_data = EwUser(member = cmd.message.author)
 
 	# Checking availability of reap action
@@ -101,15 +105,15 @@ async def reap(cmd):
 					user_data.persist()
 
 					#S(t) = 35000000 +  (t - 1440) * 992 + Log2(t/1440) * 11782046 caped at 100000000
-#                if (time_grown < 20160):
-#                    slimeGain = 33571520 + time_grown * 992 + math.log(time_grown, 2.0)
-#                    else:
-#                    slimeGain = 100000000
+#				if (time_grown < 20160):
+#					slimeGain = 33571520 + time_grown * 992 + math.log(time_grown, 2.0)
+#					else:
+#					slimeGain = 100000000
 				#S(t) = 35000000 +  (t - 1440) * 992 + Log2(t/1440) * 11782046 that transitions into flat growth
-#                if (time_grown < 20160):
-#                    slimeGain = (33571520 + time_grown * 992 + math.log(time_grown, 2.0))/300#Divided by 300 to account for later balance changes
-#                else:
-#                    slimeGain = time_grown * 992 + 80001280
+#				if (time_grown < 20160):
+#					slimeGain = (33571520 + time_grown * 992 + math.log(time_grown, 2.0))/300#Divided by 300 to account for later balance changes
+#				else:
+#					slimeGain = time_grown * 992 + 80001280
 
 					plant_type = ewcfg.seed_list[randint(0, len(ewcfg.seed_list) - 1)]
 					response = "You reap what you’ve sown. Your investment has yielded " + str(slime_gain) + " slime."  # + " slime and a bushel of " + plant_type
@@ -117,7 +121,6 @@ async def reap(cmd):
 				farm.time_lastsow = 0  # 0 means no seeds are currently planted
 				farm.persist()
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-	return
 
 
 """
@@ -168,4 +171,3 @@ async def sow(cmd):
 				farm.persist()
 
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-	return

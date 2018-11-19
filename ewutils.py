@@ -437,14 +437,14 @@ def flattenTokenListToString(tokens):
 """
 	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable)
 """
-def execute_sql_query(sql_query = None):
+def execute_sql_query(sql_query = None, sql_replacements = None):
 	data = None
 
 	try:
 		conn_info = databaseConnect()
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
-		cursor.execute(sql_query, None)
+		cursor.execute(sql_query, sql_replacements)
 		if sql_query.lower().startswith("select"):
 			data = cursor.fetchall()
 		conn.commit()
