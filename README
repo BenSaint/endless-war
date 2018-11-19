@@ -116,6 +116,15 @@ CREATE TABLE items_prop (
 		ON DELETE CASCADE
 );
 
+CREATE TABLE farms (
+	id_server varchar(128) NOT NULL,
+	id_user varchar(128) NOT NULL,
+	farm varchar(32) NOT NULL,
+	time_lastsow int NOT NULL DEFAULT '0',
+
+	PRIMARY KEY (id_server, id_user, farm)
+);
+
 CREATE TABLE districts (
 	id_server varchar(128) NOT NULL,
     district varchar(32) NOT NULL,

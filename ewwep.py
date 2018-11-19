@@ -2,7 +2,6 @@ import asyncio
 import time
 import random
 
-import ewcmd
 import ewcfg
 import ewutils
 import ewitem
@@ -267,8 +266,7 @@ async def attack(cmd):
 
 			if was_busted:
 				# Move around slime as a result of the shot.
-				user_data.change_slimes(n = (shootee_data.slimelevel ** 5), source = ewcfg.source_busting)
-				market_data = EwMarket(id_server = cmd.message.server.id)
+				user_data.change_slimes(n = ewutils.slime_bylevel(shootee_data.slimelevel), source = ewcfg.source_busting)
 				coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)
 				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 

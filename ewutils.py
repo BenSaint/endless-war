@@ -7,6 +7,9 @@ import time
 import re
 import random
 
+import ewstats
+import ewitem
+
 import discord
 
 import ewcfg
@@ -437,14 +440,14 @@ def flattenTokenListToString(tokens):
 """
 	Execute a given sql_query. (the purpose of this function is to minimize repeated code and keep functions readable)
 """
-def execute_sql_query(sql_query = None):
+def execute_sql_query(sql_query = None, sql_replacements = None):
 	data = None
 
 	try:
 		conn_info = databaseConnect()
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
-		cursor.execute(sql_query, None)
+		cursor.execute(sql_query, sql_replacements)
 		if sql_query.lower().startswith("select"):
 			data = cursor.fetchall()
 		conn.commit()
@@ -479,7 +482,7 @@ def get_channel(server = None, channel_name = ""):
 """
 	Return the role name of a user's faction. Takes user data object or life_state and faction tag
 """
-def get_faction(user_data = None, life_state = ewcfg.life_state_corpse, faction = ""):
+def get_faction(user_data = None, life_state = 0, faction = ""):
 	life_state = life_state
 	faction = faction
 	if user_data != None:

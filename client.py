@@ -16,6 +16,7 @@ import traceback
 import re
 import os
 
+import ewfarm
 
 import ewutils
 import ewcfg
@@ -168,6 +169,10 @@ cmd_map = {
 
 	# link to the world map
 	ewcfg.cmd_map: ewcmd.map,
+
+	#farming
+	ewcfg.cmd_sow: ewfarm.sow,
+	ewcfg.cmd_reap: ewfarm.reap,
 
 	# kill all players in your district; could be re-used for a future raid boss
 	#ewcfg.cmd_writhe: ewraidboss.writhe,

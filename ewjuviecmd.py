@@ -87,7 +87,7 @@ async def mine(cmd):
 			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Killers only mine under cover of darkness. Wait for nightfall at 8pm.".format(ewcfg.cmd_revive)))
 
 	# Mine only in the mines.
-	if(cmd.message.channel.name == ewcfg.channel_mines):
+	if cmd.message.channel.name in [ewcfg.channel_mines, ewcfg.channel_cv_mines, ewcfg.channel_tt_mines]:
 		if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
 			global last_mismined_times
 			mismined = last_mismined_times.get(cmd.message.author.id)
