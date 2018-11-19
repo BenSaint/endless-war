@@ -212,7 +212,7 @@ invuln_onrevive = 0
 
 # farming
 crops_time_to_grow = 720  # in minutes; 720 minutes are 12 hours
-reap_gain = 350000
+reap_gain = 120000
 
 # Cooldowns
 cd_kill = 5
