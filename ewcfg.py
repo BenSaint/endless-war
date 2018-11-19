@@ -2669,10 +2669,13 @@ poi_list = [
 		alias = [
 			"mines2",
 			"cvmines",
-			"cvm"
+			"cvm",
+			"cratersville mines",
+			"cratersville mine",
+			"cratersville m"
 		],
 		str_name = "The Cratersville Mines",
-		str_desc = "",  # todo add desc
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Cratersville.",
 		coord = (19, 30),
 		channel = channel_cv_mines,
 		role = "Cratersville Mines",
@@ -2683,10 +2686,13 @@ poi_list = [
 		alias = [
 			"mines3",
 			"ttmines",
-			"ttm"
+			"ttm",
+			"toxington mines",
+			"toxington mine",
+			"toxington m"
 		],
 		str_name = "The Toxington Mines",
-		str_desc = "",  # todo add desc
+		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Toxington.",
 		coord = (9, 2),
 		channel = channel_tt_mines,
 		role = "Toxington Mines",
@@ -2697,7 +2703,11 @@ poi_list = [
 		alias = [
 			"diner",
 			"smokerscough",
-			"smokers"
+			"smoker's cough",
+			"smoker'scough",
+			"smoker's",
+			"smokers",
+			"cough"
 		],
 		str_name = "The Smoker's Cough",
 		str_desc = "A quaint hole-in-the-wall vintage diner. The wallpaper may be peeling and the ‘80s paint job might be faded, but you’ll be damned if this place didn’t make an aesthetic stomping grounds for cheapskate juveniles like yourself. All the staff know you by name, they’ve memorized your order, and frankly they love you. You’re like a ninth son to the inbred owner and his many, many wives. It’s a cramped space, only fitting about 20 people maximum. The fluorescent lighting from the ceiling lamps invade every nook and cranny of the cyan and purple diner, even when the natural daylight could easily illuminate it just as well. You think you can see some mold on certain corners of the floor. Oh man, so cool.",
@@ -2737,6 +2747,12 @@ poi_list = [
 			"jrfarm",
 			"jrplantation",
 			"jrplant"
+			"juviesrow farms",
+			"juviesrow farm",
+			"juvies row farms",
+			"juvies row farm",
+			"juvie's row farms",
+			"juvie's row farm"
 		],
 		str_name = "The Juvie's Row Farms",
 		str_desc = "An array of haphazardly placed farms dot the already dense, crowded areas between mining shaft entrances and impoverished juvenile housing. Pollution is rampant here, with the numerous trash heaps and sludge refineries enjoying the majority of earth under the smoke-smuggered stars. It’s soil is irradiated and barely arable, but it will do. It has to.",
@@ -2753,7 +2769,15 @@ poi_list = [
 			"ogfarms",
 			"ogfarm",
 			"ogplantation",
-			"ogplant"
+			"ogplant",
+			"oozegardens farms",
+			"oozegarden farms",
+			"oozegardens farm",
+			"oozegarden farm",
+			"ooze garden farms",
+			"ooze gardens farms",
+			"ooze garden farm",
+			"ooze garden farms"
 		],
 		str_name = "The Ooze Gardens Farms",
 		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
@@ -2770,7 +2794,9 @@ poi_list = [
 			"abfarms",
 			"abfarm",
 			"abplantation",
-			"abplant"
+			"abplant",
+			"arsonbrook farms",
+			"arsonbrook farm"
 		],
 		str_name = "The Arsonbrook Farms",
 		str_desc = "A series of reedy creeks interspersed with quiet farms and burnt, black trees. It’s overcast skies make the embers from frequent forest fires glow even brighter by comparison. It’s soil is fertile with copious amounts of soot and accompanying nutrients.",
