@@ -47,7 +47,7 @@ class EwFarm:
 
 	def persist(self):
 		ewutils.execute_sql_query(
-			"REPLACE INTO districts(id_server, id_user, {col_farm}, {col_time_lastsow}) VALUES({id_server}, {id_user}, '{farm}', {time_lastsow})".format(
+			"REPLACE INTO farms(id_server, id_user, {col_farm}, {col_time_lastsow}) VALUES({id_server}, {id_user}, '{farm}', {time_lastsow})".format(
 				col_farm = ewcfg.col_farm,
 				col_time_lastsow = ewcfg.col_time_lastsow,
 				id_server = self.id_server,
@@ -66,9 +66,9 @@ async def reap(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
 	# Checking availability of reap action
-	if user_data.life_state == ewcfg.life_state_juvenile:
+	if user_data.life_state != ewcfg.life_state_juvenile:
 		response = "Only Juveniles of pure heart and with nothing better to do can farm."
-	elif cmd.message.channel.name != ewcfg.channel_jr_farms or cmd.message.channel.name != ewcfg.channel_og_farms or cmd.message.channel.name != ewcfg.channel_ab_farms:
+	elif user_data.poi not in [ewcfg.poi_id_jr_farms, ewcfg.poi_id_og_farms, ewcfg.poi_id_ab_farms]:
 		response = "Do you remember planting anything here in this barren wasteland? No, you don’t. Idiot."
 	else:
 		if user_data.poi == ewcfg.poi_id_jr_farms:
@@ -112,7 +112,7 @@ async def reap(cmd):
 #                    slimeGain = time_grown * 992 + 80001280
 
 					plant_type = ewcfg.seed_list[randint(0, len(ewcfg.seed_list) - 1)]
-					response = "You reap what you’ve sown. Your investment has yielded" + str(slime_gain) + "slime and a bushel of" + plant_type
+					response = "You reap what you’ve sown. Your investment has yielded " + str(slime_gain) + " slime."  # + " slime and a bushel of " + plant_type
 
 				farm.time_lastsow = 0  # 0 means no seeds are currently planted
 				farm.persist()
@@ -127,7 +127,7 @@ async def sow(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
 	# Checking availability of sow action
-	if user_data.life_state == ewcfg.life_state_juvenile:
+	if user_data.life_state != ewcfg.life_state_juvenile:
 		response = "Only Juveniles of pure heart and with nothing better to do can farm."
 
 	elif user_data.poi not in [ewcfg.poi_id_jr_farms, ewcfg.poi_id_og_farms, ewcfg.poi_id_ab_farms]:
@@ -160,7 +160,7 @@ async def sow(cmd):
 				response = "You don't have anything to plant! Try collecting a poudrin."
 			else:
 				# Sowing
-				response = "You sow a poudrin into the fertile soil beneath you. It will grow  in about a day."
+				response = "You sow a poudrin into the fertile soil beneath you. It will grow in about a day."
 
 				farm.time_lastsow = int(time.time() / 60)  # Grow time is stored in minutes.
 				ewitem.item_delete(id_item = poudrins[0].get('id_item'))  # Remove Poudrins

@@ -92,9 +92,9 @@ channel_cv_mines = "cratersville-mines"
 channel_tt_mines = "toxington-mines"
 channel_diner = "smokers-cough"
 channel_seafood = "red-mobster"
-channel_jr_farms = "arsonbrook-farms"
+channel_jr_farms = "juvies-row-farms"
 channel_og_farms = "ooze-gardens-farms"
-channel_ab_farms = "juvies-row-farms"
+channel_ab_farms = "arsonbrook-farms"
 
 
 # Commands
@@ -211,7 +211,7 @@ poudrin_rarity = 2400
 invuln_onrevive = 0
 
 # farming
-crops_time_to_grow = 1440  # in minutes; 1440 minutes are 24 hours
+crops_time_to_grow = 720  # in minutes; 720 minutes are 12 hours
 reap_gain = 350000
 
 # Cooldowns
@@ -485,20 +485,20 @@ stats_clear_on_death = [
 
 # Seeds you might !Sow
 seed_list = [
-        "Pink Rowddish"
-        "Sludgeberry"
-        "Pulp Gourd"
-        "Joybean"
-        "Brightshade"
-        "Dire Apple"
-        "Purple Killiflower"
-        "Razornut"
-        "Poke-tubers"
-        "Suganma Nuts"
-        "Dankwheat"
-        "Black Limes"
-        "Phosphorpoppy"
-        "Sour Potato"
+        "Pink Rowddish",
+        "Sludgeberry",
+        "Pulp Gourd",
+        "Joybean",
+        "Brightshade",
+        "Dire Apple",
+        "Purple Killiflower",
+        "Razornut",
+        "Poke-tubers",
+        "Suganma Nuts",
+        "Dankwheat",
+        "Black Limes",
+        "Phosphorpoppy",
+        "Sour Potato",
         "Blood Cabbage"
 ]
 
