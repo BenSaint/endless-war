@@ -11,7 +11,7 @@ class EwFarm:
 	id_server = ""
 	id_user = ""
 	name = ""
-	time_lastsow = ""
+	time_lastsow = 0
 
 	def __init__(
 			self,
@@ -25,7 +25,7 @@ class EwFarm:
 			self.name = farm
 
 			data = ewutils.execute_sql_query(
-				"SELECT {time_lastsow} FROM farms WHERE id_server = {id_server} AND id_user = {id_user} AND {col_farm} = {farm}".format(
+				"SELECT {time_lastsow} FROM farms WHERE id_server = {id_server} AND id_user = {id_user} AND {col_farm} = '{farm}'".format(
 					time_lastsow = ewcfg.col_time_lastsow,
 					id_server = id_server,
 					id_user = id_user,
@@ -130,7 +130,7 @@ async def sow(cmd):
 	if user_data.life_state == ewcfg.life_state_juvenile:
 		response = "Only Juveniles of pure heart and with nothing better to do can farm."
 
-	elif cmd.message.channel.name != ewcfg.channel_jr_farms or cmd.message.channel.name != ewcfg.channel_og_farms or cmd.message.channel.name != ewcfg.channel_ab_farms:
+	elif user_data.poi not in [ewcfg.poi_id_jr_farms, ewcfg.poi_id_og_farms, ewcfg.poi_id_ab_farms]:
 		response = "The cracked, filthy concrete streets around you would be a pretty terrible place for a farm. Try again on more arable land."
 
 	else:

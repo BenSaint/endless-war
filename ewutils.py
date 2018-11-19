@@ -4,8 +4,6 @@ import time
 import re
 import random
 
-import ewutils
-import ewcfg
 import ewstats
 import ewitem
 
@@ -481,7 +479,7 @@ def get_channel(server = None, channel_name = ""):
 """
 	Return the role name of a user's faction. Takes user data object or life_state and faction tag
 """
-def get_faction(user_data = None, life_state = ewcfg.life_state_corpse, faction = ""):
+def get_faction(user_data = None, life_state = 0, faction = ""):
 	life_state = life_state
 	faction = faction
 	if user_data != None:
