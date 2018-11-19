@@ -2670,9 +2670,9 @@ poi_list = [
 			"mines2",
 			"cvmines",
 			"cvm",
-			"cratersville mines",
-			"cratersville mine",
-			"cratersville m"
+			"cratersvillemines",
+			"cratersvillemine",
+			"cratersvillem"
 		],
 		str_name = "The Cratersville Mines",
 		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Cratersville.",
@@ -2687,9 +2687,9 @@ poi_list = [
 			"mines3",
 			"ttmines",
 			"ttm",
-			"toxington mines",
-			"toxington mine",
-			"toxington m"
+			"toxingtonmines",
+			"toxingtonmine",
+			"toxingtonm"
 		],
 		str_name = "The Toxington Mines",
 		str_desc = "A veritable slime-mine of slime, rejuvinated by the revival of ENDLESS WAR.\n\nExits into Toxington.",
@@ -2703,9 +2703,7 @@ poi_list = [
 		alias = [
 			"diner",
 			"smokerscough",
-			"smoker's cough",
-			"smoker'scough",
-			"smoker's",
+			"smokerscough",
 			"smokers",
 			"cough"
 		],
@@ -2747,12 +2745,9 @@ poi_list = [
 			"jrfarm",
 			"jrplantation",
 			"jrplant"
-			"juviesrow farms",
-			"juviesrow farm",
-			"juvies row farms",
-			"juvies row farm",
-			"juvie's row farms",
-			"juvie's row farm"
+			"juviesrowfarms",
+			"juviesrowfarm",
+			"juviesrowf"
 		],
 		str_name = "The Juvie's Row Farms",
 		str_desc = "An array of haphazardly placed farms dot the already dense, crowded areas between mining shaft entrances and impoverished juvenile housing. Pollution is rampant here, with the numerous trash heaps and sludge refineries enjoying the majority of earth under the smoke-smuggered stars. It’s soil is irradiated and barely arable, but it will do. It has to.",
@@ -2770,14 +2765,11 @@ poi_list = [
 			"ogfarm",
 			"ogplantation",
 			"ogplant",
-			"oozegardens farms",
-			"oozegarden farms",
-			"oozegardens farm",
-			"oozegarden farm",
-			"ooze garden farms",
-			"ooze gardens farms",
-			"ooze garden farm",
-			"ooze garden farms"
+			"oozegardensfarms",
+			"oozegardenfarms",
+			"oozegardensfarm",
+			"oozegardenfarm",
+			"oozegardensf"
 		],
 		str_name = "The Ooze Gardens Farms",
 		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
@@ -2795,8 +2787,9 @@ poi_list = [
 			"abfarm",
 			"abplantation",
 			"abplant",
-			"arsonbrook farms",
-			"arsonbrook farm"
+			"arsonbrookfarms",
+			"arsonbrookfarm",
+			"arsonbrookf"
 		],
 		str_name = "The Arsonbrook Farms",
 		str_desc = "A series of reedy creeks interspersed with quiet farms and burnt, black trees. It’s overcast skies make the embers from frequent forest fires glow even brighter by comparison. It’s soil is fertile with copious amounts of soot and accompanying nutrients.",
