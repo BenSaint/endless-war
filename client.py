@@ -68,7 +68,7 @@ cmd_map = {
 	ewcfg.cmd_spar: ewwep.spar,
 
 	# Name your current weapon.
-	ewcfg.cmd_anoint: ewwep.anoint,
+	ewcfg.cmd_annoint: ewwep.annoint,
 
 
 	# move from juvenile to one of the armies (rowdys or killers)
