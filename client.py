@@ -117,6 +117,9 @@ cmd_map = {
 	# Play slime roulette!
 	ewcfg.cmd_slimeroulette: ewcasino.roulette,
 
+	# Play slime roulette!
+	ewcfg.cmd_slimebaccarat: ewcasino.baccarat,
+
 
 	# See what's for sale in the Food Court.
 	ewcfg.cmd_menu: ewfood.menu,
@@ -179,6 +182,7 @@ cmd_map = {
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
+	ewcfg.cmd_salute: ewcmd.salute,
 	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
