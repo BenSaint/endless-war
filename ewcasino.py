@@ -395,6 +395,570 @@ async def roulette(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
+async def baccarat(cmd):
+	resp = await ewcmd.start(cmd = cmd)
+	time_now = int(time.time())
+	bet = ""
+	all_bets = ["player", "dealer", "tie"]
+	img_base = "https://ew.krakissi.net/img/cas/sb/"
+	response = ""
+	rank = ""
+	suit = ""
+
+	global last_rouletted_times
+	last_used = last_rouletted_times.get(cmd.message.author.id)
+
+	if last_used == None:
+		last_used = 0
+
+	if last_used + 2 > time_now:
+		response = "**ENOUGH**"
+	elif cmd.message.channel.name != ewcfg.channel_casino:
+		# Only allowed in the slime casino.
+		response = "You must go to the Casino to gamble your SlimeCoin."
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await asyncio.sleep(1)
+	else:
+		last_rouletted_times[cmd.message.author.id] = time_now
+		value = None
+
+		if cmd.tokens_count > 1:
+			value = ewutils.getIntToken(tokens = cmd.tokens[:2], allow_all = True)
+			bet = ewutils.flattenTokenListToString(tokens = cmd.tokens[2:])
+
+		if value != None:
+			user_data = EwUser(member = cmd.message.author)
+
+			if value == -1:
+				value = user_data.slimecredit
+
+			if value > user_data.slimecredit or value == 0:
+				response = "You don't have enough SlimeCoin."
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			elif len(bet) == 0:
+				response = "You must specify what hand you are betting on. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			elif bet not in all_bets:
+				response = "The dealer didn't understand your wager. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			else:
+				resp_d = await ewcmd.start(cmd = cmd)
+				resp_f = await ewcmd.start(cmd = cmd)
+				response = "You bet {} SlimeCoin on {}. The dealer shuffles the deck, then begins to deal.".format(str(value),str(bet))
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+				response += "\nThe dealer deals you your first card..."
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				winnings = 0
+				end = False
+				phit = False
+				d = 0
+				p = 0
+
+				drawp1 = str(random.randint(1,52))
+				if drawp1 in ["1", "14", "27", "40"]:
+					p += 1
+				if drawp1 in ["2", "15", "28", "41"]:
+					p += 2
+				if drawp1 in ["3", "16", "29", "42"]:
+					p += 3
+				if drawp1 in ["4", "17", "30", "43"]:
+					p += 4
+				if drawp1 in ["5", "18", "31", "44"]:
+					p += 5
+				if drawp1 in ["6", "19", "32", "45"]:
+					p += 6
+				if drawp1 in ["7", "20", "33", "46"]:
+					p += 7
+				if drawp1 in ["8", "21", "34", "47"]:
+					p += 8
+				if drawp1 in ["9", "22", "35", "48"]:
+					p += 9
+				if drawp1 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					p += 0
+				lastcard = drawp1
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += " the {} of {}. ".format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				response += "\nThe dealer deals you your second card..."
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawp2 = str(random.randint(1,52))
+					if drawp2 != drawp1:
+						break
+				if drawp2 in ["1", "14", "27", "40"]:
+					p += 1
+				if drawp2 in ["2", "15", "28", "41"]:
+					p += 2
+				if drawp2 in ["3", "16", "29", "42"]:
+					p += 3
+				if drawp2 in ["4", "17", "30", "43"]:
+					p += 4
+				if drawp2 in ["5", "18", "31", "44"]:
+					p += 5
+				if drawp2 in ["6", "19", "32", "45"]:
+					p += 6
+				if drawp2 in ["7", "20", "33", "46"]:
+					p += 7
+				if drawp2 in ["8", "21", "34", "47"]:
+					p += 8
+				if drawp2 in ["9", "22", "35", "48"]:
+					p += 9
+				if drawp2 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					p += 0
+				lastcard = drawp2
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += " the {} of {}. ".format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+				responsesave = response
+
+				response = "\nThe dealer deals the house its first card..."
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawd1 = str(random.randint(1,52))
+					if drawd1 != drawp1 and drawd1 != drawp2:
+						break
+				if drawd1 in ["1", "14", "27", "40"]:
+					d += 1
+				if drawd1 in ["2", "15", "28", "41"]:
+					d += 2
+				if drawd1 in ["3", "16", "29", "42"]:
+					d += 3
+				if drawd1 in ["4", "17", "30", "43"]:
+					d += 4
+				if drawd1 in ["5", "18", "31", "44"]:
+					d += 5
+				if drawd1 in ["6", "19", "32", "45"]:
+					d += 6
+				if drawd1 in ["7", "20", "33", "46"]:
+					d += 7
+				if drawd1 in ["8", "21", "34", "47"]:
+					d += 8
+				if drawd1 in ["9", "22", "35", "48"]:
+					d += 9
+				if drawd1 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					d += 0
+				lastcard = drawd1
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += " the {} of {}. ".format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				response += "\nThe dealer deals the house its second card..."
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawd2 = str(random.randint(1,52))
+					if drawd2 != drawp1 and drawd2 != drawp2 and drawd2 != drawd1:
+						break
+				if drawd2 in ["1", "14", "27", "40"]:
+					d += 1
+				if drawd2 in ["2", "15", "28", "41"]:
+					d += 2
+				if drawd2 in ["3", "16", "29", "42"]:
+					d += 3
+				if drawd2 in ["4", "17", "30", "43"]:
+					d += 4
+				if drawd2 in ["5", "18", "31", "44"]:
+					d += 5
+				if drawd2 in ["6", "19", "32", "45"]:
+					d += 6
+				if drawd2 in ["7", "20", "33", "46"]:
+					d += 7
+				if drawd2 in ["8", "21", "34", "47"]:
+					d += 8
+				if drawd2 in ["9", "22", "35", "48"]:
+					d += 9
+				if drawd2 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					d += 0
+				lastcard = drawd2
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += " the {} of {}. ".format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				responsesave_d = response
+
+				if d in [8, 9] or p in [8, 9]:
+					end = True
+
+				drawp3 = ""
+				if (p <= 5) and (end != True):
+
+					response = responsesave
+					response += "\nThe dealer deals you another card..."
+
+					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(3)
+
+					phit = True
+					while True:
+						drawp3 = str(random.randint(1,52))
+						if drawp3 != drawp1 and drawp3 != drawp2 and drawp3 != drawd1 and drawp3 != drawd2:
+							break
+					if drawp3 in ["1", "14", "27", "40"]:
+						p += 1
+					if drawp3 in ["2", "15", "28", "41"]:
+						p += 2
+					if drawp3 in ["3", "16", "29", "42"]:
+						p += 3
+					if drawp3 in ["4", "17", "30", "43"]:
+						p += 4
+					if drawp3 in ["5", "18", "31", "44"]:
+						p += 5
+					if drawp3 in ["6", "19", "32", "45"]:
+						p += 6
+					if drawp3 in ["7", "20", "33", "46"]:
+						p += 7
+					if drawp3 in ["8", "21", "34", "47"]:
+						p += 8
+					if drawp3 in ["9", "22", "35", "48"]:
+						p += 9
+					if drawp3 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+						p += 0
+					lastcard = drawp3
+					if lastcard in ["1", "14", "27", "40"]:
+						rank = "Ace"
+					if lastcard in ["2", "15", "28", "41"]:
+						rank = "Two"
+					if lastcard in ["3", "16", "29", "42"]:
+						rank = "Three"
+					if lastcard in ["4", "17", "30", "43"]:
+						rank = "Four"
+					if lastcard in ["5", "18", "31", "44"]:
+						rank = "Five"
+					if lastcard in ["6", "19", "32", "45"]:
+						rank = "Six"
+					if lastcard in ["7", "20", "33", "46"]:
+						rank = "Seven"
+					if lastcard in ["8", "21", "34", "47"]:
+						rank = "Eight"
+					if lastcard in ["9", "22", "35", "48"]:
+						rank = "Nine"
+					if lastcard in ["10", "23", "36", "49"]:
+						rank = "Ten"
+					if lastcard in ["11", "24", "37", "50"]:
+						rank = "Jack"
+					if lastcard in ["12", "25", "38", "51"]:
+						rank = "Queen"
+					if lastcard in ["13", "26", "39", "52"]:
+						rank = "King"
+					if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+						suit = "Hearts"
+					if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+						suit = "Slugs"
+					if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+						suit = "Hats"
+					if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+						suit = "Shields"
+
+					if p > 9:
+						p -= 10
+					if d > 9:
+						d -= 10
+
+					response += " the {} of {}. ".format(rank, suit)
+					response += img_base + lastcard + ".png"
+
+					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(1)
+
+				if ((phit != True and d <= 5) or (phit == True and ((d <= 2) or (d == 3 and drawp3 not in ["8", "21", "34", "47"]) or (d == 4 and drawp3 in ["2", "15", "28", "41", "3", "16", "29", "42", "4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 5 and drawp3 in ["4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 6 and drawp3 in ["6", "19", "32", "45", "7", "20", "33", "46"])))) and (d != 7) and (end != True):
+					
+					response = responsesave_d
+					response += "\nThe dealer deals the house another card..."
+					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(3)
+					
+					while True:
+						drawd3 = str(random.randint(1,52))
+						if drawd3 != drawp1 and drawd3 != drawp2 and drawd3 != drawd1 and drawd3 != drawd2 and drawd3 != drawp3:
+							break
+					if drawd3 in ["1", "14", "27", "40"]:
+						d += 1
+					if drawd3 in ["2", "15", "28", "41"]:
+						d += 2
+					if drawd3 in ["3", "16", "29", "42"]:
+						d += 3
+					if drawd3 in ["4", "17", "30", "43"]:
+						d += 4
+					if drawd3 in ["5", "18", "31", "44"]:
+						d += 5
+					if drawd3 in ["6", "19", "32", "45"]:
+						d += 6
+					if drawd3 in ["7", "20", "33", "46"]:
+						d += 7
+					if drawd3 in ["8", "21", "34", "47"]:
+						d += 8
+					if drawd3 in ["9", "22", "35", "48"]:
+						d += 9
+					if drawd3 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+						d += 0
+					lastcard = drawd3
+					if lastcard in ["1", "14", "27", "40"]:
+						rank = "Ace"
+					if lastcard in ["2", "15", "28", "41"]:
+						rank = "Two"
+					if lastcard in ["3", "16", "29", "42"]:
+						rank = "Three"
+					if lastcard in ["4", "17", "30", "43"]:
+						rank = "Four"
+					if lastcard in ["5", "18", "31", "44"]:
+						rank = "Five"
+					if lastcard in ["6", "19", "32", "45"]:
+						rank = "Six"
+					if lastcard in ["7", "20", "33", "46"]:
+						rank = "Seven"
+					if lastcard in ["8", "21", "34", "47"]:
+						rank = "Eight"
+					if lastcard in ["9", "22", "35", "48"]:
+						rank = "Nine"
+					if lastcard in ["10", "23", "36", "49"]:
+						rank = "Ten"
+					if lastcard in ["11", "24", "37", "50"]:
+						rank = "Jack"
+					if lastcard in ["12", "25", "38", "51"]:
+						rank = "Queen"
+					if lastcard in ["13", "26", "39", "52"]:
+						rank = "King"
+					if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+						suit = "Hearts"
+					if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+						suit = "Slugs"
+					if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+						suit = "Hats"
+					if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+						suit = "Shields"
+
+					if p > 9:
+						p -= 10
+					if d > 9:
+						d -= 10
+
+					response += " the {} of {}. ".format(rank, suit)
+					response += img_base + lastcard + ".png"
+
+					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(2)
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				if p > d:
+					response = "\n\nPlayer hand beats the dealer hand {} to {}.".format(str(p), str(d))
+					result = "player"
+					odds = 2
+
+				if d > p:
+					response = "\n\nDealer hand beats the player hand {} to {}.".format(str(d), str(p))
+					result = "dealer"
+					odds = 2
+
+				if p == d:
+					response = "\n\nPlayer hand and dealer hand tied at {}.".format(str(p))
+					result = "tie"
+					odds = 8
+
+				if bet == result:
+					winnings = (odds * value)
+					response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
+				else:
+					response += "\n\nYou lost your bet."
+
+				# add winnings/subtract losses
+				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
+				user_data.persist()
+				await cmd.client.edit_message(resp_f, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+		else:
+			response = "Specify how much SlimeCoin you will wager."
+			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+			await asyncio.sleep(1)
+
 def check(str):
 	if str.content == ewcfg.cmd_accept or str.content == ewcfg.cmd_refuse:
 		return True
