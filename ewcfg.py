@@ -2670,7 +2670,6 @@ poi_list = [
 			"mines2",
 			"cvmines",
 			"cvm",
-			"cratersvillemines",
 			"cratersvillemine",
 			"cratersvillem"
 		],
@@ -2687,7 +2686,6 @@ poi_list = [
 			"mines3",
 			"ttmines",
 			"ttm",
-			"toxingtonmines",
 			"toxingtonmine",
 			"toxingtonm"
 		],
@@ -2702,8 +2700,6 @@ poi_list = [
 		id_poi = poi_id_diner,
 		alias = [
 			"diner",
-			"smokerscough",
-			"smokerscough",
 			"smokers",
 			"cough"
 		],
@@ -2745,8 +2741,6 @@ poi_list = [
 			"jrfarm",
 			"jrplantation",
 			"jrplant"
-			"juviesrowfarms",
-			"juviesrowfarm",
 			"juviesrowf",
 			"juviesrowfarm"
 		],
@@ -2757,7 +2751,7 @@ poi_list = [
 		role = "Juvie's Row Farms",
 		pvp = False
 	),
-		EwPoi( # OG Farm
+	EwPoi( # OG Farm
 		id_poi = poi_id_og_farms,
 		alias = [
 			"ogf",  # OozeGardens farms
@@ -2766,14 +2760,10 @@ poi_list = [
 			"ogfarm",
 			"ogplantation",
 			"ogplant",
-			"oozegardensfarms",
 			"oozegardenfarms",
-			"oozegardensfarm",
 			"oozegardenfarm",
 			"oozegardensf",
-			"oozegardenfarms",
-			"oozegardensfarm",
-			"oozegardenfarm"
+			"oozegardensfarm"
 		],
 		str_name = "The Ooze Gardens Farms",
 		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
@@ -2782,7 +2772,7 @@ poi_list = [
 		role = "Ooze Gardens Farms",
 		pvp = False
 	),
-		EwPoi( # AB Farm
+	EwPoi( # AB Farm
 		id_poi = poi_id_ab_farms,
 		alias = [
 			"abf", #ArsonBrook farms
@@ -2791,8 +2781,6 @@ poi_list = [
 			"abfarm",
 			"abplantation",
 			"abplant",
-			"arsonbrookfarms",
-			"arsonbrookfarm",
 			"arsonbrookf",
 			"arsonbrookfarm"
 		],
