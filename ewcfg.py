@@ -7,7 +7,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v2.08"
+version = "v2.08a"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -2747,7 +2747,8 @@ poi_list = [
 			"jrplant"
 			"juviesrowfarms",
 			"juviesrowfarm",
-			"juviesrowf"
+			"juviesrowf",
+			"juviesrowfarm"
 		],
 		str_name = "The Juvie's Row Farms",
 		str_desc = "An array of haphazardly placed farms dot the already dense, crowded areas between mining shaft entrances and impoverished juvenile housing. Pollution is rampant here, with the numerous trash heaps and sludge refineries enjoying the majority of earth under the smoke-smuggered stars. It’s soil is irradiated and barely arable, but it will do. It has to.",
@@ -2769,7 +2770,10 @@ poi_list = [
 			"oozegardenfarms",
 			"oozegardensfarm",
 			"oozegardenfarm",
-			"oozegardensf"
+			"oozegardensf",
+			"oozegardenfarms",
+			"oozegardensfarm",
+			"oozegardenfarm"
 		],
 		str_name = "The Ooze Gardens Farms",
 		str_desc = "An impressive host of unique and exotic flora are grown here. Originally on private property, the expansive greenhouses were the weekly meeting place for the city’s botanical society. They have since been seized by imminent domain and are now a public park. It’s type of soil is vast and varied depending on where you choose to plant. Surely, anything can grow here.",
@@ -2789,7 +2793,8 @@ poi_list = [
 			"abplant",
 			"arsonbrookfarms",
 			"arsonbrookfarm",
-			"arsonbrookf"
+			"arsonbrookf",
+			"arsonbrookfarm"
 		],
 		str_name = "The Arsonbrook Farms",
 		str_desc = "A series of reedy creeks interspersed with quiet farms and burnt, black trees. It’s overcast skies make the embers from frequent forest fires glow even brighter by comparison. It’s soil is fertile with copious amounts of soot and accompanying nutrients.",
