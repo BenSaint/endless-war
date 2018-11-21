@@ -808,9 +808,12 @@ async def annoint(cmd):
 				# Perform the ceremony.
 				user_data.change_slimes(n = -100, source = ewcfg.source_spending)
 				user_data.weaponname = annoint_name
-
+				
+				skillup = 0
 				if user_data.weaponskill < 10:
-					user_data.add_weaponskill(n = 1)
+					skillup = 1
+
+				user_data.add_weaponskill(n = skillup)
 
 				# delete a slime poudrin from the player's inventory
 				ewitem.item_delete(id_item = poudrins[0].get('id_item'))
