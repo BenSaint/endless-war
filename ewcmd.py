@@ -241,6 +241,12 @@ async def weather(cmd):
 """
 async def harvest(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+
+"""
+	Salute the NLACakaNM flag.
+"""
+async def salute(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag.gif'))
 	
 """
 	Rowdys THRASH
