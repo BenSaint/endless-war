@@ -404,6 +404,7 @@ async def baccarat(cmd):
 	response = ""
 	rank = ""
 	suit = ""
+	str_ranksuit = " the **{} of {}**. "
 
 	global last_rouletted_times
 	last_used = last_rouletted_times.get(cmd.message.author.id)
@@ -527,7 +528,7 @@ async def baccarat(cmd):
 				if d > 9:
 					d -= 10
 
-				response += " the {} of {}. ".format(rank, suit)
+				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
 				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
@@ -601,7 +602,7 @@ async def baccarat(cmd):
 				if d > 9:
 					d -= 10
 
-				response += " the {} of {}. ".format(rank, suit)
+				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
 				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
@@ -679,7 +680,7 @@ async def baccarat(cmd):
 				if d > 9:
 					d -= 10
 
-				response += " the {} of {}. ".format(rank, suit)
+				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
 				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
@@ -753,7 +754,7 @@ async def baccarat(cmd):
 				if d > 9:
 					d -= 10
 
-				response += " the {} of {}. ".format(rank, suit)
+				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
 				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
@@ -838,7 +839,7 @@ async def baccarat(cmd):
 					if d > 9:
 						d -= 10
 
-					response += " the {} of {}. ".format(rank, suit)
+					response += str_ranksuit.format(rank, suit)
 					response += img_base + lastcard + ".png"
 
 					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
@@ -916,7 +917,7 @@ async def baccarat(cmd):
 					if d > 9:
 						d -= 10
 
-					response += " the {} of {}. ".format(rank, suit)
+					response += str_ranksuit.format(rank, suit)
 					response += img_base + lastcard + ".png"
 
 					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
@@ -944,7 +945,7 @@ async def baccarat(cmd):
 					winnings = (odds * value)
 					response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
 				else:
-					response += "\n\nYou lost your bet."
+					response += "\n\n*You lost your bet.*"
 
 				# add winnings/subtract losses
 				user_data = EwUser(member = cmd.message.author)
