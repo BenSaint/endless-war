@@ -246,7 +246,7 @@ async def harvest(cmd):
 	Salute the NLACakaNM flag.
 """
 async def salute(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://i.imgur.com/L7AbuEP.gif'))
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag.gif'))
 	
 """
 	Rowdys THRASH
