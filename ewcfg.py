@@ -2170,6 +2170,11 @@ poi_list = [
 		str_name = "Astatine Heights",
 		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards.\n\nThis area contains NLACakaNM Cinemas. To the East is Arsonbrook. To the Southeast is Smogsburg. To the South is Cop Killtown. To the Southwest is Gatlingsdale. To the West is Toxington.",
 		coord = (17, 6),
+		coord_alias = [
+			(17, 5),
+			(17, 4),
+			(17, 3)
+		],
 		channel = "astatine-heights",
 		role = "Astatine Heights"
 	),
@@ -2489,7 +2494,7 @@ poi_list = [
 		str_desc = "A delightfully run-down movie theater, with warm carpeted walls fraying ever so slightly. Films hand picked by the Rowdy Fucker and/or Cop Killer are regularly screened.\n\nExits into Astatine Heights.",
 		channel = channel_cinema,
 		role = "Cinema",
-		coord = (17, 4),
+		coord = (19, 3),
 		pvp = False
 	),
 	EwPoi( # food-court
@@ -2726,7 +2731,7 @@ poi_list = [
 		],
 		str_name = "Red Mobster Seafood",
 		str_desc = "The last bastion of sophistication in this godforsaken city. A dimly lit, atmospheric fine dining restaurant with waiters and tables and archaic stuff like that. Upper crust juveniles and older fugitives make up the majority of the patrons, making you stick out like a sore thumb. Quiet, respectable murmurs pollute the air alongside the scrapping of silverware and the occasional hoity toity laugh. Everything about this place makes you sick.",
-		coord = (17, 4),
+		coord = (17, 1),
 		channel = channel_seafood,
 		role = "Red Mobster Seafood",
 		pvp = False,
