@@ -183,6 +183,7 @@ cmd_map = {
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
 	ewcfg.cmd_salute: ewcmd.salute,
+	ewcfg.cmd_unsalute: ewcmd.unsalute,
 	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
