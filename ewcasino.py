@@ -931,13 +931,11 @@ async def baccarat(cmd):
 					response = "\n\nPlayer hand beats the dealer hand {} to {}.".format(str(p), str(d))
 					result = "player"
 					odds = 2
-
-				if d > p:
+				elif d > p:
 					response = "\n\nDealer hand beats the player hand {} to {}.".format(str(d), str(p))
 					result = "dealer"
 					odds = 2
-
-				if p == d:
+				else: # p == d (peed lol)
 					response = "\n\nPlayer hand and dealer hand tied at {}.".format(str(p))
 					result = "tie"
 					odds = 8
@@ -949,15 +947,14 @@ async def baccarat(cmd):
 					response += "\n\nYou lost your bet."
 
 				# add winnings/subtract losses
+				user_data = EwUser(member = cmd.message.author)
 				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 				user_data.persist()
 				await cmd.client.edit_message(resp_f, ewutils.formatMessage(cmd.message.author, response))
-				await asyncio.sleep(1)
 
 		else:
 			response = "Specify how much SlimeCoin you will wager."
 			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
-			await asyncio.sleep(1)
 
 def check(str):
 	if str.content == ewcfg.cmd_accept or str.content == ewcfg.cmd_refuse:
