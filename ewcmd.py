@@ -294,7 +294,10 @@ async def booru(cmd):
 async def accept(cmd):
 	user = EwUser(member = cmd.message.author)
 	if(user.rr_challenger != ""):
-		if(user.rr_challenger != user.id_user):
+		challenger = EwUser(id_user = user.rr_challenger, id_server = user.id_server)
+		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
+			challenger.rr_challenger = user.id_user
+			challenger.persist()
 			response = "You accept the challenge! Both of you head out back behind the casino and load a bullet into the gun."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	return
@@ -303,7 +306,8 @@ async def accept(cmd):
 async def refuse(cmd):
 	user = EwUser(member = cmd.message.author)
 	if(user.rr_challenger != ""):
-		if(user.rr_challenger != user.id_user):
+		challenger = EwUser(id_user = user.rr_challenger, id_server = user.id_server)
+		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
 			response = "You refuse the challenge, but not before leaving a large puddle of urine beneath you."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	return
