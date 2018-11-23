@@ -6,6 +6,7 @@ import ewcmd
 import ewutils
 import ewcfg
 import ewrolemgr
+import ewitem
 from ew import EwUser
 
 # Map containing user IDs and the last time in UTC seconds since the pachinko
@@ -522,7 +523,8 @@ async def russian_roulette(cmd):
 					
 					if challengee.life_state != ewcfg.life_state_corpse:
 						challengee.change_slimes(n = challenger.slimes, source = ewcfg.source_killing)
-
+						ewitem.item_loot(member = author, id_user_target = member.id)
+						
 						challenger.id_killer = challenger.id_user
 						challenger.die(cause = ewcfg.cause_suicide)
 					#In case the other player killed themselves
@@ -540,6 +542,7 @@ async def russian_roulette(cmd):
 
 					if challenger.life_state != ewcfg.life_state_corpse:					
 						challenger.change_slimes(n = challengee.slimes, source = ewcfg.source_killing)
+						ewitem.item_loot(member = member, id_user_target = author.id)
 
 						challengee.id_killer = challengee.id_user
 						challengee.die(cause = ewcfg.cause_suicide)
