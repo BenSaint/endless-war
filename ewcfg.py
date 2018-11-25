@@ -28,7 +28,6 @@ life_state_kingpin = 10
 
 # ID tags for points of interest that are needed in code.
 poi_id_thesewers = "thesewers"
-poi_id_downtown = "downtown"
 poi_id_slimeoidlab = "slimecorpslimeoidlaboratory"
 poi_id_mine = "themines"
 poi_id_thecasino = "thecasino"
@@ -50,6 +49,37 @@ poi_id_seafood = "redmobster"
 poi_id_jr_farms = "juviesrowfarms"
 poi_id_og_farms = "oozegardensfarms"
 poi_id_ab_farms = "arsonbrookfarms"
+
+# district pois
+poi_id_downtown = "downtown"
+poi_id_smogsburg = "smogsburg"
+poi_id_copkilltown = "copkilltown"
+poi_id_krakbay = "krakbay"
+poi_id_poudrinalley = "poudrinalley"
+poi_id_rowdyroughhouse = "rowdyroughhouse"
+poi_id_greenlightdistrict = "greenlightdistrict"
+poi_id_oldnewyonkers = "oldnewyonkers"
+poi_id_littlechernobyl = "littlechernobyl"
+poi_id_arsonbrook = "arsonbrook"
+poi_id_astatineheights = "astatineheights"
+poi_id_gatlingsdale = "gatlingsdale"
+poi_id_vandalpark = "vandalpark"
+poi_id_glocksbury = "glocksbury"
+poi_id_northsleezeborough = "northsleezeborough"
+poi_id_southsleezeborough = "southsleezeborough"
+poi_id_oozegardens = "oozegardens"
+poi_id_cratersville = "cratersville"
+poi_id_wreckington = "wreckington"
+poi_id_juviesrow = "juviesrow"
+poi_id_slimesend = "slimesend"
+poi_id_vagrantscorner = "vagrantscorner"
+poi_id_assaultflatsbeachresort = "assaultflatsbeachresort"
+poi_id_newnewyonkers = "newnewyonkers"
+poi_id_brawlden = "brawlden"
+poi_id_toxington = "toxington"
+poi_id_charcoalpark = "charcoalpark"
+poi_id_poloniumhill = "poloniumhill"
+poi_id_westglocksbury = "westglocksbury"
 
 # Role names. All lower case with no spaces.
 role_juvenile = "juveniles"
@@ -180,6 +210,12 @@ slimes_hauntmax = 20000
 slimes_perslot = 100
 slimes_perpachinko = 500
 slimecoin_exchangerate = 100
+
+# kingpin district control slime yields
+slime_yield_class_s = 101400
+slime_yield_class_a = 69800
+slime_yield_class_b = 56400
+slime_yield_class_c = 45800
 
 # hunger
 min_stamina = 100
@@ -2039,10 +2075,11 @@ poi_list = [
 			(25, 18)
 		],
 		channel = "downtown",
-		role = "Downtown"
+		role = "Downtown",
+		property_class = "S"
 	),
 	EwPoi( # 2
-		id_poi = "smogsburg",
+		id_poi = poi_id_smogsburg,
 		alias = [
 			"smog",
 			"smogs",
@@ -2052,10 +2089,11 @@ poi_list = [
 		str_desc = "The pavement rumbles as subway trains grind along their tracks far beneath your feet. In every direction, smokestacks belch sickly clouds into the sky.\n\nThis area contains the Bazaar. To the North is Arsonbrook. To the Northeast is Little Chernobyl. To the East is Old New Yonkers. To the South is Downtown NLACakaNM. To the West is Cop Killtown. To the Northwest is Astatine Heights.",
 		coord = (23, 11),
 		channel = "smogsburg",
-		role = "Smogsburg"
+		role = "Smogsburg",
+		property_class = "A"
 	),
 	EwPoi( # 3
-		id_poi = "copkilltown",
+		id_poi = poi_id_copkilltown,
 		alias = [
 			"cop",
 			"cops",
@@ -2073,10 +2111,11 @@ poi_list = [
 		factions = [
 			faction_killers
 		],
-		pvp = False
+		pvp = False,
+		property_class = "A"
 	),
 	EwPoi( # 4
-		id_poi = "krakbay",
+		id_poi = poi_id_krakbay,
 		alias = [
 			"krak",
 			"kb"
@@ -2085,10 +2124,11 @@ poi_list = [
 		str_desc = "Off the nearby riverbank, rusty barges churn their way along the Slime River. Posh riverside apartments taunt you with their cheap opulence.\n\nThis area contains the Food Court. To the East is Downtown NLACakaNM. To the Southeast is Poudrin Alley. To the South is Ooze Gardens. To the Southwest is South Sleezeborough. To the West is North Sleezeborough. To the Northwest is Glocksbury.",
 		coord = (16, 19),
 		channel = "krak-bay",
-		role = "Krak Bay"
+		role = "Krak Bay",
+		property_class = "A"
 	),
 	EwPoi( # 5
-		id_poi = "poudrinalley",
+		id_poi = poi_id_poudrinalley,
 		alias = [
 			"poudrin",
 			"pa"
@@ -2097,10 +2137,11 @@ poi_list = [
 		str_desc = "Bent and broken streetlights spark and flicker over the cracked, derelict pavement. The 7-11 stands dimly opposite a row of apartments, its CLOSED sign crooked and dusty.\n\nThis area contains the 7-11. To the Northeast is Downtown NLACakaNM. To the East is the Rowdy Roughhouse. To the South is Cratersville. To the Southwest is Ooze Gardens. To the Northwest is Krak Bay.",
 		coord = (19, 23),
 		channel = "poudrin-alley",
-		role = "Poudrin Alley"
+		role = "Poudrin Alley",
+		property_class = "B"
 	),
 	EwPoi( # 6
-		id_poi = "rowdyroughhouse",
+		id_poi = poi_id_rowdyroughhouse,
 		alias = [
 			"rowdy",
 			"rowdys",
@@ -2117,10 +2158,11 @@ poi_list = [
 		factions = [
 			faction_rowdys
 		],
-		pvp = False
+		pvp = False,
+		property_class = "A"
 	),
 	EwPoi( # 7
-		id_poi = "greenlightdistrict",
+		id_poi = poi_id_greenlightdistrict,
 		alias = [
 			"greenlight",
 			"gld"
@@ -2129,10 +2171,11 @@ poi_list = [
 		str_desc = "Fluorescent signs flicker bright glyphs over smooth freshly-paved streets, promising all conceivable earthly pleasures. The ground is tacky with some unknown but obviously sinful grime.\n\nThis area contains the Slime Casino. To the East is Vagrant's Corner. To the Southeast is Juvie's Row. To the West is Downtown NLACakaNM.",
 		coord = (29, 14),
 		channel = "green-light-district",
-		role = "Green Light District"
+		role = "Green Light District",
+		property_class = "A"
 	),
 	EwPoi( # 8
-		id_poi = "oldnewyonkers",
+		id_poi = poi_id_oldnewyonkers,
 		alias = [
 			"ony"
 		],
@@ -2140,10 +2183,11 @@ poi_list = [
 		str_desc = "Rows of three-story brick and stone condominiums with white marble moulding wind along lanes of chipped cobblestone. Wrought-iron spikes jut from windows and balconies.\n\nTo the Northeast is New New Yonkers. To the Southeeast is Vagrant's Corner. To the Southwest is Smogsburg. To the East is Little Chernobyl. To the Northwest is Brawlden.",
 		coord = (32, 9),
 		channel = "old-new-yonkers",
-		role = "Old New Yonkers"
+		role = "Old New Yonkers",
+		property_class = "A"
 	),
 	EwPoi( # 9
-		id_poi = "littlechernobyl",
+		id_poi = poi_id_littlechernobyl,
 		alias = [
 			"chernobyl",
 			"lilchernobyl",
@@ -2154,10 +2198,11 @@ poi_list = [
 		str_desc = "Pathetic little gardens front the uneven parking lots of corporate complexes housing dentists, fortune-tellers, real estate agencies, and other equally dull and pointless ventures.\n\nTo the North is Brawlden. To the East is Old New Yonkers. To the West is Arsonbrook.",
 		coord = (25, 7),
 		channel = "little-chernobyl",
-		role = "Little Chernobyl"
+		role = "Little Chernobyl",
+		property_class = "B"
 	),
 	EwPoi( # 10
-		id_poi = "arsonbrook",
+		id_poi = poi_id_arsonbrook,
 		alias = [
 			"arson",
 			"ab"
@@ -2166,10 +2211,11 @@ poi_list = [
 		str_desc = "North of the bridge, you see large swathes of what were once suburbs blackened and flat, occasionally still smoking. Legends say a Starbucks tried to open here once.\n\nTo the East is Brawlden. To the Southeast is Little Chernobyl. To the South is Smogsburg. To the West is Astatine Heights.",
 		coord = (21, 3),
 		channel = "arsonbrook",
-		role = "Arsonbrook"
+		role = "Arsonbrook",
+		property_class = "B"
 	),
 	EwPoi( # 11
-		id_poi = "astatineheights",
+		id_poi = poi_id_astatineheights,
 		alias = [
 			"astatine",
 			"heights",
@@ -2179,10 +2225,11 @@ poi_list = [
 		str_desc = "Modern high-rise condos just from the steep hills to the north. To the south, classical stone and brick houses with columns command disgustingly decadent wide grassy yards.\n\nThis area contains NLACakaNM Cinemas. To the East is Arsonbrook. To the Southeast is Smogsburg. To the South is Cop Killtown. To the Southwest is Gatlingsdale. To the West is Toxington.",
 		coord = (17, 6),
 		channel = "astatine-heights",
-		role = "Astatine Heights"
+		role = "Astatine Heights",
+		property_class = "B"
 	),
 	EwPoi( # 12
-		id_poi = "gatlingsdale",
+		id_poi = poi_id_gatlingsdale,
 		alias = [
 			"gatlings",
 			"gatling",
@@ -2192,10 +2239,11 @@ poi_list = [
 		str_desc = "The brightest young minds of NLACakaNM fritter away their time here, amid hallowed halls of learning ringed endlessly by foreign book stores and vintage clothing shops.\n\nTo the Northeast is Astatine Heights. To the Southeast is Cop Killtown. To the Southwest is Vandal Park. To the West is Polonium Hill. To the Northwest is Toxington.",
 		coord = (13, 9),
 		channel = "gatlingsdale",
-		role = "Gatlingsdale"
+		role = "Gatlingsdale",
+		property_class = "A"
 	),
 	EwPoi( # 13
-		id_poi = "vandalpark",
+		id_poi = poi_id_vandalpark,
 		alias = [
 			"vandal",
 			"park",
@@ -2205,10 +2253,11 @@ poi_list = [
 		str_desc = "The more-or-less clean air carries the roar of the crowd across the grassy fields surrounding the Battle Arena.\n\nThis area contains the Battle Arena. To the Northeast is Gatlingsdale. To the East is Cop Killtown. To the South is Glocksbury. To the Southwest is West Glocksbury. To the Northwest is Polonium Hill.",
 		coord = (10, 12),
 		channel = "vandal-park",
-		role = "Vandal Park"
+		role = "Vandal Park",
+		property_class = "A"
 	),
 	EwPoi( # 14
-		id_poi = "glocksbury",
+		id_poi = poi_id_glocksbury,
 		alias = [
 			"glocks",
 			"gb"
@@ -2217,10 +2266,11 @@ poi_list = [
 		str_desc = "You smell bacon. *Figurative* bacon. The streets are too orderly here... the cops must be about. Absolutely vile.\n\nTo the North is Vandal Park. To the Southeast is Krak Bay. To the South is North Sleezeborough. To the West is West Glocksbury.",
 		coord = (9, 16),
 		channel = "glocksbury",
-		role = "Glocksbury"
+		role = "Glocksbury",
+		property_class = "C"
 	),
 	EwPoi( # 15
-		id_poi = "northsleezeborough",
+		id_poi = poi_id_northsleezeborough,
 		alias = [
 			"northsleezeboro",
 			"nsleezeborough",
@@ -2233,10 +2283,11 @@ poi_list = [
 		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.\n\nTo the North is Glocksbury. To the East is Krak Bay. To the South is South Sleezeborough.",
 		coord = (11, 19),
 		channel = "north-sleezeborough",
-		role = "North Sleezeborough"
+		role = "North Sleezeborough",
+		property_class = "C"
 	),
 	EwPoi( # 16
-		id_poi = "southsleezeborough",
+		id_poi = poi_id_southsleezeborough,
 		alias = [
 			"southsleezeboro",
 			"ssleezeborough",
@@ -2249,10 +2300,11 @@ poi_list = [
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Gardens.",
 		coord = (12, 22),
 		channel = "south-sleezeborough",
-		role = "South Sleezeborough"
+		role = "South Sleezeborough",
+		property_class = "C"
 	),
 	EwPoi( # 17
-		id_poi = "oozegardens",
+		id_poi = poi_id_oozegardens,
 		alias = [
 			"ooze",
 			"gardens",
@@ -2262,10 +2314,11 @@ poi_list = [
 		str_desc = "A bird chirps its last before falling dead from a withered tree. A trickle of slime runs down its bark. The resident's attempts to beautify the neighborhood with foliage have really backfired, aesthetically speaking.\n\nTo the North is Krak Bay. To the Northeast is Poudrin Alley. To the East is Cratersville. To the West is South Sleezeborough.",
 		coord = (14, 25),
 		channel = "ooze-gardens",
-		role = "Ooze Gardens"
+		role = "Ooze Gardens",
+		property_class = "B"
 	),
 	EwPoi( # 18
-		id_poi = "cratersville",
+		id_poi = poi_id_cratersville,
 		alias = [
 			"craters",
 			"cville",
@@ -2275,10 +2328,11 @@ poi_list = [
 		str_desc = "The people here hurry to their destinations, avoiding eye contact. They must be wary after seeing gang members level the next town over not too long ago.\n\nTo the North is Poudrin Alley. To the Northeast is the Rowdy Roughhouse. To the East is Wreckington. To the West is Ooze Gardens.",
 		coord = (19, 28),
 		channel = "cratersville",
-		role = "Cratersville"
+		role = "Cratersville",
+		property_class = "B"
 	),
 	EwPoi( # 19
-		id_poi = "wreckington",
+		id_poi = poi_id_wreckington,
 		alias = [
 			"wrecking",
 			"wton",
@@ -2288,10 +2342,11 @@ poi_list = [
 		str_desc = "You step over piles of rubble that once housed the now-displaced population of this neighborhood. A recent a dramatic victim of rampant gang warfare.\n\nTo the North is the Rowdy Roughhouse. To the West is Cratersville.",
 		coord = (27, 24),
 		channel = "wreckington",
-		role = "Wreckington"
+		role = "Wreckington",
+		property_class = "C"
 	),
 	EwPoi( # 20
-		id_poi = "juviesrow",
+		id_poi = poi_id_juviesrow,
 		alias = [
 			"juvies",
 			"jrow",
@@ -2302,10 +2357,11 @@ poi_list = [
 		coord = (32, 18),
 		channel = "juvies-row",
 		role = "Juvie's Row",
-		pvp = False
+		pvp = False,
+		property_class = "A"
 	),
 	EwPoi( # 21
-		id_poi = "slimesend",
+		id_poi = poi_id_slimesend,
 		alias = [
 			"slimes",
 			"send",
@@ -2316,10 +2372,11 @@ poi_list = [
 		str_desc = "The narrow peninsula is bordered on both sides by the Slime Sea. The phosphorescence of the Sea illuminates the land and sky with an eerily even green glow.\n\n To the North is Vagrant's Corner.",
 		coord = (40, 16),
 		channel = "slimes-end",
-		role = "Slime's End"
+		role = "Slime's End",
+		property_class = "B"
 	),
 	EwPoi( # 22
-		id_poi = "vagrantscorner",
+		id_poi = poi_id_vagrantscorner,
 		alias = [
 			"vagrants",
 			"vcorner",
@@ -2329,10 +2386,11 @@ poi_list = [
 		str_desc = "The glow of the Slime Sea illumunates the undersides of the docks and the heavy industrial machinery designed to pump slime into the cargo holds of outbound barges.\n\nThis area contains The King's Wife's Son Speakeasy. To the North is New New Yonkers. To the Northeast is Assault Flats Beach Resort. To the South is Slime's End. To the Southwest is Juvie's Row. To the West is the Green Light District. To the Northwest is Old New Yonkers.",
 		coord = (37, 11),
 		channel = "vagrants-corner",
-		role = "Vagrant's Corner"
+		role = "Vagrant's Corner",
+		property_class = "A"
 	),
 	EwPoi( # 23
-		id_poi = "assaultflatsbeachresort",
+		id_poi = poi_id_assaultflatsbeachresort,
 		alias = [
 			"assaultflatsbeach",
 			"assaultflats",
@@ -2347,10 +2405,11 @@ poi_list = [
 		str_desc = "The white imported sand of the beach stretches toward the horizon, lapped by gentle waves of slime. Gleaming hotels jut out of the rock formations just off the beachfront.\n\nTo the South is Vagrant's Corner. To the West is New New Yonkers.",
 		coord = (40, 6),
 		channel = "assault-flats-beach-resort",
-		role = "Assault Flats Beach Resort"
+		role = "Assault Flats Beach Resort",
+		property_class = "S"
 	),
 	EwPoi( # 24
-		id_poi = "newnewyonkers",
+		id_poi = poi_id_newnewyonkers,
 		alias = [
 			"nnewyonkers",
 			"nnyonkers",
@@ -2360,10 +2419,11 @@ poi_list = [
 		str_desc = "Trendy restaurants and clubs sit empty in this sparsely-populated failed gentrification experiment.\n\nTo the East is Assault Flats Beach Resort. To the South is Vagrant's Corner. To the Southwest is Old New Yonkers. To the West is Brawlden.",
 		coord = (36, 4),
 		channel = "new-new-yonkers",
-		role = "New New Yonkers"
+		role = "New New Yonkers",
+		property_class = "B"
 	),
 	EwPoi( # 25
-		id_poi = "brawlden",
+		id_poi = poi_id_brawlden,
 		alias = [
 			"den",
 			"bd"
@@ -2372,10 +2432,11 @@ poi_list = [
 		str_desc = "Rough-looking bewifebeatered citizens are everywhere, doing unspecified maintenence on strange machines propped up on cinderblocks. A SlimeCorp Laboratory hums and whirrs in the distance, day and night.\n\nThis area contains the Slimeoid Laboratory. To the East is New New Yonkers. To the Southeast is Old New Yonkers. To the South is Little Chernobyl. To the West is Arsonbrook.",
 		coord = (28, 3),
 		channel = "brawlden",
-		role = "Brawlden"
+		role = "Brawlden",
+		property_class = "C"
 	),
 	EwPoi( # 26
-		id_poi = "toxington",
+		id_poi = poi_id_toxington,
 		alias = [
 			"tton",
 			"tt"
@@ -2384,10 +2445,11 @@ poi_list = [
 		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.\n\nTo the East is Astatine Heights. To the Southeast is Gatlingsdale. To the South is Polonium Hill. To the East is Charcoal Park.",
 		coord = (9, 4),
 		channel = "toxington",
-		role = "Toxington"
+		role = "Toxington",
+		property_class = "C"
 	),
 	EwPoi( # 27
-		id_poi = "charcoalpark",
+		id_poi = poi_id_charcoalpark,
 		alias = [
 			"charcoal",
 			"park2",
@@ -2399,10 +2461,11 @@ poi_list = [
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.\n\nTo the East is Toxington. To the South is Polonium Hill.",
 		coord = (3, 3),
 		channel = "charcoal-park",
-		role = "Charcoal Park"
+		role = "Charcoal Park",
+		property_class = "C"
 	),
 	EwPoi( # 28
-		id_poi = "poloniumhill",
+		id_poi = poi_id_poloniumhill,
 		alias = [
 			"polonium",
 			"hill",
@@ -2413,10 +2476,11 @@ poi_list = [
 		str_desc = "The gently rolling terrain is speckled with hideous minimansions that obviously cost a fortune and look like complete shit.\n\nTo the North is Charcoal Park. To the Northeast is Toxington. To the East is Gatlingsdale. To the Southeast is Vandal park. To the South is West Glocksbury.",
 		coord = (5, 9),
 		channel = "polonium-hill",
-		role = "Polonium Hill"
+		role = "Polonium Hill",
+		property_class = "A"
 	),
 	EwPoi( # 29
-		id_poi = "westglocksbury",
+		id_poi = poi_id_westglocksbury,
 		alias = [
 			"wglocksbury",
 			"westglocks",
@@ -2428,7 +2492,8 @@ poi_list = [
 		str_desc = "Gunshots ring out periodically from somewhere in the distance, hidden by laundromats and barber shops. Even the most jaded NLACakaNMite may get a bit nervous 'round these parts.\n\n To the North is Polonium Hill. To the Northeast is Vandal Park. To the East is Glocksbury",
 		coord = (4, 14),
 		channel = "west-glocksbury",
-		role = "West Glocksbury"
+		role = "West Glocksbury",
+		property_class = "C"
 	),
 	EwPoi( # the-sewers
 		id_poi = poi_id_thesewers,
@@ -2794,6 +2859,7 @@ poi_list = [
 id_to_poi = {}
 coord_to_poi = {}
 alias_to_coord = {}
+capturable_districts = []
 
 for poi in poi_list:
 	if poi.coord != None:
@@ -2809,6 +2875,6 @@ for poi in poi_list:
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
 
-property_classes = {
-	"downtown": "S"  # todo finish
-}
+	# if it's a district and not RR, CK, or JR, add it to a list of capturable districts
+	if poi.pvp and poi.id_poi != poi_id_endlesswar:
+		capturable_districts.append(poi.id_poi)

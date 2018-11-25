@@ -85,6 +85,9 @@ class EwPoi:
 	# Vendor names available at this POI.
 	vendors = []
 
+	# The value of the district
+	property_class = ""
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
@@ -103,6 +106,7 @@ class EwPoi:
 		closed = False,
 		str_closed = None,
 		vendors = [],
+		property_class = ""
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -120,6 +124,7 @@ class EwPoi:
 		self.closed = closed
 		self.str_closed = str_closed
 		self.vendors = vendors
+		self.property_class = property_class
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],

@@ -257,12 +257,12 @@ async def on_ready():
 					channels_stockmarket[server.id] = channel
 					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
 
-		# create all the districts in the database, is only run on startup so it shouldn't be a big performance hit
-		for poi in ewcfg.poi_list:
-			if poi.pvp and poi.id_poi != ewcfg.poi_id_endlesswar:  # if it's a district and not RR, CK, or JR; this is not optimal but we dont have some kind of "is subzone" attribute
-				EwDistrict(id_server = server.id, district = poi.id_poi)
+		# create all the districts in the database
+		for poi in ewcfg.capturable_districts:
+				# call the constructor to create an entry if it doesnt exist yet
+				EwDistrict(id_server = server.id, district = poi)
 
-		asyncio.ensure_future(ewdistrict.call_capture_tick(id_server = server.id, interval = 20))
+		asyncio.ensure_future(ewdistrict.capture_tick_loop(id_server = server.id))
 
 	try:
 		ewutils.logMsg('Creating message queue directory.')
@@ -382,6 +382,8 @@ async def on_ready():
 
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
+
+					ewdistrict.give_kingpins_slime(id_server = server.id)
 
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:

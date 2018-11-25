@@ -526,17 +526,20 @@ def get_faction_symbol(faction = ""):
 
 	return result
 
+
 """
 	Calculate the slime amount needed to reach a certain level
 """
 def slime_bylevel(slimelevel):
 	return int(slimelevel ** 4)
 
+
 """
 	Calculate what level the player should be at, given their slime amount
 """
 def level_byslime(slime):
 	return int(abs(slime) ** 0.25)
+
 
 """
 	Calculate the maximum hunger level at the player's slimelevel
@@ -545,8 +548,31 @@ def hunger_max_bylevel(slimelevel):
 	# note that when you change this formula, you'll also have to adjust its sql equivalent in pushupServerHunger
 	return max(ewcfg.min_stamina, slimelevel ** 2)
 
+
 """
 	Calculate how much more stamina activities should cost
 """
 def hunger_cost_mod(slimelevel):
 	return hunger_max_bylevel(slimelevel) / 200
+
+
+"""
+	Returns an EwUser object of the selected kingpin
+"""
+def find_kingpin(id_server, kingpin_role):
+	data = execute_sql_query("SELECT id_user FROM users WHERE id_server = %s AND {life_state} = %s AND {faction} = %s".format(
+		life_state = ewcfg.col_life_state,
+		faction = ewcfg.col_faction
+	), (
+		id_server,
+		ewcfg.life_state_kingpin,
+		ewcfg.faction_rowdys if kingpin_role == ewcfg.role_rowdyfucker else ewcfg.faction_killers
+	))
+
+	kingpin = None
+
+	if len(data) > 0:
+		id_kingpin = data[0][0]
+		kingpin = EwUser(id_server = id_server, id_user = id_kingpin)
+
+	return kingpin

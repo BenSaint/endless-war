@@ -20,13 +20,14 @@ class EwDistrict:
 			self.id_server = id_server
 			self.name = district
 
-			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = {id_server} AND {district_col} = '{district}'".format(
+			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = %s AND {district} = %s".format(
 				controlling_faction = ewcfg.col_controlling_faction,
 				capturing_faction = ewcfg.col_capturing_faction,
 				capture_progress = ewcfg.col_capture_progress,
-				id_server = id_server,
-				district_col = ewcfg.col_district,
-				district = district
+				district = ewcfg.col_district,
+			), (
+				id_server,
+				district
 			))
 
 			if len(data) > 0:  # if data is not empty, i.e. it found an entry
@@ -36,24 +37,26 @@ class EwDistrict:
 				self.capture_progress = data[0][2]
 				# ewutils.logMsg("EwDistrict object '" + self.name + "' created.  Controlling faction: " + self.controlling_faction + "; Capture progress: %d" % self.capture_progress)
 			else:  # create new entry
-				ewutils.execute_sql_query("REPLACE INTO districts ({id_server}, {district}) VALUES ({id}, '{dist}')".format(
+				ewutils.execute_sql_query("REPLACE INTO districts ({id_server}, {district}) VALUES (%s, %s)".format(
 					id_server = ewcfg.col_id_server,
-					district = ewcfg.col_district,
-					id = id_server,
-					dist = district
+					district = ewcfg.col_district
+				), (
+					id_server,
+					district
 				))
 
 	def persist(self):
-		ewutils.execute_sql_query("REPLACE INTO districts(id_server, {district}, {controlling_faction}, {capturing_faction}, {capture_progress}) VALUES({id_server}, '{dist}', '{ctrl_f}', '{capt_f}', {cp})".format(
+		ewutils.execute_sql_query("REPLACE INTO districts(id_server, {district}, {controlling_faction}, {capturing_faction}, {capture_progress}) VALUES(%s, %s, %s, %s, %s)".format(
 			district = ewcfg.col_district,
 			controlling_faction = ewcfg.col_controlling_faction,
 			capturing_faction = ewcfg.col_capturing_faction,
-			capture_progress = ewcfg.col_capture_progress,
-			id_server = self.id_server,
-			dist = self.name,
-			ctrl_f = self.controlling_faction,
-			capt_f = self.capturing_faction,
-			cp = self.capture_progress
+			capture_progress = ewcfg.col_capture_progress
+		), (
+			self.id_server,
+			self.name,
+			self.controlling_faction,
+			self.capturing_faction,
+			self.capture_progress
 		))
 
 
@@ -70,21 +73,23 @@ async def capture_tick(id_server):
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
-		cursor.execute("SELECT {district}, {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = {id_server}".format(
+		cursor.execute("SELECT {district}, {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = %s".format(
 			district = ewcfg.col_district,
 			controlling_faction = ewcfg.col_controlling_faction,
 			capturing_faction = ewcfg.col_capturing_faction,
-			capture_progress = ewcfg.col_capture_progress,
-			id_server = id_server
+			capture_progress = ewcfg.col_capture_progress
+		), (
+			id_server,
 		))
 
 		all_districts = cursor.fetchall()
 
-		cursor.execute("SELECT {poi}, {faction}, {life_state} FROM users WHERE id_server = {id_server} AND poi != 'thesewers'".format(  # saves some time, a lot of inactive players are in sewers
+		cursor.execute("SELECT {poi}, {faction}, {life_state} FROM users WHERE id_server = %s".format(
 			poi = ewcfg.col_poi,
 			faction = ewcfg.col_faction,
-			life_state = ewcfg.col_life_state,
-			id_server = id_server
+			life_state = ewcfg.col_life_state
+		), (
+			id_server,
 		))
 
 		all_players = cursor.fetchall()
@@ -135,14 +140,21 @@ async def capture_tick(id_server):
 					# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
 					if dist.capture_progress >= ewcfg.max_capture_progress:
 						dist.controlling_faction = dist.capturing_faction
-					# if progress < 0, swap which faction is in the process of capturing it and make the value positive again
-					elif dist.capture_progress < 0:
+
+					# # if progress < 0, swap which faction is in the process of capturing it and make the value positive again
+					# elif dist.capture_progress < 0:
+					# 	dist.capturing_faction = faction_capture
+					# 	dist.capture_progress -= dist.capture_progress
+					# # if progress is exactly 0, the district returns to being neutral
+					# elif dist.capture_progress == 0:
+					# 	dist.capturing_faction = ""
+					# 	dist.controlling_faction = ""
+
+					# if the opposing faction successfully de-captures a district, it belongs to them now
+					elif dist.capture_progress <= 0:
 						dist.capturing_faction = faction_capture
-						dist.capture_progress -= dist.capture_progress
-					# if progress is exactly 0, the district returns to being neutral
-					elif dist.capture_progress == 0:
-						dist.capturing_faction = ""
-						dist.controlling_faction = ""
+						dist.capture_progress = ewcfg.max_capture_progress
+						dist.controlling_faction = faction_capture
 
 					dist.persist()
 
@@ -157,9 +169,46 @@ async def capture_tick(id_server):
 """
 	Coroutine that continually calls capture_tick; is called once per server, and not just once globally
 """
-async def call_capture_tick(id_server, interval = 10):
+async def capture_tick_loop(id_server):
+	interval = ewcfg.capture_progress_per_tick
 	# causes a capture tick to happen exactly every 10 seconds (the "elapsed" thing might be unnecessary, depending on how long capture_tick ends up taking on average)
 	while True:
 		await capture_tick(id_server = id_server)
-		ewutils.logMsg("Capture tick happened on server %s." % id_server + " Timestamp: %d" % int(time.time()))
+		# ewutils.logMsg("Capture tick happened on server %s." % id_server + " Timestamp: %d" % int(time.time()))
+
 		await asyncio.sleep(interval)
+
+"""
+	Gives both kingpins the appropriate amount of slime for how many districts they own
+"""
+def give_kingpins_slime(id_server):
+	for kingpin_role in [ewcfg.role_rowdyfucker, ewcfg.role_copkiller]:
+		kingpin = ewutils.find_kingpin(id_server = id_server, kingpin_role = kingpin_role)
+
+		if kingpin is not None:
+			slimegain = 0
+
+			for id_district in ewcfg.capturable_districts:
+				district = EwDistrict(id_server = id_server, district = id_district)
+				property_class = ""
+
+				# if the kingpin is controlling this district
+				if district.controlling_faction == (ewcfg.faction_killers if kingpin.faction == ewcfg.faction_killers else ewcfg.faction_rowdys):
+					# find the districts property class
+					for poi in ewcfg.poi_list:
+						if poi.id_poi == id_district:
+							property_class = poi.property_class.lower()
+
+					# give the kingpin slime based on the district's property class
+					if property_class == "s":
+						slimegain += ewcfg.slime_yield_class_s
+					elif property_class == "a":
+						slimegain += ewcfg.slime_yield_class_a
+					elif property_class == "b":
+						slimegain += ewcfg.slime_yield_class_b
+					elif property_class == "c":
+						slimegain += ewcfg.slime_yield_class_c
+
+			kingpin.change_slimes(n = slimegain)
+			kingpin.persist()
+			ewutils.logMsg(kingpin_role + " just received %d" % slimegain + " slime for their captured districts.")
