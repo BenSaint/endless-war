@@ -211,11 +211,15 @@ slimes_perslot = 100
 slimes_perpachinko = 500
 slimecoin_exchangerate = 100
 
-# kingpin district control slime yields
-slime_yield_class_s = 101400
-slime_yield_class_a = 69800
-slime_yield_class_b = 56400
-slime_yield_class_c = 45800
+# time values
+seconds_per_ingame_day = 21600
+ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
+
+# kingpin district control slime yields (in-game-hourly)
+slime_yield_class_s = 101400 / ticks_per_day  # dividing the daily amount by the amount of method calls per day
+slime_yield_class_a = 69800 / ticks_per_day
+slime_yield_class_b = 56400 / ticks_per_day
+slime_yield_class_c = 45800 / ticks_per_day
 
 # hunger
 min_stamina = 100
