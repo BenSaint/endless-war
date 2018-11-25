@@ -2076,7 +2076,8 @@ poi_list = [
 		],
 		channel = "downtown",
 		role = "Downtown",
-		property_class = "S"
+		property_class = "S",
+		is_capturable = True
 	),
 	EwPoi( # 2
 		id_poi = poi_id_smogsburg,
@@ -2090,7 +2091,8 @@ poi_list = [
 		coord = (23, 11),
 		channel = "smogsburg",
 		role = "Smogsburg",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 3
 		id_poi = poi_id_copkilltown,
@@ -2112,7 +2114,8 @@ poi_list = [
 			faction_killers
 		],
 		pvp = False,
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 4
 		id_poi = poi_id_krakbay,
@@ -2125,7 +2128,8 @@ poi_list = [
 		coord = (16, 19),
 		channel = "krak-bay",
 		role = "Krak Bay",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 5
 		id_poi = poi_id_poudrinalley,
@@ -2138,7 +2142,8 @@ poi_list = [
 		coord = (19, 23),
 		channel = "poudrin-alley",
 		role = "Poudrin Alley",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 6
 		id_poi = poi_id_rowdyroughhouse,
@@ -2159,7 +2164,8 @@ poi_list = [
 			faction_rowdys
 		],
 		pvp = False,
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 7
 		id_poi = poi_id_greenlightdistrict,
@@ -2172,7 +2178,8 @@ poi_list = [
 		coord = (29, 14),
 		channel = "green-light-district",
 		role = "Green Light District",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 8
 		id_poi = poi_id_oldnewyonkers,
@@ -2184,7 +2191,8 @@ poi_list = [
 		coord = (32, 9),
 		channel = "old-new-yonkers",
 		role = "Old New Yonkers",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 9
 		id_poi = poi_id_littlechernobyl,
@@ -2199,7 +2207,8 @@ poi_list = [
 		coord = (25, 7),
 		channel = "little-chernobyl",
 		role = "Little Chernobyl",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 10
 		id_poi = poi_id_arsonbrook,
@@ -2212,7 +2221,8 @@ poi_list = [
 		coord = (21, 3),
 		channel = "arsonbrook",
 		role = "Arsonbrook",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 11
 		id_poi = poi_id_astatineheights,
@@ -2226,7 +2236,8 @@ poi_list = [
 		coord = (17, 6),
 		channel = "astatine-heights",
 		role = "Astatine Heights",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 12
 		id_poi = poi_id_gatlingsdale,
@@ -2240,7 +2251,8 @@ poi_list = [
 		coord = (13, 9),
 		channel = "gatlingsdale",
 		role = "Gatlingsdale",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 13
 		id_poi = poi_id_vandalpark,
@@ -2254,7 +2266,8 @@ poi_list = [
 		coord = (10, 12),
 		channel = "vandal-park",
 		role = "Vandal Park",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 14
 		id_poi = poi_id_glocksbury,
@@ -2267,7 +2280,8 @@ poi_list = [
 		coord = (9, 16),
 		channel = "glocksbury",
 		role = "Glocksbury",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 15
 		id_poi = poi_id_northsleezeborough,
@@ -2284,7 +2298,8 @@ poi_list = [
 		coord = (11, 19),
 		channel = "north-sleezeborough",
 		role = "North Sleezeborough",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 16
 		id_poi = poi_id_southsleezeborough,
@@ -2301,7 +2316,8 @@ poi_list = [
 		coord = (12, 22),
 		channel = "south-sleezeborough",
 		role = "South Sleezeborough",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 17
 		id_poi = poi_id_oozegardens,
@@ -2315,7 +2331,8 @@ poi_list = [
 		coord = (14, 25),
 		channel = "ooze-gardens",
 		role = "Ooze Gardens",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 18
 		id_poi = poi_id_cratersville,
@@ -2329,7 +2346,8 @@ poi_list = [
 		coord = (19, 28),
 		channel = "cratersville",
 		role = "Cratersville",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 19
 		id_poi = poi_id_wreckington,
@@ -2343,7 +2361,8 @@ poi_list = [
 		coord = (27, 24),
 		channel = "wreckington",
 		role = "Wreckington",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 20
 		id_poi = poi_id_juviesrow,
@@ -2358,7 +2377,8 @@ poi_list = [
 		channel = "juvies-row",
 		role = "Juvie's Row",
 		pvp = False,
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 21
 		id_poi = poi_id_slimesend,
@@ -2373,7 +2393,8 @@ poi_list = [
 		coord = (40, 16),
 		channel = "slimes-end",
 		role = "Slime's End",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 22
 		id_poi = poi_id_vagrantscorner,
@@ -2387,7 +2408,8 @@ poi_list = [
 		coord = (37, 11),
 		channel = "vagrants-corner",
 		role = "Vagrant's Corner",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 23
 		id_poi = poi_id_assaultflatsbeachresort,
@@ -2406,7 +2428,8 @@ poi_list = [
 		coord = (40, 6),
 		channel = "assault-flats-beach-resort",
 		role = "Assault Flats Beach Resort",
-		property_class = "S"
+		property_class = "S",
+		is_capturable = True
 	),
 	EwPoi( # 24
 		id_poi = poi_id_newnewyonkers,
@@ -2420,7 +2443,8 @@ poi_list = [
 		coord = (36, 4),
 		channel = "new-new-yonkers",
 		role = "New New Yonkers",
-		property_class = "B"
+		property_class = "B",
+		is_capturable = True
 	),
 	EwPoi( # 25
 		id_poi = poi_id_brawlden,
@@ -2433,7 +2457,8 @@ poi_list = [
 		coord = (28, 3),
 		channel = "brawlden",
 		role = "Brawlden",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 26
 		id_poi = poi_id_toxington,
@@ -2446,7 +2471,8 @@ poi_list = [
 		coord = (9, 4),
 		channel = "toxington",
 		role = "Toxington",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 27
 		id_poi = poi_id_charcoalpark,
@@ -2462,7 +2488,8 @@ poi_list = [
 		coord = (3, 3),
 		channel = "charcoal-park",
 		role = "Charcoal Park",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # 28
 		id_poi = poi_id_poloniumhill,
@@ -2477,7 +2504,8 @@ poi_list = [
 		coord = (5, 9),
 		channel = "polonium-hill",
 		role = "Polonium Hill",
-		property_class = "A"
+		property_class = "A",
+		is_capturable = True
 	),
 	EwPoi( # 29
 		id_poi = poi_id_westglocksbury,
@@ -2493,7 +2521,8 @@ poi_list = [
 		coord = (4, 14),
 		channel = "west-glocksbury",
 		role = "West Glocksbury",
-		property_class = "C"
+		property_class = "C",
+		is_capturable = True
 	),
 	EwPoi( # the-sewers
 		id_poi = poi_id_thesewers,
@@ -2876,5 +2905,5 @@ for poi in poi_list:
 		id_to_poi[alias] = poi
 
 	# if it's a district and not RR, CK, or JR, add it to a list of capturable districts
-	if poi.pvp and poi.id_poi != poi_id_endlesswar:
+	if poi.is_capturable:
 		capturable_districts.append(poi.id_poi)

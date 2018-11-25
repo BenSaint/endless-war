@@ -88,6 +88,9 @@ class EwPoi:
 	# The value of the district
 	property_class = ""
 
+	# If true, the zone is a district that can be controlled/captured
+	is_capturable = False
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
@@ -106,7 +109,8 @@ class EwPoi:
 		closed = False,
 		str_closed = None,
 		vendors = [],
-		property_class = ""
+		property_class = "",
+		is_capturable = False
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -125,6 +129,7 @@ class EwPoi:
 		self.str_closed = str_closed
 		self.vendors = vendors
 		self.property_class = property_class
+		self.is_capturable = is_capturable
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
