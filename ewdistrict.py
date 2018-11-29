@@ -2,6 +2,7 @@
 	district data model for database persistence
 """
 import asyncio
+import math
 
 import ewcfg
 import ewutils
@@ -57,6 +58,27 @@ class EwDistrict:
 			self.capturing_faction,
 			self.capture_progress
 		))
+
+	def decay_capture_progress(self, property_class):
+		max_capture_progress = {
+			ewcfg.property_class_s: ewcfg.max_capture_progress_s,
+			ewcfg.property_class_a: ewcfg.max_capture_progress_a,
+			ewcfg.property_class_b: ewcfg.max_capture_progress_b,
+			ewcfg.property_class_c: ewcfg.max_capture_progress_c
+		}
+
+		if property_class in max_capture_progress:
+			if self.capture_progress > 0:
+				# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
+				# it's ceil() instead of int() because, with different values, the decay may be 0 that way
+				self.capture_progress -= math.ceil(max_capture_progress[property_class] / ewcfg.ticks_per_day)
+
+			if self.capture_progress < 0:
+				self.capture_progress = 0
+
+			if self.capture_progress == 0:
+				self.controlling_faction = ""
+				self.capturing_faction = ""
 
 
 """
@@ -133,13 +155,13 @@ async def capture_tick(id_server):
 							property_class = poi.property_class.lower()
 
 					# capture time is different based on the property class
-					if property_class == "s":
+					if property_class == ewcfg.property_class_s:
 						max_capture_progress = ewcfg.max_capture_progress_s
-					elif property_class == "a":
+					elif property_class == ewcfg.property_class_a:
 						max_capture_progress = ewcfg.max_capture_progress_a
-					elif property_class == "b":
+					elif property_class == ewcfg.property_class_b:
 						max_capture_progress = ewcfg.max_capture_progress_b
-					elif property_class == "c":
+					elif property_class == ewcfg.property_class_c:
 						max_capture_progress = ewcfg.max_capture_progress_c
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
@@ -195,9 +217,9 @@ async def capture_tick_loop(id_server):
 		await asyncio.sleep(interval)
 
 """
-	Gives both kingpins the appropriate amount of slime for how many districts they own
+	Gives both kingpins the appropriate amount of slime for how many districts they own and lowers the capture_progress property of each district by a certain amount, turning them neutral after a while
 """
-def give_kingpins_slime(id_server):
+def give_kingpins_slime_and_decay_capture_progress(id_server):
 	for kingpin_role in [ewcfg.role_rowdyfucker, ewcfg.role_copkiller]:
 		kingpin = ewutils.find_kingpin(id_server = id_server, kingpin_role = kingpin_role)
 
@@ -216,14 +238,16 @@ def give_kingpins_slime(id_server):
 							property_class = poi.property_class.lower()
 
 					# give the kingpin slime based on the district's property class
-					if property_class == "s":
+					if property_class == ewcfg.property_class_s:
 						slimegain += ewcfg.slime_yield_class_s
-					elif property_class == "a":
+					elif property_class == ewcfg.property_class_a:
 						slimegain += ewcfg.slime_yield_class_a
-					elif property_class == "b":
+					elif property_class == ewcfg.property_class_b:
 						slimegain += ewcfg.slime_yield_class_b
-					elif property_class == "c":
+					elif property_class == ewcfg.property_class_c:
 						slimegain += ewcfg.slime_yield_class_c
+
+				district.decay_capture_progress(property_class)
 
 			kingpin.change_slimes(n = slimegain)
 			kingpin.persist()

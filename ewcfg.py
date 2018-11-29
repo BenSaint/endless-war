@@ -237,6 +237,8 @@ max_capture_progress_s = 3600  # 60 min
 max_capture_progress_a = 1800  # 30 min
 max_capture_progress_b = 1200  # 20 min
 max_capture_progress_c = 600   # 10 min
+
+# district de-capturing
 decapture_speed_multiplier = 2  # how much faster de-capturing is than capturing
 
 # time values
@@ -248,6 +250,12 @@ slime_yield_class_s = int(101400 / ticks_per_day)  # dividing the daily amount b
 slime_yield_class_a = int(69800 / ticks_per_day)
 slime_yield_class_b = int(56400 / ticks_per_day)
 slime_yield_class_c = int(45800 / ticks_per_day)
+
+# property classes
+property_class_s = "s"
+property_class_a = "a"
+property_class_b = "b"
+property_class_c = "c"
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
@@ -2084,7 +2092,7 @@ poi_list = [
 		],
 		channel = "downtown",
 		role = "Downtown",
-		property_class = "S",
+		property_class = property_class_s,
 		is_capturable = True
 	),
 	EwPoi( # 2
@@ -2099,7 +2107,7 @@ poi_list = [
 		coord = (23, 11),
 		channel = "smogsburg",
 		role = "Smogsburg",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 3
@@ -2122,7 +2130,7 @@ poi_list = [
 			faction_killers
 		],
 		pvp = False,
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 4
@@ -2136,7 +2144,7 @@ poi_list = [
 		coord = (16, 19),
 		channel = "krak-bay",
 		role = "Krak Bay",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 5
@@ -2150,7 +2158,7 @@ poi_list = [
 		coord = (19, 23),
 		channel = "poudrin-alley",
 		role = "Poudrin Alley",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 6
@@ -2172,7 +2180,7 @@ poi_list = [
 			faction_rowdys
 		],
 		pvp = False,
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 7
@@ -2186,7 +2194,7 @@ poi_list = [
 		coord = (29, 14),
 		channel = "green-light-district",
 		role = "Green Light District",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 8
@@ -2199,7 +2207,7 @@ poi_list = [
 		coord = (32, 9),
 		channel = "old-new-yonkers",
 		role = "Old New Yonkers",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 9
@@ -2215,7 +2223,7 @@ poi_list = [
 		coord = (25, 7),
 		channel = "little-chernobyl",
 		role = "Little Chernobyl",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 10
@@ -2229,7 +2237,7 @@ poi_list = [
 		coord = (21, 3),
 		channel = "arsonbrook",
 		role = "Arsonbrook",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 11
@@ -2244,7 +2252,7 @@ poi_list = [
 		coord = (17, 6),
 		channel = "astatine-heights",
 		role = "Astatine Heights",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 12
@@ -2259,7 +2267,7 @@ poi_list = [
 		coord = (13, 9),
 		channel = "gatlingsdale",
 		role = "Gatlingsdale",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 13
@@ -2274,7 +2282,7 @@ poi_list = [
 		coord = (10, 12),
 		channel = "vandal-park",
 		role = "Vandal Park",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 14
@@ -2288,7 +2296,7 @@ poi_list = [
 		coord = (9, 16),
 		channel = "glocksbury",
 		role = "Glocksbury",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 15
@@ -2306,7 +2314,7 @@ poi_list = [
 		coord = (11, 19),
 		channel = "north-sleezeborough",
 		role = "North Sleezeborough",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 16
@@ -2324,7 +2332,7 @@ poi_list = [
 		coord = (12, 22),
 		channel = "south-sleezeborough",
 		role = "South Sleezeborough",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 17
@@ -2339,7 +2347,7 @@ poi_list = [
 		coord = (14, 25),
 		channel = "ooze-gardens",
 		role = "Ooze Gardens",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 18
@@ -2354,7 +2362,7 @@ poi_list = [
 		coord = (19, 28),
 		channel = "cratersville",
 		role = "Cratersville",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 19
@@ -2369,7 +2377,7 @@ poi_list = [
 		coord = (27, 24),
 		channel = "wreckington",
 		role = "Wreckington",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 20
@@ -2385,7 +2393,7 @@ poi_list = [
 		channel = "juvies-row",
 		role = "Juvie's Row",
 		pvp = False,
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 21
@@ -2401,7 +2409,7 @@ poi_list = [
 		coord = (40, 16),
 		channel = "slimes-end",
 		role = "Slime's End",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 22
@@ -2416,7 +2424,7 @@ poi_list = [
 		coord = (37, 11),
 		channel = "vagrants-corner",
 		role = "Vagrant's Corner",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 23
@@ -2436,7 +2444,7 @@ poi_list = [
 		coord = (40, 6),
 		channel = "assault-flats-beach-resort",
 		role = "Assault Flats Beach Resort",
-		property_class = "S",
+		property_class = property_class_s,
 		is_capturable = True
 	),
 	EwPoi( # 24
@@ -2451,7 +2459,7 @@ poi_list = [
 		coord = (36, 4),
 		channel = "new-new-yonkers",
 		role = "New New Yonkers",
-		property_class = "B",
+		property_class = property_class_b,
 		is_capturable = True
 	),
 	EwPoi( # 25
@@ -2465,7 +2473,7 @@ poi_list = [
 		coord = (28, 3),
 		channel = "brawlden",
 		role = "Brawlden",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 26
@@ -2479,7 +2487,7 @@ poi_list = [
 		coord = (9, 4),
 		channel = "toxington",
 		role = "Toxington",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 27
@@ -2496,7 +2504,7 @@ poi_list = [
 		coord = (3, 3),
 		channel = "charcoal-park",
 		role = "Charcoal Park",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # 28
@@ -2512,7 +2520,7 @@ poi_list = [
 		coord = (5, 9),
 		channel = "polonium-hill",
 		role = "Polonium Hill",
-		property_class = "A",
+		property_class = property_class_a,
 		is_capturable = True
 	),
 	EwPoi( # 29
@@ -2529,7 +2537,7 @@ poi_list = [
 		coord = (4, 14),
 		channel = "west-glocksbury",
 		role = "West Glocksbury",
-		property_class = "C",
+		property_class = property_class_c,
 		is_capturable = True
 	),
 	EwPoi( # the-sewers
