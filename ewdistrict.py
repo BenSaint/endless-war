@@ -2,7 +2,6 @@
 	district data model for database persistence
 """
 import asyncio
-import time
 
 import ewcfg
 import ewutils
@@ -125,36 +124,53 @@ async def capture_tick(id_server):
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
+					property_class = ""
+					max_capture_progress = 0
+
+					# find the district's property class
+					for poi in ewcfg.poi_list:
+						if poi.id_poi == dist.name:
+							property_class = poi.property_class.lower()
+
+					# capture time is different based on the property class
+					if property_class == "s":
+						max_capture_progress = ewcfg.max_capture_progress_s
+					elif property_class == "a":
+						max_capture_progress = ewcfg.max_capture_progress_a
+					elif property_class == "b":
+						max_capture_progress = ewcfg.max_capture_progress_b
+					elif property_class == "c":
+						max_capture_progress = ewcfg.max_capture_progress_c
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
-						if dist.capture_progress < ewcfg.max_capture_progress:  # stop at maximum progress
-							dist.capture_progress += ewcfg.capture_progress_per_tick * capture_speed
+						if dist.capture_progress < max_capture_progress:  # stop at maximum progress
+							dist.capture_progress += ewcfg.capture_tick_length * capture_speed
 
 					elif dist.capture_progress == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
-						dist.capture_progress += ewcfg.capture_progress_per_tick * capture_speed
+						dist.capture_progress += ewcfg.capture_tick_length * capture_speed
 						dist.capturing_faction = faction_capture
 
 					else:  # lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
-						dist.capture_progress -= ewcfg.capture_progress_per_tick * capture_speed
+						dist.capture_progress -= ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier
 
 					# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
-					if dist.capture_progress >= ewcfg.max_capture_progress:
+					if dist.capture_progress >= max_capture_progress:
 						dist.controlling_faction = dist.capturing_faction
 
-					# # if progress < 0, swap which faction is in the process of capturing it and make the value positive again
-					# elif dist.capture_progress < 0:
-					# 	dist.capturing_faction = faction_capture
-					# 	dist.capture_progress -= dist.capture_progress
-					# # if progress is exactly 0, the district returns to being neutral
-					# elif dist.capture_progress == 0:
-					# 	dist.capturing_faction = ""
-					# 	dist.controlling_faction = ""
-
-					# if the opposing faction successfully de-captures a district, it belongs to them now
-					elif dist.capture_progress <= 0:
+					# if progress < 0, swap which faction is in the process of capturing it and make the value positive again
+					elif dist.capture_progress < 0:
 						dist.capturing_faction = faction_capture
-						dist.capture_progress = ewcfg.max_capture_progress
-						dist.controlling_faction = faction_capture
+						dist.capture_progress -= dist.capture_progress
+					# if progress is exactly 0, the district returns to being neutral
+					elif dist.capture_progress == 0:
+						dist.capturing_faction = ""
+						dist.controlling_faction = ""
+
+					# # if the opposing faction successfully de-captures a district, it belongs to them now
+					# elif dist.capture_progress <= 0:
+					# 	dist.capturing_faction = faction_capture
+					# 	dist.capture_progress = max_capture_progress
+					# 	dist.controlling_faction = faction_capture
 
 					dist.persist()
 
@@ -170,7 +186,7 @@ async def capture_tick(id_server):
 	Coroutine that continually calls capture_tick; is called once per server, and not just once globally
 """
 async def capture_tick_loop(id_server):
-	interval = ewcfg.capture_progress_per_tick
+	interval = ewcfg.capture_tick_length
 	# causes a capture tick to happen exactly every 10 seconds (the "elapsed" thing might be unnecessary, depending on how long capture_tick ends up taking on average)
 	while True:
 		await capture_tick(id_server = id_server)
@@ -194,7 +210,7 @@ def give_kingpins_slime(id_server):
 
 				# if the kingpin is controlling this district
 				if district.controlling_faction == (ewcfg.faction_killers if kingpin.faction == ewcfg.faction_killers else ewcfg.faction_rowdys):
-					# find the districts property class
+					# find the district's property class
 					for poi in ewcfg.poi_list:
 						if poi.id_poi == id_district:
 							property_class = poi.property_class.lower()

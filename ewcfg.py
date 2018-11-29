@@ -211,16 +211,6 @@ slimes_perslot = 100
 slimes_perpachinko = 500
 slimecoin_exchangerate = 100
 
-# time values
-seconds_per_ingame_day = 21600
-ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
-
-# kingpin district control slime yields (in-game-hourly)
-slime_yield_class_s = 101400 / ticks_per_day  # dividing the daily amount by the amount of method calls per day
-slime_yield_class_a = 69800 / ticks_per_day
-slime_yield_class_b = 56400 / ticks_per_day
-slime_yield_class_c = 45800 / ticks_per_day
-
 # hunger
 min_stamina = 100
 hunger_pershot = 10
@@ -242,8 +232,22 @@ togo_price_increase = 2
 std_food_expir = 12 * 3600  # 12 hours
 
 # district capturing
-capture_progress_per_tick = 10
-max_capture_progress = 60
+capture_tick_length = 10  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
+max_capture_progress_s = 3600  # 60 min
+max_capture_progress_a = 1800  # 30 min
+max_capture_progress_b = 1200  # 20 min
+max_capture_progress_c = 600   # 10 min
+decapture_speed_multiplier = 2  # how much faster de-capturing is than capturing
+
+# time values
+seconds_per_ingame_day = 21600
+ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
+
+# kingpin district control slime yields (per tick, i.e. in-game-hourly)
+slime_yield_class_s = int(101400 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
+slime_yield_class_a = int(69800 / ticks_per_day)
+slime_yield_class_b = int(56400 / ticks_per_day)
+slime_yield_class_c = int(45800 / ticks_per_day)
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
