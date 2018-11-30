@@ -2618,7 +2618,10 @@ poi_list = [
 		channel = channel_711,
 		role = "7-11",
 		coord = (19, 25),
-		pvp = False
+		pvp = False,
+		vendors = [
+			vendor_vendingmachine
+		]
 	),
 	EwPoi( # the-labs
 		id_poi = poi_id_slimeoidlab,
