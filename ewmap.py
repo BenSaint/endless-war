@@ -485,7 +485,7 @@ async def move(cmd):
 
 	minutes = int(path.cost / 60)
 
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
+	msg_walk_start = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
 		poi.str_name,
 		(" It's {} minute{} away.".format(
 			minutes,
@@ -504,6 +504,7 @@ async def move(cmd):
 
 		# If the player dies or enlists or whatever while moving, cancel the move.
 		if user_data.life_state != life_state or faction != user_data.faction:
+			await cmd.client.delete_message(msg_walk_start)
 			return
 
 		user_data.poi = poi.id_poi
@@ -519,13 +520,17 @@ async def move(cmd):
 				channel = ch
 				break
 
-		await cmd.client.send_message(
+		msg_walk_enter = await cmd.client.send_message(
 			channel,
 			ewutils.formatMessage(
 				cmd.message.author,
 				"You {} {}.".format(poi.str_enter, poi.str_name)
 			)
 		)
+		await cmd.client.delete_message(msg_walk_start)
+		await asyncio.sleep(30)
+		await cmd.client.delete_message(msg_walk_enter)
+
 	else:
 		# Perform move.
 		for step in path.steps[1:]:
@@ -549,6 +554,7 @@ async def move(cmd):
 
 				# If the player dies or enlists or whatever while moving, cancel the move.
 				if user_data.life_state != life_state or faction != user_data.faction:
+					await cmd.client.delete_message(msg_walk_start)
 					return
 
 				channel = cmd.message.channel
@@ -588,7 +594,8 @@ async def move(cmd):
 
 					await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
-					await cmd.client.send_message(
+					await cmd.client.delete_message(msg_walk_start)
+					msg_walk_start = await cmd.client.send_message(
 						channel,
 						ewutils.formatMessage(
 							cmd.message.author,
@@ -599,6 +606,9 @@ async def move(cmd):
 				if val > 0:
 					#await asyncio.sleep(val/30)
 					await asyncio.sleep(val)
+
+		await asyncio.sleep(30)
+		await cmd.client.delete_message(msg_walk_start)
 
 """
 	Dump out the visual description of the area you're in.

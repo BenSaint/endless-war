@@ -8,7 +8,7 @@ from ewitem import EwItemDef
 from ewmap import EwPoi
 
 # Global configuration options.
-version = "v2.08b"
+version = "v2.08e"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -116,6 +116,7 @@ cmd_help_alt1 = cmd_prefix + 'command'
 cmd_help_alt2 = cmd_prefix + 'commands'
 cmd_harvest = cmd_prefix + 'harvest'
 cmd_salute = cmd_prefix + 'salute'
+cmd_unsalute = cmd_prefix + 'unsalute'
 cmd_spar = cmd_prefix + 'spar'
 cmd_suicide = cmd_prefix + 'suicide'
 cmd_haunt = cmd_prefix + 'haunt'
