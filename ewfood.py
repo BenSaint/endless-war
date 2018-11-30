@@ -4,7 +4,6 @@ import time
 import ewcfg
 import ewitem
 import ewutils
-import ewcmd
 from ew import EwUser, EwMarket
 
 """ Food model object """
@@ -24,8 +23,8 @@ class EwFood:
 	# A nice string name describing this food.
 	str_name = ""
 
-	# Name of the vendor selling this food in the food court.
-	vendor = ""
+	# Names of the vendors selling this food in the food court.
+	vendors = []
 
 	# Flavor text displayed when you eat this food.
 	str_eat = ""
@@ -46,7 +45,7 @@ class EwFood:
 		recover_hunger = 0,
 		price = 0,
 		str_name = "",
-		vendor = "",
+		vendors = [],
 		str_eat = "",
 		inebriation = 0,
 		str_desc = "",
@@ -57,7 +56,7 @@ class EwFood:
 		self.recover_hunger = recover_hunger
 		self.price = price
 		self.str_name = str_name
-		self.vendor = vendor
+		self.vendors = vendors
 		self.str_eat = str_eat
 		self.inebriation = inebriation
 		self.str_desc = str_desc
@@ -92,6 +91,7 @@ async def order(cmd):
 	else:
 		value = None
 		togo = False
+		current_vendor = None
 		if cmd.tokens_count > 1:
 			for token in cmd.tokens[1:]:
 				if token.startswith('<@') == False and token.lower() not in "togo":  # togo can be spelled together or separate
@@ -103,7 +103,7 @@ async def order(cmd):
 					break
 
 		food = ewcfg.food_map.get(value.lower() if value != None else value)
-		if food != None and food.vendor == ewcfg.vendor_vendingmachine:
+		if food != None and ewcfg.vendor_vendingmachine in food.vendors:
 			togo = True
 
 		member = None
@@ -115,7 +115,11 @@ async def order(cmd):
 
 		member_data = EwUser(member = member)
 
-		if food == None or food.vendor not in poi.vendors:
+		if food is not None:
+			# gets a vendor that the item is available and the player currently located in
+			current_vendor = (set(food.vendors).intersection(set(poi.vendors))).pop()
+
+		if food == None or current_vendor is None or len(current_vendor) < 1:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
 		elif member is not None and member_data.poi != user_data.poi:
 			response = "The delivery service has become unavailable due to unforeseen circumstances."
@@ -180,12 +184,11 @@ async def order(cmd):
 						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 					item_props = {
+						# not all attributes are necessary to store in the database since the price and vendors list is only needed for buying it
 						'food_name': food.str_name,
 						'food_desc': food.str_desc,
 						'recover_hunger': food.recover_hunger,
-						'price': food.price,
 						'inebriation': food.inebriation,
-						'vendor': food.vendor,
 						'str_eat': food.str_eat,
 						'time_expir': time.time() + (food.time_expir if food.time_expir is not None else ewcfg.std_food_expir)
 					}
@@ -199,7 +202,7 @@ async def order(cmd):
 
 				response = "You slam {cost:,} SlimeCoin down at the {vendor} for a {food}{togo}{sharetext}{flavor}".format(
 					cost = value,
-					vendor = food.vendor,
+					vendor = current_vendor,
 					food = food.str_name,
 					togo = " to go" if togo else "",
 					sharetext = (". " if member == None else " and give it to {}.\n\n{}".format(member.display_name, ewutils.formatMessage(member, ""))),
