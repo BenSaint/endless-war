@@ -125,6 +125,8 @@ channel_seafood = "red-mobster"
 channel_jr_farms = "juvies-row-farms"
 channel_og_farms = "ooze-gardens-farms"
 channel_ab_farms = "arsonbrook-farms"
+channel_rowdyroughhouse = "rowdy-roughhouse"
+channel_copkilltown = "cop-killtown"
 
 
 # Commands
@@ -2124,7 +2126,7 @@ poi_list = [
 		str_name = "Cop Killtown",
 		str_desc = "Deep indigo edifices of metal and brick rise above the pavement. Apartment windows glint in the blue and purple light of neon signs, and a menacing cathedral looms darkly on the horizon.\n\nTo the North is Astatine Heights. To the East is Smogsburg. To the Southeast is Downtown NLACakaNM. To the West is Vandal Park. To the Northwest is Gatlingsdale.",
 		coord = (17, 13),
-		channel = "cop-killtown",
+		channel = channel_copkilltown,
 		role = "Cop Killtown",
 		factions = [
 			faction_killers
@@ -2174,7 +2176,7 @@ poi_list = [
 		str_name = "Rowdy Roughhouse",
 		str_desc = "Rusted pink metal shanties are hastily constructed as far as the eye can see, sometimes stacked on top of one another, forming high towers and densely populated mazes.\n\nTo the North is Downtown NLACakaNM. To the South is Wreckington. To the Southwest is Cratersville. To the West is Poudrin Alley.",
 		coord = (25, 21),
-		channel = "rowdy-roughhouse",
+		channel = channel_rowdyroughhouse,
 		role = "Rowdy Roughhouse",
 		factions = [
 			faction_rowdys

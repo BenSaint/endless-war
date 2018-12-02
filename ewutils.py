@@ -576,3 +576,9 @@ def find_kingpin(id_server, kingpin_role):
 		kingpin = EwUser(id_server = id_server, id_user = id_kingpin)
 
 	return kingpin
+
+"""
+	Posts a message both in CK and RR.
+"""
+def post_in_hideouts(id_server):
+	pass
