@@ -120,6 +120,11 @@ cmd_map = {
 	# Play slime roulette!
 	ewcfg.cmd_slimebaccarat: ewcasino.baccarat,
 
+	# Russian Roulette
+	ewcfg.cmd_russian: ewcasino.russian_roulette,
+	ewcfg.cmd_accept: ewcmd.accept,
+	ewcfg.cmd_refuse: ewcmd.refuse,
+
 
 	# See what's for sale in the Food Court.
 	ewcfg.cmd_menu: ewfood.menu,
@@ -179,6 +184,9 @@ cmd_map = {
 	#ewcfg.cmd_writhe: ewraidboss.writhe,
 
 	# Misc
+	#ewcfg.cmd_help: ewcmd.help,
+	#ewcfg.cmd_help_alt1: ewcmd.help,
+	#ewcfg.cmd_help_alt2: ewcmd.help,
 	ewcfg.cmd_howl: ewcmd.cmd_howl,
 	ewcfg.cmd_howl_alt1: ewcmd.cmd_howl,
 	ewcfg.cmd_harvest: ewcmd.harvest,
@@ -187,15 +195,7 @@ cmd_map = {
 	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
-	ewcfg.cmd_booru: ewcmd.booru,
-	#ewcfg.cmd_help: ewcmd.help,
-	#ewcfg.cmd_help_alt1: ewcmd.help,
-	#ewcfg.cmd_help_alt2: ewcmd.help
-
-	# FIXME debug - temporarily disabled
-	#ewcfg.cmd_russian: ewcasino.russian_roulette,
-	#ewcfg.cmd_accept: ewcmd.accept,
-	#ewcfg.cmd_refuse: ewcmd.refuse
+	ewcfg.cmd_booru: ewcmd.booru
 }
 
 debug = False
