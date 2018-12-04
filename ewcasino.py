@@ -1114,6 +1114,9 @@ async def russian_roulette(cmd):
 						winner = member
 						response = "You shoot {}'s corpse, adding insult to injury.".format(author.display_name).replace("@", "\{at\}")
 					
+				challenger.rr_challenger = ""
+				challengee.rr_challenger = ""
+
 				challenger.persist()
 				challengee.persist()
 
