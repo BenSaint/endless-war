@@ -128,8 +128,12 @@ channel_og_farms = "ooze-gardens-farms"
 channel_ab_farms = "arsonbrook-farms"
 channel_rowdyroughhouse = "rowdy-roughhouse"
 channel_copkilltown = "cop-killtown"
-hideout_channels = [channel_rowdyroughhouse, channel_copkilltown]
 
+hideout_channels = [channel_rowdyroughhouse, channel_copkilltown]
+hideout_by_faction = {
+	faction_rowdys: channel_rowdyroughhouse,
+	faction_killers: channel_copkilltown
+}
 
 # Commands
 cmd_prefix = '!'

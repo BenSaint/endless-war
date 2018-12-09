@@ -83,7 +83,7 @@ class EwDistrict:
 		if self.capture_progress > 0:
 			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
 			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-			self.capture_progress -= math.ceil(self.max_capture_progress / ewcfg.ticks_per_day)
+			self.change_progress(math.ceil(self.max_capture_progress / ewcfg.ticks_per_day))
 
 		if self.capture_progress < 0:
 			self.capture_progress = 0
@@ -114,17 +114,29 @@ class EwDistrict:
 				if ewcfg.capture_milestone <= progress_percent_after < ewcfg.capture_milestone * 2:  # if its the first milestone
 					await ewutils.post_in_channels(
 						id_server = self.id_server,
-						message = "The {faction} have started capturing {district}. Current progress: {progress}%".format(
+						message = "{faction} have started capturing {district}. Current progress: {progress}%".format(
 							faction = self.capturing_faction.capitalize(),
 							district = ewcfg.id_to_poi[self.name].str_name,
 							progress = progress_percent_after
 						),
-						channels = [ewcfg.id_to_poi[self.name].channel] + ewcfg.hideout_channels
+						channels = [ewcfg.id_to_poi[self.name].channel]
 					)
 				else:
+					# alert both factions of significant capture progress
+					if progress_percent_after >= 30:
+						await ewutils.post_in_channels(
+							id_server = self.id_server,
+							message = "{faction} are capturing {district}. Current progress: {progress}%".format(
+								faction = self.capturing_faction.capitalize(),
+								district = ewcfg.id_to_poi[self.name].str_name,
+								progress = progress_percent_after
+							),
+							channels = ewcfg.hideout_channels
+						)
+
 					await ewutils.post_in_channels(
 						id_server = self.id_server,
-						message = "The {faction} continue to capture {district}. Current progress: {progress}%".format(
+						message = "{faction} continue to capture {district}. Current progress: {progress}%".format(
 							faction = self.capturing_faction.capitalize(),
 							district = ewcfg.id_to_poi[self.name].str_name,
 							progress = progress_percent_after
@@ -132,15 +144,37 @@ class EwDistrict:
 						channels = [ewcfg.id_to_poi[self.name].channel]
 					)
 			else:  # if it was a negative change
-				await ewutils.post_in_channels(
-					id_server = self.id_server,
-					message = "The {faction} are de-capturing {district}. Current progress: {progress}%".format(
-						faction = self.capturing_faction.capitalize(),
-						district = ewcfg.id_to_poi[self.name].str_name,
-						progress = 100 - progress_percent_after
-					),
-					channels = [ewcfg.id_to_poi[self.name].channel]
-				)
+				if self.controlling_faction != "":  # if the district is owned by a faction
+					if progress_percent_after <= 10:
+						await ewutils.post_in_channels(
+							id_server = self.id_server,
+							message = "{faction}' control of {district} is slipping.".format(
+								faction = self.capturing_faction.capitalize(),
+								district = ewcfg.id_to_poi[self.name].str_name,
+								progress = progress_percent_after
+							),
+							channels = ewcfg.hideout_channels
+						)
+
+					await ewutils.post_in_channels(
+						id_server = self.id_server,
+						message = "{faction}' control of {district} has decreased. Remaining control level: {progress}%".format(
+							faction = self.capturing_faction.capitalize(),
+							district = ewcfg.id_to_poi[self.name].str_name,
+							progress = progress_percent_after
+						),
+						channels = [ewcfg.id_to_poi[self.name].channel]
+					)
+				else:  # if it's an uncontrolled district
+					await ewutils.post_in_channels(
+						id_server = self.id_server,
+						message = "{faction}' capture progress of {district} has decreased. Remaining progress: {progress}%".format(
+							faction = self.capturing_faction.capitalize(),
+							district = ewcfg.id_to_poi[self.name].str_name,
+							progress = progress_percent_after
+						),
+						channels = [ewcfg.id_to_poi[self.name].channel]
+					)
 
 
 """
@@ -235,7 +269,7 @@ async def capture_tick(id_server):
 						dist.controlling_faction = dist.capturing_faction
 						await ewutils.post_in_channels(
 							id_server = id_server,
-							message = "The {faction} just captured {district}".format(
+							message = "{faction} just captured {district}".format(
 								faction = dist.capturing_faction.capitalize(),
 								district = ewcfg.id_to_poi[dist.name].str_name
 							),
@@ -246,7 +280,7 @@ async def capture_tick(id_server):
 					elif dist.capture_progress <= 0:
 						await ewutils.post_in_channels(
 							id_server = id_server,
-							message = "The {faction} just wrested control over {district} from the {other_faction}".format(
+							message = "{faction} just wrested control over {district} from the {other_faction}".format(
 								faction = faction_capture.capitalize(),
 								district = ewcfg.id_to_poi[dist.name].str_name,
 								other_faction = dist.capturing_faction
