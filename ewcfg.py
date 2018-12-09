@@ -98,6 +98,7 @@ role_grandfoe = "grandfoe"
 # Faction names
 faction_killers = "killers"
 faction_rowdys = "rowdys"
+factions = [faction_killers, faction_rowdys]
 
 # Channel names
 channel_mines = "the-mines"
@@ -127,6 +128,7 @@ channel_og_farms = "ooze-gardens-farms"
 channel_ab_farms = "arsonbrook-farms"
 channel_rowdyroughhouse = "rowdy-roughhouse"
 channel_copkilltown = "cop-killtown"
+hideout_channels = [channel_rowdyroughhouse, channel_copkilltown]
 
 
 # Commands
@@ -233,12 +235,30 @@ togo_price_increase = 2
 # standard food expiration in seconds
 std_food_expir = 12 * 3600  # 12 hours
 
+# property classes
+property_class_s = "s"
+property_class_a = "a"
+property_class_b = "b"
+property_class_c = "c"
+
 # district capturing
-capture_tick_length = 10  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
+capture_tick_length = 5  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
 max_capture_progress_s = 3600  # 60 min
 max_capture_progress_a = 1800  # 30 min
 max_capture_progress_b = 1200  # 20 min
 max_capture_progress_c = 600   # 10 min
+
+# district capture rates assigned to property classes
+max_capture_progresses = {
+	property_class_s: max_capture_progress_s,
+	property_class_a: max_capture_progress_a,
+	property_class_b: max_capture_progress_b,
+	property_class_c: max_capture_progress_c
+}
+
+# capture messages
+capture_milestone = 10  # after how many percent of progress the players are notified of the progress
+
 
 # district de-capturing
 decapture_speed_multiplier = 2  # how much faster de-capturing is than capturing
@@ -253,11 +273,13 @@ slime_yield_class_a = int(69800 / ticks_per_day)
 slime_yield_class_b = int(56400 / ticks_per_day)
 slime_yield_class_c = int(45800 / ticks_per_day)
 
-# property classes
-property_class_s = "s"
-property_class_a = "a"
-property_class_b = "b"
-property_class_c = "c"
+# district control slime yields assigned to property classes
+district_control_slime_yields = {
+	property_class_s: slime_yield_class_s,
+	property_class_a: slime_yield_class_a,
+	property_class_b: slime_yield_class_b,
+	property_class_c: slime_yield_class_c
+}
 
 # Slime decay rate
 slime_half_life = 60 * 60 * 24 * 14 #two weeks
@@ -2925,3 +2947,21 @@ for poi in poi_list:
 	# if it's a district and not RR, CK, or JR, add it to a list of capturable districts
 	if poi.is_capturable:
 		capturable_districts.append(poi.id_poi)
+
+# lists of all the discord server objects served by bot, identified by the server id
+server_list = {}
+
+"""
+	store a server in a dictionary
+"""
+def update_server_list(server):
+	server_list[server.id] = server
+
+
+clients = []
+
+"""
+	save the discord client of this bot
+"""
+def set_client(cl):
+	clients.append(cl)

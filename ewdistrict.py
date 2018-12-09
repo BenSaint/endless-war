@@ -1,24 +1,44 @@
-"""
-	district data model for database persistence
-"""
 import asyncio
 import math
 
 import ewcfg
 import ewutils
 
-
+"""
+	district data model for database persistence
+"""
 class EwDistrict:
 	id_server = ""
+
+	# The district's identifying string
 	name = ""
+
+	# The faction currently controlling this district
 	controlling_faction = ""
+
+	# The faction currently capturing this district
 	capturing_faction = ""
+
+	# The amount of progress made on the capture
 	capture_progress = 0
+
+	# The property class of the district
+	property_class = ""
+
+	# The progrss it takes for the district to be captured
+	max_capture_progress = 0
 
 	def __init__(self, id_server = None, district = None):
 		if id_server is not None and district is not None:
 			self.id_server = id_server
 			self.name = district
+
+			# find the district's property class
+			for poi in ewcfg.poi_list:
+				if poi.id_poi == self.name:
+					self.property_class = poi.property_class.lower()
+
+			self.max_capture_progress = ewcfg.max_capture_progresses[self.property_class]
 
 			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = %s AND {district} = %s".format(
 				controlling_faction = ewcfg.col_controlling_faction,
@@ -59,26 +79,68 @@ class EwDistrict:
 			self.capture_progress
 		))
 
-	def decay_capture_progress(self, property_class):
-		max_capture_progress = {
-			ewcfg.property_class_s: ewcfg.max_capture_progress_s,
-			ewcfg.property_class_a: ewcfg.max_capture_progress_a,
-			ewcfg.property_class_b: ewcfg.max_capture_progress_b,
-			ewcfg.property_class_c: ewcfg.max_capture_progress_c
-		}
+	async def decay_capture_progress(self):
+		if self.capture_progress > 0:
+			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
+			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
+			self.capture_progress -= math.ceil(self.max_capture_progress / ewcfg.ticks_per_day)
 
-		if property_class in max_capture_progress:
-			if self.capture_progress > 0:
-				# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
-				# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-				self.capture_progress -= math.ceil(max_capture_progress[property_class] / ewcfg.ticks_per_day)
+		if self.capture_progress < 0:
+			self.capture_progress = 0
 
-			if self.capture_progress < 0:
-				self.capture_progress = 0
+		if self.capture_progress == 0:
+			if self.controlling_faction != "":  # if it was owned by a faction
+				await ewutils.post_in_channels(
+					id_server = self.id_server,
+					message = "The {faction} have lost control over {district} because of sheer negligence.".format(
+						faction = self.controlling_faction,
+						district = ewcfg.id_to_poi[self.name].str_name
+					),
+					channels = [ewcfg.id_to_poi[self.name].channel] + ewcfg.hideout_channels
+				)
+			self.controlling_faction = ""
+			self.capturing_faction = ""
 
-			if self.capture_progress == 0:
-				self.controlling_faction = ""
-				self.capturing_faction = ""
+		self.persist()
+
+	async def change_progress(self, progress):
+		progress_percent_before = int(self.capture_progress / self.max_capture_progress * 100)
+		self.capture_progress += progress
+		progress_percent_after = int(self.capture_progress / self.max_capture_progress * 100)
+
+		# display a message if it's reached a certain amount
+		if (progress_percent_after // ewcfg.capture_milestone) != (progress_percent_before // ewcfg.capture_milestone):  # if a progress milestone was reached
+			if progress > 0:  # if it was a positive change
+				if ewcfg.capture_milestone <= progress_percent_after < ewcfg.capture_milestone * 2:  # if its the first milestone
+					await ewutils.post_in_channels(
+						id_server = self.id_server,
+						message = "The {faction} have started capturing {district}. Current progress: {progress}%".format(
+							faction = self.capturing_faction.capitalize(),
+							district = ewcfg.id_to_poi[self.name].str_name,
+							progress = progress_percent_after
+						),
+						channels = [ewcfg.id_to_poi[self.name].channel] + ewcfg.hideout_channels
+					)
+				else:
+					await ewutils.post_in_channels(
+						id_server = self.id_server,
+						message = "The {faction} continue to capture {district}. Current progress: {progress}%".format(
+							faction = self.capturing_faction.capitalize(),
+							district = ewcfg.id_to_poi[self.name].str_name,
+							progress = progress_percent_after
+						),
+						channels = [ewcfg.id_to_poi[self.name].channel]
+					)
+			else:  # if it was a negative change
+				await ewutils.post_in_channels(
+					id_server = self.id_server,
+					message = "The {faction} are de-capturing {district}. Current progress: {progress}%".format(
+						faction = self.capturing_faction.capitalize(),
+						district = ewcfg.id_to_poi[self.name].str_name,
+						progress = 100 - progress_percent_after
+					),
+					channels = [ewcfg.id_to_poi[self.name].channel]
+				)
 
 
 """
@@ -146,47 +208,62 @@ async def capture_tick(id_server):
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
-					property_class = ""
-					max_capture_progress = 0
-
-					# find the district's property class
-					for poi in ewcfg.poi_list:
-						if poi.id_poi == dist.name:
-							property_class = poi.property_class.lower()
-
-					# capture time is different based on the property class
-					if property_class == ewcfg.property_class_s:
-						max_capture_progress = ewcfg.max_capture_progress_s
-					elif property_class == ewcfg.property_class_a:
-						max_capture_progress = ewcfg.max_capture_progress_a
-					elif property_class == ewcfg.property_class_b:
-						max_capture_progress = ewcfg.max_capture_progress_b
-					elif property_class == ewcfg.property_class_c:
-						max_capture_progress = ewcfg.max_capture_progress_c
+					max_capture_progress = dist.max_capture_progress
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
 						if dist.capture_progress < max_capture_progress:  # stop at maximum progress
-							dist.capture_progress += ewcfg.capture_tick_length * capture_speed
+							await dist.change_progress(ewcfg.capture_tick_length * capture_speed)
 
 					elif dist.capture_progress == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
-						dist.capture_progress += ewcfg.capture_tick_length * capture_speed
+						await dist.change_progress(ewcfg.capture_tick_length * capture_speed)
 						dist.capturing_faction = faction_capture
+						# await ewutils.post_in_channels(
+						# 	id_server = id_server,
+						# 	message = "The {faction} just started capturing {district}".format(
+						# 		faction = dist.capturing_faction,
+						# 		district = ewcfg.id_to_poi[dist.name].str_name
+						# 	),
+						# 	channels = [ewcfg.id_to_poi[dist.name].channel] + ewcfg.hideout_channels
+						# )
 
-					else:  # lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
-						dist.capture_progress -= ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier
+					# lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
+					else:  # if the (de-)capturing faction is not in control
+						await dist.change_progress(-(ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier))
 
 					# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
 					if dist.capture_progress >= max_capture_progress:
 						dist.controlling_faction = dist.capturing_faction
+						await ewutils.post_in_channels(
+							id_server = id_server,
+							message = "The {faction} just captured {district}".format(
+								faction = dist.capturing_faction.capitalize(),
+								district = ewcfg.id_to_poi[dist.name].str_name
+							),
+							channels = [ewcfg.id_to_poi[dist.name].channel] + ewcfg.hideout_channels
+						)
 
-					# if progress < 0, swap which faction is in the process of capturing it and make the value positive again
-					elif dist.capture_progress < 0:
-						dist.capturing_faction = faction_capture
-						dist.capture_progress -= dist.capture_progress
-					# if progress is exactly 0, the district returns to being neutral
-					elif dist.capture_progress == 0:
-						dist.capturing_faction = ""
-						dist.controlling_faction = ""
+					# if control over this district was wrested from the other faction
+					elif dist.capture_progress <= 0:
+						await ewutils.post_in_channels(
+							id_server = id_server,
+							message = "The {faction} just wrested control over {district} from the {other_faction}".format(
+								faction = faction_capture.capitalize(),
+								district = ewcfg.id_to_poi[dist.name].str_name,
+								other_faction = dist.capturing_faction
+							),
+							channels = [ewcfg.id_to_poi[dist.name].channel] + ewcfg.hideout_channels
+						)
+
+						# if progress < 0, swap which faction is in the process of capturing it and make the value positive again
+						if dist.capture_progress < 0:
+							dist.capturing_faction = faction_capture
+							dist.controlling_faction = ""
+							dist.capture_progress -= dist.capture_progress
+
+						# if progress is exactly 0, the district returns to being neutral
+						elif dist.capture_progress == 0:
+							dist.capturing_faction = ""
+							dist.controlling_faction = ""
 
 					# # if the opposing faction successfully de-captures a district, it belongs to them now
 					# elif dist.capture_progress <= 0:
@@ -219,7 +296,7 @@ async def capture_tick_loop(id_server):
 """
 	Gives both kingpins the appropriate amount of slime for how many districts they own and lowers the capture_progress property of each district by a certain amount, turning them neutral after a while
 """
-def give_kingpins_slime_and_decay_capture_progress(id_server):
+async def give_kingpins_slime_and_decay_capture_progress(id_server):
 	for kingpin_role in [ewcfg.role_rowdyfucker, ewcfg.role_copkiller]:
 		kingpin = ewutils.find_kingpin(id_server = id_server, kingpin_role = kingpin_role)
 
@@ -228,26 +305,14 @@ def give_kingpins_slime_and_decay_capture_progress(id_server):
 
 			for id_district in ewcfg.capturable_districts:
 				district = EwDistrict(id_server = id_server, district = id_district)
-				property_class = ""
 
 				# if the kingpin is controlling this district
 				if district.controlling_faction == (ewcfg.faction_killers if kingpin.faction == ewcfg.faction_killers else ewcfg.faction_rowdys):
-					# find the district's property class
-					for poi in ewcfg.poi_list:
-						if poi.id_poi == id_district:
-							property_class = poi.property_class.lower()
 
 					# give the kingpin slime based on the district's property class
-					if property_class == ewcfg.property_class_s:
-						slimegain += ewcfg.slime_yield_class_s
-					elif property_class == ewcfg.property_class_a:
-						slimegain += ewcfg.slime_yield_class_a
-					elif property_class == ewcfg.property_class_b:
-						slimegain += ewcfg.slime_yield_class_b
-					elif property_class == ewcfg.property_class_c:
-						slimegain += ewcfg.slime_yield_class_c
+					slimegain += ewcfg.district_control_slime_yields[district.property_class]
 
-				district.decay_capture_progress(property_class)
+				await district.decay_capture_progress()
 
 			kingpin.change_slimes(n = slimegain)
 			kingpin.persist()

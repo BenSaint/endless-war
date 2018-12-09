@@ -264,6 +264,9 @@ async def on_ready():
 
 		asyncio.ensure_future(ewdistrict.capture_tick_loop(id_server = server.id))
 
+		# store the list of channels in an ewutils field
+		ewcfg.update_server_list(server = server)
+
 	try:
 		ewutils.logMsg('Creating message queue directory.')
 		os.mkdir(ewcfg.dir_msgqueue)
@@ -271,6 +274,8 @@ async def on_ready():
 		ewutils.logMsg('Message queue directory already exists.')
 
 	ewutils.logMsg('Ready.')
+
+	ewcfg.set_client(client)
 
 
 	"""
@@ -383,7 +388,7 @@ async def on_ready():
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
 
-					ewdistrict.give_kingpins_slime_and_decay_capture_progress(id_server = server.id)
+					await ewdistrict.give_kingpins_slime_and_decay_capture_progress(id_server = server.id)
 
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:
