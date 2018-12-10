@@ -14,7 +14,7 @@ dir_msgqueue = 'msgqueue'
 update_hookstillactive = 60 * 60 * 3
 update_twitch = 60
 update_pvp = 60
-update_market = 10 #15 min
+update_market = 900 #15 min
 
 # Market delta
 max_iw_swing = 30
@@ -467,6 +467,20 @@ leaderboard_districts = "DISTRICTS CONTROLLED"
 # leaderboard entry types
 entry_type_player = "player"
 entry_type_districts = "districts"
+
+# district control channel topic text
+control_topic_killers = "Currently controlled by the killers."
+control_topic_rowdys = "Currently controlled by the rowdys."
+control_topic_neutral = "Currently controlled by no one."
+
+control_topics = {
+	faction_killers: control_topic_killers,
+	faction_rowdys: control_topic_rowdys,
+	"": control_topic_neutral  # no faction
+}
+
+# district control actors
+actor_decay = "decay"
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
@@ -2164,8 +2178,7 @@ poi_list = [
 			faction_killers
 		],
 		pvp = False,
-		property_class = property_class_a,
-		is_capturable = True
+		property_class = property_class_a
 	),
 	EwPoi( # 4
 		id_poi = poi_id_krakbay,
@@ -2214,8 +2227,7 @@ poi_list = [
 			faction_rowdys
 		],
 		pvp = False,
-		property_class = property_class_a,
-		is_capturable = True
+		property_class = property_class_a
 	),
 	EwPoi( # 7
 		id_poi = poi_id_greenlightdistrict,
@@ -2427,8 +2439,7 @@ poi_list = [
 		channel = "juvies-row",
 		role = "Juvie's Row",
 		pvp = False,
-		property_class = property_class_a,
-		is_capturable = True
+		property_class = property_class_a
 	),
 	EwPoi( # 21
 		id_poi = poi_id_slimesend,

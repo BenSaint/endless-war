@@ -245,6 +245,9 @@ async def on_ready():
 		# Update server data in the database
 		ewserver.server_update(server = server)
 
+		# store the list of channels in an ewutils field
+		ewcfg.update_server_list(server = server)
+
 		# Grep around for channels
 		ewutils.logMsg("connected to server: {}".format(server.name))
 		for channel in server.channels:
@@ -259,13 +262,12 @@ async def on_ready():
 
 		# create all the districts in the database
 		for poi in ewcfg.capturable_districts:
-				# call the constructor to create an entry if it doesnt exist yet
-				EwDistrict(id_server = server.id, district = poi)
+			# call the constructor to create an entry if it doesnt exist yet
+			dist = EwDistrict(id_server = server.id, district = poi)
+			# change the ownership to the faction that's already in control to initialize topic names
+			await dist.change_ownership(new_owner = dist.controlling_faction, actor = "init", client = client)
 
 		asyncio.ensure_future(ewdistrict.capture_tick_loop(id_server = server.id))
-
-		# store the list of channels in an ewutils field
-		ewcfg.update_server_list(server = server)
 
 	try:
 		ewutils.logMsg('Creating message queue directory.')
