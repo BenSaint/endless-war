@@ -390,7 +390,7 @@ async def on_ready():
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
 
-					await ewdistrict.give_kingpins_slime_and_decay_capture_progress(id_server = server.id)
+					await ewdistrict.give_kingpins_slime_and_decay_capture_points(id_server = server.id)
 
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:

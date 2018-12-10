@@ -247,17 +247,17 @@ property_class_c = "c"
 
 # district capturing
 capture_tick_length = 5  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
-max_capture_progress_s = 3600  # 60 min
-max_capture_progress_a = 1800  # 30 min
-max_capture_progress_b = 1200  # 20 min
-max_capture_progress_c = 600   # 10 min
+max_capture_points_s = 3600  # 60 min
+max_capture_points_a = 1800  # 30 min
+max_capture_points_b = 1200  # 20 min
+max_capture_points_c = 600   # 10 min
 
 # district capture rates assigned to property classes
-max_capture_progresses = {
-	property_class_s: max_capture_progress_s,
-	property_class_a: max_capture_progress_a,
-	property_class_b: max_capture_progress_b,
-	property_class_c: max_capture_progress_c
+max_capture_points = {
+	property_class_s: max_capture_points_s,
+	property_class_a: max_capture_points_a,
+	property_class_b: max_capture_points_b,
+	property_class_c: max_capture_points_c
 }
 
 # capture messages
@@ -446,7 +446,7 @@ col_timestamp = 'timestamp'
 col_district = 'district'
 col_controlling_faction = 'controlling_faction'
 col_capturing_faction = 'capturing_faction'
-col_capture_progress = 'capture_progress'
+col_capture_points = 'capture_points'
 
 # Item type names
 it_medal = "medal"

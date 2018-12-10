@@ -21,13 +21,13 @@ class EwDistrict:
 	capturing_faction = ""
 
 	# The amount of progress made on the capture
-	capture_progress = 0
+	capture_points = 0
 
 	# The property class of the district
 	property_class = ""
 
-	# The progrss it takes for the district to be captured
-	max_capture_progress = 0
+	# The amount of CP it takes for the district to be captured
+	max_capture_points = 0
 
 	def __init__(self, id_server = None, district = None):
 		if id_server is not None and district is not None:
@@ -39,12 +39,12 @@ class EwDistrict:
 				if poi.id_poi == self.name:
 					self.property_class = poi.property_class.lower()
 
-			self.max_capture_progress = ewcfg.max_capture_progresses[self.property_class]
+			self.max_capture_points = ewcfg.max_capture_pointses[self.property_class]
 
-			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = %s AND {district} = %s".format(
+			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_points} FROM districts WHERE id_server = %s AND {district} = %s".format(
 				controlling_faction = ewcfg.col_controlling_faction,
 				capturing_faction = ewcfg.col_capturing_faction,
-				capture_progress = ewcfg.col_capture_progress,
+				capture_points = ewcfg.col_capture_points,
 				district = ewcfg.col_district,
 			), (
 				id_server,
@@ -55,8 +55,8 @@ class EwDistrict:
 				# data is always a two-dimensional array and if we only fetch one row, we have to type data[0][x]
 				self.controlling_faction = data[0][0]
 				self.capturing_faction = data[0][1]
-				self.capture_progress = data[0][2]
-				# ewutils.logMsg("EwDistrict object '" + self.name + "' created.  Controlling faction: " + self.controlling_faction + "; Capture progress: %d" % self.capture_progress)
+				self.capture_points = data[0][2]
+				# ewutils.logMsg("EwDistrict object '" + self.name + "' created.  Controlling faction: " + self.controlling_faction + "; Capture progress: %d" % self.capture_points)
 			else:  # create new entry
 				ewutils.execute_sql_query("REPLACE INTO districts ({id_server}, {district}) VALUES (%s, %s)".format(
 					id_server = ewcfg.col_id_server,
@@ -67,29 +67,29 @@ class EwDistrict:
 				))
 
 	def persist(self):
-		ewutils.execute_sql_query("REPLACE INTO districts(id_server, {district}, {controlling_faction}, {capturing_faction}, {capture_progress}) VALUES(%s, %s, %s, %s, %s)".format(
+		ewutils.execute_sql_query("REPLACE INTO districts(id_server, {district}, {controlling_faction}, {capturing_faction}, {capture_points}) VALUES(%s, %s, %s, %s, %s)".format(
 			district = ewcfg.col_district,
 			controlling_faction = ewcfg.col_controlling_faction,
 			capturing_faction = ewcfg.col_capturing_faction,
-			capture_progress = ewcfg.col_capture_progress
+			capture_points = ewcfg.col_capture_points
 		), (
 			self.id_server,
 			self.name,
 			self.controlling_faction,
 			self.capturing_faction,
-			self.capture_progress
+			self.capture_points
 		))
 
-	async def decay_capture_progress(self):
-		if self.capture_progress > 0:
+	async def decay_capture_points(self):
+		if self.capture_points > 0:
 			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
 			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-			await self.change_progress(-math.ceil(self.max_capture_progress / ewcfg.ticks_per_day), ewcfg.actor_decay)
+			await self.change_progress(-math.ceil(self.max_capture_points / ewcfg.ticks_per_day), ewcfg.actor_decay)
 
-		if self.capture_progress < 0:
-			self.capture_progress = 0
+		if self.capture_points < 0:
+			self.capture_points = 0
 
-		if self.capture_progress == 0:
+		if self.capture_points == 0:
 			if self.controlling_faction != "":  # if it was owned by a faction
 				await ewutils.post_in_channels(
 					id_server = self.id_server,
@@ -105,23 +105,23 @@ class EwDistrict:
 		self.persist()
 
 	async def change_progress(self, progress, actor):  # actor can either be a faction or "decay"
-		progress_percent_before = int(self.capture_progress / self.max_capture_progress * 100)
+		progress_percent_before = int(self.capture_points / self.max_capture_points * 100)
 
-		self.capture_progress += progress
+		self.capture_points += progress
 
 		# ensures that the value doesn't exceed the bounds
-		if self.capture_progress < 0:
-			self.capture_progress = 0
-		elif self.capture_progress > self.max_capture_progress:
-			self.capture_progress = self.max_capture_progress
+		if self.capture_points < 0:
+			self.capture_points = 0
+		elif self.capture_points > self.max_capture_points:
+			self.capture_points = self.max_capture_points
 
-		progress_percent_after = int(self.capture_progress / self.max_capture_progress * 100)
+		progress_percent_after = int(self.capture_points / self.max_capture_points * 100)
 
-		# if capture_progress is at its maximum value (or above), assign the district to the capturing faction
-		if self.capture_progress == self.max_capture_progress and self.controlling_faction != actor:
+		# if capture_points is at its maximum value (or above), assign the district to the capturing faction
+		if self.capture_points == self.max_capture_points and self.controlling_faction != actor:
 			await self.change_ownership(self.capturing_faction, actor)
 
-		elif self.capture_progress == 0 and self.controlling_faction != "":
+		elif self.capture_points == 0 and self.controlling_faction != "":
 			await self.change_ownership("", actor)
 
 		# display a message if it's reached a certain amount
@@ -262,7 +262,7 @@ class EwDistrict:
 
 
 """
-	Updates/Increments the capture_progress values of all districts every time it's called
+	Updates/Increments the capture_points values of all districts every time it's called
 """
 async def capture_tick(id_server):
 	# the variables might apparently be accessed before assignment if i didn't declare them here
@@ -274,11 +274,11 @@ async def capture_tick(id_server):
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
-		cursor.execute("SELECT {district}, {controlling_faction}, {capturing_faction}, {capture_progress} FROM districts WHERE id_server = %s".format(
+		cursor.execute("SELECT {district}, {controlling_faction}, {capturing_faction}, {capture_points} FROM districts WHERE id_server = %s".format(
 			district = ewcfg.col_district,
 			controlling_faction = ewcfg.col_controlling_faction,
 			capturing_faction = ewcfg.col_capturing_faction,
-			capture_progress = ewcfg.col_capture_progress
+			capture_points = ewcfg.col_capture_points
 		), (
 			id_server,
 		))
@@ -332,7 +332,7 @@ async def capture_tick(id_server):
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
 
-					if dist.capture_progress < dist.max_capture_progress:
+					if dist.capture_points < dist.max_capture_points:
 						for stat_recipient in dc_stat_increase_list:
 							ewstats.change_stat(
 								id_server = id_server,
@@ -344,7 +344,7 @@ async def capture_tick(id_server):
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
 						await dist.change_progress(ewcfg.capture_tick_length * capture_speed, faction_capture)
 
-					elif dist.capture_progress == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
+					elif dist.capture_points == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
 						await dist.change_progress(ewcfg.capture_tick_length * capture_speed, faction_capture)
 						dist.capturing_faction = faction_capture
 
@@ -375,9 +375,9 @@ async def capture_tick_loop(id_server):
 		await asyncio.sleep(interval)
 
 """
-	Gives both kingpins the appropriate amount of slime for how many districts they own and lowers the capture_progress property of each district by a certain amount, turning them neutral after a while
+	Gives both kingpins the appropriate amount of slime for how many districts they own and lowers the capture_points property of each district by a certain amount, turning them neutral after a while
 """
-async def give_kingpins_slime_and_decay_capture_progress(id_server):
+async def give_kingpins_slime_and_decay_capture_points(id_server):
 	for kingpin_role in [ewcfg.role_rowdyfucker, ewcfg.role_copkiller]:
 		kingpin = ewutils.find_kingpin(id_server = id_server, kingpin_role = kingpin_role)
 
@@ -393,7 +393,7 @@ async def give_kingpins_slime_and_decay_capture_progress(id_server):
 					# give the kingpin slime based on the district's property class
 					slimegain += ewcfg.district_control_slime_yields[district.property_class]
 
-				await district.decay_capture_progress()
+				await district.decay_capture_points()
 
 			kingpin.change_slimes(n = slimegain)
 			kingpin.persist()

@@ -130,7 +130,7 @@ CREATE TABLE districts (
     district varchar(32) NOT NULL,
     controlling_faction varchar(32) NOT NULL DEFAULT '',
     capturing_faction varchar(32) NOT NULL DEFAULT '',
-    capture_progress bigint NOT NULL DEFAULT '0',
+    capture_points bigint NOT NULL DEFAULT '0',
 
 	PRIMARY KEY (id_server, district)
 );
