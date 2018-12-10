@@ -14,6 +14,8 @@ async def post_leaderboards(client = None, server = None):
 
 	kingpins = make_kingpin_board(server = server, title = ewcfg.leaderboard_kingpins)
 	await client.send_message(leaderboard_channel, kingpins)
+	districts = make_district_control_board(id_server = server.id, title = ewcfg.leaderboard_districts)
+	await client.send_message(leaderboard_channel, districts)
 	topslimes = make_userdata_board(server = server, category = ewcfg.col_slimes, title = ewcfg.leaderboard_slimes)
 	await client.send_message(leaderboard_channel, topslimes)
 	topcoins = make_userdata_board(server = server, category = ewcfg.col_slimecredit, title = ewcfg.leaderboard_slimecredit)
@@ -87,16 +89,44 @@ def make_kingpin_board(server = None, title = ""):
 
 	return format_board(entries = entries, title = title)
 
+
+def make_district_control_board(id_server, title):
+	entries = []
+	districts = ewutils.execute_sql_query(
+		"SELECT {district}, {controlling_faction} FROM districts WHERE id_server = %s".format(
+			district = ewcfg.col_district,
+			controlling_faction = ewcfg.col_controlling_faction
+		), (
+			id_server,
+		)
+	)
+	rowdy_districts = 0
+	killer_districts = 0
+
+	for district in districts:
+		if district[1] == ewcfg.faction_rowdys:
+			rowdy_districts += 1
+		elif district[1] == ewcfg.faction_killers:
+			killer_districts += 1
+
+	rowdy_entry = [ewcfg.faction_rowdys.capitalize(), rowdy_districts]
+	killer_entry = [ewcfg.faction_killers.capitalize(), killer_districts]
+
+	return format_board(
+		entries = [rowdy_entry, killer_entry] if rowdy_districts > killer_districts else [killer_entry, rowdy_entry],
+		title = title,
+		entry_type = ewcfg.entry_type_districts
+	)
+
 """
 	convert leaderboard data into a message ready string 
 """
-def format_board(entries = None, title = ""):
+def format_board(entries = None, title = "", entry_type = "player"):
 	result = ""
 	result += board_header(title)
-	rank = 1
+
 	for entry in entries:
-		result += board_entry(entry, rank)
-		rank += 1
+		result += board_entry(entry, entry_type)
 
 	return result
 
@@ -107,34 +137,52 @@ def board_header(title):
 
 	if title == ewcfg.leaderboard_slimes:
 		emote = ewcfg.emote_slime2
-
 		bar += "▓▓▓ "
+
 	elif title == ewcfg.leaderboard_slimecredit:
 		emote = ewcfg.emote_slimecoin
 		bar += " "
+
 	elif title == ewcfg.leaderboard_ghosts:
 		emote = ewcfg.emote_negaslime
-
 		bar += "▓ "
+
 	elif title == ewcfg.leaderboard_bounty:
 		emote = ewcfg.emote_slimegun
-
 		bar += "▓ "
+
 	elif title == ewcfg.leaderboard_kingpins:
 		emote = ewcfg.emote_theeye
+		bar += " "
 
+	elif title == ewcfg.leaderboard_districts:
+		emote = ewcfg.emote_nlacakanm
 		bar += " "
 
 	return emote + bar + title + bar + emote + "\n"
 
-def board_entry(entry, rank):
-	faction = ewutils.get_faction(life_state = entry[1], faction = entry[2])
-	faction_symbol = ewutils.get_faction_symbol(faction)
+def board_entry(entry, entry_type):
+	result = ""
 
-	result = "{} `{:_>15} | {}`\n".format(
-		faction_symbol,
-		"{:,}".format(entry[3]),
-		entry[0]
-	)
+	if entry_type == ewcfg.entry_type_player:
+		faction = ewutils.get_faction(life_state = entry[1], faction = entry[2])
+		faction_symbol = ewutils.get_faction_symbol(faction)
+
+		result = "{} `{:_>15} | {}`\n".format(
+			faction_symbol,
+			"{:,}".format(entry[3]),
+			entry[0]
+		)
+
+	elif entry_type == ewcfg.entry_type_districts:
+		faction = entry[0]
+		districts = entry[1]
+		faction_symbol = ewutils.get_faction_symbol(faction)
+
+		result = "{} `{:_>15} | {}`\n".format(
+			faction_symbol,
+			faction,
+			districts
+		)
 
 	return result

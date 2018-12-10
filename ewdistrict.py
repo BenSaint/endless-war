@@ -83,7 +83,7 @@ class EwDistrict:
 		if self.capture_progress > 0:
 			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
 			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-			self.change_progress(math.ceil(self.max_capture_progress / ewcfg.ticks_per_day))
+			await self.change_progress(-math.ceil(self.max_capture_progress / ewcfg.ticks_per_day))
 
 		if self.capture_progress < 0:
 			self.capture_progress = 0

@@ -14,7 +14,7 @@ dir_msgqueue = 'msgqueue'
 update_hookstillactive = 60 * 60 * 3
 update_twitch = 60
 update_pvp = 60
-update_market = 900 #15 min
+update_market = 10 #15 min
 
 # Market delta
 max_iw_swing = 30
@@ -346,6 +346,7 @@ emote_slimegun = "<:slimegun:436500203743477760>"
 emote_ck = "<:ck:504173691488305152>"
 emote_rf = "<:rf:504174176656162816>"
 emote_testemote = "<:purple:496348895098699796>" # test server emote
+emote_nlacakanm = "<:nlacakanm:521471563481219096>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -461,6 +462,11 @@ leaderboard_ghosts = "ANTI-SLIMIEST"
 leaderboard_podrins = "PODRIN LORDS"
 leaderboard_bounty = "MOST WANTED"
 leaderboard_kingpins = "KINGPINS' COFFERS"
+leaderboard_districts = "DISTRICTS CONTROLLED"
+
+# leaderboard entry types
+entry_type_player = "player"
+entry_type_districts = "districts"
 
 # The highest level your weaponskill may be on revive. All skills over this level reset to this level.
 weaponskill_max_onrevive = 3
