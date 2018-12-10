@@ -39,7 +39,7 @@ class EwDistrict:
 				if poi.id_poi == self.name:
 					self.property_class = poi.property_class.lower()
 
-			self.max_capture_points = ewcfg.max_capture_pointses[self.property_class]
+			self.max_capture_points = ewcfg.max_capture_points[self.property_class]
 
 			data = ewutils.execute_sql_query("SELECT {controlling_faction}, {capturing_faction}, {capture_points} FROM districts WHERE id_server = %s AND {district} = %s".format(
 				controlling_faction = ewcfg.col_controlling_faction,
@@ -84,7 +84,7 @@ class EwDistrict:
 		if self.capture_points > 0:
 			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
 			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-			await self.change_progress(-math.ceil(self.max_capture_points / ewcfg.ticks_per_day), ewcfg.actor_decay)
+			await self.change_capture_points(-math.ceil(self.max_capture_points / ewcfg.ticks_per_day), ewcfg.actor_decay)
 
 		if self.capture_points < 0:
 			self.capture_points = 0
@@ -104,7 +104,7 @@ class EwDistrict:
 
 		self.persist()
 
-	async def change_progress(self, progress, actor):  # actor can either be a faction or "decay"
+	async def change_capture_points(self, progress, actor):  # actor can either be a faction or "decay"
 		progress_percent_before = int(self.capture_points / self.max_capture_points * 100)
 
 		self.capture_points += progress
@@ -116,13 +116,6 @@ class EwDistrict:
 			self.capture_points = self.max_capture_points
 
 		progress_percent_after = int(self.capture_points / self.max_capture_points * 100)
-
-		# if capture_points is at its maximum value (or above), assign the district to the capturing faction
-		if self.capture_points == self.max_capture_points and self.controlling_faction != actor:
-			await self.change_ownership(self.capturing_faction, actor)
-
-		elif self.capture_points == 0 and self.controlling_faction != "":
-			await self.change_ownership("", actor)
 
 		# display a message if it's reached a certain amount
 		if (progress_percent_after // ewcfg.capture_milestone) != (progress_percent_before // ewcfg.capture_milestone):  # if a progress milestone was reached
@@ -150,7 +143,7 @@ class EwDistrict:
 							channels = ewcfg.hideout_channels
 						)
 
-					if self.controlling_faction != actor: #if it's not already owned by that faction
+					if self.controlling_faction != actor:  # if it's not already owned by that faction
 						await ewutils.post_in_channels(
 							id_server = self.id_server,
 							message = "{faction} continue to capture {district}. Current progress: {progress}%".format(
@@ -172,11 +165,22 @@ class EwDistrict:
 						)
 			else:  # if it was a negative change
 				if self.controlling_faction != "":  # if the district is owned by a faction
-					if progress_percent_after <= ewcfg.capture_milestone < progress_percent_before:
+					if progress_percent_after < 20 <= progress_percent_before:
 						await ewutils.post_in_channels(
 							id_server = self.id_server,
 							message = "{faction}' control of {district} is slipping.".format(
-								faction = self.capturing_faction.capitalize(),
+								faction = self.controlling_faction.capitalize(),
+								district = ewcfg.id_to_poi[self.name].str_name,
+								progress = progress_percent_after
+							),
+							channels = ewcfg.hideout_channels
+						)
+
+					elif progress_percent_after < 50 <= progress_percent_before and actor != ewcfg.actor_decay:
+						await ewutils.post_in_channels(
+							id_server = self.id_server,
+							message = "{faction} are de-capturing {district}.".format(
+								faction = actor.capitalize(),
 								district = ewcfg.id_to_poi[self.name].str_name,
 								progress = progress_percent_after
 							),
@@ -202,6 +206,14 @@ class EwDistrict:
 						),
 						channels = [ewcfg.id_to_poi[self.name].channel]
 					)
+
+		# if capture_points is at its maximum value (or above), assign the district to the capturing faction
+		if self.capture_points == self.max_capture_points and self.controlling_faction != actor:
+			await self.change_ownership(self.capturing_faction, actor)
+
+		# if the district has decayed or been de-captured and it wasn't neutral anyway, make it neutral
+		elif self.capture_points == 0 and self.controlling_faction != "":
+			await self.change_ownership("", actor)
 
 	"""
 		Change who controls the district. Can be used to update the channel topic by passing the already controlling faction as an arg.
@@ -342,15 +354,15 @@ async def capture_tick(id_server):
 							)
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
-						await dist.change_progress(ewcfg.capture_tick_length * capture_speed, faction_capture)
+						await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
 
 					elif dist.capture_points == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
-						await dist.change_progress(ewcfg.capture_tick_length * capture_speed, faction_capture)
+						await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
 						dist.capturing_faction = faction_capture
 
 					# lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
 					else:  # if the (de-)capturing faction is not in control
-						await dist.change_progress(-(ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier), faction_capture)
+						await dist.change_capture_points(-(ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier), faction_capture)
 
 					dist.persist()
 
