@@ -2,6 +2,7 @@ import asyncio
 import math
 
 import ewcfg
+import ewstats
 import ewutils
 
 """
@@ -284,10 +285,11 @@ async def capture_tick(id_server):
 
 		all_districts = cursor.fetchall()
 
-		cursor.execute("SELECT {poi}, {faction}, {life_state} FROM users WHERE id_server = %s".format(
+		cursor.execute("SELECT {poi}, {faction}, {life_state}, {id_user} FROM users WHERE id_server = %s".format(
 			poi = ewcfg.col_poi,
 			faction = ewcfg.col_faction,
-			life_state = ewcfg.col_life_state
+			life_state = ewcfg.col_life_state,
+			id_user = ewcfg.col_id_user
 		), (
 			id_server,
 		))
@@ -309,6 +311,8 @@ async def capture_tick(id_server):
 				# how much progress will be made. is higher the more people of one faction are in a district, and is 0 if both teams are present
 				capture_speed = 0
 
+				dc_stat_increase_list = []
+
 				# checks if any players are in the district and if there are only players of the same faction, i.e. progress can happen
 				for player in all_players:
 					# player[0] is their poi, player[2] their life_state. assigning them to variables might hurt the server's performance
@@ -318,14 +322,24 @@ async def capture_tick(id_server):
 						if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
 							faction_capture = 'both'  # standstill, gang violence has to happen
 							capture_speed = 0
+							dc_stat_increase_list.clear()
 
 						elif faction_capture in [None, faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
 							faction_capture = faction
 							capture_speed += 1
+							dc_stat_increase_list.append(player[3])  # player[3] is their id
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)
-					max_capture_progress = dist.max_capture_progress
+
+					if dist.capture_progress < dist.max_capture_progress:
+						for stat_recipient in dc_stat_increase_list:
+							ewstats.change_stat(
+								id_server = id_server,
+								id_user = stat_recipient,
+								metric = ewcfg.stat_capture_points_contributed,
+								n = ewcfg.capture_tick_length * capture_speed
+							)
 
 					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
 						await dist.change_progress(ewcfg.capture_tick_length * capture_speed, faction_capture)

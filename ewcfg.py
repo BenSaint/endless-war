@@ -556,6 +556,7 @@ stat_lifetime_pve_deaths = 'lifetime_pve_deaths'
 #Track revolver trigger pulls survived?
 stat_lifetime_spins_survived = 'lifetime_spins_survived'
 stat_max_spins_survived = 'max_spins_survived'
+stat_capture_points_contributed = 'capture_points_contributed'
 
 # Categories of events that change your slime total, for statistics tracking
 source_mining = 0
