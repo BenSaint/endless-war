@@ -4,6 +4,7 @@
 import ewcmd
 import ewutils
 import ewcfg
+import ewrolemgr
 from ew import EwUser
 
 """
@@ -39,6 +40,7 @@ async def pardon(cmd):
 
 				member_data.persist()
 				response = "{} has been released from his association with the {}.".format(member.display_name, faction_old)
+				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
