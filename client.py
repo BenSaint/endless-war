@@ -35,6 +35,7 @@ import ewmap
 import ewrolemgr
 import ewraidboss
 import ewleaderboard
+import ewslimeoid
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -195,7 +196,33 @@ cmd_map = {
 	ewcfg.cmd_news: ewcmd.patchnotes,
 	ewcfg.cmd_patchnotes: ewcmd.patchnotes,
 	ewcfg.cmd_wiki: ewcmd.wiki,
-	ewcfg.cmd_booru: ewcmd.booru
+	ewcfg.cmd_booru: ewcmd.booru,
+
+
+	# Slimeoids
+
+	ewcfg.cmd_incubateslimeoid: ewcmd.incubateslimeoid,
+	ewcfg.cmd_growbody: ewcmd.growbody,
+	ewcfg.cmd_growhead: ewcmd.growhead,
+	ewcfg.cmd_growlegs: ewcmd.growlegs,
+	ewcfg.cmd_growweapon: ewcmd.growweapon,
+	ewcfg.cmd_growarmor: ewcmd.growarmor,
+	ewcfg.cmd_growspecial: ewcmd.growspecial,
+	ewcfg.cmd_growbrain: ewcmd.growbrain,
+	ewcfg.cmd_nameslimeoid: ewcmd.nameslimeoid,
+	ewcfg.cmd_raisemoxie: ewcmd.raisemoxie,
+	ewcfg.cmd_lowermoxie: ewcmd.lowermoxie,
+	ewcfg.cmd_raisegrit: ewcmd.raisegrit,
+	ewcfg.cmd_lowergrit: ewcmd.lowergrit,
+	ewcfg.cmd_raisechutzpah: ewcmd.raisechutzpah,
+	ewcfg.cmd_lowerchutzpah: ewcmd.lowerchutzpah,
+	ewcfg.cmd_spawnslimeoid: ewcmd.spawnslimeoid,
+	ewcfg.cmd_dissolveslimeoid: ewcmd.dissolveslimeoid,
+	ewcfg.cmd_slimeoid: ewcmd.slimeoid,
+	ewcfg.cmd_instructions: ewcmd.instructions,
+	ewcfg.cmd_fetch: ewcmd.fetch,
+	ewcfg.cmd_pet: ewcmd.pet
+	
 }
 
 debug = False
