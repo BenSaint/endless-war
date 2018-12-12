@@ -9,6 +9,7 @@ import ewutils
 import ewmap
 import ewrolemgr
 from ew import EwUser, EwMarket
+from ewslimeoid import EwSlimeoid
 
 """ revive yourself from the dead. """
 async def revive(cmd):
@@ -19,6 +20,7 @@ async def revive(cmd):
 		response = "Come to me. I hunger. #{}.".format(ewcfg.channel_sewers)
 	else:
 		player_data = EwUser(member = cmd.message.author)
+		slimeoid = EwSlimeoid(member = cmd.message.author)
 
 		if player_data.life_state == ewcfg.life_state_corpse:
 			market_data = EwMarket(id_server = cmd.message.server.id)
@@ -64,6 +66,19 @@ async def revive(cmd):
 			response = '{slime4} A geyser of fresh slime erupts, showering Rowdy, Killer, and Juvenile alike. {slime4} {name} has been reborn in slime. {slime4}'.format(slime4 = ewcfg.emote_slime4, name = cmd.message.author.display_name)
 		else:
 			response = 'You\'re not dead just yet.'
+
+	#	deathreport = "You were {} by {}. {}".format(kill_descriptor, cmd.message.author.display_name, ewcfg.emote_slimeskull)
+	#	deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(member, deathreport)
+
+		if slimeoid.life_state == 2:
+			reunite = ""
+			brain = ewcfg.brain_map.get(slimeoid.ai)
+			reunite += brain.str_revive.format(
+			slimeoid_name = slimeoid.name
+			)
+			downtownchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_downtown)
+			reunite = ewutils.formatMessage(cmd.message.author, reunite)
+			await cmd.client.send_message(downtownchannel, reunite)
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
