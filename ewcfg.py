@@ -5,6 +5,13 @@ from ewweather import EwWeather
 from ewfood import EwFood
 from ewitem import EwItemDef
 from ewmap import EwPoi
+from ewslimeoid import EwBody
+from ewslimeoid import EwHead
+from ewslimeoid import EwMobility
+from ewslimeoid import EwOffense
+from ewslimeoid import EwDefense
+from ewslimeoid import EwSpecial
+from ewslimeoid import EwBrain
 
 # Global configuration options.
 version = "v2.08f"
@@ -25,6 +32,12 @@ life_state_juvenile = 1
 life_state_enlisted = 2
 life_state_grandfoe = 8
 life_state_kingpin = 10
+
+# slimeoid life states
+slimeoid_state_none = 0
+slimeoid_state_forming = 1
+slimeoid_state_active = 2
+slimeoid_state_stored = 3
 
 # ID tags for points of interest that are needed in code.
 poi_id_thesewers = "thesewers"
@@ -71,6 +84,7 @@ faction_rowdys = "rowdys"
 
 # Channel names
 channel_mines = "the-mines"
+channel_downtown = "downtown"
 channel_combatzone = "combat-zone"
 channel_endlesswar = "endless-war"
 channel_sewers = "the-sewers"
@@ -172,6 +186,28 @@ cmd_accept = cmd_prefix + 'accept'
 cmd_refuse = cmd_prefix + 'refuse'
 cmd_reap = cmd_prefix + 'reap'
 cmd_sow = cmd_prefix + 'sow'
+
+#slimeoid commands
+cmd_incubateslimeoid = cmd_prefix + 'incubateslimeoid'
+cmd_growbody = cmd_prefix + 'growbody'
+cmd_growhead = cmd_prefix + 'growhead'
+cmd_growlegs = cmd_prefix + 'growlegs'
+cmd_growweapon = cmd_prefix + 'growweapon'
+cmd_growarmor = cmd_prefix + 'growarmor'
+cmd_growspecial = cmd_prefix + 'growspecial'
+cmd_growbrain = cmd_prefix + 'growbrain'
+cmd_nameslimeoid = cmd_prefix + 'nameslimeoid'
+cmd_raisemoxie = cmd_prefix + 'raisemoxie'
+cmd_lowermoxie = cmd_prefix + 'lowermoxie'
+cmd_raisegrit = cmd_prefix + 'raisegrit'
+cmd_lowergrit = cmd_prefix + 'lowergrit'
+cmd_raisechutzpah = cmd_prefix + 'raisechutzpah'
+cmd_lowerchutzpah = cmd_prefix + 'lowerchutzpah'
+cmd_spawnslimeoid = cmd_prefix + 'spawnslimeoid'
+cmd_dissolveslimeoid = cmd_prefix + 'dissolveslimeoid'
+cmd_slimeoid = cmd_prefix + 'slimeoid'
+cmd_challenge = cmd_prefix + 'challenge'
+cmd_instructions = cmd_prefix + 'instructions'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -335,6 +371,22 @@ col_busted = 'busted'
 col_rrchallenger = 'rr_challenger_id'
 col_time_lastsow = 'time_lastsow'
 col_farm = 'farm'
+
+#Database columns for slimeoids
+col_id_slimeoid = 'id_slimeoid'
+col_body = 'body'
+col_head = 'head'
+col_legs = 'legs'
+col_armor = 'armor'
+col_weapon = 'weapon'
+col_special = 'special'
+col_ai = 'ai'
+col_type = 'type'
+col_name = 'name'
+col_atk = 'atk'
+col_defense = 'defense'
+col_intel = 'intel'
+col_level = 'level'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
@@ -2632,7 +2684,7 @@ poi_list = [
 			"sl"
 		],
 		str_name = "SlimeCorp Slimeoid Laboratory",
-		str_desc = "A nondescript building containing mysterious SlimeCorp industrial equipment. Large glass tubes and metallic vats seem to be designed to serve as incubators. The lab is empty and the equipment is not being powered.\n\nExits into Brawlden.",
+		str_desc = "A nondescript building containing mysterious SlimeCorp industrial equipment. Large glass tubes and metallic vats seem to be designed to serve as incubators. There is a notice from SlimeCorp on the entranceway explaining the use of its equipment. Use !instructions to read it.\n\nExits into Brawlden.",
 		channel = channel_slimeoidlab,
 		role = "Slimeoid Lab",
 		coord = (28, 1),
@@ -2818,3 +2870,552 @@ for poi in poi_list:
 	id_to_poi[poi.id_poi] = poi
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
+
+# Slimeoid attributes.
+
+# All body attributes in the game.
+body_list = [
+	EwBody( # body 1
+		id_body="teardrop",
+		alias = [
+			"tear",
+			"drop",
+			"oblong",
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid take on a roughly teardrop-shaped form.",
+		str_body="It is teardrop-shaped."
+	),
+	EwBody( # body 2
+		id_body="wormlike",
+		alias = [
+			"long",
+			"serpent",
+			"serpentine",
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid begin to stretch into an elongated form.",
+		str_body="It is long and wormlike."
+	),
+	EwBody( # body 3
+		id_body="spherical",
+		alias = [
+			"sphere",
+			"orb",
+			"ball",
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid take on a roughly spherical form.",
+		str_body="It is generally orb-shaped."
+	),
+	EwBody( # body 4
+		id_body="humanoid",
+		alias = [
+			"biped",
+			"human"
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid curl into a foetal, vaguely humanoid form.",
+		str_body="It is vaguely humanoid."
+	),
+	EwBody( # body 5
+		id_body="tentacled",
+		alias = [
+			"squid",
+			"squidlike",
+			"tentacle",
+			"tentacles"
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid begin to sprout long tendrils from its nucleus.",
+		str_body="It is a mass of tendrils."
+	),
+	EwBody( # body 6
+		id_body="amorphous",
+		alias = [
+			"none",
+			"formless",
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid accreting itself together with no distinct shape to speak of.",
+		str_body="It has no defined shape."
+	),
+	EwBody( # body 7
+		id_body="quadruped",
+		alias = [
+			"animal"
+		],
+		str_create="Through the observation port, you see the rapidly congealing proto-Slimeoid beginning to grow bones and vertebrae as it starts to resemble some kind of quadruped.",
+		str_body="It stands on four legs."
+	)
+]
+
+# A map of id_body to EwBody objects.
+body_map = {}
+
+# A list of body names
+body_names = []
+
+# Populate body map, including all aliases.
+for body in body_list:
+	body_map[body.id_body] = body
+	body_names.append(body.id_body)
+
+	for alias in body.alias:
+		body_map[alias] = body
+
+# All head attributes in the game.
+head_list = [
+	EwHead( # head 1
+		id_head="eye",
+		alias = [
+			"cyclops"
+		],
+		str_create="Through the observation port, you see a dark cluster within the proto-Slimeoid begin to form into what looks like a large eye.",
+		str_head="Its face is a single huge eye."
+	),
+	EwHead( # head 2
+		id_head="maw",
+		alias=[
+			"mouth"
+		],
+		str_create="Through the observation port, you see an opening form in what you think is the proto-Slimeoid's face, which begins to sprout large pointed teeth.",
+		str_head="Its face is a huge toothy mouth."
+	),
+	EwHead( # head 3
+		id_head="void",
+		alias=[
+			"hole",
+			"none"
+		],
+		str_create="Through the observation port, you see what you thought was the proto-Slimeoid's face suddenly sucked down into its body, as though by a black hole.",
+		str_head="Its face is an empty black void."
+	),
+	EwHead( # head 4
+		id_head="beast",
+		alias=[
+			"animal",
+			"dragon"
+		],
+		str_create="Through the observation port, you see the beginnings of an animal-like face forming on your proto-Slimeoid, with what might be eyes, a nose, teeth... maybe.",
+		str_head="Its face is that of a vicious beast."
+	),
+	EwHead( # head 5
+		id_head="insect",
+		alias=[
+			"bug",
+			"insectoid"
+		],
+		str_create="Through the observation port, you see the proto-Slimeoid suddenly bulge with a series of hard orbs which congeal into what appear to be large compound eyes.",
+		str_head="It has bulging insectoid eyes and mandibles."
+	),
+	EwHead( # head 6
+		id_head="skull",
+		alias=[
+			"skeleton"
+		],
+		str_create="Through the observation port, you see the proto-Slimeoid's frontal features twist into a ghastly death's-head.",
+		str_head="Its face resembles a skull."
+	)
+]
+
+# A map of id_head to EwBody objects.
+head_map = {}
+
+# A list of head names
+head_names = []
+
+# Populate head map, including all aliases.
+for head in head_list:
+	head_map[head.id_head] = head
+	head_names.append(head.id_head)
+
+	for alias in head.alias:
+		head_map[alias] = head
+
+# All mobility attributes in the game.
+mobility_list = [
+	EwMobility( # mobility 1
+		id_mobility="legs",
+		alias=[
+			"animal",
+			"quadruped",
+			"biped",
+			"jointed",
+			"limbs"
+		],
+		str_advance="\n{active} barrels toward {inactive}!",
+		str_retreat="\n{active} leaps away from {inactive}!",
+		str_create="Through the observation port, you see jointed limbs begin to sprout from the proto-Slimeoid's underside.",
+		str_mobility="It walks around on legs."
+	),
+	EwMobility( # mobility 2
+		id_mobility="rolling",
+		alias=[
+			"roll"
+		],
+		str_advance="\n{active} rolls itself toward {inactive}!",
+		str_retreat="\n{active} rolls away from {inactive}!",
+		str_create="Through the observation port, you see the proto-Slimeoid becoming smoother and rounder.",
+		str_mobility="It moves by rolling its body around."
+	),
+	EwMobility( # mobility 3
+		id_mobility="flagella",
+		alias=[
+			"flagella",
+			"tendrils",
+			"tentacles"
+		],
+		str_advance="\n{active} slithers toward {inactive}!",
+		str_retreat="\n{active} slithers away from {inactive}!",
+		str_create="Through the observation port, you see masses of writhing flagella begin to protrude from the proto-Slimeoid's extremities.",
+		str_mobility="It moves by pulling itself around with its flagella."
+	),
+	EwMobility( # mobility 4
+		id_mobility="jets",
+		alias=[
+			"fluid",
+			"jet"
+		],
+		str_advance="\n{active} propels itself toward {inactive}!",
+		str_retreat="\n{active} propels itself away from {inactive}!",
+		str_create="Through the observation port, you openings forming in the proto-Slimeoid's body, which begin to vent fluid.",
+		str_mobility="It moves via jet-propulsion by squirting fluids."
+	)
+]
+
+# A map of id_mobility to EwBody objects.
+mobility_map = {}
+
+# A list of mobility names
+mobility_names = []
+
+# Populate mobility map, including all aliases.
+for mobility in mobility_list:
+	mobility_map[mobility.id_mobility] = mobility
+	mobility_names.append(mobility.id_mobility)
+
+	for alias in mobility.alias:
+		mobility_map[alias] = mobility
+
+# All offense attributes in the game.
+offense_list = [
+	EwOffense( # offense 1
+		id_offense="blades",
+		alias=[
+			"edged",
+			"edges",
+			"edgy",
+			"bladed",
+			"blade"
+		],
+		str_attack="\n{active} slashes at {inactive} with its blades!",
+		str_create="Through the observation port, you see long, sharp protrusions begin to form on the proto-Slimeoid's extremities.",
+		str_offense="It slices foes with retractible blades."
+	),
+	EwOffense( # offense 2
+		id_offense="teeth",
+		alias=[
+			"bite",
+			"biting",
+			"crunch",
+			"crunching"
+		],
+		str_attack="\n{active} sinks its teeth into {inactive}!",
+		str_create="Through the observation port, you see large bony structures resembling teeth forming in the proto-Slimeoid's... mouth?",
+		str_offense="It can bite foes with deadly fangs."
+	),
+	EwOffense( # offense 3
+		id_offense="grip",
+		alias=[
+			"squeeze",
+			"grab",
+			"squeezing",
+			"grabbing",
+			"gripping",
+			"constrict",
+			"constriction",
+		],
+		str_attack="\n{active} grabs {} and squeezes hard!",
+		str_create="Through the observation port, you see the proto-Slimeoid's limbs becoming thicker and stronger, beginning to twist and writhe, seeking something to grip onto.",
+		str_offense="It can grab and crush its foes with its limbs."
+	),
+	EwOffense( # offense 4
+		id_offense="bludgeon",
+		alias=[
+			"strike",
+			"striking",
+			"smash",
+			"smashing",
+			"bash",
+			"bashing",
+			"crush",
+			"crushing"
+		],
+		str_attack="\n{active} bashes {} with its limbs!",
+		str_create="Through the observation port, you see the ends of the proto-Slimeoid's limbs becoming harder and heavier.",
+		str_offense="It can smash foes with its limbs."
+	)
+]
+
+# A map of id_offense to EwBody objects.
+offense_map = {}
+
+# A list of offense names
+offense_names = []
+
+# Populate offense map, including all aliases.
+for offense in offense_list:
+	offense_map[offense.id_offense] = offense
+	offense_names.append(offense.id_offense)
+
+	for alias in offense.alias:
+		offense_map[alias] = offense
+
+# All defense attributes in the game.
+defense_list = [
+	EwDefense( # defense 1
+		id_defense="scales",
+		alias=[
+			"scale",
+			"scaled",
+			"scaly"
+		],
+		str_defense="",
+		str_create="Through the observation port, you see the proto-Slimeoid's skin begin to glint as it sprouts roughly-edged scales.",
+		str_armor="It is covered in scales."
+	),
+	EwDefense( # defense 2
+		id_defense="boneplates",
+		alias=[
+			"bone",
+			"bony",
+			"bones",
+			"plate",
+			"plates",
+			"armor",
+			"plating"
+		],
+		str_defense="",
+		str_create="Through the observation port, you see hard bony plates begin to congeal on the proto-Slimeoid's surface.",
+		str_armor="It is covered in bony plates."
+	),
+	EwDefense( # defense 3
+		id_defense="quantumfield",
+		alias=[
+			"quantum",
+			"field",
+			"energy"
+		],
+		str_defense="",
+		str_create="Through the observation port, start to notice the proto-Slimeoid begin to flicker, and you hear a strange humming sound.",
+		str_armor="It is enveloped in a field of quantum uncertainty."
+	),
+	EwDefense( # defense 4
+		id_defense="formless",
+		alias=[
+			"amorphous",
+			"shapeless",
+			"squishy",
+		],
+		str_defense="",
+		str_create="Through the observation port, you see the proto-Slimeoid suddenly begin to twist itself, stretching and contracting as its shape rapidly shifts.",
+		str_armor="It is malleable and can absorb blows with ease."
+	),
+]
+
+# A map of id_defense to EwBody objects.
+defense_map = {}
+
+# A list of defense names
+defense_names = []
+
+# Populate defense map, including all aliases.
+for defense in defense_list:
+	defense_map[defense.id_defense] = defense
+	defense_names.append(defense.id_defense)
+
+	for alias in defense.alias:
+		defense_map[alias] = defense
+
+# All special attributes in the game.
+special_list = [
+	EwSpecial( # special 1
+		id_special="spit",
+		alias=[
+			"spitting",
+			"spray",
+			"squirt",
+			"spraying",
+			"squirting",
+			"liquid",
+			"fluid",
+			"acid",
+			"acidic",
+			"toxic",
+			"poison"
+
+		],
+		str_special_attack="\n{active} spits acidic slime all over {inactive}!",
+		str_create="Through the observation port, you see the proto-Slimeoid's body begin to excrete a foul, toxic ooze.",
+		str_special="It can spit acidic slime."
+	),
+	EwSpecial( # special 2
+		id_special="laser",
+		alias=[
+			"beam",
+			"energy",
+			"radiation"
+		],
+		str_special_attack="\n{active} sears {inactive} with a blast of radiation!",
+		str_create="Through the observation port, you see the proto-Slimeoid's body begin to glow with energy as the gestation vat's built-in Geiger Counter begins to click frantically.",
+		str_special="It can fire beams of radiation."
+	),
+	EwSpecial( # special 3
+		id_special="spines",
+		alias=[
+			"spikes",
+			"spiky",
+			"spiny",
+			"quills"
+		],
+		str_special_attack="\n{active} extends its spines, puncturing {inactive}!",
+		str_create="Through the observation port, you see the proto-Slimeoid's congealing body suddenly protruding with long, pointed spines, which quickly retract back into it.",
+		str_special="It can extrude deadly spikes."
+	),
+	EwSpecial( # special 4
+		id_special="throw",
+		alias=[
+			"throwing",
+			"hurling",
+			"hurl"
+		],
+		str_special_attack="\n{active} picks up a chunk of rock and hurls it into {inactive}!",
+		str_create="Through the observation port, you see the proto-Slimeoid's limbs become more articulate.",
+		str_special="It can hurl objects at foes."
+	)
+]
+
+# A map of id_special to EwBody objects.
+special_map = {}
+
+# A list of special names
+special_names = []
+
+# Populate special map, including all aliases.
+for special in special_list:
+	special_map[special.id_special] = special
+	special_names.append(special.id_special)
+
+	for alias in special.alias:
+		special_map[alias] = special
+
+# All brain attributes in the game.
+brain_list = [
+	EwBrain( # brain 1
+		id_brain="a",
+		alias=[
+			"typea",
+			"type a"
+		],
+		str_create="The proto-Slimeoid begins to move, thrashing about as if in frustration.",
+		str_brain="It is extremely irritable.",
+		str_kill="{slimeoid_name} howls with savage delight at the bloodshed!!",
+		str_death="{slimeoid_name} howls in fury at its master's death! It tears away in a blind rage!",
+		str_revive="{slimeoid_name} howls at your return, annoyed to have been kept waiting.",
+		str_spawn="{slimeoid_name} shakes itself off to get rid of some excess gestation fluid, then starts to hiss at you. Seems like a real firecracker, this one.",
+		str_dissolve="{slimeoid_name} hisses and spits with fury as you hold it over the SlimeCorp Dissolution Vats. Come on, get in there...\n{slimeoid_name} claws at you, clutching at the edge of the vat, screeching with rage even as you hold its head under the surface and wait for the chemical soup to do its work. At last, it stops fighting.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 2
+		id_brain="b",
+		alias=[
+			"typeb",
+			"type b"
+		],
+		str_create="The proto-Slimeoid begins to move about its gestation tank, exploring its surroundings.",
+		str_brain="It is enthusiastic about almost everything.",
+		str_kill="{slimeoid_name} gives a bestial woop of excitement for your victory!",
+		str_death="{slimeoid_name} gives a wail of grief at its master's death, streaking away from the scene.",
+		str_revive="{slimeoid_name} is waiting patiently downtown when you return from your time as a corpse. It knew you'd be back!",
+		str_spawn="{slimeoid_name} gets up off the ground slowly at first, but then it notices you and leaps into your arms. It sure seems glad to see you!",
+		str_dissolve="You order {slimeoid_name} into the Dissolution Vats. It's initially confused, but realization of what you're asking slowly crawks across its features.\nIt doesn't want to go, but after enough stern commanding, it finally pitches itself into the toxic sludge, seemingly too heartbroken to fear death.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 3
+		id_brain="c",
+		alias=[
+			"typec",
+			"type c"
+		],
+		str_create="The proto-Slimeoid draws its congealing body together, as if trying to gather its strength.",
+		str_brain="It is quiet and withdrawn.",
+		str_kill="{slimeoid_name} regards the corpse of your former adversary with an unknowable expression.",
+		str_death="{slimeoid_name} stares at the killer, memorizing their face before fleeing the scene.",
+		str_revive="{slimeoid_name} is downtown when you return from the sewers. You find it staring silently up at ENDLESS WAR.",
+		str_spawn="{slimeoid_name} regards you silently from the floor. You can't tell if it likes you or not, but it starts to follow you regardless.",
+		str_dissolve="You pick up {slimeoid_name} and hurl it into the SlimeCorp Dissolution Vats before it starts to suspect anything. It slowly sinks into the chemical soup, kind of like Arnold at the end of Terminator 2, only instead of giving you a thumbs-up, it stares at you with an unreadable expression. Betrayal? Confusion? Hatred? Yeah, probably.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 4
+		id_brain="d",
+		alias=[
+			"typed",
+			"type d"
+		],
+		str_create="The proto-Slimeoid lazily turns over in its gestation vat, floating and doing little else.",
+		str_brain="It is usually staring off into space.",
+		str_kill="{slimeoid_name} wasn't paying attention and missed the action.",
+		str_death="{slimeoid_name} is startled to realize its master has died. It blinks in confusion before fleeing.",
+		str_revive="{slimeoid_name} is exactly where you left it when you died.",
+		str_spawn="{slimeoid_name} flops over on the floor and stares up at you. Its gaze wanders around the room for a while before it finally picks itself up to follow you.",
+		str_dissolve="You lead {slimeoid_name} up to the edge of the Dissolution Vats and give a quick 'Hey, look, a distraction!'. {slimeoid_name} is immediately distracted and you shove it over the edge. Landing in the vat with a sickening *gloop* sound, it sinks quickly under the fluid surface, flailing madly in confusion and desperation.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 5
+		id_brain="e",
+		alias=[
+			"typee",
+			"type e"
+		],
+		str_create="The proto-Slimeoid starts to sporadically twitch and shiver.",
+		str_brain="It is extremely skittish and jumpy.",
+		str_kill="{slimeoid_name} peers out from behind its master, hoping the violence is over.",
+		str_death="{slimeoid_name} is overcome with terror, skittering away from the killer in a mad panic!",
+		str_revive="{slimeoid_name} peeks out from behind some trash cans before rejoining you. It seems relieved to have you back.",
+		str_spawn="{slimeoid_name}'s eyes dart frantically around the room. Seeing you, it darts behind you, as if for cover from an unknown threat.",
+		str_dissolve="{slimeoid_name} is looking around the lab nervously, obviously unnerved by the Slimeoid technology. Its preoccupation makes it all too easy to lead it to the Dissolution Vats and kick its legs out from under it, knocking it in. As it falls and hits the solvent chemicals, it wails and screeches in shock and terror, but the noise eventually quiets as it dissolves into a soft lump, then disintegrates altogether.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 6
+		id_brain="f",
+		alias=[
+			"typef",
+			"type f"
+		],
+		str_create="The proto-Slimeoid darts to the opposite side of the gestation vat. You're not sure, but you feel like it's watching you.",
+		str_brain="It acts secretive, as though it's up to something.",
+		str_kill="{slimeoid_name} rifles through your victim's pockets for food.",
+		str_death="{slimeoid_name} rifles through its dead master's pockets for whatever it can find before slinking away.",
+		str_revive="{slimeoid_name} starts following you around again not long after you have returned from the dead.",
+		str_spawn="{slimeoid_name} picks itself up off the floor and regards you coolly. It seems as if it's gauging your usefulness.",
+		str_dissolve="{slimeoid_name} eyes you suspiciously as you approach the Dissolution Vats. It's on to you. Before it has a chance to bolt, you grab it, hoist it up over your head, and hurl it into the chemical soup. {slimeoid_name} screeches in protest, sputtering and hissing as it thrashes around in the vat, but the chemicals work quickly and it soon dissolves into nothing.\n\n{slimeoid_name} is no more."
+	),
+	EwBrain( # brain 7
+		id_brain="g",
+		alias=[
+			"typeg",
+			"type g"
+		],
+		str_create="The proto-Slimeoid begins to flit around the gestation vat, seemingly unsure where to go.",
+		str_brain="It seems to have no idea what it's doing.",
+		str_kill="{slimeoid_name} seems unsure of whether to celebrate the victory or to mourn the decline of your civilization into rampant youth violence.",
+		str_death="{slimeoid_name} starts to approach its master's body, then changes its mind and starts to run away. It trips over itself and falls on its way out.",
+		str_revive="{slimeoid_name} wanders by, seemingly by accident, but thinks it probably ought to start following you again.",
+		str_spawn="{slimeoid_name} starts to pick itself up off the floor, then changes its mind and lies back down. Then it gets up again. Lies down again. Up. Down. Up. Ok, this time it stays up.",
+		str_dissolve="{slimeoid_name} is perplexed by the laboratory machinery. Taking advantage of its confusion, you point it towards the Dissolution Vats, and it gormlessly meanders up the ramp and over the edge. You hear a gloopy SPLOOSH sound, then nothing. You approach the vats and peer over the edge, but see no trace of your former companion.\n\n{slimeoid_name} is no more."
+	)
+]
+
+# A map of id_brain to EwBrain objects.
+brain_map = {}
+
+# A list of brain names
+brain_names = []
+
+# Populate brain map, including all aliases.
+for brain in brain_list:
+	brain_map[brain.id_brain] = brain
+	brain_names.append(brain.id_brain)
+
+	for alias in brain.alias:
+		brain_map[alias] = brain
