@@ -1,5 +1,6 @@
 import random
 
+from ewcosmeticitem import EwCosmeticItem
 from ewwep import EwWeapon
 from ewweather import EwWeather
 from ewfood import EwFood
@@ -366,6 +367,11 @@ it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
 it_food = "food"
 it_weapon = "weapon"
+
+# Cosmetic item rarities
+rarity_plebeian = "Plebeian"
+rarity_patrician = "Patrician"
+rarity_princeps = "Princeps"
 
 # Leaderboard score categories
 leaderboard_slimes = "SLIMIEST"
@@ -942,7 +948,7 @@ food_list = [
 		price = 18,
 		inebriation = 2,
 		str_name = 'slime n\' tonic',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "You stir your slime n' tonic with a thin straw before chugging it lustily.",
 		str_desc = "The drink that has saved more juveniles’ lives than any trip to the nurse’s office could."
 	),
@@ -955,7 +961,7 @@ food_list = [
 		price = 22,
 		inebriation = 2,
 		str_name = 'slima colada',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "Slurping down this tropicalish drink gives you a brain freeze. You drink faster to numb the pain.",
 		str_desc = "Perfect for if you like getting caught in acid rain, or if you enjoy gunning down grandmas in the dunes out of town."
 	),
@@ -969,7 +975,7 @@ food_list = [
 		price = 10,
 		inebriation = 2,
 		str_name = 'shot of slimeka',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "Your throat burns as you toss back a mouthful of the glowing, hissing liquid. You might need a doctor.",
 		str_desc = "Made with 100% unfiltered sludge from the city's harbor. Less internally damaging than a sawed-off shotgun blast to the colon, but not by much."
 	),
@@ -985,7 +991,7 @@ food_list = [
 		price = 99,
 		inebriation = 4,
 		str_name = 'bottle of vintage cabernet slimeignon',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "Ahh, you have a keen eye. 19XX was an excellent year. You pop the cork and gingerly have a sniff. Then you gulp the whole bottle down in seconds, because fuck it.",
 		str_desc = "A sophisticated drink for a sophisticated delinquent gangster with blood on his hands such as yourself."
 	),
@@ -998,7 +1004,7 @@ food_list = [
 		price = 16,
 		inebriation = 2,
 		str_name = 'slimy nipple',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "You drink the small glass of creamy, greenish layered fluids in one gulp.",
 		str_desc = "Of the drinks with terrible names, this is the least amusing."
 	),
@@ -1011,7 +1017,7 @@ food_list = [
 		price = 24,
 		inebriation = 2,
 		str_name = 'slime on the beach',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "You look pretty stupid holding this fluorescent drink with a lil umbrella in it, but you don't care. Bottoms up!",
 		str_desc = "When you told the bartender you wanted Slime on the Beach, about a dozen other guys at the speakeasy all collectively and hilariously added"
 			" “Yeah, wouldn’t we all”, chuckled under their breath, and beat the shit out of you outside afterward."
@@ -1025,7 +1031,7 @@ food_list = [
 		price = 22,
 		inebriation = 2,
 		str_name = 'goo-ba libre',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "The drink oozes tartly down your throat. It's pretty nasty, but you still like it.",
 		str_desc = "You’re lucky you got this glass so easily. Last time you had tried to convince the bartender you were over 21 for half an hour before you finally cracked and just ordered a coke."
 	),
@@ -1038,7 +1044,7 @@ food_list = [
 		price = 20,
 		inebriation = 3,
 		str_name = 'manhattan project',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "Downing your drink, the alcohol hits your bloodstream with the force of an atomic bomb.",
 		str_desc = "We got tired of waiting for the bombs to drop so we made our own."
 	),
@@ -1051,7 +1057,7 @@ food_list = [
 		price = 20,
 		inebriation = 2,
 		str_name = 'slimy mary',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "This drink smells pretty nasty even by NLACakaNM standards. But what are you gonna do, NOT drink it?",
 		str_desc = "To get this drink you have to stand in the bathroom with the lights off and your back turned to the mirror. "
 			"Say it’s name three times, turn around and open your eyes. Congratulations your wallet’s missing "
@@ -1067,7 +1073,7 @@ food_list = [
 		price = 21,
 		inebriation = 2,
 		str_name = 'stein of dark slime stout',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "The bartender pours you a rich, dark-green slime stout from the tap, with a head so thick you could rest a SlimeCoin on it.",
 		str_desc = "Fun fact; Munchy and Ben actually stole the Blarney stone and use it as a doorstop. We are wanted terrorists in Ireland."
 	),
@@ -1080,7 +1086,7 @@ food_list = [
 		price = 0,
 		inebriation = 0,
 		str_name = 'glass of water',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "The bartender sighs as he hands you a glass of water. You drink it. You're not sure why you bothered, though.",
 		str_desc = "It’s a room temperature glass of tap water. Abstaining from drinking calories has never tasted this adequate!"
 	),
@@ -1093,7 +1099,7 @@ food_list = [
 		price = 12,
 		inebriation = 0,
 		str_name = 'slice of pizza',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "You grab a hot slice of that cheesy pie! Radical!!",
 		str_desc = "A supposedly hot slice of cheese pizza. Some of it’s pre-grated cheese hasn't fully melted yet, and it’s crust is hard and chewy. Reality is a cruel mistress."
 	),
@@ -1106,7 +1112,7 @@ food_list = [
 		price = 13,
 		inebriation = 0,
 		str_name = 'slice of pepperoni pizza',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "You chomp into the spicy sausage slice, bro! Cowabunga!!",
 		str_desc = "An apparently appetizing slice of pepperoni pizza. It’s crust is limp and soggy from the excess"
 			" grease it's slathered in, which is about the only thing you can taste on it as well."
@@ -1120,7 +1126,7 @@ food_list = [
 		price = 17,
 		inebriation = 0,
 		str_name = 'slice of Meat Lover\'s pizza',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "You scarf down a meaty slice! You're sickened and nauseated by the sheer volume of animal fat you're ingesting! Tubular!!",
 		str_desc = "A thoroughly revolting slice Meat Lover's® pizza. You like meat, but you aren't sure if you're ready to love again."
 	),
@@ -1133,7 +1139,7 @@ food_list = [
 		price = 19,
 		inebriation = 0,
 		str_name = 'buffalo wings',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "Aw yeah! Your mouth burns with passion!! Your lips are in agony!! You've never felt so alive!!!",
 		str_desc = "Alright, some quick backstory: https://youtu.be/lqAh0jJTqvo"
 	),
@@ -1146,7 +1152,7 @@ food_list = [
 		price = 11,
 		inebriation = 0,
 		str_name = 'soft taco',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "It's a taco. Pretty good, you guess. But it's missing something... a blast of flavor perhaps?",
 		str_desc = "A limp, pitiful soft shell taco. Mirroring its own weak exterior, it is the perfect food for weak-willed men"
 			" without the strong moral character needed to tame the wild, wicked blast of flavor in more iconic Taco Bell tacos."
@@ -1161,7 +1167,7 @@ food_list = [
 		price = 13,
 		inebriation = 0,
 		str_name = 'Nacho Cheese taco',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "You slam your filthy mouth into a cheesy blast of nacho flavor!! *YEEAAAHHHH!!!*",
 		str_desc = "This flavor…!! It’s an explosion of artificial cheese flavors and shrapnel sized bits of soggy shell that vaguely reminds you of world famous Nacho Cheese Doritos!!"
 	),
@@ -1174,7 +1180,7 @@ food_list = [
 		price = 13,
 		inebriation = 0,
 		str_name = 'Cool Ranch taco',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "You crash your teeth into an explosion of cool ranch taco flavor!! *YEEAAAHHHH!!!*",
 		str_desc = "This flavor…?? It’s a mushy mess of poorly seasoned mystery meat and pre-grated cheese powdered in preservatives"
 			" trapped in a miserable shell that unfortunately reminds you of Doritos’ *other flavor* that isn't Nacho Cheese."
@@ -1188,7 +1194,7 @@ food_list = [
 		price = 15,
 		inebriation = 0,
 		str_name = 'chicken quesarito',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "It's a burrito, or something. It's got cheese in it. Whatever. You eat it and embrace nothingness.",
 		str_desc = "This travesty reminds you of your favorite My Little Pony: Friendship is Magic character Fluttershy for reasons you can't"
 			" quite remember and that are pushed out of your mind from embarrassment before you can remember which"
@@ -1204,7 +1210,7 @@ food_list = [
 		price = 29,
 		inebriation = 0,
 		str_name = 'SteakVolcanoQuesoMachoRito',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "It's a big fucking mess of meat, vegetables, tortilla, cheese, and whatever else happened to be around. You gobble it down greedily!!",
 		str_desc = "This pound of greasy, soggy, and flavorless artificially flavored fast food just broke through the damp, leaking"
 			" paper bag you doubled wrapped it in. Guess you're going to have to eat it off the floor."
@@ -1218,7 +1224,7 @@ food_list = [
 		price = 12,
 		inebriation = 0,
 		str_name = 'tub of cole slaw',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "It's a cup of some gross white cabbage swimming in watery mayo. Why the fuck would you order this?",
 		str_desc = "This side is so horrific you might just start seeing dead people if you eat it."
 	),
@@ -1232,7 +1238,7 @@ food_list = [
 		price = 10,
 		inebriation = 0,
 		str_name = 'biscuit with a side of gravy',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You get a biscuit and a small bucket of brown gravy. You dip the biscuit, scarf it down, then chug the gravy. *burp.*",
 		str_desc = "A cold biscuit that could break the glass if you threw it at window and scalding hot gravy that they let burn"
 			" away the filth and grime in their pots so they don't have to clean them."
@@ -1247,7 +1253,7 @@ food_list = [
 		price = 32,
 		inebriation = 0,
 		str_name = '8-piece fried chicken bucket',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You feast on hot, crispy, dripping white meat. Your fingers and tongue are scalded and you don't give a shit.",
 		str_desc = "Children are starving in Africa and you order a bucket of fried chicken just for yourself."
 			" Well, to be honest I don't even think the starving African children would touch KFC."
@@ -1261,7 +1267,7 @@ food_list = [
 		price = 16,
 		inebriation = 0,
 		str_name = 'Famous Mashed Potato Bowl',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You scarf down a shitty plastic bowl full of jumbled-up bullshit. It really hits the spot!",
 		str_desc = "It’s just not a meal unless it’s a potato-based meal with a calorie count in the six digits."
 	),
@@ -1276,7 +1282,7 @@ food_list = [
 		price = 0,
 		inebriation = 0,
 		str_name = 'packet of BBQ Sauce',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You discard what's left of your dignity and purchace a packet of barbeque sauce to slurp down.",
 		str_desc = "You're not alone. Confidential help is available for free. Call the suicide hotline if you're having thoughts of eating this."
 	),
@@ -1291,7 +1297,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with vivid green swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial various citrus flavorings. Sick!!"
 	),
@@ -1304,7 +1310,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Baja Blast',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with light bluish swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial lime flavoring. Cool!!"
 	),
@@ -1317,7 +1323,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Code Red',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with red swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial cherry flavoring. Sweet!!"
 	),
@@ -1330,7 +1336,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Pitch Black',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with dark purple swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial grape flavoring. Gnarly!!"
 	),
@@ -1343,7 +1349,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew White-Out',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with pale cloudy swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial lemon flavoring. Bodacious!!"
 	),
@@ -1356,7 +1362,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'Mtn Dew Livewire',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew, vendor_vendingmachine],
 		str_eat = "You fill your jumbo fountain drink vessel with orange swill and gulp it down.",
 		str_desc = "Ah, a nice cold brew resembling a mix between battery acid and artificial orange flavoring. Tubular!!"
 	),
@@ -1370,7 +1376,7 @@ food_list = [
 		price = 34,
 		inebriation = 0,
 		str_name = 'a shrimp cocktail',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You pull out the prawns and pop ‘em into your mouth one after without removing their shell. To wash down the shards of crustacean getting lodged in the roof of your mouth, you take vigorous swigs of the cocktail sauce straight out of the glass.",
 		str_desc = "A wavy glass of some shelled shrimp dipped in a weird, bitter ketchup that assaults your snout and mouth with unfortunate strength. Nothing is sacred."
 	),
@@ -1383,7 +1389,7 @@ food_list = [
 		price = 42,
 		inebriation = 0,
 		str_name = 'a grilled halibut',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You scarf down some delicious grilled halibut for the helluvit and it’s accompanying sides for the sidesuvit.",
 		str_desc = "A grilled hunk of halibut, served with chipotle dirty rice and corn."
 	),
@@ -1396,7 +1402,7 @@ food_list = [
 		price = 45,
 		inebriation = 0,
 		str_name = 'a wood fired salmon',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You swallow the wood fired salmon without saving any of its smoky aftertaste! Aww man, so much for the extra 2 SlimeCoin…",
 		str_desc = "A wood fired slice of salmon, served with a Dijon glaze and scalloped potatoes and broccoli on the side."
 	),
@@ -1409,7 +1415,7 @@ food_list = [
 		price = 42,
 		inebriation = 0,
 		str_name = 'a sauteed mahi mahi',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You gobble up the sauteed mahi mahi with lighting speed, reducing the proud fish into liquid in a matter of seconds.",
 		str_desc = "A sauteed measurement of mahi mahi, with a lemon pepper crust and served with scalloped potatoes and spinach."
 	),
@@ -1422,7 +1428,7 @@ food_list = [
 		price = 39,
 		inebriation = 0,
 		str_name = 'pan-seared scallops',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You lean your head back, grab a few scallops, and try throwing them up into air and landing them in your mouth. This goes extremely poorly.",
 		str_desc = "Some pan-seared scallops, served with goat cheese grits, sweet corn, and asparagus."
 	),
@@ -1436,7 +1442,7 @@ food_list = [
 		price = 30,
 		inebriation = 0,
 		str_name = 'a cup of clam chowder',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You scoop out a glob of the hearty chowder and clench your fist above your head, letting it drizzle down all over your face and into your eager mouth. You’re a fucking freak.",
 		str_desc = "A bowl of New England clam chowder, served to you cold and runny in Arizona."
 	),
@@ -1449,7 +1455,7 @@ food_list = [
 		price = 66,
 		inebriation = 0,
 		str_name = 'a rock lobster tail and a sirloin steak',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You discard the napkin immediately, along with the silverware trapped inside of it, opting to instead to eat the meal with your hands. You pry the lobster from its shell first, ramming it into your mouth and taking a shot of melted butter to soften it up while you chew. You continue onto the steak, carefully sliced against the grain, and smother it in half a bottle of A1 sauce and just start to suck on the two inch pieces as if they were a jawbreaker or some other hard candy. You suck on the dead animal until it moistens to the point of liquefying, a solid hour and a half each. You burp loudly. Man, what an unforgettable dinner!",
 		str_desc = "A grilled 12oz sirloin steak and similarly sized rock lobster tail, served with scalloped potatoes, broccoli, asparagus, shallot herb butter along side a portrait of the chef that was autographed and kissed with a vibrant red lipstick. From his loving wife, or something? You break the portrait with your fist and your hand starts to bleed."
 	),
@@ -1463,7 +1469,7 @@ food_list = [
 		price = 61,
 		inebriation = 0,
 		str_name = 'an Arizonian Kingpin Crab',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You’re too weak to properly crack the mighty crabs’ carapaces, even with the proper crab carapace cracking crackers. After about 10 minutes of desperately trying to, you just whip out whatever weapon you currently have quiped and start to viciously strike the crustaceans in a vain attempt to release their inner, delectable meat. You just end up destroying the entire table you’re eating at.",
 		str_desc = "Two imposing 1½ lb Arizonian Kingpin Crabs, steamed and split, served with a small side of melted butter. Their unique pink and purple carapaces that distinguish them are purely cosmetic, but you’ll always think one color tastes better than the other. D’awww..."
 	),
@@ -1476,7 +1482,7 @@ food_list = [
 		price = 99,
 		inebriation = 99,
 		str_name = 'a bottle of champagne',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You shake the bottle violently before popping off the cork and letting the geyser of pink alcohol blast your waiter in the face. Haha, what a fucking dumbass.",
 		str_desc = "The bubbly, carbonated bright pink liquid contained inside this bottle is very reminiscent of of the alcohol in Disney’s The Great Mouse Detective, otherwise known as most appealing liquid on Earth until you remember it’s not straight edge."
 	),
@@ -1489,7 +1495,7 @@ food_list = [
 		price = 10,
 		inebriation = 0,
 		str_name = 'a glass of sparkling water',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You savor every bubble in the lightly carbonated bliss. ‘Ah, just like in Roma,’ you think to yourself, eyes watering",
 		str_desc = "You savor every bubble of this lightly carbonated bliss. Your eyes begin to tear up as you fondly regard your own ecstasy. ‘Ah, just like in Roma…’"
 	),
@@ -1502,7 +1508,7 @@ food_list = [
 		price = 99,
 		inebriation = 0,
 		str_name = 'a bowl of decadent Juvie’s Roe',
-		vendor = vendor_seafood,
+		vendors = [vendor_seafood],
 		str_eat = "You don’t really know how to eat caviar, so you just scoop some of the disgusting slop out of the tin with your bare hands and get crushed eggs all over your mouth as you shovel it into your uncultured maw. It tastes, uh… high class? This was a waste of money.",
 		str_desc = "A small tin of wild, matured Juvie’s roe. A highly sought after delicacy by the upper crust of the critical improshived juveniles of the city. Considered by many to be the height of luxury, and utterly decadent show of unrivalled epicurean ecstasy. Sure, maybe the indescribable bursts of flavor that terrorize and confuse the uncultured masses COULD be described as non-existent, reducing the whole dish to a weird, goopy mess, BUT YOU KNOW BETTER!!!!"
 
@@ -1516,7 +1522,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'home fries',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You cram as many overcooked cubes of potato into your oversized maw as possible.You choke painfully on some of the tiny bits that that bypass your attempts at chewing and lodge themselves into your windpipe. You hunger for more.",
 		str_desc = "A greasy, over salted, crispy pile of miniature potato chunks, ranging from the average cubes to smaller irregularly shaped, condensed bits of pure fried potato skin. With a calorie count well above your recommended daily consumption in just a handful, you could subsist on these preservative riddled species of spud for well over a week and still gain weight. Too bad you can’t stop yourself from guzzling an entire plates worth in 5 minutes. Oops."
 	),
@@ -1529,7 +1535,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'three pancakes',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You drench your three flapjacks in a generous helping of maple syrup and slap a stick of butter on top for good measure. It’s a good thing you’ve drowned your pancakes in all this excess shit, or you might have actually tasted them! The soggy, limp fried dough is so much more appetizing when all it’s innate flavor is overrun by pure sugary excess.",
 		str_desc = "Pancakes are usually a pretty safe bet, no matter where you are. You can’t really mess up a pancake unless you’re specifically trying to burn it. Luckily, the dedicated chefs in the kitchen are doing just that! Thank God, you almost got a good meal in this city."
 	),
@@ -1543,7 +1549,7 @@ food_list = [
 		price = 11,
 		inebriation = 0,
 		str_name = 'two chicken strips and a waffle',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You promptly seperate the two chicken strips and waffle on to separate plates, quarantining them off completely from one another. You dip the chicken strips into some ketchup and drizzle some syrup onto the waffles, making sure to NEVER combine the two bitter rivals and to cleanse your palette before switching between them. Ah, the life of a picky eater, it’s hard and no one understands.",
 		str_desc = "Waffles are the perfect test subject. Whether it’s a good waffle or a bad waffle, they’re all going to hover around the same average quality. So, whenever you’re in a new town and you wanna judge the quality of any given breakfast diner, order the waffle and rest easy knowing that even the worst waffle isn’t really that bad. Oh, this waffle? It’s terrible. At least you have two chicken strips that were clearly frozen and only heated up a couple of minutes before you received them. For all of the loss in quality and flavor, you can fuck up microwaving something."
 	),
@@ -1556,7 +1562,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'four slices of french toast',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You brace untold misery, for your hopes and dreams to be smashed utterly and irreparably, and most importantly to have wasted 12 SlimeCoin on the worst meal of your life. Every hair on your body stands upright, as if preparing for a betrayal fueled stroke. You bite into the toast, and as soon as the sweet pastry touches your tongue you feel as though you finally resonate with the ending of critically acclaimed children’s movie Ratatouille. The bread is fluffy, light, and pleasantly moist, the perfect distribution of cinnamon and nutmeg, mixed with light sprinkles of sugar and vanilla, create a french toast that is sweet but not sickeningly so. You can’t believe you’re saying this, but… it’s perfect! Your compliments to the chef, you guess.",
 		str_desc = "French toast is the hardest to perfect out of the legendary fried dough trio. Requiring even cursory amounts of knowledge or expertise in the kitchen proves to be too much for the chefs of diners nationwide. And unlike both the pancake and the waffle, there is a huge difference between a good french toast and a bad french toast. There is nothing more euphoric than biting into a fluffy, moist, and sweet piece of good french toast, while conversely there is nothing that invokes the image of pigs greedily eating trash in their trough than the feeling of a sticky glob of undercooked dough slide down your throat from a bad french toast. You really have to be sure that the restaurant you’re ordering french toast knows what they’re doing, or else your night is ruined. Now, take a wild guess if the chefs at the Smoker’s Cough know what they’re doing."
 	),
@@ -1569,7 +1575,7 @@ food_list = [
 		price = 8,
 		inebriation = 0,
 		str_name = 'two sunny side up eggs',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You isolate the yolks from your two fried eggs with surgical precision, leaving a clump of egg whites scraps and two perfectly contained yellow bubbles waiting to burst. You salt and pepper them both thoroughly before eating one after another, first chewing on the slightly discolored egg whites and then bursting each egg yolk whole in your mouth and letting the runny, golden goo to coat your insides.",
 		str_desc = "Sure, you like your egg yolks runny, but given by their snotty, green discoloration, it’s pretty likely these eggs were severely undercooked. Oh well, salmonella here we come!"
 	),
@@ -1583,7 +1589,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'an eggs benedict',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "Even though you’re pretty sure you know what an eggs benedict is, you aren’t sure you know how to eat it. You pick up the muffin and just take a bite out of it directly, hollandaise sauce and egg yolk coat your nostrils and generally splatters all over your face. Who would eat something like this????",
 		str_desc = "An English muffin topped off with some ham, a poached egg, and hollandaise sauce. It seems like the sort of food that’d you would enjoy, it’s customizable and leans itself to quirky variants, it’s pretty easy to make, it has an egg on it… still, the food comes across as menacing. It’s thick sauce masks it’s ingredients, what secrets could it be hiding? You guess there’s only one way to find out. Gulp!"
 	),
@@ -1596,7 +1602,7 @@ food_list = [
 		price = 8,
 		inebriation = 0,
 		str_name = 'two scrambled eggs',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You attempt to strangle your ketchup bottle for the state mandated dollop of ketchup to be adequately mixed into your scrambled egg when tragedy strikes! The bottle is empty! It blasts out specs of ketchup and a funny noise a few times before you throw it against the wall in ballistic anger. You are forced to eat the eggs… plain. DEAR GOD!!!!",
 		str_desc = "Some scrambled eggs. Come on, you know what scrambled eggs are, right? Do I have to spell out everything for you? Do you want me to stay awake all night and come up with immature jokes and puns for every one of these fucking things? Come on kid, get real."
 	),
@@ -1609,7 +1615,7 @@ food_list = [
 		price = 9,
 		inebriation = 0,
 		str_name = 'a western omelette',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You pour plenty of hot sauce all over your omelette and shove bite after bite into your slobbering mouth. The heat from the sauce and the bell peppers builds to a breaking point, causing you to blackout. You wake up an indeterminate amount of time later, covered in dried tears and sweat and your abdomen feeling as though you’re pregnant with Satan. You love pain.",
 		str_desc = "A delicious Denver omelette, stuffed with diced ham, onions, and green peppers. Looks great! Hm? Excuse me? What the fuck is a ‘western omelette’? Do people on the east coast seriously call Denver omelettes that? Are you joking me? You ask anyone on the sensible half of the country what the name of the best omelette is and they’ll bark back the long and storied history of John D. Omelette and his rough-and-tumble youth growing up in the mean streets of the great state of Colorado’s capital. Do they not know what Denver is? Do they think everything past the Appalachians are uncharted wilderness? Man, fuck you guys. We know were New York is, we know where Boston is, we know where Cincinnati is, we know our geography of the east coast like the back of our hand and it’s about time you start memorizing ours. Eat shit."
 	),
@@ -1623,7 +1629,7 @@ food_list = [
 		price = 6,
 		inebriation = 0,
 		str_name = 'a glass of orange juice',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You swish around the decadent, pulpy orange juice in your mouth. This exacerbates your already poor dental hygiene, sending shockwaves of pain through your mouth as the sugary liquid washes up against dozens of cavities all throughout your mouth. But, you don’t care. You’re in heaven.",
 		str_desc = "A cavity creating, dental decaying, and enamel eroding glass of delicious orange juice. This vibrant citrus drink hits the spot any day of the week, any minute of the day, and every second of your short, pathetic life. Coffee is a myth, water is a joke, soda is piss. #juiceprideworldwide"
 	),
@@ -1636,7 +1642,7 @@ food_list = [
 		price = 6,
 		inebriation = 0,
 		str_name = 'a glass of milk',
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You take a swig of a nice, cold glass of whole milk and your palette is instantly clear of any sugary or syrupy foods you may have been eating. You are left in total cow induced euphoria.",
 		str_desc = "A simple glass of milk. No more, no less. "
 	),
@@ -1649,7 +1655,7 @@ food_list = [
 		price = 12,
 		inebriation = 0,
 		str_name = "two steak tips and two sunny side up eggs",
-		vendor = vendor_diner,
+		vendors = [vendor_diner],
 		str_eat = "You break the yolk of your two fried eggs immediately, letting the yolk run and pool around the steak tips, acting as a dipping sauce. With each mouthwatering bite of juicy, medium rare steak coated in delicious, runny yolk, you reach a higher level of christ consciousness. How does no one else but you do this?",
 		str_desc = "The only actually filling meal they serve at the diner. Between the two medium rare steak tips and the perfectly cooked sunny side up eggs, you’ve got enough protein in this one meal to grow an extra muscle."
 	),
@@ -1664,7 +1670,7 @@ food_list = [
 		price = 21,
 		inebriation = 0,
 		str_name = 'Double Down',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You chomp into the meaty pseudo-sandwich! The Colonol's Special Sauce oozes over your lips and fingers, making you feel absolutely filthy.",
 		str_desc = "From between two crispy chicken filets oozes the Colonel's Special Sauce. Haha, nasty!"
 	),
@@ -1679,7 +1685,7 @@ food_list = [
 		price = 39,
 		inebriation = 0,
 		str_name = 'KFC Family Meal',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You stuff your face full of all manner of southern-style delicacies! You chew and chew until your jaw aches and tears stream down your cheeks.",
 		str_desc = "A veritable menagerie of homestyle goodness. Chicken, mashed potatoes, mac n' cheese, biscuits and gravy, the list goes on and on."
 	),
@@ -1695,7 +1701,7 @@ food_list = [
 		price = 46,
 		inebriation = 0,
 		str_name = 'whole plutonium-battered fried chicken',
-		vendor = vendor_kfc,
+		vendors = [vendor_kfc],
 		str_eat = "You crunch into the remains of this once-majestic animal. The odd metallic taste makes your tongue tingle in a most unsettling way.",
 		str_desc = "It resembles a cooked chicken, save for an extra wing or two, encrusted with an odd greenish-brown coating. May adversely affect sperm count."
 	),
@@ -1709,7 +1715,7 @@ food_list = [
 		price = 35,
 		inebriation = 0,
 		str_name = 'giant deep-dish pizza',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "You slurp down slice after slice of sopping sauce-soaked pizza in a gruesome red runny spectacle.",
 		str_desc = "The sauce and cheese of this delicacy is like quicksand, anything falling in will sink to the bottom, never to be seen again."
 	),
@@ -1724,7 +1730,7 @@ food_list = [
 		price = 50,
 		inebriation = 0,
 		str_name = 'Whack Calzone',
-		vendor = vendor_pizzahut,
+		vendors = [vendor_pizzahut],
 		str_eat = "Chomping into this collossal italian confection, searing hot cheese explodes out from the edges in every direction. De-LISH!!!",
 		str_desc = "It's literally just an upside-down pizza on top of another pizza."
 	),
@@ -1740,7 +1746,7 @@ food_list = [
 		price = 23,
 		inebriation = 0,
 		str_name = 'Nacho Supreme',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "You shovel fistfuls of nacho detritus into your gaping maw. Your gums are savaged by the sharp edges of the crips corny chips.",
 		str_desc = "A plate full of crisp tortilla chips onto which ground beef, sour cream, cheese, tomatoes, and various assorted bullshit has been dumped."
 	),
@@ -1755,7 +1761,7 @@ food_list = [
 		price = 42,
 		inebriation = 0,
 		str_name = 'Energy Taco',
-		vendor = vendor_tacobell,
+		vendors = [vendor_tacobell],
 		str_eat = "Biting into this taco, your mouth is numbed by a sudden discharge of stored energy, accompanied by a worrisome flash of greenish light. You can't say for sure if it tasted good or not.",
 		str_desc = "This resembles a normal taco, but where the cheese might normally be is a strange glowing green fluid. It occasionally sparks and crackles with limic energy."
 	),
@@ -1771,7 +1777,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous green fluid reeks with a sickly-sweet citrusy odor."
 	),
@@ -1786,7 +1792,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW Baja Blast syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous blue fluid reeks with a sickly-sweet tropical odor."
 	),
@@ -1801,7 +1807,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW Code Red syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous red fluid reeks with a sickly-sweet cherry odor."
 	),
@@ -1817,7 +1823,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW Pitch Black syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous purple fluid reeks with a sickly-sweet grapey odor."
 	),
@@ -1832,7 +1838,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW White Out syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous pale fluid reeks with a sickly-sweet citrusy odor."
 	),
@@ -1847,7 +1853,7 @@ food_list = [
 		price = 26,
 		inebriation = 0,
 		str_name = 'cup of pure undiluted MTN DEW Livewire syrup',
-		vendor = vendor_mtndew,
+		vendors = [vendor_mtndew],
 		str_eat = "You pour the molasses-like liquid down your throat. It stings your teeth and clings to your esophagus on the way down, but you feel suddenly invigorated as your blood sugar skyrockets!!",
 		str_desc = "This thick, viscous orange fluid reeks with a sickly-sweet orangey odor."
 	),
@@ -1862,7 +1868,7 @@ food_list = [
 		price = 5,
 		inebriation = 0,
 		str_name = 'packet of salted razornuts',
-		vendor = vendor_bar,
+		vendors = [vendor_bar],
 		str_eat = "You tear into the packet and eat the small, pointy nuts one at a time, carefully avoiding any accidental lacerations.",
 		str_desc = "It's a packet of locally-grown razornuts, roasted and salted to perfection. Perfect for snacking!"
 	),
@@ -1882,13 +1888,15 @@ for food in food_list:
 	food_map[food.id_food] = food
 	food_names.append(food.id_food)
 
-	# Add food to its vendor's list.
-	vendor_list = food_vendor_inv.get(food.vendor)
-	if vendor_list == None:
-		vendor_list = []
-		food_vendor_inv[food.vendor] = vendor_list
+	# Add food to its vendors' lists.
+	for vendor in food.vendors:
+		vendor_list = food_vendor_inv.get(vendor)
 
-	vendor_list.append(food.id_food)
+		if vendor_list == None:
+			vendor_list = []
+			food_vendor_inv[vendor] = vendor_list
+
+		vendor_list.append(food.id_food)
 
 	for alias in food.alias:
 		food_map[alias] = food
@@ -2818,3 +2826,11 @@ for poi in poi_list:
 	id_to_poi[poi.id_poi] = poi
 	for alias in poi.alias:
 		id_to_poi[alias] = poi
+
+cosmetic_items_list = [
+	EwCosmeticItem(
+		name = "Test",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+]
