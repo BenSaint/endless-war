@@ -35,6 +35,7 @@ import ewmap
 import ewrolemgr
 import ewraidboss
 import ewleaderboard
+import ewcosmeticitem
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -179,6 +180,10 @@ cmd_map = {
 	#farming
 	ewcfg.cmd_sow: ewfarm.sow,
 	ewcfg.cmd_reap: ewfarm.reap,
+
+	#cosmetics
+	ewcfg.cmd_smelt: ewcosmeticitem.smelt,
+
 
 	# kill all players in your district; could be re-used for a future raid boss
 	#ewcfg.cmd_writhe: ewraidboss.writhe,
