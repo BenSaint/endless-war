@@ -369,6 +369,8 @@ it_questitem = "questitem"
 it_food = "food"
 it_weapon = "weapon"
 
+it_cosmetic = 'cosmetic'
+
 # Cosmetic item rarities
 rarity_plebeian = "Plebeian"
 rarity_patrician = "Patrician"
@@ -1986,6 +1988,17 @@ item_def_list = [
 			'weapon_name': 'Weapon',
 			'weapon_desc': 'It\'s a weapon of some sort.'
 		}
+	),
+	EwItemDef(
+		item_type = it_cosmetic,
+		str_name = "{cosmetic_name}",
+		str_desc = "{cosmetic_desc}",
+		soulbound = False,
+		item_props = {
+			'cosmetic_name': 'Cosmetic Item',
+			'cosmetic_desc': 'Cosmetic Item.',
+			'rarity': rarity_plebeian
+		}
 	)
 ]
 
@@ -2830,8 +2843,33 @@ for poi in poi_list:
 
 cosmetic_items_list = [
 	EwCosmeticItem(
-		name = "Test",
+		name = "pleb1",
 		description = "This is a cosmetic test item.",
 		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb2",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb3",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb4",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pat1",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
+		name = "pat2",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_patrician
 	),
 ]

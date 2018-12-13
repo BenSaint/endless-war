@@ -2,6 +2,7 @@ import random
 
 import ewcfg
 import ewitem
+import ewutils
 
 """
 	Cosmetic item model object
@@ -53,3 +54,26 @@ async def smelt(cmd):
 			pass
 		else:
 			pass #item = plebeian item
+
+		items = []
+
+		for cosmetic in ewcfg.cosmetic_items_list:
+			if patrician and cosmetic.rarity == ewcfg.rarity_patrician:
+				items.append(cosmetic)
+			elif not patrician and cosmetic.rarity == ewcfg.rarity_plebeian:
+				items.append(cosmetic)
+
+		item = items[random.randint(0, len(items) - 1)]
+
+		ewitem.item_create(
+			item_type = ewcfg.it_cosmetic,
+			id_user = cmd.message.author.id,
+			id_server = cmd.message.server.id,
+			item_props = {
+				'cosmetic_name': item.name,
+				'cosmetic_desc': item.description,
+				'rarity': item.rarity
+			}
+		)
+		response = "You smelted a {item_name}!".format(item_name = item.name)
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
