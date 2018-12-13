@@ -22,3 +22,9 @@ class EwCosmeticItem:
 		self.name = name
 		self.description = description
 		self.rarity = rarity
+
+"""
+	Smelt command
+"""
+async def smelt(cmd):
+	pass
