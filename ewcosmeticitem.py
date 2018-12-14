@@ -1,5 +1,7 @@
+import math
 import random
 
+import ew
 import ewcfg
 import ewitem
 import ewutils
@@ -72,8 +74,64 @@ async def smelt(cmd):
 			item_props = {
 				'cosmetic_name': item.name,
 				'cosmetic_desc': item.description,
-				'rarity': item.rarity
+				'rarity': item.rarity,
+				'adorned': 0
 			}
 		)
 		response = "You smelted a {item_name}!".format(item_name = item.name)
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+async def adorn(cmd):
+	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
+
+	try:
+		item_id_int = int(item_id)
+	except:
+		item_id_int = None
+
+	if item_id != None and len(item_id) > 0:
+		response = "You don't have one."
+
+		items = ewitem.inventory(
+			id_user = cmd.message.author.id,
+			id_server = cmd.message.server.id,
+			item_type_filter = ewcfg.it_cosmetic
+		)
+
+		item_sought = None
+		for item in items:
+			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
+				item_sought = item
+				break
+
+		if item_sought != None:
+			id_item = item_sought.get('id_item')
+			item_def = item_sought.get('item_def')
+			name = item_sought.get('name')
+			item_type = item_sought.get('item_type')
+
+			item = ewitem.EwItem(id_item = id_item)
+			user_data = ew.EwUser(member = cmd.message.author)
+
+			adorned_items = 0
+			for it in items:
+				if it.item_props['adorned'] == 1:
+					adorned_items += 1
+
+			if item.item_props['adorned'] == 1:
+				item.item_props['adorned'] = 0
+			else:
+				if adorned_items >= math.ceil(user_data.slimelevel / ewcfg.max_adorn_mod):
+					response = "You can't adorn anymore cosmetics."
+				else:
+					item.item_props['adorned'] = 1
+
+			item.persist()
+
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	else:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+			cmd.message.author,
+			'Adorn which cosmetic? Check your **!inventory**.'
+		))
+

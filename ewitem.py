@@ -559,9 +559,10 @@ async def item_use(cmd):
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
-		                                                                         'Use which item? (check **!inventory**)'))
-
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+			cmd.message.author,
+			'Use which item? (check **!inventory**)'
+		))
 
 """
 	give an existing item to a player
