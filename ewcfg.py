@@ -173,6 +173,7 @@ cmd_accept = cmd_prefix + 'accept'
 cmd_refuse = cmd_prefix + 'refuse'
 cmd_reap = cmd_prefix + 'reap'
 cmd_sow = cmd_prefix + 'sow'
+cmd_smelt = cmd_prefix + 'smelt'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -198,6 +199,7 @@ inebriation_pertick = 2
 
 # max item amounts
 max_food_in_inv_mod = 8  # modifier for how much food you can carry. the player's slime level is divided by this number to calculate the number of carriable food items
+max_adorn_mod = 4
 
 # price multipliers
 togo_price_increase = 2
@@ -367,6 +369,8 @@ it_slimepoudrin = "slimepoudrin"
 it_questitem = "questitem"
 it_food = "food"
 it_weapon = "weapon"
+
+it_cosmetic = 'cosmetic'
 
 # Cosmetic item rarities
 rarity_plebeian = "Plebeian"
@@ -1985,6 +1989,17 @@ item_def_list = [
 			'weapon_name': 'Weapon',
 			'weapon_desc': 'It\'s a weapon of some sort.'
 		}
+	),
+	EwItemDef(
+		item_type = it_cosmetic,
+		str_name = "{cosmetic_name}",
+		str_desc = "{cosmetic_desc}",
+		soulbound = False,
+		item_props = {
+			'cosmetic_name': 'Cosmetic Item',
+			'cosmetic_desc': 'Cosmetic Item.',
+			'rarity': rarity_plebeian
+		}
 	)
 ]
 
@@ -2829,8 +2844,33 @@ for poi in poi_list:
 
 cosmetic_items_list = [
 	EwCosmeticItem(
-		name = "Test",
+		name = "pleb1",
 		description = "This is a cosmetic test item.",
 		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb2",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb3",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pleb4",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pat1",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
+		name = "pat2",
+		description = "This is a cosmetic test item.",
+		rarity = rarity_patrician
 	),
 ]

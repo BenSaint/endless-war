@@ -35,6 +35,7 @@ import ewmap
 import ewrolemgr
 import ewraidboss
 import ewleaderboard
+import ewcosmeticitem
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
@@ -179,6 +180,10 @@ cmd_map = {
 	#farming
 	ewcfg.cmd_sow: ewfarm.sow,
 	ewcfg.cmd_reap: ewfarm.reap,
+
+	#cosmetics
+	ewcfg.cmd_smelt: ewcosmeticitem.smelt,
+
 
 	# kill all players in your district; could be re-used for a future raid boss
 	#ewcfg.cmd_writhe: ewraidboss.writhe,
@@ -558,6 +563,24 @@ async def on_message(message):
 			item = EwItem(id_item = item_id)
 
 			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
+
+		# Creates a poudrin
+		elif debug == True and cmd == '!createpoudrin':
+			item_id = ewitem.item_create(
+				item_type = ewcfg.it_slimepoudrin,
+				id_user = message.author.id,
+				id_server = message.server.id
+			)
+
+			ewutils.logMsg('Created item: {}'.format(item_id))
+			item = EwItem(id_item = item_id)
+			item.item_props['test'] = 'meow'
+			item.persist()
+
+			item = EwItem(id_item = item_id)
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
+
 
 		# FIXME debug
 		# Test item deletion

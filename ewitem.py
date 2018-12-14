@@ -559,9 +559,10 @@ async def item_use(cmd):
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author,
-		                                                                         'Use which item? (check **!inventory**)'))
-
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+			cmd.message.author,
+			'Use which item? (check **!inventory**)'
+		))
 
 """
 	give an existing item to a player
@@ -590,3 +591,9 @@ def give_item(
 		ewutils.execute_sql_query(sql_query)
 
 	return True
+
+
+def soulbind(id_item):
+	item = EwItem(id_item = id_item)
+	item.soulbound = True
+	item.persist()
