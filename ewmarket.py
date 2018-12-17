@@ -117,8 +117,8 @@ async def xfer(cmd):
 			# Persist changes
 			response = "You transfer {slime:,} SlimeCoin to {target_name}. Your slimebroker takes his nominal fee of {fee:,} SlimeCoin.".format(slime = value, target_name = member.display_name, fee = (cost_total - value))
 
-			user_data.persist()
 			target_data.persist()
+			user_data.persist()
 	else:
 		response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "transfer")
 
