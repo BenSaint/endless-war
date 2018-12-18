@@ -7,6 +7,7 @@ import ewitem
 import ewrolemgr
 import ewstats
 from ew import EwUser, EwMarket
+from ewitem import EwItem
 
 """ class to send general data about an interaction to a command """
 class EwCmd:
@@ -115,8 +116,9 @@ async def data(cmd):
 		)
 		adorned_cosmetics = []
 		for cosmetic in cosmetics:
-			if cosmetic['adorned'] == 1:
-				adorned_cosmetics.append(cosmetic['name'])
+			cos = EwItem(id_item = cosmetic.get('id_item'))
+			if cos.item_props['adorned'] == 'true':
+				adorned_cosmetics.append(cosmetic.get('name'))
 
 		poi = ewcfg.id_to_poi.get(user_data.poi)
 		if poi != None:
@@ -148,7 +150,7 @@ async def data(cmd):
 			response += " SlimeCorp offers a bounty of {:,} SlimeCoin for your death.".format(coinbounty)
 
 		if len(adorned_cosmetics) > 0:
-			response += " You have {} adorned.".format(ewutils.formatNiceList(adorned_cosmetics, 'and'))
+			response += " You have a {} adorned.".format(ewutils.formatNiceList(adorned_cosmetics, 'and'))
 
 		if user_data.hunger > 0:
 			response += " You are {}% hungry.".format(
@@ -173,8 +175,9 @@ async def data(cmd):
 		)
 		adorned_cosmetics = []
 		for cosmetic in cosmetics:
-			if cosmetic['adorned'] == 1:
-				adorned_cosmetics.append(cosmetic['name'])
+			cos = EwItem(id_item = cosmetic.get('id_item'))
+			if cos.item_props['adorned'] == 'true':
+				adorned_cosmetics.append(cosmetic.get('name'))
 
 		if user_data.life_state == ewcfg.life_state_grandfoe:
 			poi = ewcfg.id_to_poi.get(user_data.poi)
@@ -210,7 +213,7 @@ async def data(cmd):
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
 			if len(adorned_cosmetics) > 0:
-				response += " You have {} adorned.".format(ewutils.formatNiceList(adorned_cosmetics, 'and'))
+				response += " They have a {} adorned.".format(ewutils.formatNiceList(adorned_cosmetics, 'and'))
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

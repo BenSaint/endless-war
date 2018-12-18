@@ -1,10 +1,12 @@
 import math
 import random
 
-import ew
 import ewcfg
 import ewitem
 import ewutils
+
+from ew import EwUser
+from ewitem import EwItem
 
 """
 	Cosmetic item model object
@@ -44,7 +46,7 @@ async def smelt(cmd):
 	else:
 		for i in range(3):
 			ewitem.item_delete(id_item = poudrins[i].get('id_item'))
-		patrician_rarity = 100
+		patrician_rarity = 3
 		patrician_smelted = random.randint(1, patrician_rarity)
 		patrician = False
 
@@ -75,7 +77,7 @@ async def smelt(cmd):
 				'cosmetic_name': item.name,
 				'cosmetic_desc': item.description,
 				'rarity': item.rarity,
-				'adorned': 0
+				'adorned': 'false'
 			}
 		)
 		response = "You smelted a {item_name}!".format(item_name = item.name)
@@ -110,21 +112,24 @@ async def adorn(cmd):
 			name = item_sought.get('name')
 			item_type = item_sought.get('item_type')
 
-			item = ewitem.EwItem(id_item = id_item)
-			user_data = ew.EwUser(member = cmd.message.author)
+			item = EwItem(id_item = id_item)
+			user_data = EwUser(member = cmd.message.author)
 
 			adorned_items = 0
 			for it in items:
-				if it.item_props['adorned'] == 1:
+				i = EwItem(it.get('id_item'))
+				if i.item_props['adorned'] == 'true':
 					adorned_items += 1
 
-			if item.item_props['adorned'] == 1:
-				item.item_props['adorned'] = 0
+			if item.item_props['adorned'] == 'true':
+				item.item_props['adorned'] = 'false'
+				response = "You successfully dedorn your " + item.item_props['cosmetic_name'] + "."
 			else:
 				if adorned_items >= math.ceil(user_data.slimelevel / ewcfg.max_adorn_mod):
 					response = "You can't adorn anymore cosmetics."
 				else:
-					item.item_props['adorned'] = 1
+					item.item_props['adorned'] = 'true'
+					response = "You successfully adorn your " + item.item_props['cosmetic_name'] + "."
 
 			item.persist()
 

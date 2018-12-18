@@ -145,7 +145,7 @@ class EwItem:
 				self.id_server,
 				self.id_user,
 				self.item_type,
-				self.time_expir if self.time_expir is not None else self.item_props['time_expir'],
+				self.time_expir if self.time_expir is not None else self.item_props['time_expir'] if 'time_expir' in self.item_props.keys() else 0,
 				self.stack_max,
 				self.stack_size,
 				(1 if self.soulbound else 0)

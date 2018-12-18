@@ -174,6 +174,7 @@ cmd_refuse = cmd_prefix + 'refuse'
 cmd_reap = cmd_prefix + 'reap'
 cmd_sow = cmd_prefix + 'sow'
 cmd_smelt = cmd_prefix + 'smelt'
+cmd_adorn = cmd_prefix + 'adorn'
 
 # Slime costs/values
 slimes_onrevive = 20
