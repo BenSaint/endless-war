@@ -65,10 +65,6 @@ class EwItem:
 	stack_size = 0
 	soulbound = False
 
-	# these are just item props but with a unified name
-	name = ""
-	description = ""
-
 	item_props = {}
 
 	def __init__(
@@ -117,14 +113,6 @@ class EwItem:
 
 					for row in cursor:
 						self.item_props[row[0]] = row[1]
-
-						# if it's e.g. food_name or weapon_name
-						if "name" in row[0]:
-							self.name = row[1]
-
-						# if it's e.g. food_desc or weapon_desc
-						if "desc" in row[0]:
-							self.description = row[1]
 
 				else:
 					# Item not found.
@@ -491,12 +479,14 @@ async def item_look(cmd):
 	author = cmd.message.author
 	server = cmd.message.server
 
-	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id if server is not None else None)
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
-	if item:
+	if item_sought:
+		item = EwItem(id_item = item_sought.get('id_item'))
+
 		id_item = item.id_item
-		name = item.name
-		response = item.description
+		name = item_sought.get('name')
+		response = item_sought.get('item_def').str_desc
 
 		# Replace up to two levels of variable substitutions.
 		if response.find('{') >= 0:
@@ -528,9 +518,11 @@ async def item_use(cmd):
 	author = cmd.message.author
 	server = cmd.message.server
 
-	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
-	if item:
+	if item_sought:
+		item = EwItem(id_item = item_sought.get('id_item'))
+
 		response = "The item doesn't have !use functionality"  # if it's not overwritten
 
 		user_data = EwUser(member = author)
@@ -579,10 +571,10 @@ def give_item(
 
 
 """
-	Find a single item in the player's inventory (returns either an EwItem item or None)
+	Find a single item in the player's inventory (returns either a (non-EwItem) item or None)
 """
 def find_item(item_search, id_user, id_server):
-	item_object = None
+	item_sought = None
 
 	# search for an ID instead of a name
 	try:
@@ -600,10 +592,7 @@ def find_item(item_search, id_user, id_server):
 				item_sought = item
 				break
 
-		if item_sought:
-			item_object = EwItem(id_item = item_sought.get('id_item'))
-
-	return item_object
+	return item_sought
 
 
 """
@@ -620,26 +609,21 @@ async def give(cmd):
 		response = "You have to specify the recipient of the item."
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
-	if EwUser(member = author).poi != EwUser(member = recipient).poi:
-		response = "The recipient has to be in the same location as you."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
-	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
-
-	if item:
-		if item.soulbound:
+	if item_sought:
+		if item_sought.get('soulbound'):
 			response = "You can't just give away soulbound items."
 		else:
 			give_item(
 				member = recipient,
-				id_item = item.id_item
+				id_item = item_sought.get('id_item')
 			)
 
-			response = "You gave {recipient} a {item}.".format(
+			response = "You gave {recipient} a {item}".format(
 				recipient = recipient.display_name,
-				item = item.name
+				item = item_sought.get('name')
 			)
-
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	else:
