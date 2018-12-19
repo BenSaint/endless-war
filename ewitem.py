@@ -623,15 +623,18 @@ async def give(cmd):
 	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
 	if item:
-		give_item(
-			member = recipient,
-			id_item = item.id_item
-		)
+		if item.soulbound:
+			response = "You can't just give away soulbound items."
+		else:
+			give_item(
+				member = recipient,
+				id_item = item.id_item
+			)
 
-		response = "You gave {recipient} a {item}".format(
-			recipient = recipient.display_name,
-			item = item.name
-		)
+			response = "You gave {recipient} a {item}.".format(
+				recipient = recipient.display_name,
+				item = item.name
+			)
 
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
