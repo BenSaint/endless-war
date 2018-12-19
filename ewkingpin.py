@@ -1,7 +1,6 @@
 """
 	Commands for kingpins only.
 """
-import ewcmd
 import ewutils
 import ewcfg
 import ewrolemgr
@@ -64,3 +63,50 @@ async def deadmega(cmd):
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+"""
+	Command that creates a princeps cosmetic item
+"""
+async def create(cmd):
+	if EwUser(member = cmd.message.author).life_state != ewcfg.life_state_kingpin:
+		response = 'Lowly Non-Kingpins cannot hope to create items with their bare hands.'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	if len(cmd.tokens) != 4:
+		response = 'Usage: !create <item_name> "<item_desc>" <recipient>'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	item_name = cmd.tokens[1]
+	item_desc = cmd.tokens[2]
+	if cmd.mentions[0]:
+		recipient = cmd.mentions[0]
+	else:
+		response = 'You need to specify a recipient. Usage: !create <item_name> "<item_desc>" <recipient>'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	ewutils.execute_sql_query(
+		"INSERT INTO items(id_user, id_server, {item_type}, {soulbound}) VALUES(%s, %s, %s, %s);".format(
+			item_type = ewcfg.col_item_type,
+			soulbound = ewcfg.col_soulbound
+		), (
+			recipient.id,
+			cmd.message.server.id,
+			ewcfg.it_cosmetic,
+			1  # princeps items are always soulbound
+		)
+	)
+
+	ewutils.execute_sql_query(
+		"INSERT INTO items_prop(id_item, {name}, {value}) VALUES ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s)".format(
+			name = ewcfg.col_name,
+			value = ewcfg.col_value
+		), (
+			"cosmetic_name",
+			item_name,
+			"cosmetic_desc",
+			item_desc
+		)
+	)
+
+	response = 'Item "{}" successfully created.'.format(item_name)
+	return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
