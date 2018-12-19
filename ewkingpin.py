@@ -73,7 +73,7 @@ async def create(cmd):
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	if len(cmd.tokens) != 4:
-		response = 'Usage: !create <item_name> "<item_desc>" <recipient>'
+		response = 'Usage: !create "<item_name>" "<item_desc>" <recipient>'
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	item_name = cmd.tokens[1]
@@ -81,7 +81,7 @@ async def create(cmd):
 	if cmd.mentions[0]:
 		recipient = cmd.mentions[0]
 	else:
-		response = 'You need to specify a recipient. Usage: !create <item_name> "<item_desc>" <recipient>'
+		response = 'You need to specify a recipient. Usage: !create "<item_name>" "<item_desc>" <recipient>'
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	ewutils.execute_sql_query(
@@ -97,14 +97,18 @@ async def create(cmd):
 	)
 
 	ewutils.execute_sql_query(
-		"INSERT INTO items_prop(id_item, {name}, {value}) VALUES ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s)".format(
+		"INSERT INTO items_prop(id_item, {name}, {value}) VALUES ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s)".format(
 			name = ewcfg.col_name,
 			value = ewcfg.col_value
 		), (
 			"cosmetic_name",
 			item_name,
 			"cosmetic_desc",
-			item_desc
+			item_desc,
+			"adorned",
+			"false",
+			"rarity",
+			"princeps"
 		)
 	)
 
