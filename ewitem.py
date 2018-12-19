@@ -468,7 +468,7 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 
-	await cmd.client.send_message(cmd.message.channel, response)
+	await cmd.client.send_message(cmd.message.author, response)
 
 
 """
@@ -510,10 +510,10 @@ async def item_look(cmd):
 				if response.find('{') >= 0:
 					response = response.format_map(item_inst.item_props)
 
-				if item_sought.get('item_type') == ewcfg.it_food:
-					if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
-						response += " This food item is rotten so you decide to throw it away."
-						item_delete(id_item)
+			if item_sought.get('item_type') == ewcfg.it_food:
+				if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
+					response += " This food item is rotten so you decide to throw it away."
+					item_delete(id_item)
 
 			response = name + "\n\n" + response
 
@@ -555,6 +555,7 @@ async def item_use(cmd):
 
 			if item_type == ewcfg.it_food:
 				response = user_data.eat(item)
+				user_data.persist()
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:

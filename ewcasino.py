@@ -6,6 +6,7 @@ import ewcmd
 import ewutils
 import ewcfg
 import ewrolemgr
+import ewitem
 from ew import EwUser
 
 # Map containing user IDs and the last time in UTC seconds since the pachinko
@@ -23,6 +24,10 @@ last_slotsed_times = {}
 # Map containing user IDs and the last time in UTC seconds since the player
 # played roulette.
 last_rouletted_times = {}
+
+# Map containing user IDs and the last time in UTC seconds since the player
+# played russian roulette.
+last_russianrouletted_times = {}
 
 async def pachinko(cmd):
 	resp = await ewcmd.start(cmd = cmd)
@@ -391,174 +396,765 @@ async def roulette(cmd):
 	# Send the response to the player.
 	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
 
+async def baccarat(cmd):
+	resp = await ewcmd.start(cmd = cmd)
+	time_now = int(time.time())
+	bet = ""
+	all_bets = ["player", "dealer", "tie"]
+	img_base = "https://ew.krakissi.net/img/cas/sb/"
+	response = ""
+	rank = ""
+	suit = ""
+	str_ranksuit = " the **{} of {}**. "
+
+	global last_rouletted_times
+	last_used = last_rouletted_times.get(cmd.message.author.id)
+
+	if last_used == None:
+		last_used = 0
+
+	if last_used + 2 > time_now:
+		response = "**ENOUGH**"
+	elif cmd.message.channel.name != ewcfg.channel_casino:
+		# Only allowed in the slime casino.
+		response = "You must go to the Casino to gamble your SlimeCoin."
+		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await asyncio.sleep(1)
+	else:
+		last_rouletted_times[cmd.message.author.id] = time_now
+		value = None
+
+		if cmd.tokens_count > 1:
+			value = ewutils.getIntToken(tokens = cmd.tokens[:2], allow_all = True)
+			bet = ewutils.flattenTokenListToString(tokens = cmd.tokens[2:])
+
+		if value != None:
+			user_data = EwUser(member = cmd.message.author)
+
+			if value == -1:
+				value = user_data.slimecredit
+
+			if value > user_data.slimecredit or value == 0:
+				response = "You don't have enough SlimeCoin."
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			elif len(bet) == 0:
+				response = "You must specify what hand you are betting on. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			elif bet not in all_bets:
+				response = "The dealer didn't understand your wager. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+			else:
+				resp_d = await ewcmd.start(cmd = cmd)
+				resp_f = await ewcmd.start(cmd = cmd)
+				response = "You bet {} SlimeCoin on {}. The dealer shuffles the deck, then begins to deal.".format(str(value),str(bet))
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+				response += "\nThe dealer deals you your first card..."
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				winnings = 0
+				end = False
+				phit = False
+				d = 0
+				p = 0
+
+				drawp1 = str(random.randint(1,52))
+				if drawp1 in ["1", "14", "27", "40"]:
+					p += 1
+				if drawp1 in ["2", "15", "28", "41"]:
+					p += 2
+				if drawp1 in ["3", "16", "29", "42"]:
+					p += 3
+				if drawp1 in ["4", "17", "30", "43"]:
+					p += 4
+				if drawp1 in ["5", "18", "31", "44"]:
+					p += 5
+				if drawp1 in ["6", "19", "32", "45"]:
+					p += 6
+				if drawp1 in ["7", "20", "33", "46"]:
+					p += 7
+				if drawp1 in ["8", "21", "34", "47"]:
+					p += 8
+				if drawp1 in ["9", "22", "35", "48"]:
+					p += 9
+				if drawp1 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					p += 0
+				lastcard = drawp1
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += str_ranksuit.format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				response += "\nThe dealer deals you your second card..."
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawp2 = str(random.randint(1,52))
+					if drawp2 != drawp1:
+						break
+				if drawp2 in ["1", "14", "27", "40"]:
+					p += 1
+				if drawp2 in ["2", "15", "28", "41"]:
+					p += 2
+				if drawp2 in ["3", "16", "29", "42"]:
+					p += 3
+				if drawp2 in ["4", "17", "30", "43"]:
+					p += 4
+				if drawp2 in ["5", "18", "31", "44"]:
+					p += 5
+				if drawp2 in ["6", "19", "32", "45"]:
+					p += 6
+				if drawp2 in ["7", "20", "33", "46"]:
+					p += 7
+				if drawp2 in ["8", "21", "34", "47"]:
+					p += 8
+				if drawp2 in ["9", "22", "35", "48"]:
+					p += 9
+				if drawp2 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					p += 0
+				lastcard = drawp2
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += str_ranksuit.format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+
+				responsesave = response
+
+				response = "\nThe dealer deals the house its first card..."
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawd1 = str(random.randint(1,52))
+					if drawd1 != drawp1 and drawd1 != drawp2:
+						break
+				if drawd1 in ["1", "14", "27", "40"]:
+					d += 1
+				if drawd1 in ["2", "15", "28", "41"]:
+					d += 2
+				if drawd1 in ["3", "16", "29", "42"]:
+					d += 3
+				if drawd1 in ["4", "17", "30", "43"]:
+					d += 4
+				if drawd1 in ["5", "18", "31", "44"]:
+					d += 5
+				if drawd1 in ["6", "19", "32", "45"]:
+					d += 6
+				if drawd1 in ["7", "20", "33", "46"]:
+					d += 7
+				if drawd1 in ["8", "21", "34", "47"]:
+					d += 8
+				if drawd1 in ["9", "22", "35", "48"]:
+					d += 9
+				if drawd1 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					d += 0
+				lastcard = drawd1
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += str_ranksuit.format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				response += "\nThe dealer deals the house its second card..."
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(3)
+
+				while True:
+					drawd2 = str(random.randint(1,52))
+					if drawd2 != drawp1 and drawd2 != drawp2 and drawd2 != drawd1:
+						break
+				if drawd2 in ["1", "14", "27", "40"]:
+					d += 1
+				if drawd2 in ["2", "15", "28", "41"]:
+					d += 2
+				if drawd2 in ["3", "16", "29", "42"]:
+					d += 3
+				if drawd2 in ["4", "17", "30", "43"]:
+					d += 4
+				if drawd2 in ["5", "18", "31", "44"]:
+					d += 5
+				if drawd2 in ["6", "19", "32", "45"]:
+					d += 6
+				if drawd2 in ["7", "20", "33", "46"]:
+					d += 7
+				if drawd2 in ["8", "21", "34", "47"]:
+					d += 8
+				if drawd2 in ["9", "22", "35", "48"]:
+					d += 9
+				if drawd2 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+					d += 0
+				lastcard = drawd2
+				if lastcard in ["1", "14", "27", "40"]:
+					rank = "Ace"
+				if lastcard in ["2", "15", "28", "41"]:
+					rank = "Two"
+				if lastcard in ["3", "16", "29", "42"]:
+					rank = "Three"
+				if lastcard in ["4", "17", "30", "43"]:
+					rank = "Four"
+				if lastcard in ["5", "18", "31", "44"]:
+					rank = "Five"
+				if lastcard in ["6", "19", "32", "45"]:
+					rank = "Six"
+				if lastcard in ["7", "20", "33", "46"]:
+					rank = "Seven"
+				if lastcard in ["8", "21", "34", "47"]:
+					rank = "Eight"
+				if lastcard in ["9", "22", "35", "48"]:
+					rank = "Nine"
+				if lastcard in ["10", "23", "36", "49"]:
+					rank = "Ten"
+				if lastcard in ["11", "24", "37", "50"]:
+					rank = "Jack"
+				if lastcard in ["12", "25", "38", "51"]:
+					rank = "Queen"
+				if lastcard in ["13", "26", "39", "52"]:
+					rank = "King"
+				if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+					suit = "Hearts"
+				if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+					suit = "Slugs"
+				if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+					suit = "Hats"
+				if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+					suit = "Shields"
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				response += str_ranksuit.format(rank, suit)
+				response += img_base + lastcard + ".png"
+
+				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await asyncio.sleep(1)
+				responsesave_d = response
+
+				if d in [8, 9] or p in [8, 9]:
+					end = True
+
+				drawp3 = ""
+				if (p <= 5) and (end != True):
+
+					response = responsesave
+					response += "\nThe dealer deals you another card..."
+
+					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(3)
+
+					phit = True
+					while True:
+						drawp3 = str(random.randint(1,52))
+						if drawp3 != drawp1 and drawp3 != drawp2 and drawp3 != drawd1 and drawp3 != drawd2:
+							break
+					if drawp3 in ["1", "14", "27", "40"]:
+						p += 1
+					if drawp3 in ["2", "15", "28", "41"]:
+						p += 2
+					if drawp3 in ["3", "16", "29", "42"]:
+						p += 3
+					if drawp3 in ["4", "17", "30", "43"]:
+						p += 4
+					if drawp3 in ["5", "18", "31", "44"]:
+						p += 5
+					if drawp3 in ["6", "19", "32", "45"]:
+						p += 6
+					if drawp3 in ["7", "20", "33", "46"]:
+						p += 7
+					if drawp3 in ["8", "21", "34", "47"]:
+						p += 8
+					if drawp3 in ["9", "22", "35", "48"]:
+						p += 9
+					if drawp3 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+						p += 0
+					lastcard = drawp3
+					if lastcard in ["1", "14", "27", "40"]:
+						rank = "Ace"
+					if lastcard in ["2", "15", "28", "41"]:
+						rank = "Two"
+					if lastcard in ["3", "16", "29", "42"]:
+						rank = "Three"
+					if lastcard in ["4", "17", "30", "43"]:
+						rank = "Four"
+					if lastcard in ["5", "18", "31", "44"]:
+						rank = "Five"
+					if lastcard in ["6", "19", "32", "45"]:
+						rank = "Six"
+					if lastcard in ["7", "20", "33", "46"]:
+						rank = "Seven"
+					if lastcard in ["8", "21", "34", "47"]:
+						rank = "Eight"
+					if lastcard in ["9", "22", "35", "48"]:
+						rank = "Nine"
+					if lastcard in ["10", "23", "36", "49"]:
+						rank = "Ten"
+					if lastcard in ["11", "24", "37", "50"]:
+						rank = "Jack"
+					if lastcard in ["12", "25", "38", "51"]:
+						rank = "Queen"
+					if lastcard in ["13", "26", "39", "52"]:
+						rank = "King"
+					if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+						suit = "Hearts"
+					if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+						suit = "Slugs"
+					if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+						suit = "Hats"
+					if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+						suit = "Shields"
+
+					if p > 9:
+						p -= 10
+					if d > 9:
+						d -= 10
+
+					response += str_ranksuit.format(rank, suit)
+					response += img_base + lastcard + ".png"
+
+					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(1)
+
+				if ((phit != True and d <= 5) or (phit == True and ((d <= 2) or (d == 3 and drawp3 not in ["8", "21", "34", "47"]) or (d == 4 and drawp3 in ["2", "15", "28", "41", "3", "16", "29", "42", "4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 5 and drawp3 in ["4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 6 and drawp3 in ["6", "19", "32", "45", "7", "20", "33", "46"])))) and (d != 7) and (end != True):
+					
+					response = responsesave_d
+					response += "\nThe dealer deals the house another card..."
+					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(3)
+					
+					while True:
+						drawd3 = str(random.randint(1,52))
+						if drawd3 != drawp1 and drawd3 != drawp2 and drawd3 != drawd1 and drawd3 != drawd2 and drawd3 != drawp3:
+							break
+					if drawd3 in ["1", "14", "27", "40"]:
+						d += 1
+					if drawd3 in ["2", "15", "28", "41"]:
+						d += 2
+					if drawd3 in ["3", "16", "29", "42"]:
+						d += 3
+					if drawd3 in ["4", "17", "30", "43"]:
+						d += 4
+					if drawd3 in ["5", "18", "31", "44"]:
+						d += 5
+					if drawd3 in ["6", "19", "32", "45"]:
+						d += 6
+					if drawd3 in ["7", "20", "33", "46"]:
+						d += 7
+					if drawd3 in ["8", "21", "34", "47"]:
+						d += 8
+					if drawd3 in ["9", "22", "35", "48"]:
+						d += 9
+					if drawd3 in ["10","11","12","13","23","24","25","26","36","37","38","39","49","50","51","52"]:
+						d += 0
+					lastcard = drawd3
+					if lastcard in ["1", "14", "27", "40"]:
+						rank = "Ace"
+					if lastcard in ["2", "15", "28", "41"]:
+						rank = "Two"
+					if lastcard in ["3", "16", "29", "42"]:
+						rank = "Three"
+					if lastcard in ["4", "17", "30", "43"]:
+						rank = "Four"
+					if lastcard in ["5", "18", "31", "44"]:
+						rank = "Five"
+					if lastcard in ["6", "19", "32", "45"]:
+						rank = "Six"
+					if lastcard in ["7", "20", "33", "46"]:
+						rank = "Seven"
+					if lastcard in ["8", "21", "34", "47"]:
+						rank = "Eight"
+					if lastcard in ["9", "22", "35", "48"]:
+						rank = "Nine"
+					if lastcard in ["10", "23", "36", "49"]:
+						rank = "Ten"
+					if lastcard in ["11", "24", "37", "50"]:
+						rank = "Jack"
+					if lastcard in ["12", "25", "38", "51"]:
+						rank = "Queen"
+					if lastcard in ["13", "26", "39", "52"]:
+						rank = "King"
+					if lastcard in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13"]:
+						suit = "Hearts"
+					if lastcard in ["14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26"]:
+						suit = "Slugs"
+					if lastcard in ["27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39"]:
+						suit = "Hats"
+					if lastcard in ["40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52"]:
+						suit = "Shields"
+
+					if p > 9:
+						p -= 10
+					if d > 9:
+						d -= 10
+
+					response += str_ranksuit.format(rank, suit)
+					response += img_base + lastcard + ".png"
+
+					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await asyncio.sleep(2)
+
+				if p > 9:
+					p -= 10
+				if d > 9:
+					d -= 10
+
+				if p > d:
+					response = "\n\nPlayer hand beats the dealer hand {} to {}.".format(str(p), str(d))
+					result = "player"
+					odds = 2
+				elif d > p:
+					response = "\n\nDealer hand beats the player hand {} to {}.".format(str(d), str(p))
+					result = "dealer"
+					odds = 2
+				else: # p == d (peed lol)
+					response = "\n\nPlayer hand and dealer hand tied at {}.".format(str(p))
+					result = "tie"
+					odds = 8
+
+				if bet == result:
+					winnings = (odds * value)
+					response += "\n\n**You won {:,} SlimeCoin!**".format(winnings)
+				else:
+					response += "\n\n*You lost your bet.*"
+
+				# add winnings/subtract losses
+				user_data = EwUser(member = cmd.message.author)
+				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
+				user_data.persist()
+				await cmd.client.edit_message(resp_f, ewutils.formatMessage(cmd.message.author, response))
+
+		else:
+			response = "Specify how much SlimeCoin you will wager."
+			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+
 def check(str):
-	if((str.content == ewcfg.cmd_accept) or (str.content == ewcfg.cmd_refuse)):
+	if str.content == ewcfg.cmd_accept or str.content == ewcfg.cmd_refuse:
 		return True
 
 async def russian_roulette(cmd):
-	if(cmd.message.channel.name != ewcfg.channel_casino):
+	time_now = int(time.time())
+
+	if cmd.message.channel.name != ewcfg.channel_casino:
 		#Only at the casino
 		response = "You can only play russian roulette at the casino."
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
-	if(cmd.mentions_count != 1):
+	if cmd.mentions_count != 1:
 		#Must mention only one player
 		response = "Mention the player you want to challenge."
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	author = cmd.message.author
 	member = cmd.mentions[0]
 
-	if(author.id == member.id):
+	global last_russianrouletted_times
+	last_used_author = last_russianrouletted_times.get(author.id)
+	last_used_member = last_russianrouletted_times.get(member.id)
+
+	if last_used_author == None:
+		last_used_author = 0
+	if last_used_member == None:
+		last_used_member = 0
+
+	if last_used_author + ewcfg.cd_rr > time_now or last_used_member + ewcfg.cd_rr > time_now:
+		response = "**ENOUGH**"
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	if author.id == member.id:
 		response = "You might be looking for !suicide."
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
 	challenger = EwUser(member = author)
 	challengee = EwUser(member = member)
 
 	#Players have been challenged
-	if(challenger.rr_challenger != ""):
+	if challenger.rr_challenger != "":
 		response = "You are already in the middle of a challenge."
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
-	if(challengee.rr_challenger != ""):
+	if challengee.rr_challenger != "":
 		response = "{} is already in the middle of a challenge.".format(member.display_name).replace("@", "\{at\}")
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
-	if(challenger.poi != challengee.poi):
+	if challenger.poi != challengee.poi:
 		#Challangee must be in the casino
 		response = "Both players must be in the casino."
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
 	#Players have to be enlisted
-	if(challenger.life_state != ewcfg.life_state_enlisted or challengee.life_state != ewcfg.life_state_enlisted):
-		if(challenger.life_state == ewcfg.life_state_corpse):
+	if challenger.life_state != ewcfg.life_state_enlisted or challengee.life_state != ewcfg.life_state_enlisted:
+		if challenger.life_state == ewcfg.life_state_corpse:
 			response = "You try to grab the gun, but it falls through your hands. Ghosts can't hold weapons.".format(author.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
-		elif (challengee.life_state == ewcfg.life_state_corpse):
+			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+
+		elif challengee.life_state == ewcfg.life_state_corpse:
 			response = "{} tries to grab the gun, but it falls through their hands. Ghosts can't hold weapons.".format(member.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
+			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+
 		else:
 			response = "Juveniles are too cowardly to gamble their lives."
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
+			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
-	bet = None
-	if(cmd.tokens_count > 1):
-		#Parse slimecoin to bet
-		bet = ewutils.getIntToken(tokens = cmd.tokens, allow_all = True)
-	if(bet != None):
-		if(bet <= 0):
-			bet = None		
-	#Check if both players have the necessary slimecoin
-		if(challenger.slimecredit < bet):
-			response = "You do not have the required funds."
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
+	#Assign a challenger so players can't be challenged
+	challenger.rr_challenger = challenger.id_user
+	challengee.rr_challenger = challenger.id_user
 
-		if(challengee.slimecredit < bet):
-			response = "{} does not have the required funds.".format(member.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-			return
+	challenger.persist()
+	challengee.persist()
 
-	if(bet != None):
-		response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+	response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
 
-		#Assign a challenger so players can't be challenged
-		challenger.rr_challenger = challenger.id_user
-		challengee.rr_challenger = challenger.id_user
+	#Wait for an answer
+	accepted = 0
+	msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
+	if msg != None:
+		if msg.content == "!accept":
+			accepted = 1
 
-		challenger.persist()
-		challengee.persist()
+	#Start game
+	if accepted == 1:
 
-		#Wait for an answer
-		accepted = 0
-		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
-		if(msg != None):
-			if(msg.content == "!accept"):
-				accepted = 1
+		for spin in range(1, 7):
+			challenger = EwUser(member = author)
+			challengee = EwUser(member = member)
+			
+			#In case any of the players suicide mid-game
+			if challenger.life_state == ewcfg.life_state_corpse:
+				response = "{} couldn't handle the pressure and killed themselves.".format(author.display_name).replace("@", "\{at\}")
+				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+				break
+				
+			if challengee.life_state == ewcfg.life_state_corpse:
+				response = "{} couldn't handle the pressure and killed themselves.".format(member.display_name).replace("@", "\{at\}")
+				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+				break
+				
+			#Challenger goes second
+			if spin % 2 == 0:
+				player = author
+			else:
+				player = member
 
-		#Start game
-		if(accepted == 1):
-			for spin in range(1, 7):
-				#Challenger goes second
-				if((spin % 2) == 0):
-					player = author
-				else:
-					player = member
+			response = "You put the gun to your head and pull the trigger..."
+			res = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(player, response))
+			await asyncio.sleep(1)
 
-				response = "You put the gun to your head and pull the trigger..."
-				res = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(player, response))
-				await asyncio.sleep(1)
+			#Player dies
+			if random.randint(1, (7 - spin)) == 1:
+				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " **BANG**")))
+				response = "You return to the Casino with {}'s slime.".format(player.display_name).replace("@", "\{at\}")
+				was_suicide = False
+				#Challenger dies
+				if spin % 2 == 0:
+					winner = member
 
-				#Player dies
-				if(random.randint(1, (7 - spin)) == 1):
-					await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " **BANG**")))
-
-					#Challenger dies
-					if((spin % 2) == 0):
-						response = "You won {} SlimeCoin!".format(bet*2)
-						await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
-
-						challenger.change_slimecredit(n = -bet, coinsource = ewcfg.coinsource_casino)
-						challengee.change_slimecredit(n = bet, coinsource = ewcfg.coinsource_casino)
-
+					challenger = EwUser(member = author)
+					challengee = EwUser(member = member)
+					
+					if challengee.life_state != ewcfg.life_state_corpse:
+						challengee.change_slimes(n = challenger.slimes, source = ewcfg.source_killing)
+						ewitem.item_loot(member = author, id_user_target = member.id)
+						
 						challenger.id_killer = challenger.id_user
 						challenger.die(cause = ewcfg.cause_suicide)
-
-					#Challangee dies
+					#In case the other player killed themselves
 					else:
-						response = "You won {} SlimeCoin!".format(bet*2)
-						await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+						was_suicide = True
+						winner = author
+						response = "You shoot {}'s corpse, adding insult to injury.".format(member.display_name).replace("@", "\{at\}")
 
-						challenger.change_slimecredit(n = bet, coinsource = ewcfg.coinsource_casino)
-						challengee.change_slimecredit(n = -bet, coinsource = ewcfg.coinsource_casino)
+				#Challangee dies
+				else:
+					winner = author
+
+					challenger = EwUser(member = author)
+					challengee = EwUser(member = member)
+
+					if challenger.life_state != ewcfg.life_state_corpse:					
+						challenger.change_slimes(n = challengee.slimes, source = ewcfg.source_killing)
+						ewitem.item_loot(member = member, id_user_target = author.id)
 
 						challengee.id_killer = challengee.id_user
-						challengee.die(cause = ewcfg.cause_suicide)					
+						challengee.die(cause = ewcfg.cause_suicide)
+					#In case the other player killed themselves
+					else:
+						was_suicide = True
+						winner = member
+						response = "You shoot {}'s corpse, adding insult to injury.".format(author.display_name).replace("@", "\{at\}")
+					
+				challenger.rr_challenger = ""
+				challengee.rr_challenger = ""
 
-					break
+				challenger.persist()
+				challengee.persist()
 
-				#Or survives
-				else:
-					await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
-					await asyncio.sleep(1)
-					#track spins ?
+				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(winner, response))
 
-		#Or cancel the challenge
-		else:
-			response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+				await ewrolemgr.updateRoles(client = cmd.client, member = author)
+				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
-		challenger.rr_challenger = ""
-		challengee.rr_challenger = ""
-		challenger.time_last_rr = int(time.time())
-		challengee.time_last_rr = int(time.time())
+				if was_suicide == False:
+					deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
+					deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(player, deathreport)
 
-		challenger.persist()
-		challengee.persist()
+					sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
+					await cmd.client.send_message(sewerchannel, deathreport)
 
-		await ewrolemgr.updateRoles(client = cmd.client, member = author)
-		await ewrolemgr.updateRoles(client = cmd.client, member = member)
+				break
 
-		deathreport = "You arrive among the dead by your own volition. {}".format(ewcfg.emote_slimeskull)
-		deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(author, deathreport)
+			#Or survives
+			else:
+				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
+				await asyncio.sleep(1)
+				#track spins?
 
-		sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-		await cmd.client.send_message(sewerchannel, deathreport)
-		return
-
-	#Specify an amount to bet
+	#Or cancel the challenge
 	else:
-		response = ewcfg.str_exchange_specify.format(currency = "SlimeCoin", action = "bet")
+		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
-		return
+		last_russianrouletted_times[author.id] = time_now - 540
+		last_russianrouletted_times[member.id] = time_now - 540
+
+
+	challenger = EwUser(member = author)
+	challengee = EwUser(member = member)
+
+	challenger.rr_challenger = ""
+	challengee.rr_challenger = ""
+
+	challenger.persist()
+	challengee.persist()
+
+	return

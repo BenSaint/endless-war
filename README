@@ -33,7 +33,6 @@ CREATE TABLE users (
 	life_state int NOT NULL DEFAULT '1',
 	busted int NOT NULL DEFAULT '0',
 	rr_challenger_id varchar(128) NOT NULL DEFAULT '',
-	time_last_rr int NOT NULL DEFAULT '0',
 	CONSTRAINT id_user_server PRIMARY KEY (id_user, id_server)
 );
 
@@ -115,4 +114,13 @@ CREATE TABLE items_prop (
 	FOREIGN KEY (id_item)
 		REFERENCES items(id_item)
 		ON DELETE CASCADE
+);
+
+CREATE TABLE farms (
+	id_server varchar(128) NOT NULL,
+	id_user varchar(128) NOT NULL,
+	farm varchar(32) NOT NULL,
+	time_lastsow int NOT NULL DEFAULT '0',
+
+	PRIMARY KEY (id_server, id_user, farm)
 );

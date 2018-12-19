@@ -143,7 +143,7 @@ class EwUser:
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
-	#For possible time limit 
+	#For possible time limit
 	time_last_rr = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
@@ -173,6 +173,8 @@ class EwUser:
 			if source == ewcfg.source_killing:
 				ewstats.change_stat(user = self, metric = ewcfg.stat_slimesfromkills, n = change)
 				ewstats.change_stat(user = self, metric = ewcfg.stat_lifetime_slimesfromkills, n = change)
+
+			# todo add source from farming
 		else:
 			change *= -1 # convert to positive number
 			if source != ewcfg.source_spending and source != ewcfg.source_ghostification:
@@ -309,7 +311,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -331,8 +333,7 @@ class EwUser:
 					ewcfg.col_poi,
 					ewcfg.col_life_state,
 					ewcfg.col_busted,
-					ewcfg.col_rrchallenger,
-					ewcfg.col_time_last_rr
+					ewcfg.col_rrchallenger
 				), (
 					id_user,
 					id_server
@@ -363,13 +364,13 @@ class EwUser:
 					self.life_state = result[19]
 					self.busted = (result[20] == 1)
 					self.rr_challenger = result[21]
-					self.time_last_rr = result[22]
 				else:
 					# Create a new database entry if the object is missing.
-					cursor.execute("REPLACE INTO users(id_user, id_server, poi) VALUES(%s, %s, %s)", (
+					cursor.execute("REPLACE INTO users(id_user, id_server, poi, life_state) VALUES(%s, %s, %s, %s)", (
 						id_user,
 						id_server,
-						ewcfg.poi_id_downtown
+						ewcfg.poi_id_downtown,
+						ewcfg.life_state_juvenile
 					))
 					
 					conn.commit()
@@ -412,8 +413,9 @@ class EwUser:
 
 			self.limit_fix();
 
-			# Save the object.	
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			# Save the object.
+			# Todo Preserve Farming Data 	farmActive, plantType, time_lastsow
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -438,8 +440,7 @@ class EwUser:
 				ewcfg.col_poi,
 				ewcfg.col_life_state,
 				ewcfg.col_busted,
-				ewcfg.col_rrchallenger,
-				ewcfg.col_time_last_rr
+				ewcfg.col_rrchallenger
 			), (
 				self.id_user,
 				self.id_server,
@@ -465,8 +466,7 @@ class EwUser:
 				self.poi,
 				self.life_state,
 				(1 if self.busted else 0),
-				self.rr_challenger,
-				self.time_last_rr
+				self.rr_challenger
 			))
 
 			conn.commit()

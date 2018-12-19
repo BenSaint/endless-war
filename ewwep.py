@@ -2,7 +2,6 @@ import asyncio
 import time
 import random
 
-import ewcmd
 import ewcfg
 import ewutils
 import ewitem
@@ -145,7 +144,9 @@ async def attack(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
-	if ewmap.poi_is_pvp(user_data.poi) == False:
+	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
+		response = "You can't commit violence from here."
+	elif ewmap.poi_is_pvp(user_data.poi) == False:
 		response = "You must go elsewhere to commit gang violence."
 	elif cmd.mentions_count > 1:
 		response = "One shot at a time!"
@@ -265,8 +266,7 @@ async def attack(cmd):
 
 			if was_busted:
 				# Move around slime as a result of the shot.
-				user_data.change_slimes(n = (shootee_data.slimelevel ** 5), source = ewcfg.source_busting)
-				market_data = EwMarket(id_server = cmd.message.server.id)
+				user_data.change_slimes(n = ewutils.slime_bylevel(shootee_data.slimelevel), source = ewcfg.source_busting)
 				coinbounty = int(shootee_data.bounty / ewcfg.slimecoin_exchangerate)
 				user_data.change_slimecredit(n = coinbounty, coinsource = ewcfg.coinsource_bounty)
 
@@ -561,6 +561,13 @@ async def suicide(cmd):
 		elif user_isgeneral:
 			response = "\*click* Alas, your gun has jammed."
 		elif user_iskillers or user_isrowdys:
+			#Give slime to challenger if player suicides mid russian roulette
+			if user_data.rr_challenger != "":
+				challenger = EwUser(id_user= user_data.rr_challenger, id_server= user_data.id_server)
+				challenger.change_slimes(n = user_data.slimes, source = ewcfg.source_killing)
+				ewitem.item_loot(member = cmd.message.author, id_user_target = user_data.rr_challenger)
+				challenger.persist()
+				
 			# Set the id_killer to the player himself, remove his slime and slime poudrins.
 			user_data.id_killer = cmd.message.author.id
 			user_data.die(cause = ewcfg.cause_suicide)
@@ -613,7 +620,7 @@ async def spar(cmd):
 				response = "You are too exhausted to train right now. Go get some grub!"
 			elif user_data.poi != ewcfg.poi_id_dojo or sparred_data.poi != ewcfg.poi_id_dojo:
 				response = "Both players need to be in the dojo to spar."
-			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
+			elif sparred_data.hunger >= ewutils.hunger_max_bylevel(sparred_data.slimelevel):
 				response = "{} is too exhausted to train right now. They need a snack!".format(member.display_name)
 			elif user_isdead == True:
 				response = "The dead think they're too cool for conventional combat. Pricks."
@@ -802,9 +809,12 @@ async def annoint(cmd):
 				# Perform the ceremony.
 				user_data.change_slimes(n = -100, source = ewcfg.source_spending)
 				user_data.weaponname = annoint_name
-
+				
+				skillup = 0
 				if user_data.weaponskill < 10:
-					user_data.add_weaponskill(n = 1)
+					skillup = 1
+
+				user_data.add_weaponskill(n = skillup)
 
 				# delete a slime poudrin from the player's inventory
 				ewitem.item_delete(id_item = poudrins[0].get('id_item'))

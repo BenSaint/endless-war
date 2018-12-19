@@ -241,6 +241,19 @@ async def weather(cmd):
 """
 async def harvest(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+
+"""
+	Salute the NLACakaNM flag.
+"""
+async def salute(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag.gif'))
+
+"""
+	Burn the NLACakaNM flag.
+"""
+async def unsalute(cmd):
+	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag_burning.gif'))
+	
 	
 """
 	Rowdys THRASH
@@ -248,7 +261,7 @@ async def harvest(cmd):
 async def thrash(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
-	if user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_rowdys:
+	if (user_data.life_state == ewcfg.life_state_enlisted or user_data.life_state == ewcfg.life_state_kingpin) and user_data.faction == ewcfg.faction_rowdys:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:rowdyfucker:431275088076079105><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rowdyfucker:431275088076079105>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>'))
 	
 """
@@ -257,7 +270,7 @@ async def thrash(cmd):
 async def dab(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
-	if user_data.life_state == ewcfg.life_state_enlisted and user_data.faction == ewcfg.faction_killers:
+	if (user_data.life_state == ewcfg.life_state_enlisted or user_data.life_state == ewcfg.life_state_kingpin) and user_data.faction == ewcfg.faction_killers:
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:copkiller:431275071945048075> <:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:copkiller:431275071945048075>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>'))
 
 """
@@ -294,7 +307,10 @@ async def booru(cmd):
 async def accept(cmd):
 	user = EwUser(member = cmd.message.author)
 	if(user.rr_challenger != ""):
-		if(user.rr_challenger != user.id_user):
+		challenger = EwUser(id_user = user.rr_challenger, id_server = user.id_server)
+		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
+			challenger.rr_challenger = user.id_user
+			challenger.persist()
 			response = "You accept the challenge! Both of you head out back behind the casino and load a bullet into the gun."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	return
@@ -303,7 +319,8 @@ async def accept(cmd):
 async def refuse(cmd):
 	user = EwUser(member = cmd.message.author)
 	if(user.rr_challenger != ""):
-		if(user.rr_challenger != user.id_user):
+		challenger = EwUser(id_user = user.rr_challenger, id_server = user.id_server)
+		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
 			response = "You refuse the challenge, but not before leaving a large puddle of urine beneath you."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	return
