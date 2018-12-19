@@ -508,7 +508,7 @@ async def item_look(cmd):
 		if item_search:  # if they didnt forget to specify an item and it just wasn't found
 			response = "You don't have one."
 		else:
-			response = "Use which item? (check **!inventory**)"
+			response = "Inspect which item? (check **!inventory**)"
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
@@ -543,7 +543,7 @@ async def item_use(cmd):
 
 
 """
-	give an existing item to a player
+	Assign an existing item to a player
 """
 def give_item(
 	member = None,
@@ -596,15 +596,36 @@ def find_item(item_search, id_user, id_server):
 
 
 """
-	Command that lets player give others items
+	Command that lets players !give others items
 """
 async def give(cmd):
-	id_user = cmd.message.author.id
-	id_server = cmd.message.server.id
-	member = cmd.mentions[0]
+	item_search = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	author = cmd.message.author
+	server = cmd.message.server
 
-	#todo: finish this and also outsource the item finding code from !uee and !inspect to a commonly usable function
-	give_item(
-		member = member,
-		#id_item =
-	)
+	if cmd.mentions:  # if they're not empty
+		recipient = cmd.mentions[0]
+	else:
+		response = "You have to specify the recipient of the item."
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
+
+	if item_sought:
+		give_item(
+			member = recipient,
+			id_item = item_sought.get('id_item')
+		)
+
+		response = "You gave {recipient} a {item}".format(
+			recipient = recipient.display_name,
+			item = item_sought.get('name')
+		)
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	else:
+		if item_search:  # if they didnt forget to specify an item and it just wasn't found
+			response = "You don't have one."
+		else:
+			response = "Give which item? (check **!inventory**)"
+
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
