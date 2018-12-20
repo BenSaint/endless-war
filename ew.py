@@ -274,7 +274,7 @@ class EwUser:
 	def eat(self, food_item = None):
 		item_props = food_item.item_props
 
-		if float(food_item.time_expir if not None else 0) < time.time():
+		if float(food_item.time_expir if food_item.time_expir is not None else 0) < time.time():
 			response = "You realize that the food you were trying to eat is already spoiled. In disgust, you throw it away."
 		else:
 			self.hunger -= int(item_props['recover_hunger'])

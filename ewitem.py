@@ -491,7 +491,7 @@ async def item_look(cmd):
 	author = cmd.message.author
 	server = cmd.message.server
 
-	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
+	item = find_item(item_search = item_search, id_user = author.id, id_server = server.id if server is not None else None)
 
 	if item:
 		id_item = item.id_item
