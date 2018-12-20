@@ -582,6 +582,16 @@ async def on_message(message):
 
 			await client.send_message(message.channel, ewutils.formatMessage(message.author, "Poudrin created."))
 
+		# Gives the user some slime
+		elif debug == True and cmd == '!getslime':
+			user_data = EwUser(member = message.author)
+
+			user_data.change_slimes(n = 10000)
+			user_data.persist()
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, "You receive 10,000 slime."))
+
+
 
 		# FIXME debug
 		# Test item deletion

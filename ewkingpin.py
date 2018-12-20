@@ -1,6 +1,7 @@
 """
 	Commands for kingpins only.
 """
+import ewitem
 import ewutils
 import ewcfg
 import ewrolemgr
@@ -78,39 +79,28 @@ async def create(cmd):
 
 	item_name = cmd.tokens[1]
 	item_desc = cmd.tokens[2]
+
 	if cmd.mentions[0]:
 		recipient = cmd.mentions[0]
 	else:
 		response = 'You need to specify a recipient. Usage: !create "<item_name>" "<item_desc>" <recipient>'
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
-	ewutils.execute_sql_query(
-		"INSERT INTO items(id_user, id_server, {item_type}, {soulbound}) VALUES(%s, %s, %s, %s);".format(
-			item_type = ewcfg.col_item_type,
-			soulbound = ewcfg.col_soulbound
-		), (
-			recipient.id,
-			cmd.message.server.id,
-			ewcfg.it_cosmetic,
-			1  # princeps items are always soulbound
-		)
+	item_props = {
+		"cosmetic_name": item_name,
+		"cosmetic_desc": item_desc,
+		"adorned": "false",
+		"rarity": "princeps"
+	}
+
+	new_item_id = ewitem.item_create(
+		id_server = cmd.message.server.id,
+		id_user = recipient.id,
+		item_type = ewcfg.it_cosmetic,
+		item_props = item_props
 	)
 
-	ewutils.execute_sql_query(
-		"INSERT INTO items_prop(id_item, {name}, {value}) VALUES ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s), ((SELECT LAST_INSERT_ID()), %s, %s)".format(
-			name = ewcfg.col_name,
-			value = ewcfg.col_value
-		), (
-			"cosmetic_name",
-			item_name,
-			"cosmetic_desc",
-			item_desc,
-			"adorned",
-			"false",
-			"rarity",
-			"princeps"
-		)
-	)
+	ewitem.soulbind(new_item_id)
 
 	response = 'Item "{}" successfully created.'.format(item_name)
 	return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
