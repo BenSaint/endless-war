@@ -156,11 +156,11 @@ class EwBody:
 	str_body = ""
 	def __init__(
 		self,
-		id_body="",
-		alias=[],
-		str_create="",
-		str_body="",
-		str_observe=""
+		id_body = "",
+		alias = [],
+		str_create = "",
+		str_body = "",
+		str_observe = ""
 	):
 		self.id_body = id_body
 		self.alias = alias
@@ -175,12 +175,12 @@ class EwHead:
 	str_head = ""
 	def __init__(
 		self,
-		id_head="",
-		alias=[],
-		str_create="",
-		str_head="",
-		str_feed="",
-		str_fetch=""
+		id_head = "",
+		alias = [],
+		str_create = "",
+		str_head = "",
+		str_feed = "",
+		str_fetch = ""
 	):
 		self.id_head = id_head
 		self.alias = alias
@@ -198,13 +198,13 @@ class EwMobility:
 	str_mobility = ""
 	def __init__(
 		self,
-		id_mobility="",
-		alias=[],
-		str_advance="",
-		str_retreat="",
-		str_create="",
-		str_mobility="",
-		str_walk=""
+		id_mobility = "",
+		alias = [],
+		str_advance = "",
+		str_retreat = "",
+		str_create = "",
+		str_mobility = "",
+		str_walk = ""
 	):
 		self.id_mobility = id_mobility
 		self.alias = alias
@@ -222,12 +222,12 @@ class EwOffense:
 	str_offense = ""
 	def __init__(
 		self,
-		id_offense="",
-		alias=[],
-		str_attack="",
-		str_create="",
-		str_offense="",
-		str_observe=""
+		id_offense = "",
+		alias = [],
+		str_attack = "",
+		str_create = "",
+		str_offense = "",
+		str_observe = ""
 	):
 		self.id_offense = id_offense
 		self.alias = alias
@@ -243,12 +243,12 @@ class EwDefense:
 	str_defense = ""
 	def __init__(
 		self,
-		id_defense="",
-		alias=[],
-		str_create="",
-		str_defense="",
-		str_armor="",
-		str_pet=""
+		id_defense = "",
+		alias = [],
+		str_create = "",
+		str_defense = "",
+		str_armor = "",
+		str_pet = ""
 	):
 		self.id_defense = id_defense
 		self.alias = alias
@@ -265,12 +265,12 @@ class EwSpecial:
 	str_special = ""
 	def __init__(
 		self,
-		id_special="",
-		alias=[],
-		str_special_attack="",
-		str_create="",
-		str_special="",
-		str_observe=""
+		id_special = "",
+		alias = [],
+		str_special_attack = "",
+		str_create = "",
+		str_special = "",
+		str_observe = ""
 	):
 		self.id_special = id_special
 		self.alias = alias
@@ -286,18 +286,18 @@ class EwBrain:
 	str_brain = ""
 	def __init__(
 		self,
-		id_brain="",
-		alias=[],
-		str_create="",
-		str_brain="",
-		str_dissolve="",
-		str_spawn="",
-		str_revive="",
-		str_death="",
-		str_kill="",
-		str_walk="",
-		str_pet="",
-		str_observe=""
+		id_brain = "",
+		alias = [],
+		str_create = "",
+		str_brain = "",
+		str_dissolve = "",
+		str_spawn = "",
+		str_revive = "",
+		str_death = "",
+		str_kill = "",
+		str_walk = "",
+		str_pet = "",
+		str_observe = ""
 	):
 		self.id_brain = id_brain
 		self.alias = alias

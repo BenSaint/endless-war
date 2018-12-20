@@ -52,7 +52,7 @@ async def cmd_howl(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	slimeoid = EwSlimeoid(member = cmd.message.author)
 	response = ewcfg.howls[random.randrange(len(ewcfg.howls))]
-	if (slimeoid.life_state == 2) and (user_data.life_state != ewcfg.life_state_corpse):
+	if (slimeoid.life_state == ewcfg.slimeoid_state_active) and (user_data.life_state != ewcfg.life_state_corpse):
 		response += "\n{} howls along with you! {}".format(str(slimeoid.name), ewcfg.howls[random.randrange(len(ewcfg.howls))])
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
@@ -155,7 +155,7 @@ async def data(cmd):
 		if user_data.busted and user_data.life_state == ewcfg.life_state_corpse:
 			response += " You are busted and therefore cannot leave the sewers without reviving."
 
-		if (slimeoid.life_state == 2) and (user_data.life_state != ewcfg.life_state_corpse):
+		if (slimeoid.life_state == ewcfg.slimeoid_state_active) and (user_data.life_state != ewcfg.life_state_corpse):
 			response += " You are accompanied by {}, a {}-foot-tall Slimeoid.".format(slimeoid.name, str(slimeoid.level))
 
 	else:
@@ -197,7 +197,7 @@ async def data(cmd):
 			if coinbounty != 0:
 				response += " SlimeCorp offers a bounty of {:,} SlimeCoin for their death.".format(coinbounty)
 
-			if (slimeoid.life_state == 2) and (user_data.life_state != ewcfg.life_state_corpse):
+			if (slimeoid.life_state == ewcfg.slimeoid_state_active) and (user_data.life_state != ewcfg.life_state_corpse):
 				response += "They are accompanied by {}, a {}-foot-tall Slimeoid.".format(slimeoid.name, str(slimeoid.level))
 
 	# Send the response to the player.
@@ -350,16 +350,16 @@ async def playfetch(cmd):
 	if user_data.life_state == ewcfg.life_state_corpse:
 			response = "Slimeoids don't fuck with ghosts."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You do not have a Slimeoid to play fetch with."	
 
-	elif slimeoid.life_state == 1:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
 
 	else:
 		head = ewcfg.head_map.get(slimeoid.head)
 		response = head.str_fetch.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 
 	# Send the response to the player.
@@ -373,18 +373,18 @@ async def observeslimeoid(cmd):
 	if user_data.life_state == ewcfg.life_state_corpse:
 			response = "Slimeoids don't fuck with ghosts."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You do not have a Slimeoid to observe."	
 
-	elif slimeoid.life_state == 1:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
 
 	else:
 		options = [
-		'body',
-		'weapon',
-		'special',
-		'brain',
+			'body',
+			'weapon',
+			'special',
+			'brain',
 		]
 
 		roll = random.randrange(len(options))
@@ -403,7 +403,7 @@ async def observeslimeoid(cmd):
 			part = ewcfg.brain_map.get(slimeoid.ai)
 		
 		response = part.str_observe.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 
 	# Send the response to the player.
@@ -417,21 +417,21 @@ async def petslimeoid(cmd):
 	if user_data.life_state == ewcfg.life_state_corpse:
 			response = "Slimeoids don't fuck with ghosts."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You do not have a Slimeoid to pet."	
 
-	elif slimeoid.life_state == 1:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
 
 	else:
 		armor = ewcfg.defense_map.get(slimeoid.armor)
 		response = armor.str_pet.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 		response += " "
 		brain = ewcfg.brain_map.get(slimeoid.ai)
 		response += brain.str_pet.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 
 	# Send the response to the player.
@@ -445,22 +445,22 @@ async def walkslimeoid(cmd):
 	if user_data.life_state == ewcfg.life_state_corpse:
 			response = "Slimeoids don't fuck with ghosts."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You do not have a Slimeoid to take for a walk."	
 
-	elif slimeoid.life_state == 1:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."
 
 	else:
 		brain = ewcfg.brain_map.get(slimeoid.ai)
 		response = brain.str_walk.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 		poi = ewcfg.id_to_poi.get(user_data.poi)
 		response += " With that done, you go for a leisurely stroll around {}, while ".format(poi.str_name)
 		legs = ewcfg.mobility_map.get(slimeoid.legs)
 		response += legs.str_walk.format(
-		slimeoid_name = slimeoid.name
+			slimeoid_name = slimeoid.name
 		)
 
 	# Send the response to the player.
@@ -526,10 +526,10 @@ async def incubateslimeoid(cmd):
 			if value == -1:
 				value = user_data.slimes
 
-			if slimeoid.life_state == 2:
+			if slimeoid.life_state == ewcfg.slimeoid_state_active:
 				response = "You have already created a Slimeoid. Dissolve your current slimeoid before incubating a new one."
 				
-			elif slimeoid.life_state == 1:
+			elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 				response = "You are already in the process of incubating a Slimeoid."
 
 			elif value > user_data.slimes:
@@ -541,7 +541,7 @@ async def incubateslimeoid(cmd):
 
 				level = len(str(value))
 				user_data.change_slimes(n = -value)
-				slimeoid.life_state = 1
+				slimeoid.life_state = ewcfg.slimeoid_state_forming
 				slimeoid.level = level
 				slimeoid.id_user = user_data.id_user
 				slimeoid.id_server = user_data.id_server
@@ -570,11 +570,11 @@ async def dissolveslimeoid(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 		response = "Ghosts cannot interact with the SlimeCorp Lab apparati."	
 
-	elif slimeoid.life_state == 0:
-				response = "You have no slimeoid to dissolve."	
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
+		response = "You have no slimeoid to dissolve."	
 
 	else:			
-		if slimeoid.life_state == 1:
+		if slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "You hit a large red button with a white X on it. Immediately a buzzer goes off and the half-formed body of what would have been your new Slimeoid is flushed out of the gestation tank and down a drainage tube, along with your poudrin and slime. What a waste."
 		else:
 			brain = ewcfg.brain_map.get(slimeoid.ai)
@@ -583,7 +583,7 @@ async def dissolveslimeoid(cmd):
 			)
 			response += "{}".format(ewcfg.emote_slimeskull)
 
-		slimeoid.life_state = 0
+		slimeoid.life_state = ewcfg.slimeoid_state_none
 		slimeoid.body = ""
 		slimeoid.head = ""
 		slimeoid.legs = ""
@@ -617,10 +617,10 @@ async def growbody(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -658,10 +658,10 @@ async def growhead(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -698,10 +698,10 @@ async def growlegs(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -738,10 +738,10 @@ async def growweapon(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -778,10 +778,10 @@ async def growarmor(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -818,10 +818,10 @@ async def growspecial(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -858,10 +858,10 @@ async def growbrain(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -899,10 +899,10 @@ async def nameslimeoid(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid already has a name."	
 
 	
@@ -939,10 +939,10 @@ async def raisemoxie(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -982,10 +982,10 @@ async def lowermoxie(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -1025,10 +1025,10 @@ async def raisegrit(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -1068,10 +1068,10 @@ async def lowergrit(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -1111,10 +1111,10 @@ async def raisechutzpah(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -1154,10 +1154,10 @@ async def lowerchutzpah(cmd):
 	elif user_data.life_state == ewcfg.life_state_corpse:
 			response = "Ghosts cannot interact with the SlimeCorp Lab apparati."		
 
-	elif slimeoid.life_state == 0:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You must begin incubating a new slimeoid first."	
 
-	elif slimeoid.life_state == 2:
+	elif slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "Your slimeoid is already fully formed."	
 
 	
@@ -1205,10 +1205,10 @@ async def spawnslimeoid(cmd):
 	
 	else:
 			
-		if slimeoid.life_state == 2:
+		if slimeoid.life_state == ewcfg.slimeoid_state_active:
 			response = "You have already created a Slimeoid. Dissolve your current slimeoid before incubating a new one."
 			
-		elif slimeoid.life_state == 0:
+		elif slimeoid.life_state == ewcfg.slimeoid_state_none:
 			response = "You have not yet begun incubating a slimeoid."
 		
 		else:
@@ -1272,7 +1272,7 @@ async def spawnslimeoid(cmd):
 				if needsname == True:
 					response += "\nIt needs a name."
 			else:
-				slimeoid.life_state = 2
+				slimeoid.life_state = ewcfg.slimeoid_state_active
 				response = "You press the big red button labelled 'SPAWN'. The console lights up and there is a rush of mechanical noise as the fluid drains rapidly out of the gestation tube. The newly born Slimeoid within writhes in confusion before being sucked down an ejection chute and spat out messily onto the laboratory floor at your feet. Happy birthday, {} the Slimeoid!! {}".format(slimeoid.name, ewcfg.emote_slimeheart)
 
 				response += "\n\n{} is a {}-foot-tall Slimeoid.".format(slimeoid.name, str(slimeoid.level))
@@ -1402,12 +1402,12 @@ async def slimeoid(cmd):
 		user_data = EwUser(member = member)
 		slimeoid = EwSlimeoid(member = member)
 
-	if slimeoid.life_state == 1:
+	if slimeoid.life_state == ewcfg.slimeoid_state_forming:
 		if selfcheck == True:
 			response = "Your Slimeoid is still forming in the gestation vat. It is about {} feet from end to end.".format(str(slimeoid.level))
 		else:
 			response = "{}'s Slimeoid is still forming in the gestation vat. It is about {} feet from end to end.".format(member.display_name, str(slimeoid.level))
-	if slimeoid.life_state == 2:
+	if slimeoid.life_state == ewcfg.slimeoid_state_active:
 		if selfcheck == True:
 			response = "You are accompanied by {}, a {}-foot-tall Slimeoid.".format(slimeoid.name, str(slimeoid.level))
 		else:
@@ -1507,7 +1507,7 @@ async def slimeoid(cmd):
 	statname = "chutzpah"
 	response += " It has {} {}.".format(statlevel, statname)
 
-	if slimeoid.life_state == 0:
+	if slimeoid.life_state == ewcfg.slimeoid_state_none:
 		response = "You have not yet created a slimeoid."
 
 	if user_data.life_state == ewcfg.life_state_corpse:
