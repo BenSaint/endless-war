@@ -2915,7 +2915,7 @@ body_list = [
 		id_body = "humanoid",
 		alias = [
 			"biped",
-			"human"
+			"human",
 			"d"
 		],
 		str_create = "You press a button on the body console labelled 'D'. Through the observation port, you see the rapidly congealing proto-Slimeoid curl into a foetal, vaguely humanoid form.",
