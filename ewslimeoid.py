@@ -69,7 +69,7 @@ class EwSlimeoid:
 					ewcfg.col_intel,
 					ewcfg.col_level,
 					query_suffix
-				)
+				))
 				result = cursor.fetchone();
 
 				if result != None:
