@@ -9,6 +9,7 @@ import ewmap
 import ewrolemgr
 import ewstats
 from ew import EwUser, EwMarket
+from ewslimeoid import EwSlimeoid
 
 """ A weapon object which adds flavor text to kill/shoot. """
 class EwWeapon:
@@ -142,6 +143,7 @@ async def attack(cmd):
 	coinbounty = 0
 
 	user_data = EwUser(member = cmd.message.author)
+	slimeoid = EwSlimeoid(member = cmd.message.author)
 	weapon = ewcfg.weapon_map.get(user_data.weapon)
 
 	if ewmap.channel_name_is_poi(cmd.message.channel.name) == False:
@@ -163,6 +165,7 @@ async def attack(cmd):
 		# Get target's info.
 		member = cmd.mentions[0]
 		shootee_data = EwUser(member = member)
+		shootee_slimeoid = EwSlimeoid(member = member)
 
 		miss = False
 		crit = False
@@ -460,9 +463,28 @@ async def attack(cmd):
 							emote_skull = ewcfg.emote_slimeskull
 						))
 						shootee_data.trauma = weapon.id_weapon
+
+						if slimeoid.level == 2:
+							brain = ewcfg.brain_map.get(slimeoid.ai)
+							response += "\n\n{}" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
+
+						if shootee_slimeoid.level == 2:
+							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
+							response += "\n\n{}" + brain.str_death.format(slimeoid_name = shootee_slimeoid.name)
+
 					else:
 						response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target = member.display_name)
+
 						shootee_data.trauma = ""
+
+						if slimeoid.life_state == 2:
+							brain = ewcfg.brain_map.get(slimeoid.ai)
+							response += "\n\n" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
+
+						if shootee_slimeoid.life_state == 2:
+							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
+							response += "\n\n" + brain.str_death.format(slimeoid_name = shootee_slimeoid.name)
+
 					deathreport = "You were {} by {}. {}".format(kill_descriptor, cmd.message.author.display_name, ewcfg.emote_slimeskull)
 					deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(member, deathreport)
 					
