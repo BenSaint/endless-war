@@ -112,14 +112,14 @@ async def adorn(cmd):
 			name = item_sought.get('name')
 			item_type = item_sought.get('item_type')
 
-			item = EwItem(id_item = id_item)
-			user_data = EwUser(member = cmd.message.author)
-
 			adorned_items = 0
 			for it in items:
 				i = EwItem(it.get('id_item'))
 				if i.item_props['adorned'] == 'true':
 					adorned_items += 1
+
+			item = EwItem(id_item = id_item)
+			user_data = EwUser(member = cmd.message.author)
 
 			if item.item_props['adorned'] == 'true':
 				item.item_props['adorned'] = 'false'
