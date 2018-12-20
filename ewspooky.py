@@ -70,7 +70,7 @@ async def revive(cmd):
 	#	deathreport = "You were {} by {}. {}".format(kill_descriptor, cmd.message.author.display_name, ewcfg.emote_slimeskull)
 	#	deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(member, deathreport)
 
-		if slimeoid.life_state == 2:
+		if slimeoid.life_state == ewcfg.slimeoid_state_active:
 			reunite = ""
 			brain = ewcfg.brain_map.get(slimeoid.ai)
 			reunite += brain.str_revive.format(
