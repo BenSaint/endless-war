@@ -466,15 +466,11 @@ async def attack(cmd):
 
 						if slimeoid.level == 2:
 							brain = ewcfg.brain_map.get(slimeoid.ai)
-							response += "\n\n{}" + brain.str_kill.format(
-							slimeoid_name = shootee_slimeoid.name
-							)
+							response += "\n\n{}" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
 
 						if shootee_slimeoid.level == 2:
 							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
-							response += "\n\n{}" + brain.str_death.format(
-							slimeoid_name = shootee_slimeoid.name
-							)
+							response += "\n\n{}" + brain.str_death.format(slimeoid_name = shootee_slimeoid.name)
 
 					else:
 						response = "{name_target} is hit!!\n\n{name_target} has died.".format(name_target = member.display_name)
@@ -483,15 +479,11 @@ async def attack(cmd):
 
 						if slimeoid.life_state == 2:
 							brain = ewcfg.brain_map.get(slimeoid.ai)
-							response += "\n\n" + brain.str_kill.format(
-							slimeoid_name = shootee_slimeoid.name
-							)
+							response += "\n\n" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
 
 						if shootee_slimeoid.life_state == 2:
 							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
-							response += "\n\n" + brain.str_death.format(
-							slimeoid_name = shootee_slimeoid.name
-							)
+							response += "\n\n" + brain.str_death.format(slimeoid_name = shootee_slimeoid.name)
 
 					deathreport = "You were {} by {}. {}".format(kill_descriptor, cmd.message.author.display_name, ewcfg.emote_slimeskull)
 					deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(member, deathreport)
