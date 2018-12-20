@@ -483,7 +483,11 @@ async def on_message(message):
 		"""
 
 		# tokenize the message. the command should be the first word.
-		tokens = shlex.split(message.content)  # it's split with shlex now because shlex regards text within quotes as a single token
+		try:
+			tokens = shlex.split(message.content)  # it's split with shlex now because shlex regards text within quotes as a single token
+		except:
+			tokens = message.content.split(' ')  # if splitting via shlex doesnt work (odd number of quotes), use the old splitting method so it doesnt give an exception
+
 		tokens_count = len(tokens)
 		cmd = tokens[0].lower()
 
