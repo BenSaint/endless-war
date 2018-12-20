@@ -50,7 +50,7 @@ class EwSlimeoid:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids{}".format(
 					ewcfg.col_id_slimeoid,
 					ewcfg.col_id_user,
 					ewcfg.col_id_server,
@@ -68,7 +68,8 @@ class EwSlimeoid:
 					ewcfg.col_defense,
 					ewcfg.col_intel,
 					ewcfg.col_level,
-				) + query_suffix )
+					query_suffix
+				)
 				result = cursor.fetchone();
 
 				if result != None:
