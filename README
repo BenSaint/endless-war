@@ -124,3 +124,25 @@ CREATE TABLE farms (
 
 	PRIMARY KEY (id_server, id_user, farm)
 );
+
+CREATE TABLE slimeoids (
+	id_slimeoid int NOT NULL AUTO_INCREMENT,
+	id_server varchar(128) NOT NULL,
+	id_user varchar(128) NOT NULL,
+	life_state int NOT NULL DEFAULT '0',
+	body varchar(32) NOT NULL DEFAULT '',
+	head varchar(32) NOT NULL DEFAULT '',
+	legs varchar(32) NOT NULL DEFAULT '',
+	armor varchar(32) NOT NULL DEFAULT '',
+	weapon varchar(32) NOT NULL DEFAULT '',
+	special varchar(32) NOT NULL DEFAULT '',
+	ai varchar(32) NOT NULL DEFAULT '',
+	type varchar(32) NOT NULL DEFAULT 'Lab',
+	name varchar(32) NOT NULL DEFAULT '',
+	atk int NOT NULL DEFAULT '0',
+	defense int NOT NULL DEFAULT '0',
+	intel int NOT NULL DEFAULT '0',
+	level int NOT NULL DEFAULT '0',
+	
+	PRIMARY KEY (id_slimeoid)
+);
