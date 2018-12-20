@@ -522,8 +522,10 @@ async def attack(cmd):
 			# 	boss_data.persist()
 
 			kingpin = ewutils.find_kingpin(id_server = cmd.message.server.id, kingpin_role = role_boss)
-			kingpin.change_slimes(n = boss_slimes)
-			kingpin.persist()
+
+			if kingpin:
+				kingpin.change_slimes(n = boss_slimes)
+				kingpin.persist()
 
 			# Persist every users' data.
 			user_data.persist()
