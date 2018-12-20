@@ -91,6 +91,15 @@ async def xfer(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	market_data = EwMarket(id_server = cmd.message.author.server.id)
 
+	if cmd.message.author.id == member.id:
+		user_data.id_killer = cmd.message.author.id
+		user_data.die(cause = ewcfg.cause_suicide)
+		user_data.persist()
+
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Gaming the slimeconomy is punishable by death. SlimeCorp soldiers execute you immediately."))
+		await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
+		return
+
 	# Parse the slime value to send.
 	value = None
 	if cmd.tokens_count > 1:
