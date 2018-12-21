@@ -73,6 +73,7 @@ class EwItem:
 	):
 		if(id_item != None):
 			self.id_item = id_item
+			self.item_props.clear()
 
 			try:
 				conn_info = ewutils.databaseConnect()
@@ -112,7 +113,10 @@ class EwItem:
 					))
 
 					for row in cursor:
-						self.item_props[row[0]] = row[1]
+						try:
+							self.item_props[row[0]] = row[1]
+						except:
+							pass
 
 				else:
 					# Item not found.
