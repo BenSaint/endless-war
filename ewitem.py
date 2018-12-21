@@ -468,12 +468,17 @@ async def inventory_print(cmd):
 			id_item = item.get('id_item')
 			quantity = item.get('quantity')
 
-			response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
+			response_part = "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
 				id_item = item.get('id_item'),
 				name = item.get('name'),
 				soulbound_style = ("**" if item.get('soulbound') else ""),
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
+			if len(response) + len(response_part) > 1492:
+				await cmd.client.send_message(cmd.message.author, response)
+				response = ""
+
+			response += response_part
 
 	await cmd.client.send_message(cmd.message.author, response)
 
