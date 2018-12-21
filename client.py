@@ -181,6 +181,9 @@ cmd_map = {
 	ewcfg.cmd_sow: ewfarm.sow,
 	ewcfg.cmd_reap: ewfarm.reap,
 
+	#give an item to another player
+	ewcfg.cmd_give: ewitem.give,
+
 	# kill all players in your district; could be re-used for a future raid boss
 	#ewcfg.cmd_writhe: ewraidboss.writhe,
 
