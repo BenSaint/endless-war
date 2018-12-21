@@ -73,6 +73,8 @@ class EwItem:
 	):
 		if(id_item != None):
 			self.id_item = id_item
+
+			# the item props don't reset themselves automatically which is why the items_prop table had tons of extraneous rows (like food items having medal_names)
 			self.item_props.clear()
 
 			try:
@@ -113,10 +115,11 @@ class EwItem:
 					))
 
 					for row in cursor:
+						# this try catch is only necessary as long as extraneous props exist in the table
 						try:
 							self.item_props[row[0]] = row[1]
 						except:
-							pass
+							ewutils.logMsg("extraneous item_prop row detected.")
 
 				else:
 					# Item not found.
