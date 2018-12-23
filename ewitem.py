@@ -1,3 +1,4 @@
+import math
 import time
 
 import ewutils
@@ -618,7 +619,20 @@ async def give(cmd):
 
 	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
-	if item_sought:
+	if item_sought:  # if an item was found
+
+		# don't let people give others food when they shouldn't be able to carry more food items
+		if item_sought.get('item_type') == ewcfg.it_food:
+			food_items = inventory(
+				id_user = recipient.id,
+				id_server = server.id,
+				item_type_filter = ewcfg.it_food
+			)
+
+			if len(food_items) >= math.ceil(EwUser(member = recipient).slimelevel / ewcfg.max_food_in_inv_mod):
+				response = "They can't carry any more food items than that."
+				return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
 		if item_sought.get('soulbound'):
 			response = "You can't just give away soulbound items."
 		else:
