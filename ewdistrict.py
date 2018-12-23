@@ -82,9 +82,26 @@ class EwDistrict:
 
 	async def decay_capture_points(self):
 		if self.capture_points > 0:
-			# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
-			# it's ceil() instead of int() because, with different values, the decay may be 0 that way
-			await self.change_capture_points(-math.ceil(self.max_capture_points / ewcfg.ticks_per_day), ewcfg.actor_decay)
+			players_in_district = ewutils.execute_sql_query("SELECT {faction}, {life_state}, id_user FROM users WHERE id_server = %s AND {poi} = %s".format(
+				faction = ewcfg.col_faction,
+				life_state = ewcfg.col_life_state,
+				poi = ewcfg.col_poi
+			), (
+				self.id_server,
+				self.name
+			))
+
+			cap_faction_member_present = False
+
+			# if at least one of those players if from the capturing/controlling faction, don't decay
+			for player_in_district in players_in_district:
+				if player_in_district[0] == self.capturing_faction:  # [0] is their faction
+					cap_faction_member_present = True
+
+			if not cap_faction_member_present:  # only decay if no members of the currently capturing (or controlling) faction are present
+
+				# reduces the capture progress at a rate with which it arrives at 0 after 1 in-game day
+				await self.change_capture_points(-math.ceil(self.max_capture_points / ewcfg.ticks_per_day), ewcfg.actor_decay)
 
 		if self.capture_points < 0:
 			self.capture_points = 0
