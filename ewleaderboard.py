@@ -175,7 +175,7 @@ def board_entry(entry, entry_type):
 		)
 
 	elif entry_type == ewcfg.entry_type_districts:
-		faction = entry[0]
+		faction = entry[0].lower()
 		districts = entry[1]
 		faction_symbol = ewutils.get_faction_symbol(faction)
 
