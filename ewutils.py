@@ -199,6 +199,10 @@ def databaseClose(conn_info):
 def formatMessage(user_target, message):
 	return "*{}*: {}".format(user_target.display_name, message).replace("@", "\{at\}")
 
+""" format responses with no username: """
+def altformatMessage(user_target, message):
+	return "{}".format(message)
+
 """ Decay slime totals for all users """
 def decaySlimes(id_server = None):
 	if id_server != None:
