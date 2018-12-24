@@ -50,7 +50,7 @@ class EwSlimeoid:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids{}".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids".format(
 					ewcfg.col_id_slimeoid,
 					ewcfg.col_id_user,
 					ewcfg.col_id_server,
@@ -68,8 +68,7 @@ class EwSlimeoid:
 					ewcfg.col_defense,
 					ewcfg.col_intel,
 					ewcfg.col_level,
-					query_suffix
-				))
+				) + query_suffix )
 				result = cursor.fetchone();
 
 				if result != None:
@@ -157,11 +156,11 @@ class EwBody:
 	str_body = ""
 	def __init__(
 		self,
-		id_body = "",
-		alias = [],
-		str_create = "",
-		str_body = "",
-		str_observe = ""
+		id_body="",
+		alias=[],
+		str_create="",
+		str_body="",
+		str_observe=""
 	):
 		self.id_body = id_body
 		self.alias = alias
@@ -176,12 +175,12 @@ class EwHead:
 	str_head = ""
 	def __init__(
 		self,
-		id_head = "",
-		alias = [],
-		str_create = "",
-		str_head = "",
-		str_feed = "",
-		str_fetch = ""
+		id_head="",
+		alias=[],
+		str_create="",
+		str_head="",
+		str_feed="",
+		str_fetch=""
 	):
 		self.id_head = id_head
 		self.alias = alias
@@ -199,20 +198,26 @@ class EwMobility:
 	str_mobility = ""
 	def __init__(
 		self,
-		id_mobility = "",
-		alias = [],
-		str_advance = "",
-		str_retreat = "",
-		str_create = "",
-		str_mobility = "",
-		str_walk = ""
+		id_mobility="",
+		alias=[],
+		str_advance="",
+		str_retreat="",
+		str_advance_weak="",
+		str_retreat_weak="",
+		str_create="",
+		str_mobility="",
+		str_defeat="",
+		str_walk=""
 	):
 		self.id_mobility = id_mobility
 		self.alias = alias
 		self.str_advance = str_advance
 		self.str_retreat = str_retreat
+		self.str_advance_weak = str_advance_weak
+		self.str_retreat_weak = str_retreat_weak
 		self.str_create = str_create
 		self.str_mobility = str_mobility
+		self.str_defeat = str_defeat
 		self.str_walk = str_walk
 
 class EwOffense:
@@ -223,16 +228,20 @@ class EwOffense:
 	str_offense = ""
 	def __init__(
 		self,
-		id_offense = "",
-		alias = [],
-		str_attack = "",
-		str_create = "",
-		str_offense = "",
-		str_observe = ""
+		id_offense="",
+		alias=[],
+		str_attack="",
+		str_attack_weak="",
+		str_attack_coup="",
+		str_create="",
+		str_offense="",
+		str_observe=""
 	):
 		self.id_offense = id_offense
 		self.alias = alias
 		self.str_attack = str_attack
+		self.str_attack_weak = str_attack_weak
+		self.str_attack_coup = str_attack_coup
 		self.str_create = str_create
 		self.str_offense = str_offense
 		self.str_observe = str_observe
@@ -244,12 +253,12 @@ class EwDefense:
 	str_defense = ""
 	def __init__(
 		self,
-		id_defense = "",
-		alias = [],
-		str_create = "",
-		str_defense = "",
-		str_armor = "",
-		str_pet = ""
+		id_defense="",
+		alias=[],
+		str_create="",
+		str_defense="",
+		str_armor="",
+		str_pet=""
 	):
 		self.id_defense = id_defense
 		self.alias = alias
@@ -266,16 +275,20 @@ class EwSpecial:
 	str_special = ""
 	def __init__(
 		self,
-		id_special = "",
-		alias = [],
-		str_special_attack = "",
-		str_create = "",
-		str_special = "",
-		str_observe = ""
+		id_special="",
+		alias=[],
+		str_special_attack="",
+		str_special_attack_weak="",
+		str_special_attack_coup="",
+		str_create="",
+		str_special="",
+		str_observe=""
 	):
 		self.id_special = id_special
 		self.alias = alias
 		self.str_special_attack = str_special_attack
+		self.str_special_attack_weak = str_special_attack_weak
+		self.str_special_attack_coup = str_special_attack_coup
 		self.str_create = str_create
 		self.str_special = str_special
 		self.str_observe = str_observe
@@ -287,18 +300,23 @@ class EwBrain:
 	str_brain = ""
 	def __init__(
 		self,
-		id_brain = "",
-		alias = [],
-		str_create = "",
-		str_brain = "",
-		str_dissolve = "",
-		str_spawn = "",
-		str_revive = "",
-		str_death = "",
-		str_kill = "",
-		str_walk = "",
-		str_pet = "",
-		str_observe = ""
+		id_brain="",
+		alias=[],
+		str_create="",
+		str_brain="",
+		str_dissolve="",
+		str_spawn="",
+		str_revive="",
+		str_death="",
+		str_victory="",
+		str_battlecry="",
+		str_battlecry_weak="",
+		str_movecry="",
+		str_movecry_weak="",
+		str_kill="",
+		str_walk="",
+		str_pet="",
+		str_observe=""
 	):
 		self.id_brain = id_brain
 		self.alias = alias
@@ -308,6 +326,11 @@ class EwBrain:
 		self.str_spawn = str_spawn
 		self.str_revive = str_revive
 		self.str_death = str_death
+		self.str_victory = str_victory
+		self.str_battlecry = str_battlecry
+		self.str_battlecry_weak = str_battlecry_weak
+		self.str_movecry = str_movecry
+		self.str_movecry_weak = str_movecry_weak
 		self.str_kill = str_kill
 		self.str_pet = str_pet
 		self.str_walk = str_walk
