@@ -202,17 +202,23 @@ class EwMobility:
 		id_mobility = "",
 		alias = [],
 		str_advance = "",
+		str_advance_weak = "",
 		str_retreat = "",
+		str_retreat_weak = "",
 		str_create = "",
 		str_mobility = "",
+		str_defeat = "",
 		str_walk = ""
 	):
 		self.id_mobility = id_mobility
 		self.alias = alias
 		self.str_advance = str_advance
+		self.str_advance_weak = str_advance_weak
 		self.str_retreat = str_retreat
+		self.str_retreat_weak = str_retreat_weak
 		self.str_create = str_create
 		self.str_mobility = str_mobility
+		self.str_defeat = str_defeat
 		self.str_walk = str_walk
 
 class EwOffense:
@@ -226,6 +232,8 @@ class EwOffense:
 		id_offense = "",
 		alias = [],
 		str_attack = "",
+		str_attack_weak = "",
+		str_attack_coup = "",
 		str_create = "",
 		str_offense = "",
 		str_observe = ""
@@ -233,6 +241,8 @@ class EwOffense:
 		self.id_offense = id_offense
 		self.alias = alias
 		self.str_attack = str_attack
+		self.str_attack_weak = str_attack_weak
+		self.str_attack_coup = str_attack_coup
 		self.str_create = str_create
 		self.str_offense = str_offense
 		self.str_observe = str_observe
@@ -269,6 +279,8 @@ class EwSpecial:
 		id_special = "",
 		alias = [],
 		str_special_attack = "",
+		str_special_attack_weak = "",
+		str_special_attack_coup = "",
 		str_create = "",
 		str_special = "",
 		str_observe = ""
@@ -276,6 +288,8 @@ class EwSpecial:
 		self.id_special = id_special
 		self.alias = alias
 		self.str_special_attack = str_special_attack
+		self.str_special_attack_weak = str_special_attack_weak
+		self.str_special_attack_coup = str_special_attack_coup
 		self.str_create = str_create
 		self.str_special = str_special
 		self.str_observe = str_observe
@@ -295,6 +309,11 @@ class EwBrain:
 		str_spawn = "",
 		str_revive = "",
 		str_death = "",
+		str_victory = "",
+		str_battlecry = "",
+		str_battlecry_weak = "",
+		str_movecry = "",
+		str_movecry_weak = "",
 		str_kill = "",
 		str_walk = "",
 		str_pet = "",
@@ -308,6 +327,11 @@ class EwBrain:
 		self.str_spawn = str_spawn
 		self.str_revive = str_revive
 		self.str_death = str_death
+		self.str_victory = str_victory
+		self.str_battlecry = str_battlecry
+		self.str_battlecry_weak = str_battlecry_weak
+		self.str_movecry = str_movecry
+		self.str_movecry_weak = str_movecry_weak
 		self.str_kill = str_kill
 		self.str_pet = str_pet
 		self.str_walk = str_walk
