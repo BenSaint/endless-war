@@ -332,22 +332,29 @@ async def accept(cmd):
 			else:
 				response = "You accept the challenge! Both of you head out back behind the casino and load a bullet into the gun."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-	return
+
 
 """ Refuse a russian roulette challenge """
 async def refuse(cmd):
 	user = EwUser(member = cmd.message.author)
+
 	if(user.rr_challenger != ""):
 		challenger = EwUser(id_user = user.rr_challenger, id_server = user.id_server)
+
+		user.rr_challenger = ""
+		user.persist()
+
 		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
 			response = "You refuse the challenge, but not before leaving a large puddle of urine beneath you."
 			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-#	else:
-#		challenger.rr_challenger_id = ""
-#		challenger.persist()
-	return
+		else:
+			challenger.rr_challenger = ""
+			challenger.persist()
 
-"""Slimeoids"""
+
+"""
+	Slimeoids
+"""
 
 # play with your slimeoid
 async def playfetch(cmd):
@@ -1570,10 +1577,10 @@ async def slimeoidbattle(cmd):
 		response = "Both players must be in the Battle Arena."
 		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 
-	if challenger_slimeoid.life_state != 2:
+	if challenger_slimeoid.life_state != ewcfg.slimeoid_state_active:
 		response = "You do not have a Slimeoid ready to battle with!"
 	
-	if challengee_slimeoid.life_state != 2:
+	if challengee_slimeoid.life_state != ewcfg.slimeoid_state_active:
 		response = "{} does not have a Slimeoid ready to battle with!".format(member.display_name)
 
 	#Players have to be enlisted
@@ -1603,18 +1610,18 @@ async def slimeoidbattle(cmd):
 		if msg.content == "!accept":
 			accepted = 1
 
+	# Clear challenger field.
+	challenger = EwUser(member = author)
+	challengee = EwUser(member = member)
+
+	challenger.rr_challenger = ""
+	challengee.rr_challenger = ""
+
+	challenger.persist()
+	challengee.persist()
+
 	#Start game
 	if accepted == 1:
-
-		challenger = EwUser(member = author)
-		challengee = EwUser(member = member)
-
-		challenger.rr_challenger = ""
-		challengee.rr_challenger = ""
-
-		challenger.persist()
-		challengee.persist()
-
 		s1name = str(challengee_slimeoid.name)
 		s1weapon = ewcfg.offense_map.get(challengee_slimeoid.weapon)
 		s1armor = ewcfg.defense_map.get(challengee_slimeoid.armor)
@@ -2297,15 +2304,3 @@ async def slimeoidbattle(cmd):
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
 		last_russianrouletted_times[author.id] = time_now - 540
 		last_russianrouletted_times[member.id] = time_now - 540
-
-
-	challenger = EwUser(member = author)
-	challengee = EwUser(member = member)
-
-	challenger.rr_challenger = ""
-	challengee.rr_challenger = ""
-
-	challenger.persist()
-	challengee.persist()
-
-	return
