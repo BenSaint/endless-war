@@ -1809,7 +1809,7 @@ async def slimeoidbattle(cmd):
 		s1hp = s1hpmax
 		s2hp = s2hpmax
 
-		turncounter = 15
+		turncounter = 100
 		while s1hp > 0 and s2hp > 0 and turncounter > 0:
 			# Limit the number of turns in battle.
 			turncounter -= 1
