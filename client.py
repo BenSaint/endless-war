@@ -227,6 +227,7 @@ cmd_map = {
 	ewcfg.cmd_petslimeoid: ewcmd.petslimeoid,
 	ewcfg.cmd_walkslimeoid: ewcmd.walkslimeoid,
 	ewcfg.cmd_observeslimeoid: ewcmd.observeslimeoid
+	ewcfg.cmd_slimeoidbattle: ewcmd.slimeoidbattle
 }
 
 debug = False
