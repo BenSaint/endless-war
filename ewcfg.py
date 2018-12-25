@@ -2846,33 +2846,158 @@ for poi in poi_list:
 
 cosmetic_items_list = [
 	EwCosmeticItem(
-		name = "pleb1",
-		description = "This is a cosmetic test item.",
+		name = "propeller hat",
+		description = "A simple multi-color striped hat with a propeller on top. A staple of every juvenile’s youth.",
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
-		name = "pleb2",
-		description = "This is a cosmetic test item.",
+		name = "mining helmet",
+		description = "A typical construction hard hat with a head lamp strapped onto it.",
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
-		name = "pleb3",
-		description = "This is a cosmetic test item.",
+		name = "pickelhaube",
+		description = "A traditional Prussian spiked helmet from the nineteenth century.",
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
-		name = "pleb4",
-		description = "This is a cosmetic test item.",
+		name = "fedora",
+		description = "A soft brimmed hat with a pinched crown. A classic piece of vintage Americana and a staple of film noir. Not to be confused with the trilby, the fedora is a hat befitting the hardboiled men of it’s time.",
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
-		name = "pat1",
-		description = "This is a cosmetic test item.",
+		name = "baseball cap",
+		description = "A classic baseball cap. A staple of American culture and subsequently freedom from tyranny. If you don’t own at least one of these hats you might as well have hopped the fence from Tijuana last night. Yeah, I’m racist, that going to be a problem for you??",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "backwards baseball cap",
+		description = "A classic baseball cap… with an urban twist! Heh, 'sup dawg? Nothing much, man. You know me, just mining some goddamn slime. Word 'n shit. Hell yeah.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "pirate hat",
+		description = "A swashbuckling buccaneer’s tricorne, stylized with a jolly roger on the front.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "eyepatch",
+		description = "A black eyepatch. A striking accessory for the particularly swashbuckling, chauvinistic, or generally hardboiled of you. Genuine lack of two eyes optional and not recommended.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "cigarette",
+		description = "A single cigarette sticking out of your mouth. You huff these things down in seconds but you’re never seen without one. Everyone thinks you’re really, really cool.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "headband",
+		description = "A headband wrapped tightly around your forehead with long, flowing ends.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "handkerchief",
+		description = "A bandanna tied on your head, creating a simple cap.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "bandanna",
+		description = "A handkerchief tied around your neck and covering your lower face.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "sunglasses",
+		description = "An iconic pair of black sunglasses. Widely recognized as the coolest thing you can wear.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "glasses",
+		description = "A simple pair of eyeglasses. You have perfectly serviceable eyesight, but you are a sucker for the bookworm aesthetic. People with actual issues with sight hate you.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "birthday hat",
+		description = "A striped, multi-color birthday hat. ",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "scarf",
+		description = "A very thick striped wool scarf, in case 110° degrees is too nippy for you.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "witch hat",
+		description = "A pointy, cone-shaped hat with a wide brim. It exudes a spooky essence.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "bomer hat",
+		description = "A thick fur and leather aviator’s hat.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "tuxedo",
+		description = "A classy, semi-formal suit for dashing rogues you can’t help but love. Instant charisma granted upon each !adorn.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "beanie",
+		description = "A simple beanie with a pointed top and a slip stitch brim.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "jester's hat",
+		description = "A ridiculous, multi-colored hat with four bells dangling from protruding sleeves.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "3D glasses",
+		description = "A pair of totally tubular, ridiculously radical 3D glasses. Straight up stereoscopic, dude!",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "necktie",
+		description = "A vintage necktie, reeking of coffee, college, and shaving cream.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "viking helmet",
+		description = "A pointy bronze helmet with two sharp horns jutting out of the base.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "flip flops",
+		description = "A pair of loud, obnoxious flip flops. The price of your comfort is higher than you could ever know.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "fez",
+		description = "A short fez with a tassel attached to the top. Fezzes are cool. Or, are bowties cool? You forget, and frankly you’re embarrassed you remember either one of them.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "bowtie",
+		description = "A quite dapper, neatly tied butterfly bowtie. Bowties are cool. Or, are fezzes cool? You forget, and frankly you’re embarrassed you remember either one of them.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "cowboy",
+		description = "An essential piece of Wild West memorabilia, a bonafide ten gallon Stetson. Befitting the individualistic individuals that made them famous. Yeehaw, and all that stuff.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "Bill's Hat",
+		description = "A military beret with a shield insignia on the front.",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(
-		name = "pat2",
-		description = "This is a cosmetic test item.",
+		name = "wedding ring",
+		description = "A silver ring with a decently large diamond on top. For the person love most in the entire world. <3",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
+		name = "earbuds",
+		description = "A pair of white standard iPod earbuds. Who knows what sort of tasty jams you must be listening to while walking down the street?",
 		rarity = rarity_patrician
 	),
 ]
