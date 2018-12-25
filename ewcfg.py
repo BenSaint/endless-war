@@ -207,6 +207,7 @@ cmd_playfetch = cmd_prefix + 'playfetch'
 cmd_petslimeoid = cmd_prefix + 'petslimeoid'
 cmd_walkslimeoid = cmd_prefix + 'walkslimeoid'
 cmd_observeslimeoid = cmd_prefix + 'observeslimeoid'
+cmd_slimeoidbattle = cmd_prefix + 'slimeoidbattle'
 
 # Slime costs/values
 slimes_onrevive = 20
@@ -3081,10 +3082,13 @@ mobility_list = [
 			"limbs",
 			"a"
 		],
-		str_advance = "\n{active} barrels toward {inactive}!",
-		str_retreat = "\n{active} leaps away from {inactive}!",
+		str_advance = "{active} barrels toward {inactive}!",
+		str_retreat = "{active} leaps away from {inactive}!",
+		str_advance_weak = "{active} limps toward {inactive}!",
+		str_retreat_weak = "{active} limps away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'A'. Through the observation port, you see jointed limbs begin to sprout from the proto-Slimeoid's underside.",
-		str_mobility = "It walks around on legs.",
+		str_mobility = "It walks on legs.",
+		str_defeat = "{slimeoid_name}'s knees buckle under it as it collapses to the ground, defeated!",
 		str_walk = "{slimeoid_name} walks along beside you."
 	),
 	EwMobility( # mobility 2
@@ -3093,10 +3097,13 @@ mobility_list = [
 			"roll",
 			"b"
 		],
-		str_advance = "\n{active} rolls itself toward {inactive}!",
-		str_retreat = "\n{active} rolls away from {inactive}!",
+		str_advance = "{active} rolls itself toward {inactive}!",
+		str_retreat = "{active} rolls away from {inactive}!",
+		str_advance_weak = "{active} rolls itself unsteadily towards {inactive}!",
+		str_retreat_weak = "{active} rolls unsteadily away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'B'. Through the observation port, you see the proto-Slimeoid becoming smoother and rounder.",
 		str_mobility = "It moves by rolling its body around.",
+		str_defeat = "{slimeoid_name} rolls itself over before collapsing on the ground, defeated!",
 		str_walk = "{slimeoid_name} rolls itself along the ground behind you."
 	),
 	EwMobility( # mobility 3
@@ -3107,10 +3114,13 @@ mobility_list = [
 			"tentacles",
 			"c"
 		],
-		str_advance = "\n{active} slithers toward {inactive}!",
-		str_retreat = "\n{active} slithers away from {inactive}!",
+		str_advance = "{active} slithers toward {inactive}!",
+		str_retreat = "{active} slithers away from {inactive}!",
+		str_advance_weak = "{active} drags itself toward {inactive}!",
+		str_retreat_weak = "{active} drags itself away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'C'. Through the observation port, you see masses of writhing flagella begin to protrude from the proto-Slimeoid's extremities.",
 		str_mobility = "It moves by pulling itself around with its flagella.",
+		str_defeat = "{slimeoid_name}'s flagella go limp as it collapses to the ground, defeated!",
 		str_walk = "{slimeoid_name} writhes its way along the ground on its flagella next to you."
 	),
 	EwMobility( # mobility 4
@@ -3120,10 +3130,13 @@ mobility_list = [
 			"jet",
 			"d"
 		],
-		str_advance = "\n{active} propels itself toward {inactive}!",
-		str_retreat = "\n{active} propels itself away from {inactive}!",
+		str_advance = "{active} propels itself toward {inactive}!",
+		str_retreat = "{active} propels itself away from {inactive}!",
+		str_advance_weak = "{active} sputters towards {inactive}!",
+		str_retreat_weak = "{active} sputters away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'D'. Through the observation port, you see openings forming in the proto-Slimeoid's body, which begin to vent fluid.",
 		str_mobility = "It moves via jet-propulsion by squirting fluids.",
+		str_defeat = "{slimeoid_name} fires its fluid jets wildly in a panic until it completely deflates and collapses, defeated!",
 		str_walk = "{slimeoid_name} tries to keep pace with you, spurting jets of fluid to propel itself along behind you."
 	),
 	EwMobility( # mobility 5
@@ -3132,10 +3145,13 @@ mobility_list = [
 			"undulate",
 			"e"
 		],
-		str_advance = "\n{active} undulates its way toward {inactive}!",
-		str_retreat = "\n{active} undulates itself away from {inactive}!",
+		str_advance = "{active} undulates its way toward {inactive}!",
+		str_retreat = "{active} undulates itself away from {inactive}!",
+		str_advance_weak = "{active} heaves itself slowly toward {inactive}!",
+		str_retreat_weak = "{active} heaves itself slowly away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'E'. Through the observation port, you see the base of the proto-Slimeoid's body widen and flatten out.",
 		str_mobility = "It moves like a slug, undulating its underside along the ground.",
+		str_defeat = "{slimeoid_name} stops moving entirely and collapses to the ground, defeated!",
 		str_walk = "{slimeoid_name} glacially drags its way along behind you in its slug-like way. Your walk ends up taking fucking forever."
 	),
 	EwMobility( # mobility 5
@@ -3144,10 +3160,13 @@ mobility_list = [
 			"gas",
 			"f"
 		],
-		str_advance = "\n{active} floats toward {inactive}!",
-		str_retreat = "\n{active} floats away from {inactive}!",
+		str_advance = "{active} floats toward {inactive}!",
+		str_retreat = "{active} floats away from {inactive}!",
+		str_advance_weak = "{active} bobs unsteadily through the air towards {inactive}!",
+		str_retreat_weak = "{active} bobs unsteadily away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'F'. Through the observation port, you see the of the proto-Slimeoid's body start to inflate itself.",
 		str_mobility = "It floats in the air with the use of super-low-density gas bladders.",
+		str_defeat = "{slimeoid_name} spins wildly in the air before careening to the ground, defeated!",
 		str_walk = "{slimeoid_name} bobs along next to you on its leash like a balloon."
 	),
 	EwMobility( # mobility 5
@@ -3156,10 +3175,13 @@ mobility_list = [
 			"fly",
 			"g"
 		],
-		str_advance = "\n{active} darts through the air toward {inactive}!",
-		str_retreat = "\n{active} flaps away from {inactive}!",
+		str_advance = "{active} darts through the air toward {inactive}!",
+		str_retreat = "{active} flaps away from {inactive}!",
+		str_advance_weak = "{active} flaps its way doggedly towards {inactive}!",
+		str_retreat_weak = "{active} flaps doggedly away from {inactive}!",
 		str_create = "You press a button on the mobility console labelled 'G'. Through the observation port, you see the proto-slimeoid start to sprout wide, flat, thin appendages.",
 		str_mobility = "It moves by making short flights through the air with its wings.",
+		str_defeat = "{slimeoid_name} flaps helplessly as it spins out and crashes into the ground, defeated!",
 		str_walk = "{slimeoid_name} flaps along through the air next to you, occasionally perching in trees or windowsills along the route."
 	)
 ]
@@ -3190,7 +3212,9 @@ offense_list = [
 			"blade",
 			"a"
 		],
-		str_attack = "\n{active} slashes at {inactive} with its blades!",
+		str_attack = "{active} slashes {inactive} with its blades!",
+		str_attack_weak = "{active} desperately swipes at {inactive} with its blades!",
+		str_attack_coup = "{active} slices deep into {inactive}! Green goo splatters onto the ground from the wound!!",
 		str_create = "You press a button on the weapon console labelled 'A'. Through the observation port, you see long, sharp protrusions begin to form on the proto-Slimeoid's extremities.",
 		str_offense = "It slices foes with retractible blades.",
 		str_observe = "{slimeoid_name} is sharpening its retractible blades on a stone nearby."
@@ -3204,7 +3228,9 @@ offense_list = [
 			"crunching",
 			"b"
 		],
-		str_attack = "\n{active} sinks its teeth into {inactive}!",
+		str_attack = "{active} sinks its teeth into {inactive}!",
+		str_attack_weak = "{active} gnashes its teeth, biting {inactive} wherever it can!",
+		str_attack_coup = "{active} bites hard into {inactive}, tearing off a piece and chewing it hungrily!",
 		str_create = "You press a button on the weapon console labelled 'B'. Through the observation port, you see large bony structures resembling teeth forming in the proto-Slimeoid's... mouth?",
 		str_offense = "It can bite foes with deadly fangs.",
 		str_observe = "{slimeoid_name} is idly picking its sharp teeth."
@@ -3221,7 +3247,9 @@ offense_list = [
 			"constriction",
 			"c"
 		],
-		str_attack = "\n{active} grabs {} and squeezes hard!",
+		str_attack = "{active} grabs {inactive} and squeezes hard!",
+		str_attack_weak = "{active} grabs at {inactive}, trying to fend it off!",
+		str_attack_coup = "{active} grips {inactive} like a vice, squeezing until you hear a sickening pop!",
 		str_create = "You press a button on the weapon console labelled 'C'. Through the observation port, you see the proto-Slimeoid's limbs becoming thicker and stronger, beginning to twist and writhe, seeking something to grip onto.",
 		str_offense = "It can grab and crush its foes with its limbs.",
 		str_observe = "{slimeoid_name} picks up a rock off the ground and squeezes it like a stress ball."
@@ -3239,7 +3267,9 @@ offense_list = [
 			"crushing",
 			"d"
 		],
-		str_attack = "\n{active} bashes {} with its limbs!",
+		str_attack = "{active} bashes {inactive} with its limbs!",
+		str_attack_weak = "{active} flails its limbs to strike back at {inactive}!",
+		str_attack_coup = "{active} winds back and smashes {inactive}, dealing a knockout blow!",
 		str_create = "You press a button on the weapon console labelled 'D'. Through the observation port, you see the ends of the proto-Slimeoid's limbs becoming harder and heavier.",
 		str_offense = "It can smash foes with one or more of its limbs.",
 		str_observe = "{slimeoid_name} spots an insect on the ground nearby and smashes it."
@@ -3251,7 +3281,9 @@ offense_list = [
 			"spear",
 			"e"
 		],
-		str_attack = "\n{active} skewers {} with its spikes!",
+		str_attack = "{active} skewers {inactive} with its spikes!",
+		str_attack_weak = "{active} tries to defend itself from {inactive} with its spikes!",
+		str_attack_coup = "{active} punctures {inactive} with its spikes, opening a hole that oozes green fluid all over the ground!",
 		str_create = "You press a button on the weapon console labelled 'E'. Through the observation port, you see hard spikes forming out of the congealing slime biomatter.",
 		str_offense = "It can puncture its enemies with the spikes on its body.",
 		str_observe = "{slimeoid_name} carefully adjusts its position so as not to prick itself with its own spikes."
@@ -3262,7 +3294,9 @@ offense_list = [
 			"strike",
 			"f"
 		],
-		str_attack = "\n{active} unleashes a pent-up electrical discharge into {}!",
+		str_attack = "{active} unleashes a pent-up electrical discharge into {inactive}!",
+		str_attack_weak = "{active} sparks and flickers with electricity, shocking {inactive}!",
+		str_attack_coup = "{active} charges up and sends a bolt of electricity through {inactive}, making it sizzle!",
 		str_create = "You press a button on the weapon console labelled 'F'. Through the observation port, you see the proto-Slimeoid begin to spark with small electrical discharges.",
 		str_offense = "It crackles with stored electrical energy.",
 		str_observe = "A fly flies a little too near {slimeoid_name} and is zapped with a tiny bolt of electricity, killing it instantly."
@@ -3273,7 +3307,9 @@ offense_list = [
 			"bodyslam",
 			"g"
 		],
-		str_attack = "\n{active} slams its entire body into {}!",
+		str_attack = "{active} slams its entire body into {inactive}!",
+		str_attack_weak = "{active} flails itself back against {inactive}'s onslaught!",
+		str_attack_coup = "{active} hurls its whole weight into {inactive}, crushing it to the ground!",
 		str_create = "You press a button on the weapon console labelled 'G'. Through the observation port, you see the ends of the proto-Slimeoid's congealing body condense, becoming heavier and more robust.",
 		str_offense = "It can slam its body into its foes with tremendous force.",
 		str_observe = "{slimeoid_name} shifts its weight back and forth before settling down in a kind of sumo-squat position."
@@ -3421,7 +3457,9 @@ special_list = [
 			"poison",
 			"a"
 		],
-		str_special_attack = "\n{active} spits acidic ooze all over {inactive}!",
+		str_special_attack = "{active} spits acidic ooze onto {inactive}!",
+		str_special_attack_weak = "{active} coughs and spurts up a sputtering spray of acid at {inactive}!",
+		str_special_attack_coup = "{active} vomits a torrent of acid onto {inactive}, deteriorating it to the point that it can no longer fight!",
 		str_create = "You press a button on the special attack console labelled 'A'. Through the observation port, you see the proto-Slimeoid's body begin to excrete a foul, toxic ooze.",
 		str_special = "It can spit acidic ooze.",
 		str_observe = "A bit of acidic fluid drips from {slimeoid_name} onto the ground, where it smokes and sizzles."
@@ -3434,7 +3472,9 @@ special_list = [
 			"radiation",
 			"b"
 		],
-		str_special_attack = "\n{active} sears {inactive} with a blast of radiation!",
+		str_special_attack = "{active} sears {inactive} with a blast of radiation!",
+		str_special_attack_weak = "{active} starts to flicker before firing an unsteady beam of light at {inactive}!",
+		str_special_attack_coup = "{active} blasts {inactive} with a beam of green energy, searing it all over its body!",
 		str_create = "You press a button on the special attack console labelled 'B'. Through the observation port, you see the proto-Slimeoid's body begin to glow with energy as the gestation vat's built-in Geiger Counter begins to click frantically.",
 		str_special = "It can fire beams of radiation.",
 		str_observe = "{slimeoid_name} suddenly glows with radioactive energy. Best not to look directly at it until it settles down..."
@@ -3448,7 +3488,9 @@ special_list = [
 			"quills",
 			"c"
 		],
-		str_special_attack = "\n{active} fires a volley of quills into {inactive}!",
+		str_special_attack = "{active} fires a volley of quills into {inactive}!",
+		str_special_attack_weak = "{active} desperately fires a few of its last quills into {inactive}!",
+		str_special_attack_coup = "{active} fires a rapid burst of sharp quills into {inactive}, filling it like a pincushion!",
 		str_create = "You press a button on the special attack console labelled 'C'. Through the observation port, you see the proto-Slimeoid's congealing body suddenly protruding with long, pointed spines, which quickly retract back into it.",
 		str_special = "It can fire sharp quills.",
 		str_observe = "{slimeoid_name} shudders and ejects a few old quills onto the ground. You can see new ones already growing in to replace them."
@@ -3461,7 +3503,9 @@ special_list = [
 			"hurl",
 			"d"
 		],
-		str_special_attack = "\n{active} picks up a nearby heavy object and hurls it into {inactive}!",
+		str_special_attack = "{active} picks up a nearby {object} and hurls it into {inactive}!",
+		str_special_attack_weak = "{active} unsteadily hefts a nearby {object} before throwing it into {inactive}!",
+		str_special_attack_coup = "{active} hurls a {object}, which smashes square into {inactive}, knocking it to the ground! A direct hit!",
 		str_create = "You press a button on the special attack console labelled 'D'. Through the observation port, you see the proto-Slimeoid's limbs become more articulate.",
 		str_special = "It can hurl objects at foes.",
 		str_observe = "{slimeoid_name} is idly picking up stones and seeing how far it can toss them."
@@ -3473,7 +3517,9 @@ special_list = [
 			"psychic",
 			"e"
 		],
-		str_special_attack = "\n{active} focuses on {inactive}... {inactive} convulses in pain!",
+		str_special_attack = "{active} focuses on {inactive}... {inactive} convulses in pain!",
+		str_special_attack_weak = "{active}'s cranium bulges and throbs! {inactive} convulses!",
+		str_special_attack_coup = "{active} emanates a strange static sound as {inactive} is inexplicably rendered completely unconscious!",
 		str_create = "You press a button on the special attack console labelled 'E'. You momentarily experience an uncomfortable sensation, sort of like the feeling you get when you know there's a TV on in the room even though you can't see it.",
 		str_special = "It can generate harmful frequencies with its brainwaves.",
 		str_observe = "You momentarily black out. When you come to, your nose is bleeding. {slimeoid_name} tries to look innocent."
@@ -3486,7 +3532,9 @@ special_list = [
 			"breathe",
 			"f"
 		],
-		str_special_attack = "\n{active} ejects a stream of fluid which ignites in the air, burning {inactive}!",
+		str_special_attack = "{active} ejects a stream of fluid which ignites in the air, burning {inactive}!",
+		str_special_attack_weak = "{active} fires an unsteady, sputtering stream of fluid that ignites and singes {inactive}!",
+		str_special_attack_coup = "{active} empties its fluid bladders in a final burst of liquid! {inactive} is completely engulfed in the conflagration!",
 		str_create = "You press a button on the special attack console labelled 'F'. Through the observation port, you see fluid bladders forming deep under the still-forming proto-Slimeoid's translucent skin.",
 		str_special = "It can fire a stream of pyrophoric fluid at its foes.",
 		str_observe = "A bit of fluid drips from {slimeoid_name} onto the floor and ignites, but you manage to smother the small flame quickly before it spreads."
@@ -3498,7 +3546,9 @@ special_list = [
 			"web",
 			"g"
 		],
-		str_special_attack = "\n{active} fires a stream of sticky webbing onto {inactive}!",
+		str_special_attack = "{active} fires a stream of sticky webbing onto {inactive}!",
+		str_special_attack_weak = "{active} is running out of webbing! It shoots as much as it can onto {inactive}!",
+		str_special_attack_coup = "{active} gathers itself up before spurting a blast of webbing that coats {inactive}'s body, completely ensnaring it!",
 		str_create = "You press a button on the special attack console labelled 'G'. Through the observation port, you see large glands forming near the surface of the still-forming proto-Slimeoid's translucent skin.",
 		str_special = "It can spin webs and shoot webbing fluid to capture prey.",
 		str_observe = "{slimeoid_name} is over in the corner, building itself a web to catch prey in."
@@ -3534,6 +3584,11 @@ brain_list = [
 		str_walk = "You wrestle {slimeoid_name} down and force a leash onto it, as it angrily snarls and hisses at you in protest.",
 		str_kill = "{slimeoid_name} howls with savage delight at the bloodshed!!",
 		str_death = "{slimeoid_name} howls in fury at its master's death! It tears away in a blind rage!",
+		str_victory = "{slimeoid_name} roars in triumph!!",
+		str_battlecry = "{slimeoid_name} roars with bloodlust!! ",
+		str_battlecry_weak = "{slimeoid_name} is too breathless to roar, but is still filled with bloodlust!! ",
+		str_movecry = "{slimeoid_name} snarls at its prey! " ,
+		str_movecry_weak = "{slimeoid_name}  hisses with frustrated rage! ",
 		str_revive = "{slimeoid_name} howls at your return, annoyed to have been kept waiting.",
 		str_spawn = "{slimeoid_name} shakes itself off to get rid of some excess gestation fluid, then starts to hiss at you. Seems like a real firecracker, this one.",
 		str_dissolve = "{slimeoid_name} hisses and spits with fury as you hold it over the SlimeCorp Dissolution Vats. Come on, get in there...\n{slimeoid_name} claws at you, clutching at the edge of the vat, screeching with rage even as you hold its head under the surface and wait for the chemical soup to do its work. At last, it stops fighting.\n\n{slimeoid_name} is no more."
@@ -3551,6 +3606,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} is so excited for its walk, it can barely hold still enough to let you put the leash on it!",
 		str_kill = "{slimeoid_name} gives a bestial woop of excitement for your victory!",
 		str_death = "{slimeoid_name} gives a wail of grief at its master's death, streaking away from the scene.",
+		str_victory = "{slimeoid_name} woops with delight at its victory!",
+		str_battlecry = "{slimeoid_name} lets out a loud war woop! " ,
+		str_battlecry_weak = "{slimeoid_name} is determined not to lose! ",
+		str_movecry = "{slimeoid_name} is thrilled by the battle! " ,
+		str_movecry_weak = "{slimeoid_name} seems a little less thrilled now... ",
 		str_revive = "{slimeoid_name} is waiting patiently downtown when you return from your time as a corpse. It knew you'd be back!",
 		str_spawn = "{slimeoid_name} gets up off the ground slowly at first, but then it notices you and leaps into your arms. It sure seems glad to see you!",
 		str_dissolve = "You order {slimeoid_name} into the Dissolution Vats. It's initially confused, but realization of what you're asking slowly crawks across its features.\nIt doesn't want to go, but after enough stern commanding, it finally pitches itself into the toxic sludge, seemingly too heartbroken to fear death.\n\n{slimeoid_name} is no more."
@@ -3568,6 +3628,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} holds still as you place the leash on it. It regards the leash, seemingly pontificating.",
 		str_kill = "{slimeoid_name} regards the corpse of your former adversary with an unknowable expression.",
 		str_death = "{slimeoid_name} stares at the killer, memorizing their face before fleeing the scene.",
+		str_victory = "{slimeoid_name} silently turns away from its defeated opponent.",
+		str_battlecry = "{slimeoid_name} carefully regards its opponent. ",
+		str_battlecry_weak = "{slimeoid_name} tries to steady itself. ",
+		str_movecry = "{slimeoid_name} seems to be getting impatient. " ,
+		str_movecry_weak = "{slimeoid_name} is losing its composure just a little! ",
 		str_revive = "{slimeoid_name} is downtown when you return from the sewers. You find it staring silently up at ENDLESS WAR.",
 		str_spawn = "{slimeoid_name} regards you silently from the floor. You can't tell if it likes you or not, but it starts to follow you regardless.",
 		str_dissolve = "You pick up {slimeoid_name} and hurl it into the SlimeCorp Dissolution Vats before it starts to suspect anything. It slowly sinks into the chemical soup, kind of like Arnold at the end of Terminator 2, only instead of giving you a thumbs-up, it stares at you with an unreadable expression. Betrayal? Confusion? Hatred? Yeah, probably.\n\n{slimeoid_name} is no more."
@@ -3585,6 +3650,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} hardly seems to notice you fastening it with a leash.",
 		str_kill = "{slimeoid_name} wasn't paying attention and missed the action.",
 		str_death = "{slimeoid_name} is startled to realize its master has died. It blinks in confusion before fleeing.",
+		str_victory = "{slimeoid_name} keeps attacking for a moment before realizing it's already won.",
+		str_battlecry = "{slimeoid_name} is weighing its options! ",
+		str_battlecry_weak = "{slimeoid_name} is desperately trying to come up with a plan! ",
+		str_movecry = "{slimeoid_name} Isn't really feeling this. " ,
+		str_movecry_weak = "{slimeoid_name} tries to buy itself some time to think! ",
 		str_revive = "{slimeoid_name} is exactly where you left it when you died.",
 		str_spawn = "{slimeoid_name} flops over on the floor and stares up at you. Its gaze wanders around the room for a while before it finally picks itself up to follow you.",
 		str_dissolve = "You lead {slimeoid_name} up to the edge of the Dissolution Vats and give a quick 'Hey, look, a distraction!'. {slimeoid_name} is immediately distracted and you shove it over the edge. Landing in the vat with a sickening *gloop* sound, it sinks quickly under the fluid surface, flailing madly in confusion and desperation.\n\n{slimeoid_name} is no more."
@@ -3602,6 +3672,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} shivers in place as you're fastening the leash, then starts to pull and tug at it, seemingly perturbed.",
 		str_kill = "{slimeoid_name} peers out from behind its master, hoping the violence is over.",
 		str_death = "{slimeoid_name} is overcome with terror, skittering away from the killer in a mad panic!",
+		str_victory = "{slimeoid_name} is deeply relieved that the battle is over.",
+		str_battlecry = "{slimeoid_name} chitters fearfully! ",
+		str_battlecry_weak = "{slimeoid_name} squeals in abject terror! ",
+		str_movecry = "{slimeoid_name} makes a break for it! " ,
+		str_movecry_weak = "{slimeoid_name} is in a full-blown panic! ",
 		str_revive = "{slimeoid_name} peeks out from behind some trash cans before rejoining you. It seems relieved to have you back.",
 		str_spawn = "{slimeoid_name}'s eyes dart frantically around the room. Seeing you, it darts behind you, as if for cover from an unknown threat.",
 		str_dissolve = "{slimeoid_name} is looking around the lab nervously, obviously unnerved by the Slimeoid technology. Its preoccupation makes it all too easy to lead it to the Dissolution Vats and kick its legs out from under it, knocking it in. As it falls and hits the solvent chemicals, it wails and screeches in shock and terror, but the noise eventually quiets as it dissolves into a soft lump, then disintegrates altogether.\n\n{slimeoid_name} is no more."
@@ -3619,6 +3694,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} exasperatedly lets you fit it with a leash for a walk.",
 		str_kill = "{slimeoid_name} rifles through your victim's pockets for food.",
 		str_death = "{slimeoid_name} rifles through its dead master's pockets for whatever it can find before slinking away.",
+		str_victory = "{slimeoid_name} shakes itself off after the battle.",
+		str_battlecry = "{slimeoid_name} makes its move! ",
+		str_battlecry_weak = "{slimeoid_name}, backed into a corner, tries to counterattack! ",
+		str_movecry = "{slimeoid_name} decides on a tactical repositioning. " ,
+		str_movecry_weak = "{slimeoid_name} thinks it'd better try something else, and fast! ",
 		str_revive = "{slimeoid_name} starts following you around again not long after you have returned from the dead.",
 		str_spawn = "{slimeoid_name} picks itself up off the floor and regards you coolly. It seems as if it's gauging your usefulness.",
 		str_dissolve = "{slimeoid_name} eyes you suspiciously as you approach the Dissolution Vats. It's on to you. Before it has a chance to bolt, you grab it, hoist it up over your head, and hurl it into the chemical soup. {slimeoid_name} screeches in protest, sputtering and hissing as it thrashes around in the vat, but the chemicals work quickly and it soon dissolves into nothing.\n\n{slimeoid_name} is no more."
@@ -3636,6 +3716,11 @@ brain_list = [
 		str_walk = "{slimeoid_name} lets you put its leash on it, but immediately starts to trip over it and get tangled in it.",
 		str_kill = "{slimeoid_name} seems unsure of whether to celebrate the victory or to mourn the decline of your civilization into rampant youth violence.",
 		str_death = "{slimeoid_name} starts to approach its master's body, then changes its mind and starts to run away. It trips over itself and falls on its way out.",
+		str_victory = "{slimeoid_name} looks around, apparently shocked that it somehow won.",
+		str_battlecry = "{slimeoid_name} decides to actually do something for once! ",
+		str_battlecry_weak = "{slimeoid_name} decides to actually do something for once, now that it's probably too late.",
+		str_movecry = "{slimeoid_name} is moving around aimlessly! " ,
+		str_movecry_weak = "{slimeoid_name} is limping around aimlessly! ",
 		str_revive = "{slimeoid_name} wanders by, seemingly by accident, but thinks it probably ought to start following you again.",
 		str_spawn = "{slimeoid_name} starts to pick itself up off the floor, then changes its mind and lies back down. Then it gets up again. Lies down again. Up. Down. Up. Ok, this time it stays up.",
 		str_dissolve = "{slimeoid_name} is perplexed by the laboratory machinery. Taking advantage of its confusion, you point it towards the Dissolution Vats, and it gormlessly meanders up the ramp and over the edge. You hear a gloopy SPLOOSH sound, then nothing. You approach the vats and peer over the edge, but see no trace of your former companion.\n\n{slimeoid_name} is no more."
@@ -3655,3 +3740,27 @@ for brain in brain_list:
 
 	for alias in brain.alias:
 		brain_map[alias] = brain
+
+# Things a slimeoid might throw
+thrownobjects_list = [
+	"sewer cap",
+	"boulder",
+	"chunk of broken asphalt",
+	"broken fire hydrant",
+	"SlimeCorp-Brand Slime Containment Vessel (tm)",
+	"piece of sheet metal",
+	"burning tire",
+	"hapless bystander",
+	"completely normal small mammal",
+	"heap of broken glass",
+	"stereotypical nautical anchor",
+	"piece of an iron girder",
+	"pile of lumber",
+	"pile of bricks",
+	"unrecognizably decayed animal carcass",
+	"very fortuitously abandoned javelin",
+	"large rock",
+	"small motor vehicle",
+	"chunk of broken concrete",
+	"piece of rusted scrap metal"
+]
