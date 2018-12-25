@@ -1791,17 +1791,17 @@ async def slimeoidbattle(cmd):
 		player = author
 
 		response = "**{} sends {} out into the Battle Arena!**".format(author.display_name, s2name)
-		await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+		await cmd.client.send_message(cmd.message.channel, response)
 		await asyncio.sleep(1)
 		response = "**{} sends {} out into the Battle Arena!**".format(member.display_name, s1name)
-		await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+		await cmd.client.send_message(cmd.message.channel, response)
 		await asyncio.sleep(1)
 		response = "\nThe crowd erupts into cheers! The battle between {} and {} has begun! :crossed_swords:".format(s1name, s2name)
 #		response += "\n{} {} {} {} {} {}".format(str(s1moxie),str(s1grit),str(s1chutzpah),str(challengee_slimeoid.weapon),str(challengee_slimeoid.armor),str(challengee_slimeoid.special))
 #		response += "\n{} {} {} {} {} {}".format(str(s2moxie),str(s2grit),str(s2chutzpah),str(challenger_slimeoid.weapon),str(challenger_slimeoid.armor),str(challenger_slimeoid.special))
 #		response += "\n{}, {}".format(str(challengee_resistance),str(challengee_weakness))
 #		response += "\n{}, {}".format(str(challenger_resistance),str(challenger_weakness))
-		await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+		await cmd.client.send_message(cmd.message.channel, response)
 		await asyncio.sleep(3)
 			
 		s1hpmax = 50 + (challengee_slimeoid.level * 20)
@@ -1847,7 +1847,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_battlecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -1859,7 +1859,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_movecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -1906,7 +1906,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challenger_weakness != "" or s2hp > 0:
@@ -1959,7 +1959,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_battlecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -1971,7 +1971,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_movecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2000,7 +2000,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challenger_resistance != "" or s2hp > 0:
@@ -2072,7 +2072,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_battlecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -2084,7 +2084,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_movecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2131,7 +2131,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challengee_weakness != "" or s1hp > 0:
@@ -2183,7 +2183,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_battlecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -2195,7 +2195,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_movecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2224,7 +2224,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+						await cmd.client.send_message(cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challengee_resistance != "" or s2hp > 0:
@@ -2266,7 +2266,7 @@ async def slimeoidbattle(cmd):
 				
 			# Send the response to the player.
 			if s1hp > 0 and s2hp > 0:
-				await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+				await cmd.client.send_message(cmd.message.channel, response)
 				await asyncio.sleep(2)
 
 		if s1hp <= 0:
@@ -2277,10 +2277,10 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s2brain.str_victory.format(
 				slimeoid_name=s2name
 			)
-			await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+			await cmd.client.send_message(cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challenger_slimeoid.name, challenger_slimeoid.name, author.display_name)
-			await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+			await cmd.client.send_message(cmd.message.channel, response)
 			await asyncio.sleep(2)
 		else:
 			response = "\n" + s2legs.str_defeat.format(
@@ -2290,15 +2290,15 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s1brain.str_victory.format(
 				slimeoid_name=s1name
 			)
-			await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+			await cmd.client.send_message(cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challengee_slimeoid.name, challengee_slimeoid.name, member.display_name)
-			await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+			await cmd.client.send_message(cmd.message.channel, response)
 			await asyncio.sleep(2)
 
 		# Send the response to the player.
 	#	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
-	#	await cmd.client.send_message(cmd.message.channel, ewutils.altformatMessage(member, response))
+	#	await cmd.client.send_message(cmd.message.channel, response)
 	else:
 		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
