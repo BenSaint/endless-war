@@ -635,7 +635,7 @@ async def give(cmd):
 			)
 
 			if len(food_items) >= math.ceil(EwUser(member = recipient).slimelevel / ewcfg.max_food_in_inv_mod):
-				response = "They can't carry any more food items than that."
+				response = "They can't carry any more food items."
 				return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 		if item_sought.get('soulbound'):
