@@ -1809,7 +1809,11 @@ async def slimeoidbattle(cmd):
 		s1hp = s1hpmax
 		s2hp = s2hpmax
 
-		while s1hp > 0 and s2hp > 0:
+		turncounter = 15
+		while s1hp > 0 and s2hp > 0 and turncounter > 0:
+			# Limit the number of turns in battle.
+			turncounter -= 1
+
 			response = ""
 			battlecry = random.randrange(1,3,1)
 			thrownobject = ewcfg.thrownobjects_list[random.randrange(len(ewcfg.thrownobjects_list))]
