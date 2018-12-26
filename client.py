@@ -38,9 +38,11 @@ import ewraidboss
 import ewleaderboard
 import ewcosmeticitem
 import ewslimeoid
+import ewdistrict
 
 from ewitem import EwItem
 from ew import EwUser, EwMarket
+from ewdistrict import EwDistrict
 
 ewutils.logMsg('Starting up...')
 
@@ -287,6 +289,9 @@ async def on_ready():
 		# Update server data in the database
 		ewserver.server_update(server = server)
 
+		# store the list of channels in an ewutils field
+		ewcfg.update_server_list(server = server)
+
 		# Grep around for channels
 		ewutils.logMsg("connected to server: {}".format(server.name))
 		for channel in server.channels:
@@ -299,6 +304,15 @@ async def on_ready():
 					channels_stockmarket[server.id] = channel
 					ewutils.logMsg("• found channel for stock exchange: {}".format(channel.name))
 
+		# create all the districts in the database
+		for poi in ewcfg.capturable_districts:
+			# call the constructor to create an entry if it doesnt exist yet
+			dist = EwDistrict(id_server = server.id, district = poi)
+			# change the ownership to the faction that's already in control to initialize topic names
+			await dist.change_ownership(new_owner = dist.controlling_faction, actor = "init", client = client)
+
+		asyncio.ensure_future(ewdistrict.capture_tick_loop(id_server = server.id))
+
 	try:
 		ewutils.logMsg('Creating message queue directory.')
 		os.mkdir(ewcfg.dir_msgqueue)
@@ -306,6 +320,8 @@ async def on_ready():
 		ewutils.logMsg('Message queue directory already exists.')
 
 	ewutils.logMsg('Ready.')
+
+	ewcfg.set_client(client)
 
 
 	"""
@@ -417,6 +433,8 @@ async def on_ready():
 
 					# Decrease inebriation for all players above min (0).
 					ewutils.pushdownServerInebriation(id_server = server.id)
+
+					await ewdistrict.give_kingpins_slime_and_decay_capture_points(id_server = server.id)
 
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:
