@@ -309,7 +309,10 @@ async def on_ready():
 			# call the constructor to create an entry if it doesnt exist yet
 			dist = EwDistrict(id_server = server.id, district = poi)
 			# change the ownership to the faction that's already in control to initialize topic names
-			await dist.change_ownership(new_owner = dist.controlling_faction, actor = "init", client = client)
+			try:
+				await dist.change_ownership(new_owner = dist.controlling_faction, actor = "init", client = client)
+			except:
+				ewutils.logMsg('Could not change ownership for {} to "{}".'.format(poi, dist.controlling_faction))
 
 		asyncio.ensure_future(ewdistrict.capture_tick_loop(id_server = server.id))
 
