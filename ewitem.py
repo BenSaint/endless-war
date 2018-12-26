@@ -604,7 +604,7 @@ def soulbind(id_item):
 	item = EwItem(id_item = id_item)
 	item.soulbound = True
 	item.persist()
-=======
+
 """
 	Find a single item in the player's inventory (returns either a (non-EwItem) item or None)
 """
