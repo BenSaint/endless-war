@@ -153,7 +153,7 @@ class EwItem:
 				self.id_server,
 				self.id_user,
 				self.item_type,
-				self.time_expir if self.time_expir is not None else self.item_props['time_expir'],
+				self.time_expir if self.time_expir is not None else self.item_props['time_expir'] if 'time_expir' in self.item_props.keys() else 0,
 				self.stack_max,
 				self.stack_size,
 				(1 if self.soulbound else 0)
@@ -336,15 +336,25 @@ def item_loot(
 		ewutils.logMsg("Attempting to loot {} poudrins.".format(poudrins_looted))
 		ewstats.change_stat(id_server = member.server.id, id_user = id_user_target, metric = ewcfg.stat_poudrins_looted, n = poudrins_looted)
 
-		# Re-assign lootable items to looting user
-		cursor.execute("UPDATE items SET {id_user} = %s WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0".format(
+		# only drop poudrins and adorned cosmetics
+		# there's probably a more elegant way of doing this but this works
+		query = "UPDATE items, items_prop SET {id_user} = %s WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0 AND items_prop.id_item = items.id_item AND ({item_type} = %s OR"" \
+			""({item_type} = %s AND {name} = 'adorned' AND {value} = 'true'))".format(
 			id_user = ewcfg.col_id_user,
 			id_server = ewcfg.col_id_server,
 			soulbound = ewcfg.col_soulbound,
-		), (
+			item_type = ewcfg.col_item_type,
+			name = ewcfg.col_name,
+			value = ewcfg.col_value
+		)
+
+		# Re-assign lootable items to looting user
+		cursor.execute(query, (
 			id_user_target,
 			member.server.id,
-			member.id
+			member.id,
+			ewcfg.it_slimepoudrin,
+			ewcfg.it_cosmetic
 		))
 
 		conn.commit()
@@ -553,7 +563,11 @@ async def item_use(cmd):
 			response = "Use which item? (check **!inventory**)"
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
-
+	else:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+			cmd.message.author,
+			'Use which item? (check **!inventory**)'
+		))
 
 """
 	Assign an existing item to a player
@@ -582,6 +596,14 @@ def give_item(
 
 	return
 
+
+	return True
+
+
+def soulbind(id_item):
+	item = EwItem(id_item = id_item)
+	item.soulbound = True
+	item.persist()
 
 """
 	Find a single item in the player's inventory (returns either a (non-EwItem) item or None)

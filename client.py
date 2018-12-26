@@ -15,6 +15,7 @@ import subprocess
 import traceback
 import re
 import os
+import shlex
 
 import ewfarm
 
@@ -35,6 +36,7 @@ import ewmap
 import ewrolemgr
 import ewraidboss
 import ewleaderboard
+import ewcosmeticitem
 import ewslimeoid
 
 from ewitem import EwItem
@@ -181,6 +183,11 @@ cmd_map = {
 	ewcfg.cmd_sow: ewfarm.sow,
 	ewcfg.cmd_reap: ewfarm.reap,
 
+	#cosmetics
+	ewcfg.cmd_smelt: ewcosmeticitem.smelt,
+	ewcfg.cmd_adorn: ewcosmeticitem.adorn,
+	ewcfg.cmd_create: ewkingpin.create,
+  
 	#give an item to another player
 	ewcfg.cmd_give: ewitem.give,
 
@@ -508,7 +515,11 @@ async def on_message(message):
 		"""
 
 		# tokenize the message. the command should be the first word.
-		tokens = message.content.split(' ')
+		try:
+			tokens = shlex.split(message.content)  # it's split with shlex now because shlex regards text within quotes as a single token
+		except:
+			tokens = message.content.split(' ')  # if splitting via shlex doesnt work (odd number of quotes), use the old splitting method so it doesnt give an exception
+
 		tokens_count = len(tokens)
 		cmd = tokens[0].lower()
 
@@ -571,7 +582,7 @@ async def on_message(message):
 
 		# FIXME debug
 		# Test item creation
-		elif debug == True and cmd == '!create':
+		elif debug == True and cmd == '!createtestitem':
 			item_id = ewitem.item_create(
 				item_type = 'medal',
 				id_user = message.author.id,
@@ -590,6 +601,33 @@ async def on_message(message):
 			item = EwItem(id_item = item_id)
 
 			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
+
+		# Creates a poudrin
+		elif debug == True and cmd == '!createpoudrin':
+			item_id = ewitem.item_create(
+				item_type = ewcfg.it_slimepoudrin,
+				id_user = message.author.id,
+				id_server = message.server.id
+			)
+
+			ewutils.logMsg('Created item: {}'.format(item_id))
+			item = EwItem(id_item = item_id)
+			item.persist()
+
+			item = EwItem(id_item = item_id)
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, "Poudrin created."))
+
+		# Gives the user some slime
+		elif debug == True and cmd == '!getslime':
+			user_data = EwUser(member = message.author)
+
+			user_data.change_slimes(n = 10000)
+			user_data.persist()
+
+			await client.send_message(message.channel, ewutils.formatMessage(message.author, "You receive 10,000 slime."))
+
+
 
 		# FIXME debug
 		# Test item deletion

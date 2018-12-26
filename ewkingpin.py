@@ -1,7 +1,7 @@
 """
 	Commands for kingpins only.
 """
-import ewcmd
+import ewitem
 import ewutils
 import ewcfg
 import ewrolemgr
@@ -64,3 +64,43 @@ async def deadmega(cmd):
 
 	# Send the response to the player.
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+"""
+	Command that creates a princeps cosmetic item
+"""
+async def create(cmd):
+	if EwUser(member = cmd.message.author).life_state != ewcfg.life_state_kingpin:
+		response = 'Lowly Non-Kingpins cannot hope to create items with their bare hands.'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	if len(cmd.tokens) != 4:
+		response = 'Usage: !create "<item_name>" "<item_desc>" <recipient>'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	item_name = cmd.tokens[1]
+	item_desc = cmd.tokens[2]
+
+	if cmd.mentions[0]:
+		recipient = cmd.mentions[0]
+	else:
+		response = 'You need to specify a recipient. Usage: !create "<item_name>" "<item_desc>" <recipient>'
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	item_props = {
+		"cosmetic_name": item_name,
+		"cosmetic_desc": item_desc,
+		"adorned": "false",
+		"rarity": "princeps"
+	}
+
+	new_item_id = ewitem.item_create(
+		id_server = cmd.message.server.id,
+		id_user = recipient.id,
+		item_type = ewcfg.it_cosmetic,
+		item_props = item_props
+	)
+
+	ewitem.soulbind(new_item_id)
+
+	response = 'Item "{}" successfully created.'.format(item_name)
+	return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
