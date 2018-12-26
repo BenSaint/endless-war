@@ -2329,11 +2329,12 @@ async def slimeoidbattle(cmd):
 			await cmd.client.send_message(cmd.message.channel, response)
 			await asyncio.sleep(2)
 
-		# Send the response to the player.
-	#	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
-	#	await cmd.client.send_message(cmd.message.channel, response)
 	else:
 		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+
+		time_now = int(time.time())
 		last_russianrouletted_times[author.id] = time_now - 540
 		last_russianrouletted_times[member.id] = time_now - 540
+
+		# Send the response to the player.
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
