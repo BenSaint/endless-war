@@ -169,16 +169,13 @@ async def order(cmd):
 							user_data.ghostbust = True
 
 				else:  # if it's togo
-					inv = ewitem.inventory(
+					food_items = ewitem.inventory(
 						id_user = cmd.message.author.id,
-						id_server = cmd.message.server.id
+						id_server = cmd.message.server.id,
+						item_type_filter = ewcfg.it_food
 					)
-					food_in_inv = 0
-					for item in inv:
-						if item.get('item_type') == ewcfg.it_food:
-							food_in_inv += 1
 
-					if food_in_inv >= math.ceil(user_data.slimelevel / ewcfg.max_food_in_inv_mod):
+					if len(food_items) >= math.ceil(user_data.slimelevel / ewcfg.max_food_in_inv_mod):
 						# user_data never got persisted so the player won't lose money unnecessarily
 						response = "You can't carry any more food than that."
 						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

@@ -1,3 +1,4 @@
+import math
 import time
 
 import ewutils
@@ -74,6 +75,9 @@ class EwItem:
 		if(id_item != None):
 			self.id_item = id_item
 
+			# the item props don't reset themselves automatically which is why the items_prop table had tons of extraneous rows (like food items having medal_names)
+			self.item_props.clear()
+
 			try:
 				conn_info = ewutils.databaseConnect()
 				conn = conn_info.get('conn')
@@ -112,7 +116,11 @@ class EwItem:
 					))
 
 					for row in cursor:
-						self.item_props[row[0]] = row[1]
+						# this try catch is only necessary as long as extraneous props exist in the table
+						try:
+							self.item_props[row[0]] = row[1]
+						except:
+							ewutils.logMsg("extraneous item_prop row detected.")
 
 				else:
 					# Item not found.
@@ -471,12 +479,17 @@ async def inventory_print(cmd):
 			id_item = item.get('id_item')
 			quantity = item.get('quantity')
 
-			response += "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
+			response_part = "\n{id_item}: {soulbound_style}{name}{soulbound_style}{quantity}".format(
 				id_item = item.get('id_item'),
 				name = item.get('name'),
 				soulbound_style = ("**" if item.get('soulbound') else ""),
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
+			if len(response) + len(response_part) > 1492:
+				await cmd.client.send_message(cmd.message.author, response)
+				response = ""
+
+			response += response_part
 
 	await cmd.client.send_message(cmd.message.author, response)
 
@@ -485,87 +498,69 @@ async def inventory_print(cmd):
 	Dump out the visual description of an item.
 """
 async def item_look(cmd):
-	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	item_search = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	author = cmd.message.author
+	server = cmd.message.server
 
-	try:
-		item_id_int = int(item_id)
-	except:
-		item_id_int = None
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id if server is not None else None)
 
-	if item_id != None and len(item_id) > 0:
-		response = "You don't have one."
+	if item_sought:
+		item = EwItem(id_item = item_sought.get('id_item'))
 
-		items = inventory(
-			id_user = cmd.message.author.id,
-			id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
-		)
+		id_item = item.id_item
+		name = item_sought.get('name')
+		response = item_sought.get('item_def').str_desc
 
-		item_sought = None
-		for item in items:
-			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
-				item_sought = item
-				break
+		# Replace up to two levels of variable substitutions.
+		if response.find('{') >= 0:
+			response = response.format_map(item.item_props)
 
-		if item_sought != None:
-			item_def = item_sought.get('item_def')
-			id_item = item_sought.get('id_item')
-			name = item_sought.get('name')
-			response = item_def.str_desc
-
-			# Replace up to two levels of variable substitutions.
 			if response.find('{') >= 0:
-				item_inst = EwItem(id_item = id_item)
-				response = response.format_map(item_inst.item_props)
+				response = response.format_map(item.item_props)
 
-				if response.find('{') >= 0:
-					response = response.format_map(item_inst.item_props)
+		if item.item_type == ewcfg.it_food:
+			if float(item.item_props.get('time_expir') if not None else 0) < time.time():
+				response += " This food item is rotten so you decide to throw it away."
+				item_delete(id_item)
 
-			if item_sought.get('item_type') == ewcfg.it_food:
-				if float(item_inst.item_props.get('time_expir') if not None else 0) < time.time():
-					response += " This food item is rotten so you decide to throw it away."
-					item_delete(id_item)
-
-			response = name + "\n\n" + response
+		response = name + "\n\n" + response
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
 	else:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Inspect which item? (check **!inventory**)'))
+		if item_search:  # if they didnt forget to specify an item and it just wasn't found
+			response = "You don't have one."
+		else:
+			response = "Inspect which item? (check **!inventory**)"
+
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 # this is basically just the item_look command with some other stuff at the bottom
 async def item_use(cmd):
-	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	item_search = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	author = cmd.message.author
+	server = cmd.message.server
 
-	try:
-		item_id_int = int(item_id)
-	except:
-		item_id_int = None
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
-	if item_id != None and len(item_id) > 0:
-		response = "You don't have one."
+	if item_sought:
+		item = EwItem(id_item = item_sought.get('id_item'))
 
-		items = inventory(
-			id_user = cmd.message.author.id,
-			id_server = (cmd.message.server.id if (cmd.message.server != None) else None)
-		)
+		response = "The item doesn't have !use functionality"  # if it's not overwritten
 
-		item_sought = None
-		for item in items:
-			if item.get('id_item') == item_id_int or item_id in ewutils.flattenTokenListToString(item.get('name')):
-				item_sought = item
-				break
+		user_data = EwUser(member = author)
 
-		if item_sought != None:
-			id_item = item_sought.get('id_item')
-			item_def = item_sought.get('item_def')
-			name = item_sought.get('name')
-			item_type = item_sought.get('item_type')
+		if item.item_type == ewcfg.it_food:
+			response = user_data.eat(item)
+			user_data.persist()
 
-			item = EwItem(id_item = id_item)
-			user_data = EwUser(member = cmd.message.author)
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
-			if item_type == ewcfg.it_food:
-				response = user_data.eat(item)
-				user_data.persist()
+	else:
+		if item_search:  # if they didnt forget to specify an item and it just wasn't found
+			response = "You don't have one."
+		else:
+			response = "Use which item? (check **!inventory**)"
 
 		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
@@ -575,7 +570,7 @@ async def item_use(cmd):
 		))
 
 """
-	give an existing item to a player
+	Assign an existing item to a player
 """
 def give_item(
 	member = None,
@@ -584,21 +579,23 @@ def give_item(
 	id_server = None
 ):
 
-	if(id_user == None) and (id_server == None) and (member != None):
+	if id_user is None and id_server is None and member is not None:
 		id_server = member.server.id
 		id_user = member.id
 
-	if id_server != None and id_user != None and id_item != None:
-		sql_query = "UPDATE items SET {id_user} = {user_id} WHERE {id_server} = {server_id} AND {id_item} = {item_id}".format(
-			id_user = ewcfg.col_id_user,
-			user_id = id_user,
-			id_server = ewcfg.col_id_server,
-			server_id = id_server,
-			id_item = ewcfg.col_id_item,
-			item_id = id_item
+	if id_server is not None and id_user is not None and id_item is not None:
+		ewutils.execute_sql_query(
+			"UPDATE items SET id_user = %s WHERE id_server = %s AND {id_item} = %s".format(
+				id_item = ewcfg.col_id_item
+			), (
+				id_user,
+				id_server,
+				id_item
+			)
 		)
 
-		ewutils.execute_sql_query(sql_query)
+	return
+
 
 	return True
 
@@ -607,3 +604,80 @@ def soulbind(id_item):
 	item = EwItem(id_item = id_item)
 	item.soulbound = True
 	item.persist()
+=======
+"""
+	Find a single item in the player's inventory (returns either a (non-EwItem) item or None)
+"""
+def find_item(item_search, id_user, id_server):
+	item_sought = None
+
+	# search for an ID instead of a name
+	try:
+		item_search_int = int(item_search)
+	except:
+		item_search_int = None
+
+	if item_search:
+		items = inventory(id_user = id_user, id_server = id_server)
+		item_sought = None
+
+		# find the first (i.e. the oldest) item that matches the search
+		for item in items:
+			if item.get('id_item') == item_search_int or item_search in ewutils.flattenTokenListToString(item.get('name')):
+				item_sought = item
+				break
+
+	return item_sought
+
+
+"""
+	Command that lets players !give others items
+"""
+async def give(cmd):
+	item_search = ewutils.flattenTokenListToString(cmd.tokens[1:])
+	author = cmd.message.author
+	server = cmd.message.server
+
+	if cmd.mentions:  # if they're not empty
+		recipient = cmd.mentions[0]
+	else:
+		response = "You have to specify the recipient of the item."
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
+
+	if item_sought:  # if an item was found
+
+		# don't let people give others food when they shouldn't be able to carry more food items
+		if item_sought.get('item_type') == ewcfg.it_food:
+			food_items = inventory(
+				id_user = recipient.id,
+				id_server = server.id,
+				item_type_filter = ewcfg.it_food
+			)
+
+			if len(food_items) >= math.ceil(EwUser(member = recipient).slimelevel / ewcfg.max_food_in_inv_mod):
+				response = "They can't carry any more food items."
+				return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+		if item_sought.get('soulbound'):
+			response = "You can't just give away soulbound items."
+		else:
+			give_item(
+				member = recipient,
+				id_item = item_sought.get('id_item')
+			)
+
+			response = "You gave {recipient} a {item}".format(
+				recipient = recipient.display_name,
+				item = item_sought.get('name')
+			)
+		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	else:
+		if item_search:  # if they didnt forget to specify an item and it just wasn't found
+			response = "You don't have one."
+		else:
+			response = "Give which item? (check **!inventory**)"
+
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
