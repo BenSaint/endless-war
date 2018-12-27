@@ -3217,7 +3217,7 @@ cosmetic_items_list = [
 	),
 	EwCosmeticItem(
 		name = "wedding ring",
-		description = "A silver ring with a decently large diamond on top. For the person love most in the entire world. <3",
+		description = "A silver ring with a decently large diamond on top. For the person you love most in the entire world. <3",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(

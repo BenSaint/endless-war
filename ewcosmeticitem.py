@@ -46,18 +46,13 @@ async def smelt(cmd):
 	else:
 		for i in range(3):
 			ewitem.item_delete(id_item = poudrins[i].get('id_item'))
-		patrician_rarity = 3
+
+		patrician_rarity = 100
 		patrician_smelted = random.randint(1, patrician_rarity)
 		patrician = False
 
 		if patrician_smelted == 1:
 			patrician = True
-
-		if patrician:
-			#item = patrician item
-			pass
-		else:
-			pass #item = plebeian item
 
 		items = []
 
