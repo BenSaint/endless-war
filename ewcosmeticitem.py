@@ -47,7 +47,7 @@ async def smelt(cmd):
 		for i in range(3):
 			ewitem.item_delete(id_item = poudrins[i].get('id_item'))
 
-		patrician_rarity = 100
+		patrician_rarity = 20
 		patrician_smelted = random.randint(1, patrician_rarity)
 		patrician = False
 
