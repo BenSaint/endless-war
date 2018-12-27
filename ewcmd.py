@@ -1852,19 +1852,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challengee_slimeoid.ai in ['a', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
 							strat = 'move'
 					elif challengee_slimeoid.ai in ['b', 'd', 'f']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['c', 'e']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
@@ -1964,19 +1964,19 @@ async def slimeoidbattle(cmd):
 				else:
 					#determine strat based on ai
 					if challengee_slimeoid.ai in ['a', 'b', 'c']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['d']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['e', 'f', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
@@ -2077,19 +2077,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challenger_slimeoid.ai in ['a', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
 							strat = 'move'
 					elif challenger_slimeoid.ai in ['b', 'd', 'f']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['c', 'e']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
@@ -2188,19 +2188,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challenger_slimeoid.ai in ['a', 'b', 'c']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['d']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['e', 'f', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
