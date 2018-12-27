@@ -592,9 +592,6 @@ def give_item(
 	return
 
 
-	return True
-
-
 def soulbind(id_item):
 	item = EwItem(id_item = id_item)
 	item.soulbound = True
