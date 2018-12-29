@@ -392,7 +392,7 @@ emote_ck = "<:ck:504173691488305152>"
 emote_rf = "<:rf:504174176656162816>"
 emote_slimecorp = "<:slimecorp:522416869127225344>"
 emote_testemote = "<:purple:496348895098699796>" # test server emote
-emote_nlacakanm = "<:nlacakanm:521471563481219096>"
+emote_nlacakanm = "<:nlacakanm:528396143378432034>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
