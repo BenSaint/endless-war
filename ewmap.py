@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 from copy import deepcopy
 
@@ -91,6 +92,12 @@ class EwPoi:
 	# If true, the zone is a district that can be controlled/captured
 	is_capturable = False
 
+	# If it's a subzone
+	is_subzone = False
+
+	# What District each subzone is in
+	mother_district = ""
+
 	def __init__(
 		self,
 		id_poi = "unknown", 
@@ -110,7 +117,9 @@ class EwPoi:
 		str_closed = None,
 		vendors = [],
 		property_class = "",
-		is_capturable = False
+		is_capturable = False,
+		is_subzone = False,
+		mother_district = "",
 	):
 		self.id_poi = id_poi
 		self.alias = alias
@@ -130,6 +139,8 @@ class EwPoi:
 		self.vendors = vendors
 		self.property_class = property_class
 		self.is_capturable = is_capturable
+		self.is_subzone = is_subzone
+		self.mother_district = mother_district
 
 map_world = [
 	[ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
@@ -635,3 +646,32 @@ async def look(cmd):
 				) if cmd.message.server != None else "")
 			)
 		))
+
+"""
+	Kicks idle players from subzones. Called every 15 minutes.
+"""
+async def kick(id_server):
+	# Gets data for all living players from the database
+	all_living_players = ewutils.execute_sql_query("SELECT {poi}, {id_user}, {time_last_action} FROM users WHERE id_server = %s AND {life_state} > 0".format(
+		poi = ewcfg.col_poi,
+		id_user = ewcfg.col_id_user,
+		time_last_action = ewcfg.col_time_last_action,
+		life_state = ewcfg.col_life_state,
+	), (
+		id_server,
+	))
+
+	for player in all_living_players:
+		poi = ewcfg.id_to_poi[player[0]]
+		id_user = player[1]
+		time_last_action = player[2]
+
+		# checks if the player should be kicked from the subzone and kicks them if they should.
+		if poi.is_subzone and time_last_action < time.time() - ewcfg.time_kickout:
+			user_data = EwUser(id_user = id_user, id_server = id_server)
+			user_data.poi = poi.mother_district
+			user_data.persist()
+
+			member_object = ewcfg.server_list[id_server].get_member(id_user)
+			response = "You have been kicked out for loitering! You can only stay in a sub-zone and twiddle your thumbs for 3 hours at a time."
+			await ewutils.get_client().send_message(poi.mother_district.channel, ewutils.formatMessage(member_object, response))
