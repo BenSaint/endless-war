@@ -3279,8 +3279,7 @@ cosmetic_items_list = [
 		name = "earbuds",
 		description = "A pair of white standard iPod earbuds. Who knows what sort of tasty jams you must be listening to while walking down the street?",
 		rarity = rarity_patrician
-	),
-
+	)
 ]
 
 # Slimeoid attributes.
