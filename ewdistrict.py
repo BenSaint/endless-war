@@ -290,7 +290,6 @@ class EwDistrict:
 						)
 
 				self.controlling_faction = new_owner
-				self.persist()
 
 
 """
