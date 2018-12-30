@@ -327,82 +327,81 @@ async def capture_tick(id_server):
 		))
 
 		all_gang_members = cursor.fetchall()
-		#time_old = time.time()
-
-		if len(all_districts) > 0:  # if all_districts isn't empty
-			for d in range(len(all_districts)):  # iterate through all districts
-				district = all_districts[d]
-
-				district_name = district[0]
-				controlling_faction = district[1]
-
-				# the faction that's actively capturing the district this tick
-				# if no players are present, it's None, if only players of one faction (ignoring juvies and ghosts) are,
-				# it's the faction's name, i.e. 'rowdys' or 'killers', and if both are present, it's 'both'
-				faction_capture = None
-
-				# how much progress will be made. is higher the more people of one faction are in a district, and is 0 if both teams are present
-				capture_speed = 0
-
-				dc_stat_increase_list = []
-
-				# checks if any players are in the district and if there are only players of the same faction, i.e. progress can happen
-				for player in all_gang_members:
-					player_id = player[3]
-					# player[0] is their poi, player[2] their life_state. assigning them to variables might hurt the server's performance
-					if player[0] == district_name and player[2] == ewcfg.life_state_enlisted:  # if the player is in the district and a gang member
-						faction = player[1]
-
-						try:
-							player_online = ewcfg.server_list[id_server].get_member(player_id).status != discord.Status.offline
-						except:
-							player_online = False
-
-						#ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
-
-						if player_online:
-							if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
-								faction_capture = 'both'  # standstill, gang violence has to happen
-								capture_speed = 0
-								dc_stat_increase_list.clear()
-
-							elif faction_capture in [None, faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
-								faction_capture = faction
-								capture_speed += 1
-								dc_stat_increase_list.append(player_id)
-
-				if faction_capture not in ['both', None]:  # if only members of one faction is present
-					dist = EwDistrict(id_server = id_server, district = district_name)
-
-					if dist.capture_points < dist.max_capture_points:
-						for stat_recipient in dc_stat_increase_list:
-							ewstats.change_stat(
-								id_server = id_server,
-								id_user = stat_recipient,
-								metric = ewcfg.stat_capture_points_contributed,
-								n = ewcfg.capture_tick_length * capture_speed
-							)
-
-					if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
-						await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
-
-					elif dist.capture_points == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
-						await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
-						dist.capturing_faction = faction_capture
-
-					# lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
-					else:  # if the (de-)capturing faction is not in control
-						await dist.change_capture_points(-(ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier), faction_capture)
-
-					dist.persist()
-
-		conn.commit()
 	finally:
 		# Clean up the database handles.
 		cursor.close()
 		ewutils.databaseClose(conn_info)
 
-	return
+
+	if len(all_districts) > 0:  # if all_districts isn't empty
+		server = ewcfg.server_list[id_server]
+		time_old = time.time()
+
+		for district in all_districts:
+			district_name = district[0]
+			controlling_faction = district[1]
+
+			# the faction that's actively capturing the district this tick
+			# if no players are present, it's None, if only players of one faction (ignoring juvies and ghosts) are,
+			# it's the faction's name, i.e. 'rowdys' or 'killers', and if both are present, it's 'both'
+			faction_capture = None
+
+			# how much progress will be made. is higher the more people of one faction are in a district, and is 0 if both teams are present
+			capture_speed = 0
+
+			dc_stat_increase_list = []
+
+			# checks if any players are in the district and if there are only players of the same faction, i.e. progress can happen
+			for player in all_gang_members:
+				player_poi = player[0]
+				player_faction = player[1]
+				player_life_state = player[2]
+				player_id = player[3]
+
+				if player_poi == district_name and player_life_state == ewcfg.life_state_enlisted:  # if the player is in the district and a gang member
+					try:
+						player_online = server.get_member(player_id).status != discord.Status.offline
+					except:
+						player_online = False
+
+					# FIXME debug
+					ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
+
+					if player_online:
+						if faction_capture != None and faction_capture != player_faction:  # if someone of the opposite faction is in the district
+							faction_capture = 'both'  # standstill, gang violence has to happen
+							capture_speed = 0
+							dc_stat_increase_list.clear()
+
+						elif faction_capture in [None, player_faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
+							faction_capture = player_faction
+							capture_speed += 1
+							dc_stat_increase_list.append(player_id)
+
+			if faction_capture not in ['both', None]:  # if only members of one faction is present
+				dist = EwDistrict(id_server = id_server, district = district_name)
+
+				if dist.capture_points < dist.max_capture_points:
+					for stat_recipient in dc_stat_increase_list:
+						ewstats.change_stat(
+							id_server = id_server,
+							id_user = stat_recipient,
+							metric = ewcfg.stat_capture_points_contributed,
+							n = ewcfg.capture_tick_length * capture_speed
+						)
+
+				if faction_capture == dist.capturing_faction:  # if the faction is already in the process of capturing, continue
+					await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
+
+				elif dist.capture_points == 0 and dist.controlling_faction == "":  # if it's neutral, start the capture
+					await dist.change_capture_points(ewcfg.capture_tick_length * capture_speed, faction_capture)
+					dist.capturing_faction = faction_capture
+
+				# lower the enemy faction's progress to revert it to neutral (or potentially get it onto your side without becoming neutral first)
+				else:  # if the (de-)capturing faction is not in control
+					await dist.change_capture_points(-(ewcfg.capture_tick_length * capture_speed * ewcfg.decapture_speed_multiplier), faction_capture)
+
+				dist.persist()
 
 """
 	Coroutine that continually calls capture_tick; is called once per server, and not just once globally

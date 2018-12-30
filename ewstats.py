@@ -71,34 +71,26 @@ def set_stat(id_server = None, id_user = None, user = None, metric = None, value
 			value
 		))
 
-		ewevent.process_stat_change(id_server = id_server, id_user = id_user, metric = metric, value = value)
-
 		conn.commit()
 	finally:
 		# Clean up the database handles.
 		cursor.close()
 		ewutils.databaseClose(conn_info)
+
+	ewevent.process_stat_change(id_server = id_server, id_user = id_user, metric = metric, value = value)
 
 """ Increase/Decrease a stat by a given value """
 def change_stat(id_server = None, id_user = None, user = None, metric = None, n = 0):
-	if(id_user == None) and (id_server == None):
-			if(user != None):
-				id_server = user.id_server
-				id_user = user.id_user
+	if(id_user == None) and (id_server == None) and (user != None):
+		id_server = user.id_server
+		id_user = user.id_user
 
-	try:
-		conn_info = ewutils.databaseConnect()
-		conn = conn_info.get('conn')
-		cursor = conn.cursor();
+	if (id_user == None) or (id_server == None):
+		return
 
-		old_value = get_stat(id_server = id_server, id_user = id_user, metric = metric)
-		set_stat(id_server = id_server, id_user = id_user, metric = metric, value = old_value + n)
+	old_value = get_stat(id_server = id_server, id_user = id_user, metric = metric)
+	set_stat(id_server = id_server, id_user = id_user, metric = metric, value = old_value + n)
 
-		conn.commit()
-	finally:
-		# Clean up the database handles.
-		cursor.close()
-		ewutils.databaseClose(conn_info)
 
 def increment_stat(id_server = None, id_user = None, user = None, metric = None):
 	change_stat(id_server = id_server, id_user = id_user, user = user, metric = metric, n = 1)
