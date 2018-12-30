@@ -364,8 +364,7 @@ async def capture_tick(id_server):
 					except:
 						player_online = False
 
-					# FIXME debug
-					ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
+					#ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
 
 					if player_online:
 						if faction_capture != None and faction_capture != player_faction:  # if someone of the opposite faction is in the district
