@@ -3211,13 +3211,68 @@ cosmetic_items_list = [
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
+		name = "kepi",
+		description = "A short kepi with a sunken top and an insignia on the front.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "tam o' shanter'",
+		description = "A traditional Scottish wool bonnet with a plaid pattern.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "ushanka",
+		description = "A traditional Russian fur cap with thick wool ear flaps.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "karategi",
+		description = "A traditional Japanese karateka’s outfiit, complete with a belt with extended ends that easily flow in the wind for dramatic effect.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "turban",
+		description = "A traditional Arabian headdress, lavishly decorated with a single large jewel and protruding peacock feather.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "nemes",
+		description = "The traditional ancient Egyptian pharaoh's striped head cloth.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "varsity jacket",
+		description = "An American baseball jacket, with a large insignia on the left side of the chest.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "sombrero",
+		description = "A traditional Mexican sombrero, with an extra-wide brim to protect you from the blistering Arizonian sun.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "hawaiian shirt",
+		description = "A brightly colored Hawaiian shirt with a floral pattern. It reeks of slima colada and the complementary shampoo from Assault Flats Beach Resort.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "fursuit",
+		description = "A fursuit. Custom-made and complete with high quality faux fur, padded digitigrade legs, follow-me eyes, adjustable facial expressions, and a fan in the head. It is modeled off your original character, also known as your fursona. Some would call it’s character design “ugly” or “embarrassing,” but you think it’s perfect.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
+		name = "diadem",
+		description = "The traditional Greco-Roman laurel wreath symbolizing sovereignty and power. Be careful about wearing this around in public, you might just wake up with 23 stab wounds.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
 		name = "Bill's Hat",
 		description = "A military beret with a shield insignia on the front.",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(
 		name = "wedding ring",
-		description = "A silver ring with a decently large diamond on top. For the person love most in the entire world. <3",
+		description = "A silver ring with a decently large diamond on top. For the person you love most in the entire world. <3",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(
