@@ -461,11 +461,12 @@ def inventory(
 
 	return items
 
+
 """
 	Dump out a player's inventory.
 """
 async def inventory_print(cmd):
-	response = "You are holding:\n"
+	can_message_user = True
 
 	items = inventory(
 		id_user = cmd.message.author.id,
@@ -475,6 +476,17 @@ async def inventory_print(cmd):
 	if len(items) == 0:
 		response = "You don't have anything."
 	else:
+		response = "You are holding:"
+
+	try:
+		await cmd.client.send_message(cmd.message.author, response)
+	except:
+		can_message_user = False
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
+	if len(items) > 0:
+		response = ""
+
 		for item in items:
 			id_item = item.get('id_item')
 			quantity = item.get('quantity')
@@ -486,12 +498,19 @@ async def inventory_print(cmd):
 				quantity = (" x{:,}".format(quantity) if (quantity > 0) else "")
 			)
 			if len(response) + len(response_part) > 1492:
-				await cmd.client.send_message(cmd.message.author, response)
+				if can_message_user:
+					await cmd.client.send_message(cmd.message.author, response)
+				else:
+					await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
 				response = ""
 
 			response += response_part
 
-	await cmd.client.send_message(cmd.message.author, response)
+	if can_message_user:
+		await cmd.client.send_message(cmd.message.author, response)
+	else:
+		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """
