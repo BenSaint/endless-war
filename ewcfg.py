@@ -9,7 +9,7 @@ from ewmap import EwPoi
 from ewslimeoid import EwBody, EwHead, EwMobility, EwOffense, EwDefense, EwSpecial, EwBrain
 
 # Global configuration options.
-version = "v2.13"
+version = "v2.13a"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
