@@ -1,5 +1,6 @@
 import random
 import asyncio
+import time
 
 import ewcfg
 import ewutils
@@ -60,8 +61,8 @@ async def cmd_howl(cmd):
 	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ returns true if it's night time and the casino is open, else false. """
-def is_casino_open(time):
-	if time < 18 and time >= 6:
+def is_casino_open(t):
+	if t < 18 and t >= 6:
 		return False
 
 	return True
@@ -1435,7 +1436,7 @@ async def slimeoid(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	member = None
 	selfcheck = True
-
+	response = ""
 
 	if cmd.mentions_count == 0:
 		selfcheck = True

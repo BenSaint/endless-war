@@ -353,7 +353,10 @@ async def capture_tick(id_server):
 					if player[0] == district_name and player[2] == ewcfg.life_state_enlisted:  # if the player is in the district and a gang member
 						faction = player[1]
 
-						player_online = ewcfg.server_list[id_server].get_member(player_id).status != discord.Status.offline
+						try:
+							player_online = ewcfg.server_list[id_server].get_member(player_id).status != discord.Status.offline
+						except:
+							player_online = False
 
 						#ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
 
