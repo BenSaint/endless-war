@@ -1,5 +1,8 @@
 import asyncio
 import math
+import time
+
+import discord
 
 import ewcfg
 import ewstats
@@ -314,7 +317,7 @@ async def capture_tick(id_server):
 
 		all_districts = cursor.fetchall()
 
-		cursor.execute("SELECT {poi}, {faction}, {life_state}, {id_user} FROM users WHERE id_server = %s".format(
+		cursor.execute("SELECT {poi}, {faction}, {life_state}, {id_user} FROM users WHERE id_server = %s AND {life_state} > 1".format(
 			poi = ewcfg.col_poi,
 			faction = ewcfg.col_faction,
 			life_state = ewcfg.col_life_state,
@@ -323,7 +326,8 @@ async def capture_tick(id_server):
 			id_server,
 		))
 
-		all_players = cursor.fetchall()
+		all_gang_members = cursor.fetchall()
+		#time_old = time.time()
 
 		if len(all_districts) > 0:  # if all_districts isn't empty
 			for d in range(len(all_districts)):  # iterate through all districts
@@ -343,20 +347,26 @@ async def capture_tick(id_server):
 				dc_stat_increase_list = []
 
 				# checks if any players are in the district and if there are only players of the same faction, i.e. progress can happen
-				for player in all_players:
+				for player in all_gang_members:
+					player_id = player[3]
 					# player[0] is their poi, player[2] their life_state. assigning them to variables might hurt the server's performance
 					if player[0] == district_name and player[2] == ewcfg.life_state_enlisted:  # if the player is in the district and a gang member
 						faction = player[1]
 
-						if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
-							faction_capture = 'both'  # standstill, gang violence has to happen
-							capture_speed = 0
-							dc_stat_increase_list.clear()
+						player_online = ewcfg.server_list[id_server].get_member(player_id).status != discord.Status.offline
 
-						elif faction_capture in [None, faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
-							faction_capture = faction
-							capture_speed += 1
-							dc_stat_increase_list.append(player[3])  # player[3] is their id
+						#ewutils.logMsg("Online status checked. Time elapsed: %f" % (time.time() - time_old) + " Server: %s" % id_server + " Player: %s" % player_id + " Status: %s" % ("online" if player_online else "offline"))
+
+						if player_online:
+							if faction_capture is not None and faction_capture != faction:  # if someone of the opposite faction is in the district
+								faction_capture = 'both'  # standstill, gang violence has to happen
+								capture_speed = 0
+								dc_stat_increase_list.clear()
+
+							elif faction_capture in [None, faction]:  # if the district isn't already controlled by the player's faction and the capture isn't halted by an enemy
+								faction_capture = faction
+								capture_speed += 1
+								dc_stat_increase_list.append(player_id)
 
 				if faction_capture not in ['both', None]:  # if only members of one faction is present
 					dist = EwDistrict(id_server = id_server, district = district_name)

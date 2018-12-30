@@ -290,7 +290,7 @@ property_class_b = "b"
 property_class_c = "c"
 
 # district capturing
-capture_tick_length = 5  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
+capture_tick_length = 10  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
 max_capture_points_s = 3600  # 60 min
 max_capture_points_a = 1800  # 30 min
 max_capture_points_b = 1200  # 20 min
@@ -392,7 +392,7 @@ emote_ck = "<:ck:504173691488305152>"
 emote_rf = "<:rf:504174176656162816>"
 emote_slimecorp = "<:slimecorp:522416869127225344>"
 emote_testemote = "<:purple:496348895098699796>" # test server emote
-emote_nlacakanm = "<:nlacakanm:521471563481219096>"
+emote_nlacakanm = "<:nlacakanm:528396143378432034>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
