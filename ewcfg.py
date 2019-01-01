@@ -2423,6 +2423,7 @@ poi_list = [
 		id_poi = poi_id_glocksbury,
 		alias = [
 			"glocks",
+			"glock",
 			"gb"
 		],
 		str_name = "Glocksbury",
@@ -2441,7 +2442,8 @@ poi_list = [
 			"nsleezeboro",
 			"nsleeze",
 			"northsleeze",
-			"nsb"
+			"nsb",
+			"ns"
 		],
 		str_name = "North Sleezeborough",
 		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.\n\nTo the North is Glocksbury. To the East is Krak Bay. To the South is South Sleezeborough.",
@@ -2459,7 +2461,8 @@ poi_list = [
 			"ssleezeboro",
 			"ssleeze",
 			"southsleeze",
-			"ssb"
+			"ssb",
+			"ss"
 		],
 		str_name = "South Sleezeborough",
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Gardens.",
@@ -2504,6 +2507,7 @@ poi_list = [
 		alias = [
 			"wrecking",
 			"wton",
+			"ton",
 			"wt"
 		],
 		str_name = "Wreckington",
@@ -2569,6 +2573,8 @@ poi_list = [
 			"resort",
 			"assault",
 			"flats",
+			"af",
+			"br",
 			"assflats",
 			"afbr"
 		],
@@ -2612,8 +2618,11 @@ poi_list = [
 	EwPoi( # 26
 		id_poi = poi_id_toxington,
 		alias = [
+			"tox",
 			"tton",
-			"tt"
+			"ttn",
+			"tt",
+			"tx"
 		],
 		str_name = "Toxington",
 		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.\n\nTo the East is Astatine Heights. To the Southeast is Gatlingsdale. To the South is Polonium Hill. To the East is Charcoal Park.",
@@ -2630,7 +2639,8 @@ poi_list = [
 			"park2",
 			"cpark",
 			"awkwardinitials",
-			"cp"
+			"cp",
+			"ch"
 		],
 		str_name = "Charcoal Park",
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.\n\nTo the East is Toxington. To the South is Polonium Hill.",
@@ -2662,6 +2672,7 @@ poi_list = [
 			"wglocksbury",
 			"westglocks",
 			"wglocks",
+			"wglock",
 			"wgb",
 			"wg"
 		],
@@ -2679,6 +2690,8 @@ poi_list = [
 			"drain",
 			"sewers",
 			"sewer",
+			"ghost",
+			"ghosts",
 			"ts",
 			"s"
 		],
@@ -2826,8 +2839,10 @@ poi_list = [
 			"kingswifesson",
 			"speakeasy",
 			"bar",
+			"sons",
 			"sez",  # se is already slime's end
-			"ez"
+			"ez",
+			"kws"
 		],
 		str_name = "The King's Wife's Son Speakeasy",
 		str_desc = "A rustic tavern with dark wooden walls and floor, bearing innumerable knickknacks on the walls and high wooden stools arranged in front of a bar made of patina'd copper. There's nobody here.\n\nExits into Vagrant's Corner.",
@@ -2922,7 +2937,9 @@ poi_list = [
 		alias = [
 			"mines2",
 			"cvmines",
+			"cmines",
 			"cvm",
+			"cm",
 			"cratersvillemine",
 			"cratersvillem"
 		],
@@ -2939,6 +2956,7 @@ poi_list = [
 			"mines3",
 			"ttmines",
 			"ttm",
+			"toxm",
 			"toxingtonmine",
 			"toxingtonm"
 		],
@@ -2954,7 +2972,10 @@ poi_list = [
 		alias = [
 			"diner",
 			"smokers",
-			"cough"
+			"cough",
+			"smc", 
+			"wf", #wreckington food
+			"rf" #rowdy food
 		],
 		str_name = "The Smoker's Cough",
 		str_desc = "A quaint hole-in-the-wall vintage diner. The wallpaper may be peeling and the ‘80s paint job might be faded, but you’ll be damned if this place didn’t make an aesthetic stomping grounds for cheapskate juveniles like yourself. All the staff know you by name, they’ve memorized your order, and frankly they love you. You’re like a ninth son to the inbred owner and his many, many wives. It’s a cramped space, only fitting about 20 people maximum. The fluorescent lighting from the ceiling lamps invade every nook and cranny of the cyan and purple diner, even when the natural daylight could easily illuminate it just as well. You think you can see some mold on certain corners of the floor. Oh man, so cool.",
@@ -2973,7 +2994,9 @@ poi_list = [
 			"redmobster",
 			"red",
 			"mobster",
-			"rm"
+			"rm",
+			"mob",
+			"kf" #killer food
 		],
 		str_name = "Red Mobster Seafood",
 		str_desc = "The last bastion of sophistication in this godforsaken city. A dimly lit, atmospheric fine dining restaurant with waiters and tables and archaic stuff like that. Upper crust juveniles and older fugitives make up the majority of the patrons, making you stick out like a sore thumb. Quiet, respectable murmurs pollute the air alongside the scrapping of silverware and the occasional hoity toity laugh. Everything about this place makes you sick.",
@@ -2993,7 +3016,7 @@ poi_list = [
 			"jrfarms",
 			"jrfarm",
 			"jrplantation",
-			"jrplant"
+			"jrplant",
 			"juviesrowf",
 			"juviesrowfarm"
 		],
