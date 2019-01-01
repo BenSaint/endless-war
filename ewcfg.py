@@ -2620,7 +2620,7 @@ poi_list = [
 		alias = [
 			"tox",
 			"tton",
-			"ttn"
+			"ttn",
 			"tt",
 			"tx"
 		],
@@ -2639,7 +2639,8 @@ poi_list = [
 			"park2",
 			"cpark",
 			"awkwardinitials",
-			"cp"
+			"cp",
+			"ch"
 		],
 		str_name = "Charcoal Park",
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.\n\nTo the East is Toxington. To the South is Polonium Hill.",
@@ -2671,6 +2672,7 @@ poi_list = [
 			"wglocksbury",
 			"westglocks",
 			"wglocks",
+			"wglock",
 			"wgb",
 			"wg"
 		],
@@ -2688,6 +2690,8 @@ poi_list = [
 			"drain",
 			"sewers",
 			"sewer",
+			"ghost",
+			"ghosts",
 			"ts",
 			"s"
 		],
@@ -2933,6 +2937,7 @@ poi_list = [
 		alias = [
 			"mines2",
 			"cvmines",
+			"cmines",
 			"cvm",
 			"cm",
 			"cratersvillemine",
@@ -2990,7 +2995,8 @@ poi_list = [
 			"red",
 			"mobster",
 			"rm",
-			"mob"
+			"mob",
+			"kf" #killer food
 		],
 		str_name = "Red Mobster Seafood",
 		str_desc = "The last bastion of sophistication in this godforsaken city. A dimly lit, atmospheric fine dining restaurant with waiters and tables and archaic stuff like that. Upper crust juveniles and older fugitives make up the majority of the patrons, making you stick out like a sore thumb. Quiet, respectable murmurs pollute the air alongside the scrapping of silverware and the occasional hoity toity laugh. Everything about this place makes you sick.",
@@ -3010,7 +3016,7 @@ poi_list = [
 			"jrfarms",
 			"jrfarm",
 			"jrplantation",
-			"jrplant"
+			"jrplant",
 			"juviesrowf",
 			"juviesrowfarm"
 		],
