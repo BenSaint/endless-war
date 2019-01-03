@@ -522,21 +522,25 @@ def get_faction(user_data = None, life_state = 0, faction = ""):
 	return faction_role
 
 def get_faction_symbol(faction = "", faction_raw = ""):
+	result = None
+
 	if faction == ewcfg.role_kingpin:
 		if faction_raw == ewcfg.faction_rowdys:
-			faction_symbol = ewcfg.emote_rowdyfucker
+			result = ewcfg.emote_rowdyfucker
 		elif faction_raw == ewcfg.faction_killers:
-			faction_symbol = ewcfg.emote_copkiller
-	elif faction == ewcfg.role_corpse:
-		result = ewcfg.emote_ghost
-	elif faction == ewcfg.role_juvenile:
-		result = ewcfg.emote_slime3
-	elif faction == ewcfg.role_copkillers:
-		result = ewcfg.emote_ck
-	elif faction == ewcfg.role_rowdyfuckers:
-		result = ewcfg.emote_rf
-	else:
-		result = ewcfg.emote_blank
+			result = ewcfg.emote_copkiller
+
+	if result == None:
+		if faction == ewcfg.role_corpse:
+			result = ewcfg.emote_ghost
+		elif faction == ewcfg.role_juvenile:
+			result = ewcfg.emote_slime3
+		elif faction == ewcfg.role_copkillers:
+			result = ewcfg.emote_ck
+		elif faction == ewcfg.role_rowdyfuckers:
+			result = ewcfg.emote_rf
+		else:
+			result = ewcfg.emote_blank
 
 	return result
 
