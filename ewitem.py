@@ -507,10 +507,10 @@ async def inventory_print(cmd):
 
 			response += response_part
 
-	if can_message_user:
-		await cmd.client.send_message(cmd.message.author, response)
-	else:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		if can_message_user:
+			await cmd.client.send_message(cmd.message.author, response)
+		else:
+			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """

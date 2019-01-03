@@ -9,7 +9,7 @@ from ewmap import EwPoi
 from ewslimeoid import EwBody, EwHead, EwMobility, EwOffense, EwDefense, EwSpecial, EwBrain
 
 # Global configuration options.
-version = "v2.13k1p"
+version = "v2.13k2p"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -364,8 +364,12 @@ emote_pizzahut = "<:pizzahut:431273890355085323>"
 emote_kfc = "<:kfc:431273890216673281>"
 emote_moon = "<:moon:431418525303963649>"
 emote_111 = "<:111:431547758181220377>"
+
 emote_copkiller = "<:copkiller:431275071945048075>"
 emote_rowdyfucker = "<:rowdyfucker:431275088076079105>"
+emote_ck = "<:ck:504173691488305152>"
+emote_rf = "<:rf:504174176656162816>"
+
 emote_theeye = "<:theeye:431429098909466634>"
 emote_slime1 = "<:slime1:431564830541873182>"
 emote_slime2 = "<:slime2:431570132901560320>"
@@ -388,11 +392,8 @@ emote_purple = "<:purple:496397848343216138>"
 emote_pink = "<:pink:496397871180939294>"
 emote_slimecoin = "<:slimecoin:440576133214240769>"
 emote_slimegun = "<:slimegun:436500203743477760>"
-emote_ck = "<:ck:504173691488305152>"
-emote_rf = "<:rf:504174176656162816>"
 emote_slimecorp = "<:slimecorp:522416869127225344>"
-emote_testemote = "<:purple:496348895098699796>" # test server emote
-emote_nlacakanm = "<:nlacakanm:528396143378432034>"
+emote_nlacakanm = "<:nlacakanm:499615025544298517>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"

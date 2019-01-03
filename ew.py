@@ -229,6 +229,8 @@ class EwUser:
 		ewstats.clear_on_death(id_server = self.id_server, id_user = self.id_user)
 		ewitem.item_destroyall(id_server = self.id_server, id_user = self.id_user)
 
+		ewutils.logMsg('server {}: {} was killed by {} - cause was {}'.format(self.id_server, self.id_user, self.id_killer, cause))
+
 	def add_bounty(self, n = 0):
 		self.bounty += int(n)
 		ewstats.track_maximum(user = self, metric = ewcfg.stat_max_bounty, value = self.bounty)
