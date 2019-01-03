@@ -473,7 +473,7 @@ async def post_in_channels(id_server, message, channels = None):
 		if type(channel) is str:  # if the channels are passed as strings instead of discord channel objects
 			channel = get_channel(server, channel)
 		if channel is not None and channel.type == discord.ChannelType.text:
-			await client.send_message(channel, message)
+			await send_message(client, channel, message)
 	return
 
 """
@@ -607,3 +607,22 @@ async def post_in_hideouts(id_server, message):
 """
 def get_client():
 	return ewcfg.clients[0]
+
+
+"""
+	Proxy to discord.py Client.send_message with exception handling.
+"""
+async def send_message(client, channel, text):
+	try:
+		return await client.send_message(channel, text)
+	except:
+		logMsg('Failed to send message to channel: {}\n{}'.format(channel, text))
+
+"""
+	Proxy to discord.py Client.edit_message with exception handling.
+"""
+async def edit_message(client, message, text):
+	try:
+		return await client.edit_message(message, text)
+	except:
+		logMsg('Failed to edit message. Updated text would have been:\n{}'.format(text))

@@ -42,7 +42,7 @@ async def pardon(cmd):
 				response = "{} has been released from his association with the {}.".format(member.display_name, faction_old)
 				await ewrolemgr.updateRoles(client = cmd.client, member = member)
 
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ Destroy a megaslime of your own for lore reasons. """
 async def deadmega(cmd):
@@ -63,7 +63,7 @@ async def deadmega(cmd):
 			response = "Alas, poor megaslime. You have {:,} slime remaining.".format(user_data.slimes)
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """
 	Command that creates a princeps cosmetic item
@@ -71,11 +71,11 @@ async def deadmega(cmd):
 async def create(cmd):
 	if EwUser(member = cmd.message.author).life_state != ewcfg.life_state_kingpin:
 		response = 'Lowly Non-Kingpins cannot hope to create items with their bare hands.'
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	if len(cmd.tokens) != 4:
 		response = 'Usage: !create "<item_name>" "<item_desc>" <recipient>'
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	item_name = cmd.tokens[1]
 	item_desc = cmd.tokens[2]
@@ -84,7 +84,7 @@ async def create(cmd):
 		recipient = cmd.mentions[0]
 	else:
 		response = 'You need to specify a recipient. Usage: !create "<item_name>" "<item_desc>" <recipient>'
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	item_props = {
 		"cosmetic_name": item_name,
@@ -103,4 +103,4 @@ async def create(cmd):
 	ewitem.soulbind(new_item_id)
 
 	response = 'Item "{}" successfully created.'.format(item_name)
-	return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

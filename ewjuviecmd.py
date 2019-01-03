@@ -62,7 +62,7 @@ async def enlist(cmd):
 		response = "You can't do that right now, bitch."
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ mine for slime (or endless rocks) """
 async def mine(cmd):
@@ -75,20 +75,20 @@ async def mine(cmd):
 
 	# ghosts cant mine (anymore)
 	if user_data.life_state == ewcfg.life_state_corpse:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine while you're dead. Try {}.".format(ewcfg.cmd_revive)))
 
 	# Enlisted players only mine at certain times.
 	if user_data.life_state == ewcfg.life_state_enlisted:
 		if user_data.faction == ewcfg.faction_rowdys and (market_data.clock < 8 or market_data.clock > 17):
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Rowdies only mine in the daytime. Wait for full daylight at 8am.".format(ewcfg.cmd_revive)))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Rowdies only mine in the daytime. Wait for full daylight at 8am.".format(ewcfg.cmd_revive)))
 
 		if user_data.faction == ewcfg.faction_killers and (market_data.clock < 20 and market_data.clock > 5):
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Killers only mine under cover of darkness. Wait for nightfall at 8pm.".format(ewcfg.cmd_revive)))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Killers only mine under cover of darkness. Wait for nightfall at 8pm.".format(ewcfg.cmd_revive)))
 
 	# Mine only in the mines.
 	if cmd.message.channel.name in [ewcfg.channel_mines, ewcfg.channel_cv_mines, ewcfg.channel_tt_mines]:
 		if user_data.hunger >= ewutils.hunger_max_bylevel(user_data.slimelevel):
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."))
 		else:
 			# Determine if a poudrin is found.
 			poudrin = False
@@ -157,9 +157,9 @@ async def mine(cmd):
 				if was_levelup:
 					response += "You have been empowered by slime and are now a level {} slimeboi!".format(user_data.slimelevel)
 
-				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You can't mine here. Go to the mines."))
 
 """
 	Mining in the wrong channel or while exhausted. This is deprecated anyway but let's sorta keep it around in case we need it.
@@ -193,14 +193,14 @@ async def mismine(cmd, user_data, cause):
 		user_data.change_slimes(n = -(user_data.slimes / 5))
 		user_data.persist()
 
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have lost an arm and a leg in a mining accident. Tis but a scratch."))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You have lost an arm and a leg in a mining accident. Tis but a scratch."))
 		# await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 		# sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-		# await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
+		# await ewutils.send_message(cmd.client, sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(cmd.message.author, "You have died in a mining accident. {}".format(ewcfg.emote_slimeskull)))
 	else:
 		if cause == "exhaustion":
 			response = "You've exhausted yourself from mining. You'll need some refreshment before getting back to work."
 		else:
 			response = "You can't mine in this channel. Go elsewhere."
 
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

@@ -76,4 +76,7 @@ async def updateRoles(
 		else:
 			ewutils.logMsg("error: role missing \"{}\"".format(name))
 
-	await client.replace_roles(member, *replacement_roles)
+	try:
+		await client.replace_roles(member, *replacement_roles)
+	except:
+		ewutils.logMsg('error: failed to replace roles for {}'.format(member.display_name))

@@ -265,7 +265,10 @@ class EwDistrict:
 					client = ewutils.get_client()
 
 				if client is not None:
-					await client.edit_channel(channel = channel, topic = new_topic)
+					try:
+						await client.edit_channel(channel = channel, topic = new_topic)
+					except:
+						ewutils.logMsg('Failed to set channel topic for {} to {}'.format(channel.name, new_topic))
 
 			if self.controlling_faction != new_owner:  # if the controlling faction actually changed
 				if new_owner != "":  # if it was captured by a faction instead of being de-captured or decayed

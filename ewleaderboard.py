@@ -10,20 +10,20 @@ async def post_leaderboards(client = None, server = None):
 	market = EwMarket(id_server = server.id)
 	time = "day {}".format(market.day) 
 
-	await client.send_message(leaderboard_channel, "▓▓{} **STATE OF THE CITY:** {} {}▓▓".format(ewcfg.emote_theeye, time, ewcfg.emote_theeye))
+	await ewutils.send_message(client, leaderboard_channel, "▓▓{} **STATE OF THE CITY:** {} {}▓▓".format(ewcfg.emote_theeye, time, ewcfg.emote_theeye))
 
 	kingpins = make_kingpin_board(server = server, title = ewcfg.leaderboard_kingpins)
-	await client.send_message(leaderboard_channel, kingpins)
+	await ewutils.send_message(client, leaderboard_channel, kingpins)
 	districts = make_district_control_board(id_server = server.id, title = ewcfg.leaderboard_districts)
-	await client.send_message(leaderboard_channel, districts)
+	await ewutils.send_message(client, leaderboard_channel, districts)
 	topslimes = make_userdata_board(server = server, category = ewcfg.col_slimes, title = ewcfg.leaderboard_slimes)
-	await client.send_message(leaderboard_channel, topslimes)
+	await ewutils.send_message(client, leaderboard_channel, topslimes)
 	topcoins = make_userdata_board(server = server, category = ewcfg.col_slimecredit, title = ewcfg.leaderboard_slimecredit)
-	await client.send_message(leaderboard_channel, topcoins)
+	await ewutils.send_message(client, leaderboard_channel, topcoins)
 	topghosts = make_userdata_board(server = server, category = ewcfg.col_slimes, title = ewcfg.leaderboard_ghosts, lowscores = True, rows = 3)
-	await client.send_message(leaderboard_channel, topghosts)
+	await ewutils.send_message(client, leaderboard_channel, topghosts)
 	topbounty = make_userdata_board(server = server, category = ewcfg.col_bounty, title = ewcfg.leaderboard_bounty)
-	await client.send_message(leaderboard_channel, topbounty)
+	await ewutils.send_message(client, leaderboard_channel, topbounty)
 
 def make_userdata_board(server = None, category = "", title = "", lowscores = False, rows = 5):
 	entries = []
