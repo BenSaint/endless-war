@@ -429,14 +429,17 @@ async def give_kingpins_slime_and_decay_capture_points(id_server):
 			for id_district in ewcfg.capturable_districts:
 				district = EwDistrict(id_server = id_server, district = id_district)
 
-				# if the kingpin is controlling this district
+				# if the kingpin is controlling this district give the kingpin slime based on the district's property class
 				if district.controlling_faction == (ewcfg.faction_killers if kingpin.faction == ewcfg.faction_killers else ewcfg.faction_rowdys):
-
-					# give the kingpin slime based on the district's property class
 					slimegain += ewcfg.district_control_slime_yields[district.property_class]
-
-				await district.decay_capture_points()
 
 			kingpin.change_slimes(n = slimegain)
 			kingpin.persist()
+
 			ewutils.logMsg(kingpin_role + " just received %d" % slimegain + " slime for their captured districts.")
+
+	# Decay capture points.
+	for id_district in ewcfg.capturable_districts:
+		district = EwDistrict(id_server = id_server, district = id_district)
+
+		await district.decay_capture_points()
