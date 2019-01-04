@@ -322,40 +322,43 @@ def item_loot(
 		conn = conn_info.get('conn')
 		cursor = conn.cursor()
 
-		# TODO more elegant solution for tracking this sort of thing -- get amount of poudrins taken for stat tracking
-		cursor.execute("SELECT * FROM items WHERE {id_server} = %s AND {id_user} = %s AND {item_type} = %s".format(
-			id_user = ewcfg.col_id_user,
-			id_server = ewcfg.col_id_server,
-			item_type = ewcfg.col_item_type,
+		# Transfer adorned cosmetics
+		cursor.execute((
+			"UPDATE items SET id_user = %s " +
+			"WHERE id_user = %s AND id_server = %s AND soulbound = 0 AND item_type = %s AND id_item IN (" +
+				"SELECT id_item FROM items_prop " +
+				"WHERE name = 'adorned' AND value = 'true' " +
+			")"
 		), (
-			member.server.id,
-			member.id,
-			ewcfg.it_slimepoudrin
-		))
-		poudrins_looted = cursor.rowcount
-		ewutils.logMsg("Attempting to loot {} poudrins.".format(poudrins_looted))
-		ewstats.change_stat(id_server = member.server.id, id_user = id_user_target, metric = ewcfg.stat_poudrins_looted, n = poudrins_looted)
-
-		# only drop poudrins and adorned cosmetics
-		# there's probably a more elegant way of doing this but this works
-		query = "UPDATE items, items_prop SET {id_user} = %s WHERE {id_server} = %s AND {id_user} = %s AND {soulbound} = 0 AND items_prop.id_item = items.id_item AND ({item_type} = %s OR"" \
-			""({item_type} = %s AND {name} = 'adorned' AND {value} = 'true'))".format(
-			id_user = ewcfg.col_id_user,
-			id_server = ewcfg.col_id_server,
-			soulbound = ewcfg.col_soulbound,
-			item_type = ewcfg.col_item_type,
-			name = ewcfg.col_name,
-			value = ewcfg.col_value
-		)
-
-		# Re-assign lootable items to looting user
-		cursor.execute(query, (
 			id_user_target,
-			member.server.id,
 			member.id,
-			ewcfg.it_slimepoudrin,
+			member.server.id,
 			ewcfg.it_cosmetic
 		))
+
+		ewutils.logMsg('Transferred {} cosmetic items.'.format(cursor.rowcount))
+
+		# Transfer slimepoudrins
+		cursor.execute((
+			"UPDATE items SET id_user = %s " +
+			"WHERE id_user = %s AND id_server = %s AND item_type = %s "
+		), (
+			id_user_target,
+			member.id,
+			member.server.id,
+			ewcfg.it_slimepoudrin
+		))
+
+		poudrins_looted = cursor.rowcount
+
+		ewstats.change_stat(
+			id_server = member.server.id,
+			id_user = id_user_target,
+			metric = ewcfg.stat_poudrins_looted,
+			n = poudrins_looted
+		)
+
+		ewutils.logMsg('Transferred {} slime poudrins.'.format(poudrins_looted))
 
 		conn.commit()
 	finally:
