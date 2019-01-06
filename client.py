@@ -189,7 +189,7 @@ cmd_map = {
 	ewcfg.cmd_smelt: ewcosmeticitem.smelt,
 	ewcfg.cmd_adorn: ewcosmeticitem.adorn,
 	ewcfg.cmd_create: ewkingpin.create,
-  
+
 	#give an item to another player
 	ewcfg.cmd_give: ewitem.give,
 
@@ -269,7 +269,7 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
-	if False: 
+	if False:
 		twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
@@ -364,7 +364,7 @@ async def on_ready():
 				# Twitch API call to see if there are any active streams.
 				json_string = ""
 				p = subprocess.Popen(
-					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login = rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), 
+					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login = rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id),
 					shell = True,
 					stdout = subprocess.PIPE
 				)
@@ -723,6 +723,14 @@ async def on_message(message):
 			message = message,
 			client = client
 		))
+
+	ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
+		time_last_action = ewcfg.col_time_last_action
+	), (
+		time.time(),
+		message.author.id,
+		message.server.id,
+	))
 
 # find our REST API token
 token = ewutils.getToken()
