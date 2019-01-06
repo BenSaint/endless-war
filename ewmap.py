@@ -451,28 +451,28 @@ def inaccessible(user_data = None, poi = None):
 """
 async def move(cmd):
 	if channel_name_is_poi(cmd.message.channel.name) == False:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You must {} in a zone's channel.".format(cmd.tokens[0])))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You must {} in a zone's channel.".format(cmd.tokens[0])))
 
 	target_name = ewutils.flattenTokenListToString(cmd.tokens[1:])
 	if target_name == None or len(target_name) == 0:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Where to?"))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Where to?"))
 
 	user_data = EwUser(member = cmd.message.author)
 	poi_current = ewcfg.id_to_poi.get(user_data.poi)
 	poi = ewcfg.id_to_poi.get(target_name)
 
 	if poi == None:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Never heard of it."))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "Never heard of it."))
 
 	if poi.id_poi == user_data.poi:
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're already there, bitch."))
 
 	if inaccessible(user_data = user_data, poi = poi):
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're not allowed to go there (bitch)."))
 
 	if user_data.life_state == ewcfg.life_state_corpse and user_data.busted:
 		if user_data.poi == ewcfg.poi_id_thesewers:
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You're busted, bitch. You can't leave the sewers until your !revive."))
 		else:  # sometimes busted ghosts get stuck outside the sewers
 			user_data.poi = ewcfg.poi_id_thesewers
 			user_data.persist()
@@ -489,7 +489,7 @@ async def move(cmd):
 		)
 
 		if path == None:
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You don't know how to get there."))
 
 	global moves_active
 	global move_counter
@@ -503,7 +503,7 @@ async def move(cmd):
 
 	minutes = int(path.cost / 60)
 
-	msg_walk_start = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
+	msg_walk_start = await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
 		poi.str_name,
 		(" It's {} minute{} away.".format(
 			minutes,
@@ -522,7 +522,11 @@ async def move(cmd):
 
 		# If the player dies or enlists or whatever while moving, cancel the move.
 		if user_data.life_state != life_state or faction != user_data.faction:
-			await cmd.client.delete_message(msg_walk_start)
+			try:
+				await cmd.client.delete_message(msg_walk_start)
+			except:
+				pass
+
 			return
 
 		user_data.poi = poi.id_poi
@@ -538,16 +542,19 @@ async def move(cmd):
 				channel = ch
 				break
 
-		msg_walk_enter = await cmd.client.send_message(
+		msg_walk_enter = await ewutils.send_message(cmd.client, 
 			channel,
 			ewutils.formatMessage(
 				cmd.message.author,
 				"You {} {}.".format(poi.str_enter, poi.str_name)
 			)
 		)
-		await cmd.client.delete_message(msg_walk_start)
-		await asyncio.sleep(30)
-		await cmd.client.delete_message(msg_walk_enter)
+		try:
+			await cmd.client.delete_message(msg_walk_start)
+			await asyncio.sleep(30)
+			await cmd.client.delete_message(msg_walk_enter)
+		except:
+			pass
 
 	else:
 		# Perform move.
@@ -572,7 +579,11 @@ async def move(cmd):
 
 				# If the player dies or enlists or whatever while moving, cancel the move.
 				if user_data.life_state != life_state or faction != user_data.faction:
-					await cmd.client.delete_message(msg_walk_start)
+					try:
+						await cmd.client.delete_message(msg_walk_start)
+					except:
+						pass
+
 					return
 
 				channel = cmd.message.channel
@@ -592,7 +603,7 @@ async def move(cmd):
 								channel = ch
 								break
 					finally:
-						return await cmd.client.send_message(
+						return await ewutils.send_message(cmd.client, 
 							channel,
 							ewutils.formatMessage(
 								cmd.message.author,
@@ -612,8 +623,12 @@ async def move(cmd):
 
 					await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 
-					await cmd.client.delete_message(msg_walk_start)
-					msg_walk_start = await cmd.client.send_message(
+					try:
+						await cmd.client.delete_message(msg_walk_start)
+					except:
+						pass
+
+					msg_walk_start = await ewutils.send_message(cmd.client, 
 						channel,
 						ewutils.formatMessage(
 							cmd.message.author,
@@ -626,7 +641,10 @@ async def move(cmd):
 					await asyncio.sleep(val)
 
 		await asyncio.sleep(30)
-		await cmd.client.delete_message(msg_walk_start)
+		try:
+			await cmd.client.delete_message(msg_walk_start)
+		except:
+			pass
 
 """
 	Dump out the visual description of the area you're in.
@@ -636,7 +654,7 @@ async def look(cmd):
 	poi = ewcfg.id_to_poi.get(user_data.poi)
 
 	if poi != None:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(
 			cmd.message.author,
 			"**{}**\n\n{}{}".format(
 				poi.str_name,

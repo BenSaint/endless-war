@@ -473,7 +473,7 @@ async def post_in_channels(id_server, message, channels = None):
 		if type(channel) is str:  # if the channels are passed as strings instead of discord channel objects
 			channel = get_channel(server, channel)
 		if channel is not None and channel.type == discord.ChannelType.text:
-			await client.send_message(channel, message)
+			await send_message(client, channel, message)
 	return
 
 """
@@ -521,17 +521,26 @@ def get_faction(user_data = None, life_state = 0, faction = ""):
 
 	return faction_role
 
-def get_faction_symbol(faction = ""):
-	if faction == ewcfg.role_corpse:
-		result = ewcfg.emote_ghost
-	elif faction == ewcfg.role_juvenile:
-		result = ewcfg.emote_slime3
-	elif faction == ewcfg.role_copkillers:
-		result = ewcfg.emote_ck
-	elif faction == ewcfg.role_rowdyfuckers:
-		result = ewcfg.emote_rf
-	else:
-		result = ewcfg.emote_blank
+def get_faction_symbol(faction = "", faction_raw = ""):
+	result = None
+
+	if faction == ewcfg.role_kingpin:
+		if faction_raw == ewcfg.faction_rowdys:
+			result = ewcfg.emote_rowdyfucker
+		elif faction_raw == ewcfg.faction_killers:
+			result = ewcfg.emote_copkiller
+
+	if result == None:
+		if faction == ewcfg.role_corpse:
+			result = ewcfg.emote_ghost
+		elif faction == ewcfg.role_juvenile:
+			result = ewcfg.emote_slime3
+		elif faction == ewcfg.role_copkillers:
+			result = ewcfg.emote_ck
+		elif faction == ewcfg.role_rowdyfuckers:
+			result = ewcfg.emote_rf
+		else:
+			result = ewcfg.emote_blank
 
 	return result
 
@@ -602,3 +611,22 @@ async def post_in_hideouts(id_server, message):
 """
 def get_client():
 	return ewcfg.clients[0]
+
+
+"""
+	Proxy to discord.py Client.send_message with exception handling.
+"""
+async def send_message(client, channel, text):
+	try:
+		return await client.send_message(channel, text)
+	except:
+		logMsg('Failed to send message to channel: {}\n{}'.format(channel, text))
+
+"""
+	Proxy to discord.py Client.edit_message with exception handling.
+"""
+async def edit_message(client, message, text):
+	try:
+		return await client.edit_message(message, text)
+	except:
+		logMsg('Failed to edit message. Updated text would have been:\n{}'.format(text))

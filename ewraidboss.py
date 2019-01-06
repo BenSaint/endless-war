@@ -19,7 +19,7 @@ async def writhe(cmd):
 
 	if user_data.life_state != ewcfg.life_state_grandfoe:
 		response = "Only the NEGASLIME {} can do that.".format(ewcfg.emote_negaslime)
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
 		# play animation
 		he = ewcfg.emote_he
@@ -48,7 +48,7 @@ async def writhe(cmd):
 
 		for writhing in writhings:
 			cur_time = time.time()
-			await cmd.client.edit_message(resp, writhing)
+			await ewutils.edit_message(cmd.client, resp, writhing)
 			elapsed = time.time() - cur_time
 			await asyncio.sleep(2.0 - elapsed)
 
@@ -92,7 +92,7 @@ async def writhe(cmd):
 				user_data_target.persist()
 				await ewrolemgr.updateRoles(client = cmd.client, member = target)
 				sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-				await cmd.client.send_message(sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(target, "You have been crushed by tendrils. {}".format(ewcfg.emote_slimeskull)))
+				await ewutils.send_message(cmd.client, sewerchannel, "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(target, "You have been crushed by tendrils. {}".format(ewcfg.emote_slimeskull)))
 
 				victim_list.append(target)
 
@@ -103,4 +103,4 @@ async def writhe(cmd):
 		else:
 			response = "Your tendrils didn't kill anyone :("
 
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

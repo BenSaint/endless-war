@@ -1,5 +1,6 @@
 import random
 import asyncio
+import time
 
 import ewcfg
 import ewutils
@@ -44,7 +45,7 @@ async def start(cmd = None, message = '...', channel = None, client = None):
 		client = cmd.client
 
 	if client != None and channel != None:
-		return await client.send_message(channel, message)
+		return await ewutils.send_message(client, channel, message)
 
 	return None
 
@@ -57,11 +58,11 @@ async def cmd_howl(cmd):
 	if (slimeoid.life_state == ewcfg.slimeoid_state_active) and (user_data.life_state != ewcfg.life_state_corpse):
 		response += "\n{} howls along with you! {}".format(str(slimeoid.name), ewcfg.howls[random.randrange(len(ewcfg.howls))])
 
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ returns true if it's night time and the casino is open, else false. """
-def is_casino_open(time):
-	if time < 18 and time >= 6:
+def is_casino_open(t):
+	if t < 18 and t >= 6:
 		return False
 
 	return True
@@ -102,7 +103,7 @@ async def score(cmd):
 			response = "{} currently has {:,} slime{}.".format(member.display_name, user_data.slimes, (" and {} slime poudrin{}".format(poudrins_count, ("" if poudrins_count == 1 else "s")) if poudrins_count > 0 else ""))
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 	if member != None:
 		await ewrolemgr.updateRoles(client = cmd.client, member = member)
@@ -232,7 +233,7 @@ async def data(cmd):
 				response += "They are accompanied by {}, a {}-foot-tall Slimeoid.".format(slimeoid.name, str(slimeoid.level))
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	await ewrolemgr.updateRoles(client = cmd.client, member = cmd.message.author)
 	if member != None:
@@ -278,26 +279,26 @@ async def weather(cmd):
 	response = weather_txt(cmd.message.server.id)
 	
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """
 	Harvest is not and has never been a command.
 """
 async def harvest(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, '**HARVEST IS NOT A COMMAND YOU FUCKING IDIOT**'))
 
 """
 	Salute the NLACakaNM flag.
 """
 async def salute(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag.gif'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag.gif'))
 
 """
 	Burn the NLACakaNM flag.
 """
 async def unsalute(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag_burning.gif'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'https://ew.krakissi.net/img/nlacakanm_flag_burning.gif'))
 	
 	
 """
@@ -307,7 +308,7 @@ async def thrash(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
 	if (user_data.life_state == ewcfg.life_state_enlisted or user_data.life_state == ewcfg.life_state_kingpin) and user_data.faction == ewcfg.faction_rowdys:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:rowdyfucker:431275088076079105><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rowdyfucker:431275088076079105>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>'))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:rowdyfucker:431275088076079105><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rowdyfucker:431275088076079105>\n<:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:slime3:431659469844381717><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:slime1:431564830541873182><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816><:rf:504174176656162816>'))
 	
 """
 	Killers DAB
@@ -316,37 +317,37 @@ async def dab(cmd):
 	user_data = EwUser(member = cmd.message.author)
 
 	if (user_data.life_state == ewcfg.life_state_enlisted or user_data.life_state == ewcfg.life_state_kingpin) and user_data.faction == ewcfg.faction_killers:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:copkiller:431275071945048075> <:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:copkiller:431275071945048075>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>'))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, '\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime3:431659469844381717><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:copkiller:431275071945048075> <:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:copkiller:431275071945048075>\n<:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:slime3:431659469844381717><:ck:504173691488305152><:ck:504173691488305152><:ck:504173691488305152>\n<:blank:492087853702971403><:blank:492087853702971403><:blank:492087853702971403><:ck:504173691488305152><:slime3:431659469844381717><:slime1:431564830541873182><:slime1:431564830541873182><:slime3:431659469844381717><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152><:ck:504173691488305152><:slime1:431564830541873182><:ck:504173691488305152>'))
 
 """
 	advertise patch notes
 """
 async def patchnotes(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Look for the latest patchnotes on the news page: https://ew.krakissi.net/news/'))
 
 """
 	advertise help services
 """
 async def help(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Check out the guide for help: https://ew.krakissi.net/guide/'))
 
 """
 	Link to the world map.
 """
 async def map(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Online world map: https://ew.krakissi.net/map/'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Online world map: https://ew.krakissi.net/map/'))
 
 """
 	Link to the RFCK wiki.
 """
 async def wiki(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Wiki: https://rfck.miraheze.org/wiki/Main_Page'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Wiki: https://rfck.miraheze.org/wiki/Main_Page'))
 
 """
 	Link to the fan art booru.
 """
 async def booru(cmd):
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Booru: http://rfck.booru.org/'))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, 'Rowdy Fuckers Cop Killers Booru: http://rfck.booru.org/'))
 	
 """ Accept a russian roulette challenge """
 async def accept(cmd):
@@ -360,7 +361,7 @@ async def accept(cmd):
 				response = "You accept the challenge! Both of your Slimeoids ready themselves for combat!"
 			else:
 				response = "You accept the challenge! Both of you head out back behind the casino and load a bullet into the gun."
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+			await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """ Refuse a russian roulette challenge """
@@ -375,7 +376,7 @@ async def refuse(cmd):
 
 		if(user.rr_challenger != user.id_user and challenger.rr_challenger != user.id_user):
 			response = "You refuse the challenge, but not before leaving a large puddle of urine beneath you."
-			await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+			await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 		else:
 			challenger.rr_challenger = ""
 			challenger.persist()
@@ -407,7 +408,7 @@ async def playfetch(cmd):
 		)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def observeslimeoid(cmd):
 	resp = await start(cmd = cmd)
@@ -451,7 +452,7 @@ async def observeslimeoid(cmd):
 		)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def petslimeoid(cmd):
 	resp = await start(cmd = cmd)
@@ -479,7 +480,7 @@ async def petslimeoid(cmd):
 		)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def walkslimeoid(cmd):
 	resp = await start(cmd = cmd)
@@ -508,7 +509,7 @@ async def walkslimeoid(cmd):
 		)
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 # read the instructions
 async def instructions(cmd):
@@ -526,7 +527,7 @@ async def instructions(cmd):
 		response += "\n\nThis laboratory is equipped with everything required for the creation of a Slimeoid from scratch. To create a Slimeoid, you will need to supply one (1) Slime Poudrin, which will serve as the locus around which your Slimeoid will be based. You will also need to supply some Slime. You may supply as much or as little slime as you like, but greater Slime contribution will lead to superior Slimeoid genesis. To begin the Slimeoid creation process, use **!incubateslimeoid** followed by the amount of slime you wish to use."
 		response += "\n\nAfter beginning incubation, you will need to use the console to adjust your Slimeoid's features while it is still forming. Use **!growbody**, **!growhead**, **!growlegs**, **!growweapon**, **!growarmor**, **!growspecial**, or **!growbrain** followed by a letter (A - G) to choose the appearance, abilities, and temperament of your Slimeoid. You will also need to give youe Slimeoid a name. Use **!nameslimeoid** followed by your desired name. These traits may be changed at any time before the incubation is completed."
 		response += "\n\nIn addition to physical features, you will need to allocate your Slimeoid's attributes. Your Slimeoid will have a different amount of potential depending on how much slime you invested in its creation. You must distribute this potential across the three Slimeoid attributes, Moxie, Grit, and Chutzpah. Use **!raisemoxie**, **!lowermoxie**, **!raisegrit**, **!lowergrit**, **!raisechutzpah**, and **!lowerchutzpah** to adjust your Slimeoid's attributes to your liking."
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 		response = "\n\nWhen all of your Slimeoid's traits are confirmed, use **!spawnslimeoid** to end the incubation and eject your Slimeoid from the gestation vat. Be aware that once spawned, the Slimeoid's traits are finalized and cannot be changed, so be sure you are happy with your Slimeoid's construction before spawning. Additionally, be aware that you may only have one Slimeoid at a time, meaning should you ever want a new Slimeoid, you will need to euthanise your old one with **!dissolveslimeoid**. SlimeCorp assumes no responsibility for accidents, injuries, infections, physical disabilities, or ideological radicalizations that may occur due to prolonged contact with slime-based lifeforms."
 		response += "\n\nYou can read a full description of your or someone else's Slimeoid with the **!slimeoid** command. Note that your Slimeoid, having been made out of slime extracted from your body, will recognize you as its master and follow you until such time as you choose to dispose of it. It will react to your actions, including when you kill an opponent, when you are killed, when you return from the dead, and when you !howl. In addition, you can also perform activities with your Slimeoid. Try **!observeslimeoid**, **!petslimeoid**, **!walkslimeoid**, and **!playfetch** and see what happens."
 		response += "\n\nSlimeoid research is ongoing, and the effects of a Slimeoid's physical makeup, brain structure, and attribute allocation on its abilities are a rapidly advancing field. Field studies into the effects of these variables on one-on-one Slimeoid battles are set to begin in the near future. In the meantime, report any unusual findings or behaviors to the Cop Killer and Rowdy Fucker, who have much fewer important things to spend their time on than SlimeCorp employees."
@@ -534,7 +535,7 @@ async def instructions(cmd):
 
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp2, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp2, ewutils.formatMessage(cmd.message.author, response))
 
 # Create a slimeoid
 async def incubateslimeoid(cmd):
@@ -599,7 +600,7 @@ async def incubateslimeoid(cmd):
 			response = "You must contribute some of your own slime to create a Slimeoid. Specify how much slime you will sacrifice."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 # Create a slimeoid
 async def dissolveslimeoid(cmd):
@@ -646,7 +647,7 @@ async def dissolveslimeoid(cmd):
 		slimeoid.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 # shape your slimeoid's body
 
@@ -687,7 +688,7 @@ async def growbody(cmd):
 			response = "You must specify a body type. Choose an option from the buttons on the body console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 
 # shape your slimeoid's head
@@ -728,7 +729,7 @@ async def growhead(cmd):
 			response = "You must specify a head type. Choose an option from the buttons on the head console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 # shape your slimeoid's legs
 async def growlegs(cmd):
@@ -768,7 +769,7 @@ async def growlegs(cmd):
 			response = "You must specify means of locomotion. Choose an option from the buttons on the mobility console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 	
 # shape your slimeoid's weapon
 async def growweapon(cmd):
@@ -808,7 +809,7 @@ async def growweapon(cmd):
 			response = "You must specify a means of attack. Choose an option from the buttons on the weapon console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 	
 # shape your slimeoid's armor
 async def growarmor(cmd):
@@ -848,7 +849,7 @@ async def growarmor(cmd):
 			response = "You must specify a method of protection. Choose an option from the buttons on the armor console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 	
 # shape your slimeoid's special ability
 async def growspecial(cmd):
@@ -888,7 +889,7 @@ async def growspecial(cmd):
 			response = "You must specify a special attack type. Choose an option from the buttons on the special attack console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 # shape your slimeoid's brain.
 async def growbrain(cmd):
@@ -928,7 +929,7 @@ async def growbrain(cmd):
 			response = "You must specify a brain structure. Choose an option from the buttons on the brain console labelled A through G."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 		
 # Name your slimeoid.
 async def nameslimeoid(cmd):
@@ -969,7 +970,7 @@ async def nameslimeoid(cmd):
 				response = "You enter the name {} into the console.".format(str(name))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 	
 #allocate a point to ATK
 async def raisemoxie(cmd):
@@ -1012,7 +1013,7 @@ async def raisemoxie(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 #allocate a point to ATK
 async def lowermoxie(cmd):
@@ -1055,7 +1056,7 @@ async def lowermoxie(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 #allocate a point to DEF
 async def raisegrit(cmd):
@@ -1098,7 +1099,7 @@ async def raisegrit(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 #allocate a point to ATK
 async def lowergrit(cmd):
@@ -1141,7 +1142,7 @@ async def lowergrit(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 #allocate a point to DEF
 async def raisechutzpah(cmd):
@@ -1184,7 +1185,7 @@ async def raisechutzpah(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 #allocate a point to ATK
 async def lowerchutzpah(cmd):
@@ -1227,7 +1228,7 @@ async def lowerchutzpah(cmd):
 			response += "\nPoints remaining: {}".format(str(points))
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 
 
@@ -1425,7 +1426,7 @@ async def spawnslimeoid(cmd):
 			slimeoid.persist()
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 			
 		
@@ -1435,7 +1436,7 @@ async def slimeoid(cmd):
 	user_data = EwUser(member = cmd.message.author)
 	member = None
 	selfcheck = True
-
+	response = ""
 
 	if cmd.mentions_count == 0:
 		selfcheck = True
@@ -1559,7 +1560,7 @@ async def slimeoid(cmd):
 
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 def check(str):
 	if str.content == ewcfg.cmd_accept or str.content == ewcfg.cmd_refuse:
@@ -1570,19 +1571,19 @@ async def slimeoidbattle(cmd):
 	if cmd.message.channel.name != ewcfg.channel_arena:
 		#Only at the casino
 		response = "You can only have Slimeoid Battles at the Battle Arena."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	if cmd.mentions_count != 1:
 		#Must mention only one player
 		response = "Mention the player you want to challenge."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	author = cmd.message.author
 	member = cmd.mentions[0]
 
 	if author.id == member.id:
 		response = "You can't challenge yourself, dumbass."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	challenger = EwUser(member = author)
 	challenger_slimeoid = EwSlimeoid(member = author)
@@ -1595,16 +1596,16 @@ async def slimeoidbattle(cmd):
 	#Players have been challenged
 	if challenger.rr_challenger != "":
 		response = "You are already in the middle of a challenge."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	if challengee.rr_challenger != "":
 		response = "{} is already in the middle of a challenge.".format(member.display_name).replace("@", "\{at\}")
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	if challenger.poi != challengee.poi:
 		#Challangee must be in the casino
 		response = "Both players must be in the Battle Arena."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	if challenger_slimeoid.life_state != ewcfg.slimeoid_state_active:
 		response = "You do not have a Slimeoid ready to battle with!"
@@ -1616,11 +1617,11 @@ async def slimeoidbattle(cmd):
 	if challenger.life_state == ewcfg.life_state_corpse or challengee.life_state == ewcfg.life_state_corpse:
 		if challenger.life_state == ewcfg.life_state_corpse:
 			response = "Your Slimeoid won't battle for you while you're dead.".format(author.display_name).replace("@", "\{at\}")
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 		elif challengee.life_state == ewcfg.life_state_corpse:
 			response = "{}'s Slimeoid wont battle for them while they're dead.".format(member.display_name).replace("@", "\{at\}")
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	#Assign a challenger so players can't be challenged
 	challenger.rr_challenger = challenger.id_user
@@ -1630,14 +1631,18 @@ async def slimeoidbattle(cmd):
 	challengee.persist()
 
 	response = "You have been challenged by {} to a Slimeoid Battle. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(member, response))
 
 	#Wait for an answer
 	accepted = 0
-	msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
-	if msg != None:
-		if msg.content == "!accept":
-			accepted = 1
+	try:
+		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
+
+		if msg != None:
+			if msg.content == "!accept":
+				accepted = 1
+	except:
+		accepted = 0
 
 	# Clear challenger field.
 	challenger = EwUser(member = author)
@@ -1813,24 +1818,24 @@ async def slimeoidbattle(cmd):
 		if challengee_slimeoid.defense > challenger_slimeoid.defense:
 			s1_active = True
 		elif challengee_slimeoid.defense == challenger_slimeoid.defense:
-			coinflip = random.randrange(1,2,1)
+			coinflip = random.randrange(1,3)
 			if coinflip == 1:
 				s1active = True
 
 		player = author
 
 		response = "**{} sends {} out into the Battle Arena!**".format(author.display_name, s2name)
-		await cmd.client.send_message(cmd.message.channel, response)
+		await ewutils.send_message(cmd.client, cmd.message.channel, response)
 		await asyncio.sleep(1)
 		response = "**{} sends {} out into the Battle Arena!**".format(member.display_name, s1name)
-		await cmd.client.send_message(cmd.message.channel, response)
+		await ewutils.send_message(cmd.client, cmd.message.channel, response)
 		await asyncio.sleep(1)
 		response = "\nThe crowd erupts into cheers! The battle between {} and {} has begun! :crossed_swords:".format(s1name, s2name)
 #		response += "\n{} {} {} {} {} {}".format(str(s1moxie),str(s1grit),str(s1chutzpah),str(challengee_slimeoid.weapon),str(challengee_slimeoid.armor),str(challengee_slimeoid.special))
 #		response += "\n{} {} {} {} {} {}".format(str(s2moxie),str(s2grit),str(s2chutzpah),str(challenger_slimeoid.weapon),str(challenger_slimeoid.armor),str(challenger_slimeoid.special))
 #		response += "\n{}, {}".format(str(challengee_resistance),str(challengee_weakness))
 #		response += "\n{}, {}".format(str(challenger_resistance),str(challenger_weakness))
-		await cmd.client.send_message(cmd.message.channel, response)
+		await ewutils.send_message(cmd.client, cmd.message.channel, response)
 		await asyncio.sleep(3)
 			
 		s1hpmax = 50 + (challengee_slimeoid.level * 20)
@@ -1844,7 +1849,7 @@ async def slimeoidbattle(cmd):
 			turncounter -= 1
 
 			response = ""
-			battlecry = random.randrange(1,3,1)
+			battlecry = random.randrange(1,4)
 			thrownobject = ewcfg.thrownobjects_list[random.randrange(len(ewcfg.thrownobjects_list))]
 			if s1_active:
 				player = member
@@ -1852,19 +1857,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challengee_slimeoid.ai in ['a', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
 							strat = 'move'
 					elif challengee_slimeoid.ai in ['b', 'd', 'f']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['c', 'e']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
@@ -1880,7 +1885,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_battlecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -1892,7 +1897,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_movecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -1939,7 +1944,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challenger_weakness != "" or s2hp > 0:
@@ -1964,19 +1969,19 @@ async def slimeoidbattle(cmd):
 				else:
 					#determine strat based on ai
 					if challengee_slimeoid.ai in ['a', 'b', 'c']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['d']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challengee_slimeoid.ai in ['e', 'f', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
@@ -1992,7 +1997,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_battlecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -2004,7 +2009,7 @@ async def slimeoidbattle(cmd):
 							response = s1brain.str_movecry.format(
 								slimeoid_name=s1name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2033,7 +2038,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challenger_resistance != "" or s2hp > 0:
@@ -2077,19 +2082,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challenger_slimeoid.ai in ['a', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
 							strat = 'move'
 					elif challenger_slimeoid.ai in ['b', 'd', 'f']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['c', 'e']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
@@ -2105,7 +2110,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_battlecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -2117,7 +2122,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_movecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2164,7 +2169,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challengee_weakness != "" or s1hp > 0:
@@ -2188,19 +2193,19 @@ async def slimeoidbattle(cmd):
 
 					#determine strat based on ai
 					if challenger_slimeoid.ai in ['a', 'b', 'c']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['d']:
-						ranged_strat = random.randrange(1,2,1)
+						ranged_strat = random.randrange(1,3)
 						if ranged_strat < 2:
 							strat = 'move'
 						else:
 							strat = 'attack'
 					elif challenger_slimeoid.ai in ['e', 'f', 'g']:
-						ranged_strat = random.randrange(1,4,1)
+						ranged_strat = random.randrange(1,5)
 						if ranged_strat < 2:
 							strat = 'attack'
 						else:
@@ -2216,7 +2221,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_battlecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					elif strat == 'move' and battlecry == 1:
@@ -2228,7 +2233,7 @@ async def slimeoidbattle(cmd):
 							response = s2brain.str_movecry.format(
 								slimeoid_name=s2name
 							)
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 					#perform action
@@ -2257,7 +2262,7 @@ async def slimeoidbattle(cmd):
 						response += " :boom:"
 #						response += " strat:{}".format(str(ranged_strat))
 
-						await cmd.client.send_message(cmd.message.channel, response)
+						await ewutils.send_message(cmd.client, cmd.message.channel, response)
 						await asyncio.sleep(1)
 
 						if challengee_resistance != "" or s2hp > 0:
@@ -2299,7 +2304,7 @@ async def slimeoidbattle(cmd):
 				
 			# Send the response to the player.
 			if s1hp > 0 and s2hp > 0:
-				await cmd.client.send_message(cmd.message.channel, response)
+				await ewutils.send_message(cmd.client, cmd.message.channel, response)
 				await asyncio.sleep(2)
 
 		if s1hp <= 0:
@@ -2310,10 +2315,10 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s2brain.str_victory.format(
 				slimeoid_name=s2name
 			)
-			await cmd.client.send_message(cmd.message.channel, response)
+			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challenger_slimeoid.name, challenger_slimeoid.name, author.display_name)
-			await cmd.client.send_message(cmd.message.channel, response)
+			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 		else:
 			response = "\n" + s2legs.str_defeat.format(
@@ -2323,10 +2328,10 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s1brain.str_victory.format(
 				slimeoid_name=s1name
 			)
-			await cmd.client.send_message(cmd.message.channel, response)
+			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challengee_slimeoid.name, challengee_slimeoid.name, member.display_name)
-			await cmd.client.send_message(cmd.message.channel, response)
+			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 
 	else:
@@ -2337,4 +2342,4 @@ async def slimeoidbattle(cmd):
 		last_russianrouletted_times[member.id] = time_now - 540
 
 		# Send the response to the player.
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))

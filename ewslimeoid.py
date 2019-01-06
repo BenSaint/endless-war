@@ -37,11 +37,11 @@ class EwSlimeoid:
 		query_suffix = ""
 
 		if id_slimeoid != None:
-			query_suffix = " WHERE id_slimeoid = {}".format(id_slimeoid)
+			query_suffix = " WHERE id_slimeoid = '{}'".format(id_slimeoid)
 		elif member != None:
-			query_suffix = " WHERE id_user = {} AND id_server = {}".format(member.id, member.server.id)
+			query_suffix = " WHERE id_user = '{}' AND id_server = '{}'".format(member.id, member.server.id)
 			if life_state != None:
-				query_suffix += " AND life_state = {}".format(life_state)
+				query_suffix += " AND life_state = '{}'".format(life_state)
 
 		if query_suffix != "":
 			try:

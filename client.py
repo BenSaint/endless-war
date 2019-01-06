@@ -262,7 +262,10 @@ async def on_ready():
 		if poi.role != None:
 			poi.role = ewutils.mapRoleName(poi.role)
 
-	await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
+	try:
+		await client.change_presence(game = discord.Game(name = ("dev. by @krak " + ewcfg.version)))
+	except:
+		ewutils.logMsg("Failed to change_presence!")
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
@@ -311,6 +314,7 @@ async def on_ready():
 			# change the ownership to the faction that's already in control to initialize topic names
 			try:
 				await dist.change_ownership(new_owner = dist.controlling_faction, actor = "init", client = client)
+				dist.persist()
 			except:
 				ewutils.logMsg('Could not change ownership for {} to "{}".'.format(poi, dist.controlling_faction))
 
@@ -385,7 +389,8 @@ async def on_ready():
 
 						# The stream has transitioned from offline to online. Make an announcement!
 						for channel in channels_announcement:
-							await client.send_message(
+							await ewutils.send_message(
+								client,
 								channel,
 								"ATTENTION CITIZENS. THE **ROWDY FUCKER** AND THE **COP KILLER** ARE **STREAMING**. BEWARE OF INCREASED KILLER AND ROWDY ACTIVITY.\n\n@everyone\n{}".format(
 									"https://www.twitch.tv/rowdyfrickerscopkillers"
@@ -481,9 +486,9 @@ async def on_ready():
 					for server in client.servers:
 						for channel in server.channels:
 							if channel.name in msg_channel_names:
-								await client.send_message(channel, "**{}**".format(msg.message))
+								await ewutils.send_message(client, channel, "**{}**".format(msg.message))
 							elif channel.name in msg_channel_names_reverb:
-								await client.send_message(channel, "**Something is happening nearby...\n\n{}**".format(msg.message))
+								await ewutils.send_message(client, channel, "**Something is happening nearby...\n\n{}**".format(msg.message))
 		except:
 			ewutils.logMsg('An error occurred while trying to process the message queue:')
 			traceback.print_exc(file = sys.stdout)
@@ -500,7 +505,7 @@ async def on_member_join(member):
 async def on_message_delete(message):
 	if message != None and message.server != None and message.author.id != client.user.id and message.content.startswith(ewcfg.cmd_prefix):
 		ewutils.logMsg("deleted message from {}: {}".format(message.author.display_name, message.content))
-		await client.send_message(message.channel, ewutils.formatMessage(message.author, '**I SAW THAT.**'));
+		await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, '**I SAW THAT.**'));
 
 @client.event
 async def on_message(message):
@@ -574,7 +579,7 @@ async def on_message(message):
 				# Only send the help doc once every thirty seconds. There's no need to spam it.
 				if (time_now - time_last) > 30:
 					last_helped_times[message.author.id] = time_now
-					await client.send_message(message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
+					await ewutils.send_message(client, message.channel, 'Check out the guide for help: https://ew.krakissi.net/guide/')
 			"""
 
 			# Nothing else to do in a DM.
@@ -589,7 +594,7 @@ async def on_message(message):
 
 			response = "You cannot participate in the ENDLESS WAR while offline."
 
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, response))
+			await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, response))
 
 			return
 
@@ -621,7 +626,7 @@ async def on_message(message):
 
 			item = EwItem(id_item = item_id)
 
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
+			await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, ewitem.item_look(item)))
 
 		# Creates a poudrin
 		elif debug == True and cmd == '!createpoudrin':
@@ -637,7 +642,7 @@ async def on_message(message):
 
 			item = EwItem(id_item = item_id)
 
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, "Poudrin created."))
+			await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, "Poudrin created."))
 
 		# Gives the user some slime
 		elif debug == True and cmd == '!getslime':
@@ -646,7 +651,7 @@ async def on_message(message):
 			user_data.change_slimes(n = 10000)
 			user_data.persist()
 
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, "You receive 10,000 slime."))
+			await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, "You receive 10,000 slime."))
 
 
 
@@ -663,7 +668,7 @@ async def on_message(message):
 					id_item = item.get('id_item')
 				)
 
-			await client.send_message(message.channel, ewutils.formatMessage(message.author, 'ok'))
+			await ewutils.send_message(client, message.channel, ewutils.formatMessage(message.author, 'ok'))
 
 		# AWOOOOO
 		elif re_awoo.match(cmd):
@@ -683,13 +688,16 @@ async def on_message(message):
 
 				if role != None:
 					for user in mentions:
-						await client.replace_roles(user, role)
+						try:
+							await client.replace_roles(user, role)
+						except:
+							ewutils.logMsg('Failed to replace_roles for user {} with {}.'.format(user.display_name, role.name))
 
 					response = 'Done.'
 				else:
 					response = 'Unrecognized role.'
 
-			await client.send_message(cmd.message.channel, ewutils.formatMessage(message.author, response))
+			await ewutils.send_message(client, cmd.message.channel, ewutils.formatMessage(message.author, response))
 
 		# didn't match any of the command words.
 		else:
@@ -702,9 +710,12 @@ async def on_message(message):
 			elif randint == 3:
 				msg_mistake = "ENDLESS WAR pays you no mind."
 
-			msg = await client.send_message(cmd_obj.message.channel, msg_mistake)
+			msg = await ewutils.send_message(client, cmd_obj.message.channel, msg_mistake)
 			await asyncio.sleep(2)
-			await client.delete_message(msg)
+			try:
+				await client.delete_message(msg)
+			except:
+				pass
 
 	elif content_tolower.find(ewcfg.cmd_howl) >= 0 or content_tolower.find(ewcfg.cmd_howl_alt1) >= 0 or re_awoo.match(content_tolower):
 		""" Howl if !howl is in the message at all. """

@@ -9,7 +9,7 @@ from ewmap import EwPoi
 from ewslimeoid import EwBody, EwHead, EwMobility, EwOffense, EwDefense, EwSpecial, EwBrain
 
 # Global configuration options.
-version = "v2.12"
+version = "v2.14"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -290,7 +290,7 @@ property_class_b = "b"
 property_class_c = "c"
 
 # district capturing
-capture_tick_length = 5  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
+capture_tick_length = 10  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
 max_capture_points_s = 3600  # 60 min
 max_capture_points_a = 1800  # 30 min
 max_capture_points_b = 1200  # 20 min
@@ -367,8 +367,12 @@ emote_pizzahut = "<:pizzahut:431273890355085323>"
 emote_kfc = "<:kfc:431273890216673281>"
 emote_moon = "<:moon:431418525303963649>"
 emote_111 = "<:111:431547758181220377>"
+
 emote_copkiller = "<:copkiller:431275071945048075>"
 emote_rowdyfucker = "<:rowdyfucker:431275088076079105>"
+emote_ck = "<:ck:504173691488305152>"
+emote_rf = "<:rf:504174176656162816>"
+
 emote_theeye = "<:theeye:431429098909466634>"
 emote_slime1 = "<:slime1:431564830541873182>"
 emote_slime2 = "<:slime2:431570132901560320>"
@@ -391,11 +395,8 @@ emote_purple = "<:purple:496397848343216138>"
 emote_pink = "<:pink:496397871180939294>"
 emote_slimecoin = "<:slimecoin:440576133214240769>"
 emote_slimegun = "<:slimegun:436500203743477760>"
-emote_ck = "<:ck:504173691488305152>"
-emote_rf = "<:rf:504174176656162816>"
 emote_slimecorp = "<:slimecorp:522416869127225344>"
-emote_testemote = "<:purple:496348895098699796>" # test server emote
-emote_nlacakanm = "<:nlacakanm:521471563481219096>"
+emote_nlacakanm = "<:nlacakanm:499615025544298517>"
 
 # Emotes for the negaslime writhe animation
 emote_vt = "<:vt:492067858160025600>"
@@ -2429,6 +2430,7 @@ poi_list = [
 		id_poi = poi_id_glocksbury,
 		alias = [
 			"glocks",
+			"glock",
 			"gb"
 		],
 		str_name = "Glocksbury",
@@ -2447,7 +2449,8 @@ poi_list = [
 			"nsleezeboro",
 			"nsleeze",
 			"northsleeze",
-			"nsb"
+			"nsb",
+			"ns"
 		],
 		str_name = "North Sleezeborough",
 		str_desc = "Young jobless adults walk around in plaid and suspenders with curious facial hair, stopping into the occasional store front to buy a vinyl recording or an ironic knick-knack.\n\nTo the North is Glocksbury. To the East is Krak Bay. To the South is South Sleezeborough.",
@@ -2465,7 +2468,8 @@ poi_list = [
 			"ssleezeboro",
 			"ssleeze",
 			"southsleeze",
-			"ssb"
+			"ssb",
+			"ss"
 		],
 		str_name = "South Sleezeborough",
 		str_desc = "The streets are empty. The residents of this neighborhood have all lost their nerve and are hiding in their hovels in a futile attempts to stay safe from gang violence.\n\nThis area contains the Dojo. To the North is North Sleezeborough. To the Northeast is Krak Bay, To the East is Ooze Gardens.",
@@ -2510,6 +2514,7 @@ poi_list = [
 		alias = [
 			"wrecking",
 			"wton",
+			"ton",
 			"wt"
 		],
 		str_name = "Wreckington",
@@ -2575,6 +2580,8 @@ poi_list = [
 			"resort",
 			"assault",
 			"flats",
+			"af",
+			"br",
 			"assflats",
 			"afbr"
 		],
@@ -2618,8 +2625,11 @@ poi_list = [
 	EwPoi( # 26
 		id_poi = poi_id_toxington,
 		alias = [
+			"tox",
 			"tton",
-			"tt"
+			"ttn",
+			"tt",
+			"tx"
 		],
 		str_name = "Toxington",
 		str_desc = "You cover your mouth in a futile attempt to avoid breathing choking acidic vapor that continually rises off of the nearby lake.\n\nTo the East is Astatine Heights. To the Southeast is Gatlingsdale. To the South is Polonium Hill. To the East is Charcoal Park.",
@@ -2636,7 +2646,8 @@ poi_list = [
 			"park2",
 			"cpark",
 			"awkwardinitials",
-			"cp"
+			"cp",
+			"ch"
 		],
 		str_name = "Charcoal Park",
 		str_desc = "The soil here is mostly black soot and the charred remains of a now long-gone series of low-income apartment complexes. A few shantytowns have been constructed as some of the only living trees in NLACakaNM have sprouted out of the ashes.\n\nTo the East is Toxington. To the South is Polonium Hill.",
@@ -2668,6 +2679,7 @@ poi_list = [
 			"wglocksbury",
 			"westglocks",
 			"wglocks",
+			"wglock",
 			"wgb",
 			"wg"
 		],
@@ -2685,6 +2697,8 @@ poi_list = [
 			"drain",
 			"sewers",
 			"sewer",
+			"ghost",
+			"ghosts",
 			"ts",
 			"s"
 		],
@@ -2846,8 +2860,10 @@ poi_list = [
 			"kingswifesson",
 			"speakeasy",
 			"bar",
+			"sons",
 			"sez",  # se is already slime's end
-			"ez"
+			"ez",
+			"kws"
 		],
 		str_name = "The King's Wife's Son Speakeasy",
 		str_desc = "A rustic tavern with dark wooden walls and floor, bearing innumerable knickknacks on the walls and high wooden stools arranged in front of a bar made of patina'd copper. There's nobody here.\n\nExits into Vagrant's Corner.",
@@ -2952,7 +2968,9 @@ poi_list = [
 		alias = [
 			"mines2",
 			"cvmines",
+			"cmines",
 			"cvm",
+			"cm",
 			"cratersvillemine",
 			"cratersvillem"
 		],
@@ -2971,6 +2989,7 @@ poi_list = [
 			"mines3",
 			"ttmines",
 			"ttm",
+			"toxm",
 			"toxingtonmine",
 			"toxingtonm"
 		],
@@ -2988,7 +3007,10 @@ poi_list = [
 		alias = [
 			"diner",
 			"smokers",
-			"cough"
+			"cough",
+			"smc", 
+			"wf", #wreckington food
+			"rf" #rowdy food
 		],
 		str_name = "The Smoker's Cough",
 		str_desc = "A quaint hole-in-the-wall vintage diner. The wallpaper may be peeling and the ‘80s paint job might be faded, but you’ll be damned if this place didn’t make an aesthetic stomping grounds for cheapskate juveniles like yourself. All the staff know you by name, they’ve memorized your order, and frankly they love you. You’re like a ninth son to the inbred owner and his many, many wives. It’s a cramped space, only fitting about 20 people maximum. The fluorescent lighting from the ceiling lamps invade every nook and cranny of the cyan and purple diner, even when the natural daylight could easily illuminate it just as well. You think you can see some mold on certain corners of the floor. Oh man, so cool.",
@@ -3009,7 +3031,9 @@ poi_list = [
 			"redmobster",
 			"red",
 			"mobster",
-			"rm"
+			"rm",
+			"mob",
+			"kf" #killer food
 		],
 		str_name = "Red Mobster Seafood",
 		str_desc = "The last bastion of sophistication in this godforsaken city. A dimly lit, atmospheric fine dining restaurant with waiters and tables and archaic stuff like that. Upper crust juveniles and older fugitives make up the majority of the patrons, making you stick out like a sore thumb. Quiet, respectable murmurs pollute the air alongside the scrapping of silverware and the occasional hoity toity laugh. Everything about this place makes you sick.",
@@ -3031,7 +3055,7 @@ poi_list = [
 			"jrfarms",
 			"jrfarm",
 			"jrplantation",
-			"jrplant"
+			"jrplant",
 			"juviesrowf",
 			"juviesrowfarm"
 		],
@@ -3255,13 +3279,68 @@ cosmetic_items_list = [
 		rarity = rarity_plebeian
 	),
 	EwCosmeticItem(
+		name = "kepi",
+		description = "A short kepi with a sunken top and an insignia on the front.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "tam o' shanter'",
+		description = "A traditional Scottish wool bonnet with a plaid pattern.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "ushanka",
+		description = "A traditional Russian fur cap with thick wool ear flaps.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "karategi",
+		description = "A traditional Japanese karateka’s outfiit, complete with a belt with extended ends that easily flow in the wind for dramatic effect.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "turban",
+		description = "A traditional Arabian headdress, lavishly decorated with a single large jewel and protruding peacock feather.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "nemes",
+		description = "The traditional ancient Egyptian pharaoh's striped head cloth.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "varsity jacket",
+		description = "An American baseball jacket, with a large insignia on the left side of the chest.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "sombrero",
+		description = "A traditional Mexican sombrero, with an extra-wide brim to protect you from the blistering Arizonian sun.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "hawaiian shirt",
+		description = "A brightly colored Hawaiian shirt with a floral pattern. It reeks of slima colada and the complementary shampoo from Assault Flats Beach Resort.",
+		rarity = rarity_plebeian
+	),
+	EwCosmeticItem(
+		name = "fursuit",
+		description = "A fursuit. Custom-made and complete with high quality faux fur, padded digitigrade legs, follow-me eyes, adjustable facial expressions, and a fan in the head. It is modeled off your original character, also known as your fursona. Some would call it’s character design “ugly” or “embarrassing,” but you think it’s perfect.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
+		name = "diadem",
+		description = "The traditional Greco-Roman laurel wreath symbolizing sovereignty and power. Be careful about wearing this around in public, you might just wake up with 23 stab wounds.",
+		rarity = rarity_patrician
+	),
+	EwCosmeticItem(
 		name = "Bill's Hat",
 		description = "A military beret with a shield insignia on the front.",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(
 		name = "wedding ring",
-		description = "A silver ring with a decently large diamond on top. For the person love most in the entire world. <3",
+		description = "A silver ring with a decently large diamond on top. For the person you love most in the entire world. <3",
 		rarity = rarity_patrician
 	),
 	EwCosmeticItem(

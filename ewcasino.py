@@ -55,7 +55,7 @@ async def pachinko(cmd):
 		if value > user_data.slimecredit:
 			response = "You don't have enough SlimeCoin to play."
 		else:
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
+			await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin. Balls begin to drop!".format(ewcfg.slimes_perpachinko)))
 			await asyncio.sleep(3)
 
 			ball_count = 10
@@ -81,7 +81,7 @@ async def pachinko(cmd):
 					response += " ... **ding!**"
 					winballs += 1
 
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 			winnings = int(winballs * ewcfg.slimes_perpachinko / 2)
@@ -102,7 +102,7 @@ async def pachinko(cmd):
 		last_pachinkoed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 
 async def craps(cmd):
@@ -164,7 +164,7 @@ async def craps(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def slots(cmd):
 	resp = await ewcmd.start(cmd = cmd)
@@ -192,7 +192,7 @@ async def slots(cmd):
 			response = "You don't have enough SlimeCoin."
 		else:
 			# Add some suspense...
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
+			await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, "You insert {:,} SlimeCoin and pull the handle...".format(ewcfg.slimes_perslot)))
 			await asyncio.sleep(3)
 
 			slots = [
@@ -210,7 +210,7 @@ async def slots(cmd):
 			# Roll those tumblers!
 			spins = 3
 			while spins > 0:
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, "{} {} {}".format(
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, "{} {} {}".format(
 					slots[random.randrange(0, slots_len)],
 					slots[random.randrange(0, slots_len)],
 					slots[random.randrange(0, slots_len)]
@@ -276,7 +276,7 @@ async def slots(cmd):
 		last_slotsed_times[cmd.message.author.id] = 0
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def roulette(cmd):
 	resp = await ewcmd.start(cmd = cmd)
@@ -320,7 +320,7 @@ async def roulette(cmd):
 			elif bet not in all_bets:
 				response = "The dealer didn't understand your wager. Options are: {}\n{}board.png".format(ewutils.formatNiceList(names = all_bets), img_base)
 			else:
-				await cmd.client.edit_message(resp, ewutils.formatMessage(
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(
 					cmd.message.author,
 					img_base + "sr.gif"
 				))
@@ -394,7 +394,7 @@ async def roulette(cmd):
 			response = "Specify how much SlimeCoin you will wager."
 
 	# Send the response to the player.
-	await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 async def baccarat(cmd):
 	resp = await ewcmd.start(cmd = cmd)
@@ -418,7 +418,7 @@ async def baccarat(cmd):
 	elif cmd.message.channel.name != ewcfg.channel_casino:
 		# Only allowed in the slime casino.
 		response = "You must go to the Casino to gamble your SlimeCoin."
-		await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 		await asyncio.sleep(1)
 	else:
 		last_rouletted_times[cmd.message.author.id] = time_now
@@ -436,29 +436,29 @@ async def baccarat(cmd):
 
 			if value > user_data.slimecredit or value == 0:
 				response = "You don't have enough SlimeCoin."
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 			elif len(bet) == 0:
 				response = "You must specify what hand you are betting on. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 			elif bet not in all_bets:
 				response = "The dealer didn't understand your wager. Options are {}.".format(ewutils.formatNiceList(names = all_bets), img_base)
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 			else:
 				resp_d = await ewcmd.start(cmd = cmd)
 				resp_f = await ewcmd.start(cmd = cmd)
 				response = "You bet {} SlimeCoin on {}. The dealer shuffles the deck, then begins to deal.".format(str(value),str(bet))
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 				response += "\nThe dealer deals you your first card..."
 
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(3)
 
 				winnings = 0
@@ -532,10 +532,10 @@ async def baccarat(cmd):
 				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 				response += "\nThe dealer deals you your second card..."
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(3)
 
 				while True:
@@ -606,14 +606,14 @@ async def baccarat(cmd):
 				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
-				await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 
 				responsesave = response
 
 				response = "\nThe dealer deals the house its first card..."
 
-				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(3)
 
 				while True:
@@ -684,10 +684,10 @@ async def baccarat(cmd):
 				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
-				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 				response += "\nThe dealer deals the house its second card..."
-				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(3)
 
 				while True:
@@ -758,7 +758,7 @@ async def baccarat(cmd):
 				response += str_ranksuit.format(rank, suit)
 				response += img_base + lastcard + ".png"
 
-				await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 				await asyncio.sleep(1)
 				responsesave_d = response
 
@@ -771,7 +771,7 @@ async def baccarat(cmd):
 					response = responsesave
 					response += "\nThe dealer deals you another card..."
 
-					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 					await asyncio.sleep(3)
 
 					phit = True
@@ -843,14 +843,14 @@ async def baccarat(cmd):
 					response += str_ranksuit.format(rank, suit)
 					response += img_base + lastcard + ".png"
 
-					await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+					await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 					await asyncio.sleep(1)
 
 				if ((phit != True and d <= 5) or (phit == True and ((d <= 2) or (d == 3 and drawp3 not in ["8", "21", "34", "47"]) or (d == 4 and drawp3 in ["2", "15", "28", "41", "3", "16", "29", "42", "4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 5 and drawp3 in ["4", "17", "30", "43", "5", "18", "31", "44", "6", "19", "32", "45", "7", "20", "33", "46"]) or (d == 6 and drawp3 in ["6", "19", "32", "45", "7", "20", "33", "46"])))) and (d != 7) and (end != True):
 					
 					response = responsesave_d
 					response += "\nThe dealer deals the house another card..."
-					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 					await asyncio.sleep(3)
 					
 					while True:
@@ -921,7 +921,7 @@ async def baccarat(cmd):
 					response += str_ranksuit.format(rank, suit)
 					response += img_base + lastcard + ".png"
 
-					await cmd.client.edit_message(resp_d, ewutils.formatMessage(cmd.message.author, response))
+					await ewutils.edit_message(cmd.client, resp_d, ewutils.formatMessage(cmd.message.author, response))
 					await asyncio.sleep(2)
 
 				if p > 9:
@@ -952,11 +952,11 @@ async def baccarat(cmd):
 				user_data = EwUser(member = cmd.message.author)
 				user_data.change_slimecredit(n = winnings - value, coinsource = ewcfg.coinsource_casino)
 				user_data.persist()
-				await cmd.client.edit_message(resp_f, ewutils.formatMessage(cmd.message.author, response))
+				await ewutils.edit_message(cmd.client, resp_f, ewutils.formatMessage(cmd.message.author, response))
 
 		else:
 			response = "Specify how much SlimeCoin you will wager."
-			await cmd.client.edit_message(resp, ewutils.formatMessage(cmd.message.author, response))
+			await ewutils.edit_message(cmd.client, resp, ewutils.formatMessage(cmd.message.author, response))
 
 def check(str):
 	if str.content == ewcfg.cmd_accept or str.content == ewcfg.cmd_refuse:
@@ -968,12 +968,12 @@ async def russian_roulette(cmd):
 	if cmd.message.channel.name != ewcfg.channel_casino:
 		#Only at the casino
 		response = "You can only play russian roulette at the casino."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	if cmd.mentions_count != 1:
 		#Must mention only one player
 		response = "Mention the player you want to challenge."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	author = cmd.message.author
 	member = cmd.mentions[0]
@@ -989,11 +989,11 @@ async def russian_roulette(cmd):
 
 	if last_used_author + ewcfg.cd_rr > time_now or last_used_member + ewcfg.cd_rr > time_now:
 		response = "**ENOUGH**"
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 	if author.id == member.id:
 		response = "You might be looking for !suicide."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	challenger = EwUser(member = author)
 	challengee = EwUser(member = member)
@@ -1001,30 +1001,30 @@ async def russian_roulette(cmd):
 	#Players have been challenged
 	if challenger.rr_challenger != "":
 		response = "You are already in the middle of a challenge."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	if challengee.rr_challenger != "":
 		response = "{} is already in the middle of a challenge.".format(member.display_name).replace("@", "\{at\}")
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	if challenger.poi != challengee.poi:
 		#Challangee must be in the casino
 		response = "Both players must be in the casino."
-		return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	#Players have to be enlisted
 	if challenger.life_state != ewcfg.life_state_enlisted or challengee.life_state != ewcfg.life_state_enlisted:
 		if challenger.life_state == ewcfg.life_state_corpse:
 			response = "You try to grab the gun, but it falls through your hands. Ghosts can't hold weapons.".format(author.display_name).replace("@", "\{at\}")
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 		elif challengee.life_state == ewcfg.life_state_corpse:
 			response = "{} tries to grab the gun, but it falls through their hands. Ghosts can't hold weapons.".format(member.display_name).replace("@", "\{at\}")
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 		else:
 			response = "Juveniles are too cowardly to gamble their lives."
-			return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+			return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 
 	#Assign a challenger so players can't be challenged
 	challenger.rr_challenger = challenger.id_user
@@ -1034,14 +1034,18 @@ async def russian_roulette(cmd):
 	challengee.persist()
 
 	response = "You have been challenged by {} to a game of russian roulette. Do you !accept or !refuse?".format(author.display_name).replace("@", "\{at\}")
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(member, response))
 
 	#Wait for an answer
 	accepted = 0
-	msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
-	if msg != None:
-		if msg.content == "!accept":
-			accepted = 1
+	try:
+		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
+
+		if msg != None:
+			if msg.content == "!accept":
+				accepted = 1
+	except:
+		accepted = 0
 
 	#Start game
 	if accepted == 1:
@@ -1053,12 +1057,12 @@ async def russian_roulette(cmd):
 			#In case any of the players suicide mid-game
 			if challenger.life_state == ewcfg.life_state_corpse:
 				response = "{} couldn't handle the pressure and killed themselves.".format(author.display_name).replace("@", "\{at\}")
-				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(member, response))
+				await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(member, response))
 				break
 				
 			if challengee.life_state == ewcfg.life_state_corpse:
 				response = "{} couldn't handle the pressure and killed themselves.".format(member.display_name).replace("@", "\{at\}")
-				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+				await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 				break
 				
 			#Challenger goes second
@@ -1068,12 +1072,12 @@ async def russian_roulette(cmd):
 				player = member
 
 			response = "You put the gun to your head and pull the trigger..."
-			res = await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(player, response))
+			res = await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(player, response))
 			await asyncio.sleep(1)
 
 			#Player dies
 			if random.randint(1, (7 - spin)) == 1:
-				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " **BANG**")))
+				await ewutils.edit_message(cmd.client, res, ewutils.formatMessage(player, (response + " **BANG**")))
 				response = "You return to the Casino with {}'s slime.".format(player.display_name).replace("@", "\{at\}")
 				was_suicide = False
 				#Challenger dies
@@ -1120,7 +1124,7 @@ async def russian_roulette(cmd):
 				challenger.persist()
 				challengee.persist()
 
-				await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(winner, response))
+				await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(winner, response))
 
 				await ewrolemgr.updateRoles(client = cmd.client, member = author)
 				await ewrolemgr.updateRoles(client = cmd.client, member = member)
@@ -1130,20 +1134,20 @@ async def russian_roulette(cmd):
 					deathreport = "{} ".format(ewcfg.emote_slimeskull) + ewutils.formatMessage(player, deathreport)
 
 					sewerchannel = ewutils.get_channel(cmd.message.server, ewcfg.channel_sewers)
-					await cmd.client.send_message(sewerchannel, deathreport)
+					await ewutils.send_message(cmd.client, sewerchannel, deathreport)
 
 				break
 
 			#Or survives
 			else:
-				await cmd.client.edit_message(res, ewutils.formatMessage(player, (response + " but it's empty")))
+				await ewutils.edit_message(cmd.client, res, ewutils.formatMessage(player, (response + " but it's empty")))
 				await asyncio.sleep(1)
 				#track spins?
 
 	#Or cancel the challenge
 	else:
 		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
 		last_russianrouletted_times[author.id] = time_now - 540
 		last_russianrouletted_times[member.id] = time_now - 540
 
