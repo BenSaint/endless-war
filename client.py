@@ -534,13 +534,16 @@ async def on_message(message):
 	re_awoo = re.compile('.*![a]+[w]+o[o]+.*')
 
 	# update the player's time_last_action which is used for kicking AFK players out of subzones
-	ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
-		time_last_action = ewcfg.col_time_last_action
-	), (
-		time.time(),
-		message.author.id,
-		message.server.id,
-	))
+	try:
+		ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
+			time_last_action = ewcfg.col_time_last_action
+		), (
+			int(time.time()),
+			message.author.id,
+			message.server.id
+		))
+	except:
+		ewutils.logMsg('server {}: failed to update time_last_action for {}'.format(message.server.id, message.author.id))
 
 	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
 		"""

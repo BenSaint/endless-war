@@ -144,8 +144,6 @@ class EwUser:
 	time_lastspar = 0
 	time_lasthaunt = 0
 	time_lastinvest = 0
-	#For possible time limit
-	time_last_rr = 0
 
 	""" fix data in this object if it's out of acceptable ranges """
 	def limit_fix(self):
@@ -157,6 +155,9 @@ class EwUser:
 
 		if self.poi == '':
 			self.poi = ewcfg.poi_id_downtown
+
+		if self.time_last_action <= 0:
+			self.time_last_action = int(time.time())
 			
 	""" gain or lose slime, recording statistics and potentially leveling up. """
 	def change_slimes(self, n = 0, source = None):

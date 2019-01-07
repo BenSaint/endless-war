@@ -320,10 +320,10 @@ seconds_per_ingame_day = 21600
 ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
 
 # kingpin district control slime yields (per tick, i.e. in-game-hourly)
-slime_yield_class_s = int(60000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
-slime_yield_class_a = int(40000 / ticks_per_day)
-slime_yield_class_b = int(30000 / ticks_per_day)
-slime_yield_class_c = int(20000 / ticks_per_day)
+slime_yield_class_s = int(300000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
+slime_yield_class_a = int(200000 / ticks_per_day)
+slime_yield_class_b = int(150000 / ticks_per_day)
+slime_yield_class_c = int(100000 / ticks_per_day)
 
 # district control slime yields assigned to property classes
 district_control_slime_yields = {
