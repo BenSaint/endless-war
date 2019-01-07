@@ -1820,7 +1820,7 @@ async def slimeoidbattle(cmd):
 		elif challengee_slimeoid.defense == challenger_slimeoid.defense:
 			coinflip = random.randrange(1,3)
 			if coinflip == 1:
-				s1active = True
+				s1_active = True
 
 		player = author
 
