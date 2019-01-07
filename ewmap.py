@@ -692,4 +692,4 @@ async def kick(id_server):
 
 			member_object = ewcfg.server_list[id_server].get_member(id_user)
 			response = "You have been kicked out for loitering! You can only stay in a sub-zone and twiddle your thumbs for 3 hours at a time."
-			await ewutils.get_client().send_message(poi.mother_district.channel, ewutils.formatMessage(member_object, response))
+			await ewutils.send_message(ewutils.get_client(), poi.mother_district.channel, ewutils.formatMessage(member_object, response))

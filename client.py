@@ -444,6 +444,8 @@ async def on_ready():
 
 					await ewdistrict.give_kingpins_slime_and_decay_capture_points(id_server = server.id)
 
+					await ewmap.kick(server.id)
+
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:
 						await ewleaderboard.post_leaderboards(client = client, server = server)
