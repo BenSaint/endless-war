@@ -10,7 +10,7 @@ from ew import EwUser, EwMarket
 
 """ Slimeoid data model for database persistence """
 class EwSlimeoid:
-	id_slimeoid = ""
+	id_slimeoid = 0
 	id_user = ""
 	id_server = ""
 
@@ -103,6 +103,9 @@ class EwSlimeoid:
 			conn_info = ewutils.databaseConnect()
 			conn = conn_info.get('conn')
 			cursor = conn.cursor();
+
+			if self.id_slimeoid == "" or self.id_slimeoid == None:
+				self.id_slimeoid = 0
 
 			# Save the object.
 			cursor.execute("REPLACE INTO slimeoids({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
