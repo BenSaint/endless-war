@@ -117,7 +117,10 @@ async def order(cmd):
 
 		if food is not None:
 			# gets a vendor that the item is available and the player currently located in
-			current_vendor = (set(food.vendors).intersection(set(poi.vendors))).pop()
+			try:
+				current_vendor = (set(food.vendors).intersection(set(poi.vendors))).pop()
+			except:
+				current_vendor = None
 
 		if food == None or current_vendor is None or len(current_vendor) < 1:
 			response = "Check the {} for a list of items you can {}.".format(ewcfg.cmd_menu, ewcfg.cmd_order)
