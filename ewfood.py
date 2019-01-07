@@ -185,6 +185,7 @@ async def order(cmd):
 
 					item_props = {
 						# not all attributes are necessary to store in the database since the price and vendors list is only needed for buying it
+						'id_food': food.id_food,
 						'food_name': food.str_name,
 						'food_desc': food.str_desc,
 						'recover_hunger': food.recover_hunger,

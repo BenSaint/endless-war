@@ -287,9 +287,10 @@ class EwUser:
 				self.inebriation = 20
 
 			try:
-				if item_props['food_name'] == "coleslaw":
+				if item_props['id_food'] == "coleslaw":
 					self.ghostbust = True
 			except:
+				# An exception will occur if there's no id_food prop in the database. We don't care.
 				pass
 
 			response = item_props['str_eat'] + ("\n\nYou're stuffed!" if self.hunger <= 0 else "")

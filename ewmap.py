@@ -491,12 +491,14 @@ async def move(cmd):
 	move_current = moves_active[cmd.message.author.id] = move_counter
 
 	minutes = int(path.cost / 60)
+	seconds = path.cost % 60
 
 	msg_walk_start = await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You begin walking to {}.{}".format(
 		poi.str_name,
-		(" It's {} minute{} away.".format(
+		(" It's {} minute{}{} away.".format(
 			minutes,
-			("s" if minutes != 1 else "")
+			("s" if minutes != 1 else ""),
+			(" and {} seconds".format(seconds) if seconds > 5 else "")
 		) if minutes > 0 else "")
 	)))
 
