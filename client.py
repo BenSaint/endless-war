@@ -252,6 +252,7 @@ if debug == True:
 
 @client.event
 async def on_ready():
+	ewcfg.set_client(client)
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 
 	ewutils.logMsg("Loaded NLACakaNM world map. ({}x{})".format(ewmap.map_width, ewmap.map_height))
@@ -327,9 +328,6 @@ async def on_ready():
 		ewutils.logMsg('Message queue directory already exists.')
 
 	ewutils.logMsg('Ready.')
-
-	ewcfg.set_client(client)
-
 
 	"""
 		Set up for infinite loop to perform periodic tasks.
@@ -534,6 +532,15 @@ async def on_message(message):
 	content_tolower = message.content.lower()
 	re_awoo = re.compile('.*![a]+[w]+o[o]+.*')
 
+	# update the player's time_last_action which is used for kicking AFK players out of subzones
+	ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
+		time_last_action = ewcfg.col_time_last_action
+	), (
+		time.time(),
+		message.author.id,
+		message.server.id,
+	))
+
 	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
 		"""
 			Wake up if we need to respond to messages. Could be:
@@ -726,13 +733,6 @@ async def on_message(message):
 			client = client
 		))
 
-	ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
-		time_last_action = ewcfg.col_time_last_action
-	), (
-		time.time(),
-		message.author.id,
-		message.server.id,
-	))
 
 # find our REST API token
 token = ewutils.getToken()
