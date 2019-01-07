@@ -658,6 +658,13 @@ async def give(cmd):
 		response = "You have to specify the recipient of the item."
 		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
+	user_data = EwUser(member = author)
+	recipient_data = EwUser(member = recipient)
+
+	if user_data.poi != recipient_data.poi:
+		response = "You must be in the same location as the person you want to gift your item to, bitch."
+		return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+
 	item_sought = find_item(item_search = item_search, id_user = author.id, id_server = server.id)
 
 	if item_sought:  # if an item was found
