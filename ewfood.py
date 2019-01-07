@@ -78,7 +78,7 @@ async def menu(cmd):
 			response += "**{}**: *{}*\n".format(vendor, ewutils.formatNiceList(names = ewcfg.food_vendor_inv[vendor]))
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 """ players order food, for themselves or somebody else """
 async def order(cmd):
@@ -178,7 +178,7 @@ async def order(cmd):
 					if len(food_items) >= math.ceil(user_data.slimelevel / ewcfg.max_food_in_inv_mod):
 						# user_data never got persisted so the player won't lose money unnecessarily
 						response = "You can't carry any more food than that."
-						return await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+						return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 					item_props = {
 						# not all attributes are necessary to store in the database since the price and vendors list is only needed for buying it
@@ -215,4 +215,4 @@ async def order(cmd):
 					target_data.persist()
 
 	# Send the response to the player.
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

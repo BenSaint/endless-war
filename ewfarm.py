@@ -120,7 +120,7 @@ async def reap(cmd):
 
 				farm.time_lastsow = 0  # 0 means no seeds are currently planted
 				farm.persist()
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 
 """
@@ -170,4 +170,4 @@ async def sow(cmd):
 
 				farm.persist()
 
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))

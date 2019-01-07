@@ -286,8 +286,11 @@ class EwUser:
 			if self.inebriation > 20:
 				self.inebriation = 20
 
-			if food_item.id_item == "coleslaw":
-				self.ghostbust = True
+			try:
+				if item_props['food_name'] == "coleslaw":
+					self.ghostbust = True
+			except:
+				pass
 
 			response = item_props['str_eat'] + ("\n\nYou're stuffed!" if self.hunger <= 0 else "")
 

@@ -76,7 +76,7 @@ async def smelt(cmd):
 			}
 		)
 		response = "You smelted a {item_name}!".format(item_name = item.name)
-	await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+	await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 
 async def adorn(cmd):
 	item_id = ewutils.flattenTokenListToString(cmd.tokens[1:])
@@ -128,9 +128,9 @@ async def adorn(cmd):
 
 			item.persist()
 
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, response))
 	else:
-		await cmd.client.send_message(cmd.message.channel, ewutils.formatMessage(
+		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(
 			cmd.message.author,
 			'Adorn which cosmetic? Check your **!inventory**.'
 		))

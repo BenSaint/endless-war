@@ -2337,9 +2337,5 @@ async def slimeoidbattle(cmd):
 	else:
 		response = "{} was too cowardly to accept your challenge.".format(member.display_name).replace("@", "\{at\}")
 
-		time_now = int(time.time())
-		last_russianrouletted_times[author.id] = time_now - 540
-		last_russianrouletted_times[member.id] = time_now - 540
-
 		# Send the response to the player.
 		await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(author, response))
