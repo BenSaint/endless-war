@@ -137,6 +137,7 @@ class EwUser:
 	life_state = 0
 	busted = False
 	rr_challenger = ""
+	time_last_action = 0
 
 	time_lastkill = 0
 	time_lastrevive = 0
@@ -317,7 +318,7 @@ class EwUser:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM users WHERE id_user = %s AND id_server = %s".format(
 					ewcfg.col_slimes,
 					ewcfg.col_slimelevel,
 					ewcfg.col_hunger,
@@ -339,7 +340,8 @@ class EwUser:
 					ewcfg.col_poi,
 					ewcfg.col_life_state,
 					ewcfg.col_busted,
-					ewcfg.col_rrchallenger
+					ewcfg.col_rrchallenger,
+					ewcfg.col_time_last_action
 				), (
 					id_user,
 					id_server
@@ -370,6 +372,7 @@ class EwUser:
 					self.life_state = result[19]
 					self.busted = (result[20] == 1)
 					self.rr_challenger = result[21]
+					self.time_last_action = result[22]
 				else:
 					# Create a new database entry if the object is missing.
 					cursor.execute("REPLACE INTO users(id_user, id_server, poi, life_state) VALUES(%s, %s, %s, %s)", (
@@ -421,7 +424,7 @@ class EwUser:
 
 			# Save the object.
 			# Todo Preserve Farming Data 	farmActive, plantType, time_lastsow
-			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO users({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
 				ewcfg.col_slimes,
@@ -446,7 +449,8 @@ class EwUser:
 				ewcfg.col_poi,
 				ewcfg.col_life_state,
 				ewcfg.col_busted,
-				ewcfg.col_rrchallenger
+				ewcfg.col_rrchallenger,
+				ewcfg.col_time_last_action
 			), (
 				self.id_user,
 				self.id_server,
@@ -472,7 +476,8 @@ class EwUser:
 				self.poi,
 				self.life_state,
 				(1 if self.busted else 0),
-				self.rr_challenger
+				self.rr_challenger,
+				self.time_last_action
 			))
 
 			conn.commit()
