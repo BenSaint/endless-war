@@ -190,7 +190,7 @@ cmd_map = {
 	ewcfg.cmd_smelt: ewcosmeticitem.smelt,
 	ewcfg.cmd_adorn: ewcosmeticitem.adorn,
 	ewcfg.cmd_create: ewkingpin.create,
-  
+
 	#give an item to another player
 	ewcfg.cmd_give: ewitem.give,
 
@@ -253,6 +253,7 @@ if debug == True:
 
 @client.event
 async def on_ready():
+	ewcfg.set_client(client)
 	ewutils.logMsg('Logged in as {} ({}).'.format(client.user.name, client.user.id))
 
 	ewutils.logMsg("Loaded NLACakaNM world map. ({}x{})".format(ewmap.map_width, ewmap.map_height))
@@ -270,7 +271,7 @@ async def on_ready():
 
 	# Look for a Twitch client_id on disk.
 	# FIXME debug - temporarily disable Twitch integration
-	if False: 
+	if False:
 		twitch_client_id = ewutils.getTwitchClientId()
 
 	# If no twitch client ID is available, twitch integration will be disabled.
@@ -329,9 +330,6 @@ async def on_ready():
 
 	ewutils.logMsg('Ready.')
 
-	ewcfg.set_client(client)
-
-
 	"""
 		Set up for infinite loop to perform periodic tasks.
 	"""
@@ -365,7 +363,7 @@ async def on_ready():
 				# Twitch API call to see if there are any active streams.
 				json_string = ""
 				p = subprocess.Popen(
-					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login = rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id), 
+					"curl -H 'Client-ID: {}' -X GET 'https://api.twitch.tv/helix/streams?user_login = rowdyfrickerscopkillers' 2>/dev/null".format(twitch_client_id),
 					shell = True,
 					stdout = subprocess.PIPE
 				)
@@ -444,6 +442,8 @@ async def on_ready():
 					ewutils.pushdownServerInebriation(id_server = server.id)
 
 					await ewdistrict.give_kingpins_slime_and_decay_capture_points(id_server = server.id)
+
+					await ewmap.kick(server.id)
 
 					# Post leaderboards at 6am NLACakaNM time.
 					if market_data.clock == 6:
@@ -532,6 +532,18 @@ async def on_message(message):
 
 	content_tolower = message.content.lower()
 	re_awoo = re.compile('.*![a]+[w]+o[o]+.*')
+
+	# update the player's time_last_action which is used for kicking AFK players out of subzones
+	try:
+		ewutils.execute_sql_query("UPDATE users SET {time_last_action} = %s WHERE id_user = %s AND id_server = %s".format(
+			time_last_action = ewcfg.col_time_last_action
+		), (
+			int(time.time()),
+			message.author.id,
+			message.server.id
+		))
+	except:
+		ewutils.logMsg('server {}: failed to update time_last_action for {}'.format(message.server.id, message.author.id))
 
 	if message.content.startswith(ewcfg.cmd_prefix) or message.server == None or len(message.author.roles) < 2:
 		"""
@@ -724,6 +736,7 @@ async def on_message(message):
 			message = message,
 			client = client
 		))
+
 
 # find our REST API token
 token = ewutils.getToken()

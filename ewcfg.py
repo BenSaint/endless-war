@@ -320,10 +320,10 @@ seconds_per_ingame_day = 21600
 ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
 
 # kingpin district control slime yields (per tick, i.e. in-game-hourly)
-slime_yield_class_s = int(60000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
-slime_yield_class_a = int(40000 / ticks_per_day)
-slime_yield_class_b = int(30000 / ticks_per_day)
-slime_yield_class_c = int(20000 / ticks_per_day)
+slime_yield_class_s = int(300000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
+slime_yield_class_a = int(200000 / ticks_per_day)
+slime_yield_class_b = int(150000 / ticks_per_day)
+slime_yield_class_c = int(100000 / ticks_per_day)
 
 # district control slime yields assigned to property classes
 district_control_slime_yields = {
@@ -361,6 +361,9 @@ time_pvp_mine = 180
 time_pvp_haunt = 600
 time_pvp_invest_withdraw = 180
 time_pvp = 1800
+
+# time to get kicked out of subzone
+time_kickout = 3 * 60 * 60  # 3 hours
 
 # Emotes
 emote_tacobell = "<:tacobell:431273890195570699>"
@@ -468,6 +471,7 @@ col_busted = 'busted'
 col_rrchallenger = 'rr_challenger_id'
 col_time_lastsow = 'time_lastsow'
 col_farm = 'farm'
+col_time_last_action = 'time_last_action'
 
 #Database columns for slimeoids
 col_id_slimeoid = 'id_slimeoid'
@@ -2209,7 +2213,9 @@ poi_list = [
 		coord = (27, 18),
 		channel = channel_slimecorphq,
 		role = "SlimeCorp HQ",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_downtown
 	),
 	EwPoi( # 1
 		id_poi = poi_id_downtown,
@@ -2726,7 +2732,9 @@ poi_list = [
 		channel = channel_stockexchange,
 		role = "Stock Exchange",
 		coord = (21, 16),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_downtown
 	),
 	EwPoi( # the-bazaar
 		id_poi = poi_id_bazaar,
@@ -2741,7 +2749,9 @@ poi_list = [
 		channel = channel_bazaar,
 		role = "Bazaar",
 		coord = (21, 11),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_smogsburg
 	),
 	EwPoi( # the-cinema
 		id_poi = poi_id_cinema,
@@ -2759,7 +2769,9 @@ poi_list = [
 		channel = channel_cinema,
 		role = "Cinema",
 		coord = (19, 3),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_astatineheights
 	),
 	EwPoi( # food-court
 		id_poi = poi_id_foodcourt,
@@ -2785,7 +2797,9 @@ poi_list = [
 			vendor_tacobell,
 			vendor_kfc,
 			vendor_mtndew
-		]
+		],
+		is_subzone = True,
+		mother_district = poi_id_krakbay
 	),
 	EwPoi( # nlac-u
 		id_poi = poi_id_nlacu,
@@ -2802,7 +2816,9 @@ poi_list = [
 		channel = channel_nlacu,
 		role = "NLAC U",
 		coord = (15, 9),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_gatlingsdale
 	),
 	EwPoi( # battle-arena
 		id_poi = poi_id_arena,
@@ -2818,7 +2834,9 @@ poi_list = [
 		channel = channel_arena,
 		role = "Arena",
 		coord = (10, 10),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_vandalpark
 	),
 	EwPoi( # the-dojo
 		id_poi = poi_id_dojo,
@@ -2835,7 +2853,9 @@ poi_list = [
 		channel = channel_dojo,
 		role = "Dojo",
 		coord = (11, 23),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_southsleezeborough
 	),
 	EwPoi( # speakeasy
 		id_poi = poi_id_speakeasy,
@@ -2857,7 +2877,9 @@ poi_list = [
 		pvp = False,
 		vendors = [
 			vendor_bar
-		]
+		],
+		is_subzone = True,
+		mother_district = poi_id_vagrantscorner
 	),
 	EwPoi( # 7-11
 		id_poi = poi_id_711,
@@ -2878,7 +2900,9 @@ poi_list = [
 		pvp = False,
 		vendors = [
 			vendor_vendingmachine
-		]
+		],
+		is_subzone = True,
+		mother_district = poi_id_poudrinalley
 	),
 	EwPoi( # the-labs
 		id_poi = poi_id_slimeoidlab,
@@ -2901,7 +2925,9 @@ poi_list = [
 		channel = channel_slimeoidlab,
 		role = "Slimeoid Lab",
 		coord = (28, 1),
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_brawlden
 	),
 	EwPoi( # the-mines
 		id_poi = poi_id_mine,
@@ -2917,7 +2943,9 @@ poi_list = [
 		coord = (34, 18),
 		channel = channel_mines,
 		role = "Mines",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_juviesrow
 	),
 	EwPoi( # the-casino
 		id_poi = poi_id_thecasino,
@@ -2935,7 +2963,9 @@ poi_list = [
 		coord = (29, 16),
 		channel = channel_casino,
 		role = "Casino",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_greenlightdistrict
 	),
 	EwPoi(  # cratersville mines
 		id_poi = poi_id_cv_mines,
@@ -2953,7 +2983,9 @@ poi_list = [
 		coord = (19, 30),
 		channel = channel_cv_mines,
 		role = "Cratersville Mines",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_cratersville
 	),
 	EwPoi(  # toxington mines
 		id_poi = poi_id_tt_mines,
@@ -2970,7 +3002,9 @@ poi_list = [
 		coord = (9, 2),
 		channel = channel_tt_mines,
 		role = "Toxington Mines",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_toxington
 	),
 	EwPoi( # smokers-cough
 		id_poi = poi_id_diner,
@@ -2990,7 +3024,9 @@ poi_list = [
 		pvp = False,
 		vendors = [
 			vendor_diner
-		]
+		],
+		is_subzone = True,
+		mother_district = poi_id_wreckington
 	),
 	EwPoi( # Red Mobster
 		id_poi = poi_id_seafood,
@@ -3011,7 +3047,9 @@ poi_list = [
 		pvp = False,
 		vendors = [
 			vendor_seafood
-		]
+		],
+		is_subzone = True,
+		mother_district = poi_id_astatineheights
 	),
 	EwPoi( # JR Farm
 		id_poi = poi_id_jr_farms,
@@ -3030,7 +3068,9 @@ poi_list = [
 		coord = (32, 20),
 		channel = channel_jr_farms,
 		role = "Juvie's Row Farms",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_juviesrow
 	),
 	EwPoi( # OG Farm
 		id_poi = poi_id_og_farms,
@@ -3051,7 +3091,9 @@ poi_list = [
 		coord = (14, 27),
 		channel = channel_og_farms,
 		role = "Ooze Gardens Farms",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_oozegardens
 	),
 	EwPoi( # AB Farm
 		id_poi = poi_id_ab_farms,
@@ -3070,7 +3112,9 @@ poi_list = [
 		coord = (21, 1),
 		channel = channel_ab_farms,
 		role = "Arsonbrook Farms",
-		pvp = False
+		pvp = False,
+		is_subzone = True,
+		mother_district = poi_id_arsonbrook
 	)
 ]
 
