@@ -291,10 +291,10 @@ property_class_c = "c"
 
 # district capturing
 capture_tick_length = 10  # in seconds; also affects how much progress is made per tick so that 1 second = 1 capture point
-max_capture_points_s = 3600  # 60 min
-max_capture_points_a = 1800  # 30 min
-max_capture_points_b = 1200  # 20 min
-max_capture_points_c = 600   # 10 min
+max_capture_points_s = 7200  # 120 min
+max_capture_points_a = 3600  # 60 min
+max_capture_points_b = 1800  # 30 min
+max_capture_points_c = 900   # 15 min
 
 # district capture rates assigned to property classes
 max_capture_points = {
@@ -305,21 +305,24 @@ max_capture_points = {
 }
 
 # capture messages
-capture_milestone = 10  # after how many percent of progress the players are notified of the progress
+capture_milestone = 5  # after how many percent of progress the players are notified of the progress
 
 
 # district de-capturing
 decapture_speed_multiplier = 2  # how much faster de-capturing is than capturing
+
+# district control decay
+decay_modifier = 2  # more means slower
 
 # time values
 seconds_per_ingame_day = 21600
 ticks_per_day = seconds_per_ingame_day / update_market  # how often the kingpins receive slime per in-game day
 
 # kingpin district control slime yields (per tick, i.e. in-game-hourly)
-slime_yield_class_s = int(30000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
-slime_yield_class_a = int(20000 / ticks_per_day)
-slime_yield_class_b = int(15000 / ticks_per_day)
-slime_yield_class_c = int(10000 / ticks_per_day)
+slime_yield_class_s = int(60000 / ticks_per_day)  # dividing the daily amount by the amount of method calls per day
+slime_yield_class_a = int(40000 / ticks_per_day)
+slime_yield_class_b = int(30000 / ticks_per_day)
+slime_yield_class_c = int(20000 / ticks_per_day)
 
 # district control slime yields assigned to property classes
 district_control_slime_yields = {
