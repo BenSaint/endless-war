@@ -356,6 +356,8 @@ cd_invest = 1200
 cd_boombust = 22
 #For possible time limit on russian roulette
 cd_rr = 600
+#slimeoid downtime after a defeat
+cd_slimeoiddefeated = 900
 
 # PvP timer pushouts
 time_pvp_kill = 600
@@ -490,6 +492,7 @@ col_atk = 'atk'
 col_defense = 'defense'
 col_intel = 'intel'
 col_level = 'level'
+col_time_defeated = 'time_defeated'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
