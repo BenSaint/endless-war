@@ -1553,7 +1553,10 @@ async def slimeoid(cmd):
 	response += " It has {} {}.".format(statlevel, statname)
 
 	if slimeoid.life_state == ewcfg.slimeoid_state_none:
-		response = "You have not yet created a slimeoid."
+		if selfcheck == True:
+			response = "You have not yet created a slimeoid."
+		else:
+			response = "{} has not yet created a slimeoid.".format(member.display_name)
 
 	if user_data.life_state == ewcfg.life_state_corpse:
 		response = "Slimeoids don't fuck with ghosts."
