@@ -356,6 +356,8 @@ cd_invest = 1200
 cd_boombust = 22
 #For possible time limit on russian roulette
 cd_rr = 600
+#slimeoid downtime after a defeat
+cd_slimeoiddefeated = 900
 
 # PvP timer pushouts
 time_pvp_kill = 600
@@ -363,9 +365,6 @@ time_pvp_mine = 180
 time_pvp_haunt = 600
 time_pvp_invest_withdraw = 180
 time_pvp = 1800
-
-# time to get kicked out of subzone
-time_kickout = 3 * 60 * 60  # 3 hours
 
 # Emotes
 emote_tacobell = "<:tacobell:431273890195570699>"
@@ -473,7 +472,6 @@ col_busted = 'busted'
 col_rrchallenger = 'rr_challenger_id'
 col_time_lastsow = 'time_lastsow'
 col_farm = 'farm'
-col_time_last_action = 'time_last_action'
 
 #Database columns for slimeoids
 col_id_slimeoid = 'id_slimeoid'
@@ -490,6 +488,7 @@ col_atk = 'atk'
 col_defense = 'defense'
 col_intel = 'intel'
 col_level = 'level'
+col_time_defeated = 'time_defeated'
 
 # Database columns for user statistics
 col_stat_metric = 'stat_metric'
