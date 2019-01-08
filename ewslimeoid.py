@@ -28,6 +28,7 @@ class EwSlimeoid:
 	defense = 0
 	intel = 0
 	level = 0
+	time_defeated = 0
 
 	#slimeoid = EwSlimeoid(member = cmd.message.author, )
 	#slimeoid = EwSlimeoid(id_slimeoid = 12)
@@ -50,7 +51,7 @@ class EwSlimeoid:
 				cursor = conn.cursor();
 
 				# Retrieve object
-				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids{}".format(
+				cursor.execute("SELECT {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {} FROM slimeoids{}".format(
 					ewcfg.col_id_slimeoid,
 					ewcfg.col_id_user,
 					ewcfg.col_id_server,
@@ -68,6 +69,7 @@ class EwSlimeoid:
 					ewcfg.col_defense,
 					ewcfg.col_intel,
 					ewcfg.col_level,
+					ewcfg.col_time_defeated,
 					query_suffix
 				))
 				result = cursor.fetchone();
@@ -91,6 +93,7 @@ class EwSlimeoid:
 					self.defense = result[14]
 					self.intel = result[15]
 					self.level = result[16]
+					self.time_defeated = result[17]
 
 			finally:
 				# Clean up the database handles.
@@ -104,11 +107,8 @@ class EwSlimeoid:
 			conn = conn_info.get('conn')
 			cursor = conn.cursor();
 
-			if self.id_slimeoid == "" or self.id_slimeoid == None:
-				self.id_slimeoid = 0
-
 			# Save the object.
-			cursor.execute("REPLACE INTO slimeoids({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
+			cursor.execute("REPLACE INTO slimeoids({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}) VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)".format(
 				ewcfg.col_id_slimeoid,
 				ewcfg.col_id_user,
 				ewcfg.col_id_server,
@@ -125,7 +125,8 @@ class EwSlimeoid:
 				ewcfg.col_atk,
 				ewcfg.col_defense,
 				ewcfg.col_intel,
-				ewcfg.col_level
+				ewcfg.col_level,
+				ewcfg.col_time_defeated
 			), (
 				self.id_slimeoid,
 				self.id_user,
@@ -143,7 +144,8 @@ class EwSlimeoid:
 				self.atk,
 				self.defense,
 				self.intel,
-				self.level
+				self.level,
+				self.time_defeated
 			))
 
 			conn.commit()
