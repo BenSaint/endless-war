@@ -1636,7 +1636,7 @@ async def slimeoidbattle(cmd):
 	#Wait for an answer
 	accepted = 0
 	try:
-		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
+		msg = await cmd.client.wait_for_message(timeout = 30, author = member, check = check)
 
 		if msg != None:
 			if msg.content == "!accept":
