@@ -466,7 +466,7 @@ async def attack(cmd):
 
 						if slimeoid.level == ewcfg.slimeoid_state_active:
 							brain = ewcfg.brain_map.get(slimeoid.ai)
-							response += "\n\n{}" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
+							response += "\n\n{}" + brain.str_kill.format(slimeoid_name = slimeoid.name)
 
 						if shootee_slimeoid.level == ewcfg.slimeoid_state_active:
 							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
@@ -479,7 +479,7 @@ async def attack(cmd):
 
 						if slimeoid.life_state == ewcfg.slimeoid_state_active:
 							brain = ewcfg.brain_map.get(slimeoid.ai)
-							response += "\n\n" + brain.str_kill.format(slimeoid_name = shootee_slimeoid.name)
+							response += "\n\n" + brain.str_kill.format(slimeoid_name = slimeoid.name)
 
 						if shootee_slimeoid.life_state == ewcfg.slimeoid_state_active:
 							brain = ewcfg.brain_map.get(shootee_slimeoid.ai)
