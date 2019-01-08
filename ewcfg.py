@@ -9,7 +9,7 @@ from ewmap import EwPoi
 from ewslimeoid import EwBody, EwHead, EwMobility, EwOffense, EwDefense, EwSpecial, EwBrain
 
 # Global configuration options.
-version = "v2.15"
+version = "v2.15a"
 dir_msgqueue = 'msgqueue'
 
 # Update intervals
@@ -203,6 +203,8 @@ cmd_inventory_alt3 = cmd_prefix + 'bag'
 cmd_move = cmd_prefix + 'move'
 cmd_move_alt1 = cmd_prefix + 'goto'
 cmd_move_alt2 = cmd_prefix + 'walk'
+cmd_halt = cmd_prefix + 'halt'
+cmd_halt_alt1 = cmd_prefix + 'stop'
 cmd_inspect = cmd_prefix + 'inspect'
 cmd_look = cmd_prefix + 'look'
 cmd_map = cmd_prefix + 'map'

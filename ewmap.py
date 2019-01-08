@@ -648,6 +648,15 @@ async def move(cmd):
 		except:
 			pass
 
+
+"""
+	Cancel any in progress move.
+"""
+async def halt(cmd):
+	moves_active[cmd.message.author.id] = 0
+	return await ewutils.send_message(cmd.client, cmd.message.channel, ewutils.formatMessage(cmd.message.author, "You {} dead in your tracks.".format(cmd.cmd[1:])))
+
+
 """
 	Dump out the visual description of the area you're in.
 """

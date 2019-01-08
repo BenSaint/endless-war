@@ -176,6 +176,10 @@ cmd_map = {
 	ewcfg.cmd_move_alt1: ewmap.move,
 	ewcfg.cmd_move_alt2: ewmap.move,
 
+	# Cancel all moves in progress.
+	ewcfg.cmd_halt: ewmap.halt,
+	ewcfg.cmd_halt_alt1: ewmap.halt,
+
 	# Look around the POI you find yourself in.
 	ewcfg.cmd_look: ewmap.look,
 
