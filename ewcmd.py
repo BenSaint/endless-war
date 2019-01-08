@@ -401,6 +401,9 @@ async def playfetch(cmd):
 	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
 
+	elif (time_now - slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "{} is too beat up from its last battle to play fetch right now.".format(slimeoid.name)
+
 	else:
 		head = ewcfg.head_map.get(slimeoid.head)
 		response = head.str_fetch.format(
@@ -423,6 +426,9 @@ async def observeslimeoid(cmd):
 
 	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
+
+	elif (time_now - slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "{} lies totally inert, recuperating from being recently pulverized in the Arena.".format(slimeoid.name)
 
 	else:
 		options = [
@@ -468,6 +474,9 @@ async def petslimeoid(cmd):
 	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."	
 
+	elif (time_now - slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "{} whimpers. It's still recovering from being beaten up in the Arena.".format(slimeoid.name)
+
 	else:
 		armor = ewcfg.defense_map.get(slimeoid.armor)
 		response = armor.str_pet.format(
@@ -495,6 +504,9 @@ async def walkslimeoid(cmd):
 
 	elif slimeoid.life_state == ewcfg.slimeoid_state_forming:
 			response = "Your Slimeoid is not yet ready. Use !spawnslimeoid to complete incubation."
+
+	elif (time_now - slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "{} can barely move. It's still recovering from its injuries from the Arena.".format(slimeoid.name)
 
 	else:
 		brain = ewcfg.brain_map.get(slimeoid.ai)
@@ -1552,8 +1564,14 @@ async def slimeoid(cmd):
 	statname = "chutzpah"
 	response += " It has {} {}.".format(statlevel, statname)
 
+	if (time_now - slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response += " It is currently incapacitated after being defeated in the Battle Arena."
+
 	if slimeoid.life_state == ewcfg.slimeoid_state_none:
-		response = "You have not yet created a slimeoid."
+		if selfcheck == True:
+			response = "You have not yet created a slimeoid."
+		else:
+			response = "{} has not yet created a slimeoid.".format(member.display_name)
 
 	if user_data.life_state == ewcfg.life_state_corpse:
 		response = "Slimeoids don't fuck with ghosts."
@@ -1613,6 +1631,12 @@ async def slimeoidbattle(cmd):
 	if challengee_slimeoid.life_state != ewcfg.slimeoid_state_active:
 		response = "{} does not have a Slimeoid ready to battle with!".format(member.display_name)
 
+	if (time_now - challenger_slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "Your Slimeoid is still recovering from its last defeat!"
+
+	if (time_now - challengee_slimeoid.time_defeated) < ewcfg.cd_slimeoiddefeated:
+			response = "{}'s Slimeoid is still recovering from its last defeat!".format(member.display_name)
+
 	#Players have to be enlisted
 	if challenger.life_state == ewcfg.life_state_corpse or challengee.life_state == ewcfg.life_state_corpse:
 		if challenger.life_state == ewcfg.life_state_corpse:
@@ -1636,7 +1660,7 @@ async def slimeoidbattle(cmd):
 	#Wait for an answer
 	accepted = 0
 	try:
-		msg = await cmd.client.wait_for_message(timeout = 10, author = member, check = check)
+		msg = await cmd.client.wait_for_message(timeout = 30, author = member, check = check)
 
 		if msg != None:
 			if msg.content == "!accept":
@@ -2315,6 +2339,10 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s2brain.str_victory.format(
 				slimeoid_name=s2name
 			)
+			#store deafeated slimeoid's defet time in the database
+			time_now = int(time.time())
+			challengee_slimeoid.time_defeated = time_now
+			challengee_slimeoid.persist()
 			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challenger_slimeoid.name, challenger_slimeoid.name, author.display_name)
@@ -2328,6 +2356,10 @@ async def slimeoidbattle(cmd):
 			response += "\n" + s1brain.str_victory.format(
 				slimeoid_name=s1name
 			)
+			#store deafeated slimeoid's defet time in the database
+			time_now = int(time.time())
+			challenger_slimeoid.time_defeated = time_now
+			challenger_slimeoid.persist()
 			await ewutils.send_message(cmd.client, cmd.message.channel, response)
 			await asyncio.sleep(2)
 			response = "\n**{} has won the Slimeoid battle!! The crowd erupts into cheers for {} and {}!!** :tada:".format(challengee_slimeoid.name, challengee_slimeoid.name, member.display_name)
